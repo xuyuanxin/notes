@@ -1,0 +1,18 @@
+﻿重复前缀指令REP(Repeat String Instruction)
+
+重复前缀指令是重复其后的字符串操作指令，重复的次数由CX来决定。其一般格式为：
+
+REP　LODS/LODSB/LODSW/LODSD
+REP　STOS/STOSB/STOSW/STOSD
+REP　MOVS/MOVSB/MOVSW/MOVSD
+REP　INS/ INSB/INSW/INSD
+REP　OUTS/OUTSB/OUTSW/OUTSD
+
+重复前缀指令的执行步骤如下：
+
+(1)、判断：CX=0；
+(2)、如果CX=0，则结束重复操作，执行程序中的下一条指令；
+(3)、否则，CX=CX-1(不影响有关标志位)，并执行其后的字符串操作指令，在该指令执行完后，再转到步骤(1)。
+
+
+http://cs.fjzs.edu.cn/ketang/hbyy/05-2-112.htm

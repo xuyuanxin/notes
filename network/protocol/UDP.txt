@@ -1,0 +1,64 @@
+User Datagram Protocol
+
+   the format of fields in a udp datagram
+0                   16                    31
++------------------------------------------+
+|   UDP SOURCE PORT  | UDP DESTINATON PORT |
++------------------------------------------+
+| UDP MESSAGE LENGTH |  UDP CHECKSUM       |    
++------------------------------------------+
+|                  DATA                    |
++------------------------------------------+
+UDP SOURCE PORT    :  源端口     
+UDP DESTINATON PORT:  目的端口 可以不指定(此时为零)
+UDP MESSAGE LENGTH :  消息长度 包括头和数据 单位字节
+UDP CHECKSUM       :  ipv4可选(为零不校验)，ipv6必选。伪首部 首部 数据一起计算。
+
+     ipv4 udp pseudo-header format
+0        8          16                    31
++------------------------------------------+
+|              SOURCE IP ADDRESS           |
++------------------------------------------+
+|           DESTINATON IP ADDRESS          |    
++------------------------------------------+
+|   ZERO   | PROTO  |         UDP LENGTH   |
++------------------------------------------+
+PROTO     :the IPv4 protocol type code ( 17 for UDP)
+UDP LENGTH:the length of the UDP datagram (not including the pseudo-header).
+
++------------------------------------------+
+|     ipv6 udp pseudo-header format        |
+|------------------------------------------|
+|0                             24        31| 
++------------------------------------------+
+|                                          |
+|              SOURCE  ADDRESS             |
+|                                          |
+|                                          |
++------------------------------------------+
+|                                          |
+|                                          |
+|           DESTINATON  ADDRESS            |
+|                                          |
++------------------------------------------+
+|                  UDP LENGTH              |
++------------------------------------------+
+| UNUSED(MUST BE ZERO)       | NEXT HEADER |                                 |
++------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

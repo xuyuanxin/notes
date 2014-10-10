@@ -1,0 +1,7 @@
+pushd temp1
+进入目录temp1中，并当前一目录入栈
+
+例如F:\test目录下有一个temp1目录
+pushd temp1 执行后进入F:\test\temp1，并把F:\test入栈。
+popd 就可以回到F:\test目录
+dirs 可显示当前入栈的目录 dirs -l -v 显示更加规整

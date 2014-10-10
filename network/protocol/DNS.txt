@@ -1,0 +1,126 @@
+---->基本概念
+Domain Name System :the system that provides name to address mapping for the Internet. 
+DNS has two conceptually independent aspects. 
+The first is abstract: it specifies the name syntax and rules for delegating authority over names.
+The second is concrete: it specifies the implementation of a distributed computing system that efficiently maps names to addresses.
+
+domain names:The Domain Name System uses a hierarchical naming scheme known as domain names.a domain name consists of a sequence 
+of subnames separated by a delimiter character, the dot.DNS simply calls each section a label.
+
+Thus, the domain name: cs.purdue.edu
+contains three labels:cs, purdue, and edu. 
+Any suffix of a label in a domain name is also called a domain.
+the lowest-level domain is cs.purdue.edu, (the domain name for the Computer Science department at Purdue University), 
+the second level domain is purdue.edu(the domain name for Purdue University), 
+the top-level domain is edu(the domain name for educational institutions). 
+domain names are written with the local label first and the top domain last. 
+domain name comparisons are insensitive to case, so COM is equivalent to com.
+
+
+---->不同类型的机器可能有相同的名字
+A given name may map to more than one item in the domain system. The client specifies the type of object desired when resolving a name, and the server returns objects of that type.
+For example, a given name can be the name of a host computer that has an IPv4 address, a host computer that has an IPv6 address, a mail server, and so on.
+When a client asks the domain system to resolve a name, it must specify the type of answer desired.
+
+----.仅从名字不能区分出是一个域的名字还是一个主机的名字,也看不出域名的类型
+One cannot distinguish the names of subdomains from the names of individual objects or the type of an object using only the domain name syntax.
+it is possible to have a machine named gwen.purdue.edu,even though cs.purdue.edu names a subdomain.
+
+---->域名的层级管理
+A machine namedxinuin the Computer Science department at Purdue University has the official domain name: xinu.cs.purdue.edu
+The machine name was approved and registered by the local network manager in the Computer Science department. 
+The department manager had previously obtained authority for the subdomain cs.purdue.edufrom a university network authority, who had
+obtained permission to manage the subdomainpurdue.edu from the Internet authority.
+The Internet authority retains control of theedudomain, so new universities can only be added with its permission. 
+Similarly, the university network manager at Purdue University retains authority for the purdue.edusubdomain, so new third-level domains may
+only be added with the manager’s permission.
+
+
+
+
+---->Top-Level Domains
+aero Air transport industry
+arpa Infrastructure domain
+asia Regional domain for Asia
+biz Businesses
+cat Catalan language and cultural
+com Commercial organization
+coop Cooperative associations
+edu Educational institution (4-year)
+gov United States government
+info Information
+int International treaty organizations
+jobs Human resource management
+mil United States military
+museum Museums
+name Individuals
+net Major network support centers
+org Organizations other than those above
+pro Credentialed professionals
+travel Travel industry
+xxx Internet pornography
+country code Each country (geographic scheme)
+
+
+
+================================= 
+----> name server  name resolver
+A name server is a server program that supplies name-to-address translation, mapping from domain names to IP addresses. 
+Often,server software executes on a dedicated processor, and the machine itself is called the name server. 
+The client software, called a name resolver, may contact one or more name servers when translating a name.
+
+---->
+A client must know how to contact at least one name server.
+Domain name servers use a well-known protocol port for all communication, so
+clients know how to communicate with a name server once they know the IP address of
+the machine in which the server executes. How does a client learn the address of a
+name server? Many systems obtain the address of a domain server automatically as part
+of the bootstrap process‡. For example, bootstrap protocols such as IPv4’s DHCP and
+IPv6’s NDP or DHCPv6 can supply a name server address. Of course, other approaches are possible. For example, the address of a name server can be bound into application programs at compile time. Alternatively, the address can be stored in a file on
+secondary storage.
+
+---->caching 
+Internet name servers use caching to make resolution efficient.
+When a client asks the server to resolve a name, the server first checks to see
+if it has authority for the name according to the standard procedure. If not, the server
+checks its cache to see if the name has been resolved recently. Servers report cached
+information to clients, but mark it as a nonauthoritativebinding and give the domain
+name of the server,S, from which they obtained the binding. The local server also
+sends along additional information that tells the client the binding betweenSand an IP
+address. 
+Caching is important in hosts as well as in local name servers. Most resolver
+software caches DNS entries in the host. Thus, if a user looks up the same name repeatedly, subsequent lookups can be resolved from the local cache without using the
+network.
+
+关于老化时间ttl
+The key to DNS success arises because a server does not apply a single fixed
+timeout to all entries. Instead, DNS allows the authority for an entry to configure its
+timeout. That is, whenever an authority responds to a request, the authority includes a
+Time To Live(TTL) value in the response that specifies how long the binding will
+remain valid. Thus, authorities can reduce network overhead by specifying long
+timeouts for entries that they expect to remain unchanged, while specifying short
+timeouts for entries that they expect to change.
+
+---->协议格式
+|0                    16                    31|
++---------------------------------------------+
+|    IDENTIFICATION    |      PARAMETER       |
++---------------------------------------------+
+| NUMBER OF QUESTIONS  | NUMBER OF ANSWERS    |
++---------------------------------------------+
+| NUMBER OF AUTHORITY  | NUMBER OF ADDITIONAL |
++---------------------------------------------+
+|             QUESTION SECTION                |
+|                    ...                      |
++---------------------------------------------+
+|              ANSWER SECTION                 |
+|                    ...                      |
++---------------------------------------------+
+|             AUTHORITY SECTION               |
+|                    ...                      |
++---------------------------------------------+
+|   ADDITIONAL INFORMATION SECTION            |
+|                    ...                      |
++---------------------------------------------+
+
+IDENTIFICATION field that the client uses to match responses to queries

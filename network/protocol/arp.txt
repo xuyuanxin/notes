@@ -1,0 +1,86 @@
+ARP简介
+    ARP is a generic protocol, in the sense that it is designed to support mapping between a wide variety of address types. 
+In practice, however, it is almost always used to map between 32-bit IPv4 addresses and Ethernet-style 48-bit MAC addresses. 
+This case, the one specified in [RFC0826], is also the one of interest to us. 
+    ARP provides a dynamic mapping from a network-layer address to a corresponding hardware address. That is,if a host were 
+to have its network interface card changed, thereby changing its hardware address (but retaining its assigned IP  address),  
+ARP would continue to operate properly after some delay.
+    A related protocol that provides the reverse mapping from ARP, called RARP, was used by systems lacking a disk drive 
+(normally diskless workstations or X terminals). It is rarely used today and requires manual configuration by the system 
+administrator. See [RFC0903] for details.
+
+    Designers of TCP/IP protocols found a creative solution to the address resolution problem for networks like Ethernet that 
+have broadcast capability. The solution allows new hosts or routers to be added to a network without recompiling code, and does 
+not require maintenance of a centralized database. To avoid maintaining a centralized database, the designers chose to use a 
+low-level protocol that resolves addresses dynamically. Named the Address Resolution Protocol(ARP), the protocol provides a 
+mechanism that is reasonably efficient and does not require an administrator to configure tables manually.
+    The idea behind dynamic resolution with ARP is straightforward: when it wants to resolve IP addressIB, a host broadcasts an 
+ARP request packet that asks the host with IP address IB to respond with its hardware address HB. All hosts, including B,receive 
+the request, but only host B recognizes its IP address and sends a reply that contains its hardware address. ARP is only used 
+when a host needs to send an IP packet. Therefore, when it receives a reply to its request, the host that made the request will 
+use the information to send an IP packet directly to B. We can summarize:
+    The Address Resolution Protocol, ARP, allows a host to find the physical address of a target host on the same physical network, 
+given only the target’s IP address.
+    The design allows ARP to map an arbitrary high-level protocol address to an arbitrary network hardware address. In practice, 
+ARP is only used to map 32-bit IPv4 addresses to 48-bit Ethernet addresses
+
+ARP Implementation send
+    Given the IP address of a computer to which a packet must be sent, the software consults its ARP cache to see if the cache 
+already contains the mapping from the IP address to a hardware address.If the answer is found, the software extracts the hardware 
+ddress, fills in the destination address on the outgoing frame, and sends the frame. If the mapping is not in cache, two things 
+must happen. First, the host must store the outgoing packet so it can be sent once the address has been resolved. Second, ARP
+software must broadcast an ARP request.
+    ARP请求报文也要有重传机制，因为对方可能忙来不及回复，或者干脆请求报文丢失了，此时需要重传。如果ARP 请求发出后，在没有收到reply报文
+之前，其它模块也用这个IP发送报文时应该怎么处理？丢包或者创建一个队列缓存这些报文？一般是创建队列。
+    One final detail distinguishes ARP cache management from the management of a typical cache. In a typical cache, timeouts 
+are used to eliminate inactive entries. Thus, the timestamp on an entry is reset each time the entry is used. When space must 
+be reclaimed, the entry with the oldest timestamp is removed from the cache. For an ARP cache, however, the time at which an 
+entry was last referenced is irrelevant — ARP can continue to use the entry even if the destination computer has crashed. Thus, 
+it is important to timeout an entry even if the entry is still being used.  
+  
+ARP Implementation recive
+    When an ARP packet arrives, the software first extracts the sender’s IP address and hardware address pair, and examines the 
+local cache to see if it already has an entry for the sender. If a cache entry exists for the given IP address, the handler 
+updates that entry by overwriting the physical address with the physical address obtained from the packet. After updating the
+cache, a receiver processes the rest of the ARP packet.
+    To process the rest of an ARP packet, the receiver checks the operation. If the incoming packet is an ARP request, the 
+receiving machine checks to see whether it is the target of the request (i.e., some other machine has broadcast a request and 
+“I” am the target of the request). If so, the ARP software adds the sender’s address pair to its cache (if the pair is not 
+already present), forms a reply, and sends the reply directly back to the requester. If the IP address mentioned in a request
+does not match the local IP address (i.e., the request is for another computer), the incoming ARP packet is discarded.
+    If the incoming packet is an ARP reply, the receiver tries to match the reply with a previously issued request. If the 
+reply does not match a request, the packet is discarded. Otherwise, the address binding is known (the entry in the cache will 
+already have been updated in the first step above). Therefore, the ARP software examines the queue of outgoing IP packets 
+(packets that have been waiting for the response). ARP software places each IP packet in a frame, uses the address binding 
+information from the cache to fill in the destination address in the frame, and sends the packet.
+
+ARP Encapsulation And Identification
+    When ARP messages travel from one computer to another, they must be carried in a network frame. ARP message is carried in 
+the payload area of a frame (i.e., is treated as data).
+    To identify the frame as carrying an ARP message, the sender assigns a special value to the type field in the frame header. 
+When a frame arrives at a computer, the network software uses the frame type to determine its contents. In most technologies, a
+single type value is used for all frames that carry an ARP message — network software in the receiver must further examine the 
+ARP message to distinguish between ARP requests and ARP replies. For example, on an Ethernet, frames carrying ARP messages have 
+a type field of 0x0806, where the prefix0xindicates a hexadecimal value. The frame type for ARP has been standardized by IEEE 
+(which owns the Ethernet standards). Thus, when ARP travels over any Ethernet, the type is always 0x0806. Other hardware 
+technologies may use other values.
+
+ARP报文结构
+
+ARP缓存
+
+ARP代理
+
+
+
+
+
+
+
+
+
+
+
+
+
+

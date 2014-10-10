@@ -1,0 +1,2 @@
+Copy the contents of the LR to register Rx.
+mflr Rx (equivalent to: mfspr Rx,8)

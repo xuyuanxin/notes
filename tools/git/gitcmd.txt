@@ -1,0 +1,37 @@
+下载一个代码库,修改,上传
+1 新建一个文件夹
+2 git clone https://github.com/xuyuanxin/notes    下载代码
+3 git add .                                       添加文件
+4 git push origin master                          向GitHub推送
+
+
+
+
+yuanxin@XW /C/Program Files (x86)/Git
+$ git config --global user.name "yuanxin"
+
+yuanxin@XW /C/Program Files (x86)/Git
+$ git config --global user.email "xxuyuanxin@163.com"
+
+git add .  将目录下的所有文件加入到版本管理
+git commit -a -m "message" 
+
+git push -u origin master   推送代码,把本地的代码推送到库上,第一次用-u,后面可以不用。
+git pull  更新代码
+
+
+
+…or create a new repository on the command line
+
+
+touch README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/xuyuanxin/myproj.git
+git push -u origin master
+…or push an existing repository from the command line
+
+
+git remote add origin https://github.com/xuyuanxin/myproj.git
+git push -u origin master

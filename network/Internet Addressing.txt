@@ -1,0 +1,42 @@
+dotted-quad dotted-decimal 
+
+
+ipv6地址
+128 bit
+16  char
+8   short
+4   long
+
+表示方法:16个bit一组中间用冒号:分割。
+例如:5f05:2000:80ad:5800:0058:0800:2023:1d71
+
+a number of agreed-upon simplifications have been standardized for expressing IPv6 addresses [RFC4291]:
+
+1 打头的零没必要写，
+例如:5f05:2000:80ad:5800:0058:0800:2023:1d71
+简写:5f05:2000:80ad:5800:58:0800:2023:1d71
+
+2 连续的零可以用两个冒号::代替，为避免歧义只能使用一次
+例如:  0:0:0:0:0:0:0:1
+简写:  ::1
+       2001:0db8:0:0:0:0:0:2
+简写:  2001:db8::2
+
+3 IPv4-mapped  IPv6 address
+ipv6:  ::ffff:10.0.0.1  这个ipv6地址
+ipv4:  10.0.0.1         代表这个ipv4地址
+
+4 IPv4-compatible  IPv6  address
+  A conventional notation is adopted in which the low-order 32 bits of the IPv6 address can be written using dotted-quad notation.
+例如  :  ::0102:f001
+可写成:  ::1.2.240.1
+
+
+The flexibility provided by [RFC4291] resulted in unnecessary confusion due to the ability to represent the same IPv6 address in multiple ways. To remedy this 
+situation,  [RFC5952]  imposes  some  rules  to  narrow  the  range  of  options  while 
+remaining compatible with [RFC4291]. They are as follows:
+1.  Leading  zeros  must  be  suppressed  (e.g.,  2001:0db8::0022  becomes 
+2001:db8::22).
+2.  The :: construct must be used to its maximum possible effect (most zeros 
+suppressed) but not for only 16-bit blocks. If multiple blocks contain equallength runs of zeros, the first is replaced with ::.
+3.  The hexadecimal digits a through f should be represented in lowercase

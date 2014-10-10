@@ -1,0 +1,8 @@
+EFLAGS 
+
+2、DF标志(DF flag)
+这个方向标志(位于EFLAGS寄存器的第10位)控制串指令(MOVS, CMPS, SCAS, LODS以及STOS)。设置DF标志使得串指令自动递减（从高地址向低地址方向处理字符串），清除该标志则使得串指令自动递增。STD以及CLD指令分别用于设置以及清除DF标志。
+
+
+
+http://blog.csdn.net/jn1158359135/article/details/7761011

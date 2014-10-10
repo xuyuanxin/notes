@@ -1,0 +1,18 @@
+ar
+
+作用：将多个.o文件生成一个静态库库文件(.a)。
+用法：
+ar crs libmy.a foo.o bar.o   用foo.o bar.o生成静态库libmy.o
+ar d libmy.a foo.o           把foo.o从静态库libmy.0中删除
+ar x libmy.a                  查看静态库libmy.a中有哪些.o文件
+ar t libmy.a                  查看静态库libmy.a中有哪些.o文件
+参数：
+x 查看静态库   
+t 查看静态库
+d 删除静态库中的.o文件
+c 创建档案文件
+r 将文件增加到创建的档案文件中
+s 生成库索引提高链接效率
+  
+
+   

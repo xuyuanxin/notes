@@ -1,0 +1,5 @@
+﻿stdu RS,DS(RA)
+
+有两个效果
+1 RS的值存储在地址DS(RA)中
+2 RA = RA + DS

@@ -1,0 +1,5 @@
+#include<stdlib.h>    
+int rand(void);
+
+1 The rand function computes a sequence of pseudo-random integers in the range 0 to RAND_MAX .
+2 The value of the RAND_MAX macro shall be at least 32767.

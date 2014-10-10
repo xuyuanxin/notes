@@ -1,0 +1,14 @@
+﻿ADC
+指令名称 adc
+格式 adc dst,src
+ADC 带进位的加法指令 ADC Reg/Mem, Reg/Mem/Imm 功能，将目的操作数和源操作数相加再加低位进位，结果送入目的的地址 dst+src+cf->dst， 受影响的标志位：AF、CF、OF、PF、SF和ZF，该指令的功能是把源操作数和进位标志位CF的值(0/1)一起加到目的操作数中。
+例：
+mov ax,2
+mov bx,1
+sub bx,ax
+adc ax,1
+执行后，(ax)=4.adc执行时，相当于计算：(ax)+1+CF=2+1+1=4
+mov ax,1
+add ax,ax
+adc ax,3
+执行后，(ax)=5.adc执行时，相当于计算：(ax)+3+CF=2+3+0=5

@@ -1,0 +1,84 @@
+Transmission Control Protocol
+
++------------------------------------------+
+|            tcp segment format            |
+|------------------------------------------|
+|0    4     10      16          24       31|
++------------------------------------------+
+|      SOURCE PORT   |   DESTINATON PORT   |
++------------------------------------------+
+|               SEQUENCE NUMBER            |
++------------------------------------------+
+|         ACKNOWLEDGEMENT NUMBER           |
++------------------------------------------+
+|HLEN|RESERVED|CODE BITS|     WINDOW       |
++------------------------------------------+
+|      CHECKSUM         | URGENT POINTER   |
++------------------------------------------+
+|     OPTIONS(IF ANY)          |  PADDING  |
++------------------------------------------+
+|                PAYLOAD                   |
++------------------------------------------+
+SOURCE PORT            : TCP port numbers that identify the application
+DESTINATION PORT       : programs at the ends of the connection
+SEQUENCE NUMBER        : identifies the position in the sender¡¯s octet stream of the data in the segment
+ACKNOWLEDGEMENT NUMBER : identifies the number of the octet that the source expects to receive next
+HLEN(4-bit)            : specifies the length of the segment header measured in 32-bit multiples. 
+RESERVED(6-bit)        : reserved for future use
+CODE BITS(6-bit)       : determine the purpose and contents of the segment
+                         Bit (left to right) | Meaning if bit set to 1
+                                URG          | Urgent pointer field is valid
+                                ACK          | Acknowledgement field is valid
+                                PSH          | This segment requests a push
+                                RST          | Reset the connection
+                                SYN          | Synchronize sequence numbers
+                                FIN          | Sender has reached end of its byte stream
+WINDOW(16-bit)         : TCP software advertises how much data it is willing to accept every time it sends a segment by specifying its buffer size in the  field
+URGENT POINTER         : When the URG bit is set, the  field specifies the position in the segment where urgent data ends
+OPTIONS                : TCP header can contain zero or more options ;Each option begins with a 1-octet field that specifies
+                         the option type followed by a 1-octet length field that specifies the size of the option in octets. 
+PADDING                : the header length is specified in 32-bit multiples. If the options do not occupy an exact multiple of 32 bits, 
+                         PADDING is added to the end of the header.
+						 
+						 
++------------------------------------------+						 
+|     ipv4 tcp pseudo-header format        |
+|------------------------------------------|
+|0        8          16                  31|
++------------------------------------------+
+|              SOURCE IP ADDRESS           |
++------------------------------------------+
+|           DESTINATON IP ADDRESS          |    
++------------------------------------------+
+|  ZERO  | PROTOCOL  |        TCP LENGTH   |
++------------------------------------------+
+
+
++------------------------------------------+
+|     ipv6 tcp pseudo-header format        |
+|------------------------------------------|
+|0                             24        31| 
++------------------------------------------+
+|                                          |
+|              SOURCE  ADDRESS             |
+|                                          |
+|                                          |
++------------------------------------------+
+|                                          |
+|                                          |
+|           DESTINATON  ADDRESS            |
+|                                          |
++------------------------------------------+
+|                 TCP LENGTH               |
++------------------------------------------+
+| UNUSED(MUST BE ZERO)       | NEXT HEADER |
++------------------------------------------+
+PROTOCOL field (IPv4) or the NEXT HEADER field (IPv6) is assigned the value 6, the value for datagrams carrying TCP. 
+The TCP LENGTH field specifies the total length of the TCP segment including the TCP header.
+
+
+
+
+
+
+

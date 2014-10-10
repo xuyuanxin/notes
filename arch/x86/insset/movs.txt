@@ -1,0 +1,86 @@
+﻿movs
+有两种含义，有操作数和无操作数是指令的意思不一样
+
+
+movs
+无操作数，从esi所指的地方复制一个长字(字 字节)到edi所指的地方，并使esi和edi分别加4。
+
+
+movsbw S,D  
+S -> D  字节(符号扩张后)传送到字
+
+movsbl S,D    
+S -> D  字节(符号扩张后)传送到双字
+
+movswl S,D  
+S -> D  字(符号扩张后)传送到双字
+
+说明:
+b、l、w表示分别在大小为1、2和4个字节的数据上进程操作
+
+例子
+执行前  %dh = CD，%eax = 98765432
+执  行  movsbw %dh,%al
+执行后  %eax = FFFFFFCD
+
+
+一.传送字符串
+把字符串从一个内存位置复制到另一个内存位置。
+ 
+ 
+1.MOVS
+3种格式：
+MOVSB：传送单一字节
+MOVSW：传送一个字（2字节）
+MOVSL：传送一个双字（4字节）
+MOVS使用隐含的源（ESI）、目的（EDI）操作数。
+两种加载ESI、EDI值的方式：
+1）间接寻址：
+movl $output,  %edi
+2）lea指令加载一个对象的有效地址
+leal output,  %esi
+ 
+每次执行MOVS指令时，数据传送后，ESI和EDI寄存器会自动改变，为另一次传送做准备。
+ESI、EDI可能递增也可能递减，这取决于EFLAGS中的DF标志。如果DF被清零则递增，DF被设置，则递减。
+CLD将DF清零
+STD设置DF标志
+
+
+
+
+/*cld   Clear the DF flag in the EFLAGS register
+  rep   重复其后的字符串操作指令，重复的次数由CX来决定*/
+  movsl 每次执行MOVS指令时，数据传送后，ESI和EDI寄存器会自动改变，为另一次传送做准备。
+        ESI、EDI可能递增也可能递减，这取决于EFLAGS中的DF标志。如果DF被清零则递增，DF被设置，则递减。*/
+					
+					/**/
+http://www.2cto.com/kf/201212/178401.html
+
+
+
+
+
+
+MOVSD和MOVSL两个指令均是对字符串进行双字传送。两者的区别：Intel文档使用MOVSD传送双字，而GNU文档使用MOVSL传送双字。
+
+例如：linux内核buffer.c中一段代码。
+
+#define COPYBLK(from,to) \
+__asm__("cld\n\t" \
+ "rep\n\t" \
+ "movsl\n\t" \
+ ::"c" (BLOCK_SIZE/4),"S" (from),"D" (to) \
+ :"cx","di","si")
+
+这里的BLOCK_SIZE是一个逻辑块的大小，为1024字节。这里的嵌入汇编没有输出寄存器，输入寄存器分别是CX、SI、DI，改变的寄存器也是这三个寄存器。
+
+还有一点，rep movsl和
+
+rep
+
+movsl
+
+等价
+
+
+http://blog.163.com/njut_wangjian/blog/static/165796425201247105532210/

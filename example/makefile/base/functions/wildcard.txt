@@ -1,0 +1,12 @@
+wildcard
+
+格式
+$(wildcard _pattern)
+
+用途
+wildcard是通配符函数。可以得到当前目录中满足_pattern条件的文件或目录名列表。
+
+示例
+srcs = $(wildcard *.c)
+scrs就是当前目录下所有的C源文件。
+

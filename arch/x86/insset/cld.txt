@@ -1,0 +1,3 @@
+﻿cld Clear Direction Flag
+
+Clear the DF flag in the EFLAGS register

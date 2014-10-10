@@ -1,0 +1,94 @@
+.PHONY: all clean
+MKDIR = mkdir
+RM = rm
+RMFLAGS = -fr
+
+CC = gcc
+
+AR = ar
+ARFLAGS = crs
+
+DIR_OBJS = objs
+DIR_EXES = $(ROOT)/build/exes
+DIR_DEPS = deps
+DIR_LIBS = $(ROOT)/build/libs
+DIRS = $(DIR_OBJS) $(DIR_EXES) $(DIR_DEPS) $(DIR_LIBS)
+RMS = $(DIR_OBJS) $(DIR_DEPS)
+
+ifneq ("$(EXE)", "")
+EXE := $(addprefix $(DIR_EXES)/, $(EXE))
+RMS += $(EXE)
+endif
+
+ifneq ("$(LIB)", "")
+LIB := $(addprefix $(DIR_LIBS)/, $(LIB))
+RMS += $(LIB)
+endif
+
+
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS))
+DEPS = $(SRCS:.c=.dep)
+DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS))
+
+ifeq ("$(wildcard $(DIR_OBJS))", "")
+DEP_DIR_OBJS := $(DIR_OBJS)
+endif
+
+ifeq ("$(wildcard $(DIR_EXES))", "")
+DEP_DIR_EXES := $(DIR_EXES)
+endif
+
+ifeq ("$(wildcard $(DIR_DEPS))", "")
+DEP_DIR_DEPS := $(DIR_DEPS)
+endif
+
+ifeq ("$(wildcard $(DIR_LIBS))", "")
+DEP_DIR_LIBS := $(DIR_LIBS)
+endif
+
+
+all:  $(EXE) $(LIB) $(DEP_LIBS)
+
+ifneq ($(MAKECMDGOALS), clean)
+include $(DEPS)
+endif
+
+ifneq ("$(INCLUDE_DIRS)", "")
+INCLUDE_DIRS := $(strip $(INCLUDE_DIRS))
+INCLUDE_DIRS := $(addprefix -I,$(INCLUDE_DIRS))
+endif
+ifneq ("$(LINK_LIBS)", "")
+LINK_LIBS := $(strip $(LINK_LIBS))
+LIB_ALL := $(notdir $(wildcard $(DIR_LIBS)/*))
+LIB_FILTERED := $(addsuffix %, $(addprefix lib, $(LINK_LIBS)))
+$(eval DEP_LIBS = $(filter $(LIB_FILTERED), $(LIB_ALL)))
+DEP_LIBS := $(addprefix $(DIR_LIBS)/, $(DEP_LIBS))
+LINK_LIBS := $(addprefix -l,$(LINK_LIBS))
+endif
+
+$(DIRS):
+	$(MKDIR) $@
+
+$(EXE): $(DEP_DIR_EXES) $(OBJS)
+	$(CC) -L$(DIR_LIBS) -o $@ $(filter %.o, $^) $(LINK_LIBS)
+$(LIB): $(DEP_DIR_LIBS) $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(filter %.o, $^)
+$(DIR_OBJS)/%.o: $(DEP_DIR_OBJS) %.c
+	$(CC)  $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
+$(DIR_DEPS)/%.dep: $(DEP_DIR_DEPS) %.c
+	@echo "Making $@ ..."
+	@set -e; \
+	$(RM) $(RMFLAGS) $@.tmp ; \
+	$(CC) $(INCLUDE_DIRS) -E -MM $(filter %.c, $^) > $@.tmp ; \
+	sed 's,\(.*\)\.o[ :]*,objs/\1.o $@: ,g' < $@.tmp > $@ ; \
+	$(RM) $(RMFLAGS) $@.tmp
+mytest:
+	@echo "LIB_ALL:"$(LIB_ALL)
+	@echo "LIB_FILTERED:"$(LIB_FILTERED)
+	@echo "DEP_LIBS:"$(DEP_LIBS)
+	
+	
+clean:
+	$(RM) $(RMFLAGS) $(RMS)

@@ -1,0 +1,30 @@
+    ICMP is an error reporting mechanism.
+    In an internet, a sender cannot tell whether a delivery failure resulted from a malfunction of the local network or a 
+failure of a system somewhere along the path to a destination. Debugging in such an environment becomes extremely difficult. 
+The IP protocol itself contains nothing to help the sender test connectivity or learn about failures.
+    To allow routers in an internet to report errors or provide information about unexpected circumstances, the designers added 
+a special-purpose mechanism to the TCP/IP protocols. Known as the Internet Control Message Protocol (ICMP), the mechanism is 
+considered a required part of IP and must be included in every IP implementation.
+    The Internet Control Message Protocol allows routers to send error or control messages back to the source of a datagram that 
+caused a problem. ICMP messages are not usually delivered to applications. We think of ICMP as providing communication between 
+an ICMP module on one machine and an ICMP module on another.ICMP might inform an application or a higher-level protocol about 
+an incoming message.
+
+    ICMP was initially designed to allow routers to report the cause of delivery errors to hosts, but ICMP is not restricted 
+exclusively to routers. Although guidelines specify that some ICMP messages should only be sent by routers, an arbitrary 
+machine can send an ICMP message to any other machine. Thus, a host can use ICMP to correspond with a router or another host. 
+The chief advantage of allowing hosts to use ICMP is that it provides a single mechanism used for all control and information messages.
+
+ICMP只报错不修复错误
+    When a datagram causes an error, ICMP can only report the error condition back to the original source of the datagram; the 
+source must relate the error to an individual application program or take other action to correct the problem.
+    ICMP报文如果发生错误，不再报错。
+
+ICMP封装
+    Each ICMP message travels across an internet in the payload portion of an IP datagram, which itself travels across an 
+underlying network in the payload portion of a frame.
+    When an ICMP message is carried in the payload area of an IPv4 datagram, the PROTOCOL field is set to 1. IPv6 uses the NEXT 
+HEADER field to specify the type of the item being carried. When an ICMP message is carried in the payload area of an IPv6 
+datagram, the NEXT HEADER field of the header that is previous to the ICMP message contains 58.
+
+

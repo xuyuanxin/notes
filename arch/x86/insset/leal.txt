@@ -1,0 +1,3 @@
+﻿leal 9(%eax,%ecx,2),%edx
+
+相当于:edx = 9+eax+2*ecx

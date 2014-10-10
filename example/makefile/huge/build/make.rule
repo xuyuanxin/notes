@@ -1,0 +1,100 @@
+.PHONY: all clean
+
+MKDIR = mkdir#mkdir 创建目录
+
+RM = rm       #rm命令删除目录及文件。#-r, -R, --recursive 递归删除目录及其内容
+RMFLAGS = -fr #-f, --force 强制删除。忽略不存在的文件，不提示确认
+
+CC = gcc
+
+AR = ar       #ar:管理静态库。
+ARFLAGS = crs #c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连接效率;
+
+DIR_OBJS = objs
+DIR_EXES = $(ROOT)/build/exes
+DIR_DEPS = deps
+DIR_LIBS = $(ROOT)/build/libs
+DIRS = $(DIR_OBJS) $(DIR_EXES) $(DIR_DEPS) $(DIR_LIBS)
+RMS = $(DIR_OBJS) $(DIR_DEPS)
+
+ifneq ("$(EXE)", "")
+EXE := $(addprefix $(DIR_EXES)/, $(EXE))
+RMS += $(EXE)
+endif
+
+ifneq ("$(LIB)", "")
+LIB := $(addprefix $(DIR_LIBS)/, $(LIB))
+RMS += $(LIB)
+endif
+
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS))
+DEPS = $(SRCS:.c=.dep)
+DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS))
+
+ifeq ("$(wildcard $(DIR_OBJS))", "")
+DEP_DIR_OBJS := $(DIR_OBJS)
+endif
+ifeq ("$(wildcard $(DIR_EXES))", "")
+DEP_DIR_EXES := $(DIR_EXES)
+endif
+ifeq ("$(wildcard $(DIR_DEPS))", "")
+DEP_DIR_DEPS := $(DIR_DEPS)
+endif
+ifeq ("$(wildcard $(DIR_LIBS))", "")
+DEP_DIR_LIBS := $(DIR_LIBS)
+endif
+
+all:  $(EXE) $(LIB) $(DEP_LIBS)
+
+ifneq ($(MAKECMDGOALS), clean)
+include $(DEPS)
+endif
+
+ifneq ("$(INCLUDE_DIRS)", "")
+INCLUDE_DIRS := $(strip $(INCLUDE_DIRS))
+INCLUDE_DIRS := $(addprefix -I,$(INCLUDE_DIRS))
+endif
+#notdir:去掉目录，取出文件名。%:通配符
+#addsuffix:加后缀; addprefix:加前缀
+ifneq ("$(LINK_LIBS)", "")
+LINK_LIBS := $(strip $(LINK_LIBS))                            #strip:去掉空格
+LIB_ALL := $(notdir $(wildcard $(DIR_LIBS)/*))                #libbar.a libfoo.a
+LIB_FILTERED := $(addsuffix %, $(addprefix lib, $(LINK_LIBS)))#libbar% libfoo%   LINK_LIBS是传入的值
+$(eval DEP_LIBS = $(filter $(LIB_FILTERED), $(LIB_ALL)))      #libbar.a libfoo.a
+DEP_LIBS := $(addprefix $(DIR_LIBS)/, $(DEP_LIBS))            #给两个.a文件加上路径
+LINK_LIBS := $(addprefix -l,$(LINK_LIBS))                     #-lfoo -lbar
+endif
+
+$(DIRS):
+	$(MKDIR) $@
+
+#-I:指定头文件的目录 HIJ
+#-L:指定库文件目录   KLM
+#-l:连接的库名       klm
+$(EXE): $(DEP_DIR_EXES) $(OBJS)
+	$(CC) -L$(DIR_LIBS) -o $@ $(filter %.o, $^) $(LINK_LIBS)
+$(LIB): $(DEP_DIR_LIBS) $(OBJS)
+	$(AR) $(ARFLAGS) $@ $(filter %.o, $^)
+$(DIR_OBJS)/%.o: $(DEP_DIR_OBJS) %.c
+	$(CC)  $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
+$(DIR_DEPS)/%.dep: $(DEP_DIR_DEPS) %.c
+	@echo "Making $@ ..."
+	@set -e; \
+	$(RM) $(RMFLAGS) $@.tmp ; \
+	$(CC) $(INCLUDE_DIRS) -E -MM $(filter %.c, $^) > $@.tmp ; \
+	sed 's,\(.*\)\.o[ :]*,objs/\1.o $@: ,g' < $@.tmp > $@ ; \
+	$(RM) $(RMFLAGS) $@.tmp
+
+clean:
+	$(RM) $(RMFLAGS) $(RMS)
+	
+mytest:
+	@echo "LIB_ALL:"$(LIB_ALL)
+	@echo "LIB_FILTERED:"$(LIB_FILTERED)
+	@echo "DEP_LIBS:"$(DEP_LIBS)
+	@echo "ROOT:"$(ROOT)
+	@echo "LINK_LIBS:"$(LINK_LIBS)
+	
+

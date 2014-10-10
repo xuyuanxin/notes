@@ -1,0 +1,70 @@
+#基于Makefile_3_120
+
+.PHONY: all clean
+CFLAG = -DDebug
+MKDIR   = mkdir
+RM      = rm
+RMFLAGS = -fr
+CC      = gcc
+#文件夹的定义
+DIR_OBJS = objs
+DIR_EXES = exes
+DIR_DEPS = deps
+DIRS = $(DIR_OBJS) $(DIR_EXES) $(DIR_DEPS) #objs exes deps
+#编译结果的定义，中间文件等
+EXE = complicated.exe
+EXE := $(addprefix $(DIR_EXES)/, $(EXE))   #exes/complicated.exe
+SRCS = $(wildcard *.c)                     
+OBJS = $(SRCS:.c=.o)                       
+OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS)) #objs/main.o objs/foo.o
+DEPS = $(SRCS:.c=.dep)                     #main.dep foo.dep
+DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS)) #deps/main.dep deps/foo.dep
+
+ifeq ("$(wildcard $(DIR_OBJS))", "")       #为空则赋值
+DEP_DIR_OBJS := $(DIR_OBJS)                #objs
+endif
+ifeq ("$(wildcard $(DIR_EXES))", "")
+DEP_DIR_EXES := $(DIR_EXES)                #exes
+endif
+ifeq ("$(wildcard $(DIR_DEPS))", "")
+DEP_DIR_DEPS := $(DIR_DEPS)                #deps
+endif
+
+all:$(EXE)
+
+#MAKECMDGOALS用户输入的目标
+ifneq ($(MAKECMDGOALS), clean)
+include $(DEPS)  #make看到include指令时会试图去构建所需要包含进来的依赖文件
+endif
+#$@运行的目标；$^所有先决条件；$<第一个先决条件
+$(DIRS):
+	$(MKDIR) $@
+	
+#exes/complicated.exe：
+#gcc -DDebug -o exes/complicated.exe objs/main.o objs/foo.o
+$(EXE): $(DEP_DIR_EXES) $(OBJS)
+	$(CC) $(CFLAG) -o $@ $(filter %.o, $^) 
+
+#objs/foo.o: objs foo.c
+#gcc -DDebug -o objs/foo.o -c foo.c
+$(DIR_OBJS)/%.o: $(DEP_DIR_OBJS) %.c
+	$(CC) $(CFLAG) -o $@ -c $(filter %.c, $^)
+
+#deps/foo.dep: deps foo.c
+#@set -e 告诉shell生产依赖关系文件的过程中出现错误就直接退出
+#gcc -E -MM foo.c生产foo.c的依赖文件(自己定义的)。-E告诉gcc只做预处理而不进行程序编译
+#gcc -E -MM foo.c的输出foo.o: foo.c foo.h define.h
+#sed之后objs/foo.o deps/foo.dep: foo.c foo.h define.h
+$(DIR_DEPS)/%.dep: $(DEP_DIR_DEPS) %.c
+	@echo "Making $@ ..."
+	@set -e; \
+	$(RM) $(RMFLAGS) $@.tmp ; \
+	$(CC) -E -MM $(filter %.c, $^) > $@.tmp ; \
+	sed 's,\(.*\)\.o[ :]*,objs/\1.o $@: ,g' < $@.tmp > $@ ; \
+	$(RM) $(RMFLAGS) $@.tmp
+
+clean:
+	$(RM) $(RMFLAGS) $(DIRS)
+	
+test1:
+	@echo "dddd"

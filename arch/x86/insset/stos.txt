@@ -1,0 +1,27 @@
+﻿stos
+stos dst
+将寄存器（AX，EAX）里的内容存储（store）到内存单元（地址ES：DI）；
+stos根据操作单元的大小有几种方式byte/word/dword等
+当它与REP联用时，可把AL或AX的内容存入一个长度为（CX）的缓冲区中
+D为1往低地址拷贝,D为0往高地址拷贝。
+CLD指令清除方向标志(置0)，即D为0
+
+
+lods
+将内存单元（地址：DS：SI）中的内容装入（load）到寄存器（AX，EAX）。
+
+
+
+
+stos((store into String)，意思是把eax的内容拷贝到目的地址。
+格式：STOS DST
+      STOSB（字节）
+      STOSW（字）
+执行的操作：
+字节操作：((DT))←(AL),(DI)←(DI)±1
+字操作：((DI))←(AX),(DI)←(DI)±2
+该指令把AL或AX的内容存入由（DI）指定的附加段的某单元中，并根据DF的值及数据类型修改DI的内容。当它与REP联用时，可把AL或AX的内容存入一个长度为（CX）的缓冲区中。上述有关串处理指令的特性也适用于STOS指令，该指令也不影响标志位。
+STOS指令在初始化某一缓冲区时很有用。
+
+http://genime.blog.163.com/blog/static/16715775320122133462249/
+

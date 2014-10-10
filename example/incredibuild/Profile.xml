@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Profile FormatVersion="1">
+    <Tools>
+        <Tool Filename="make" AllowIntercept="true" />
+        <Tool Filename="cl" AllowRemote="true" />
+        <Tool Filename="link" AllowRemote="true" />
+        <Tool Filename="gcc" AllowRemote="true" />
+        <Tool Filename="gcc-3" AllowRemote="true" />
+    </Tools>
+</Profile>

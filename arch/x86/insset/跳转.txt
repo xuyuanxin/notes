@@ -1,0 +1,1 @@
+﻿je Lable     相等或零跳转到Lable

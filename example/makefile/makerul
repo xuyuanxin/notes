@@ -1,0 +1,26 @@
+#test
+
+all:
+	@echo $(ROOT)
+test1:
+	echo aaa \
+ifeq ("$(flag)","yes") \
+	echo bbb \
+endif \
+	echo ccc
+test2:
+	echo aaa
+ifeq ("$(flag)","yes")
+	echo bbb 
+endif
+	echo ccc
+	
+test3:
+ifeq ("$(flag)","yes") 
+	echo aaa \
+	echo bbb \
+	echo ccc
+else
+	echo ddd
+endif 
+	

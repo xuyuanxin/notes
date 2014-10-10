@@ -1,0 +1,6 @@
+
+函数名： time
+头文件：time.h
+函数原型：time_t time(time_t * timer)
+功能: 获取当前的系统时间，返回的结果是一个time_t类型，其实就是一个大整数，其值表示从CUT（Coordinated Universal Time）时间1970年1月1日00:00:00（称为UNIX系统的Epoch时间）到当前时刻的秒数。
+

@@ -1,0 +1,12 @@
+
+movb S,D         S -> D  传送字节
+movw S,D         S -> D  传送字
+movl S,D         S -> D  传送双字
+
+说明:
+b、l、w表示分别在大小为1、2和4个字节的数据上进程操作
+
+例子
+执行前  %dh = CD，%eax = 98765432
+执  行  movb %dh,%al
+执行后  %eax = 987654CD

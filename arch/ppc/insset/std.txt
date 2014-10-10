@@ -1,0 +1,4 @@
+﻿
+std RS,DS(RA)
+
+RS的值存储在地址DS(RA)中
