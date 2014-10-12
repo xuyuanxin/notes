@@ -221,3 +221,47 @@ int setuid(uid_t uid);
 int setgid(gid_t gid);
 
 
+
+#include <unistd.h>
+/*Returns: process group ID of calling process*/
+pid_t getpgrp(void);
+
+/*
+  returns: process group ID if OK,-1 on error
+
+  1 getpgid(0)==getpgrp()*/
+pid_t getpgid(pid_t pid);
+
+/*
+  function:A process joins an existing process group or creates a new process group by calling @setpgid
+  Returns: 0 if OK,-1 on error
+
+  1 把进程@pid的进程组ID设置成@pgid,如果@pid==@pgid,则进程@pid变成进程组组长.
+  2 if @pid==0  使用调用者的进程ID
+  3 if @pgid==0 则进程@pid的进程ID作为进程组ID
+  4 一个进程只能为自己或它的子进程设置进程组ID
+  5 子进程调用exec系列函数后,进程组不能改变*/
+int setpgid(pid_t pid,pid_t pgid);
+
+/*
+function:A process establishes a new session by calling the @setsid function.
+returns: process group ID if OK,-1 on error
+
+1 如果调用该函数的进程是组长进程,则函数返回出错.
+2 如果不是组长进程,则@setsid创建一个新会话.
+2.1 The process becomes the session leader of this new session. (A session leader is
+    the process that creates a session.) The process is the only process in this new session.
+2.2 The process becomes the process group leader of a new process group. The new
+    process group ID is the process ID of the calling process.
+2.3 The process has no controlling terminal. If the process had a controlling terminal before calling
+    @setsid,that association is broken.*/
+pid_t setsid(void);
+
+/*
+returns: session leader's process group ID if OK,-1 on error
+1 If @pid is 0, @getsid returns the process group ID of the calling process's session leader.
+2 For security reasons, some implementations may restrict the calling process from obtaining the 
+  process group ID of the session leader if @pid doesn't belong to the same session as the caller.*/
+pid_t getsid(pid_t pid);
+
+

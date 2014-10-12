@@ -1,0 +1,36 @@
+下载一个代码库,修改,上传
+1 git clone https://github.com/xuyuanxin/notes    下载代码
+2 git add .                                       添加文件到暂存区
+3 git commit -a -m "message"                      提交到本地版本库
+4 git push origin master                          提交到github
+
+----> 删除文件
+1 git rm filename
+2 git commit filename
+
+----> 文件重命名
+1 git mv <旧文件名> <新文件名> 
+2 commit即可
+
+
+
+…or create a new repository on the command line
+
+
+touch README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/xuyuanxin/myproj.git
+git push -u origin master
+…or push an existing repository from the command line
+
+
+git remote add origin https://github.com/xuyuanxin/myproj.git
+git push -u origin master
+
+yuanxin@XW /C/Program Files (x86)/Git
+$ git config --global user.name "yuanxin"
+
+yuanxin@XW /C/Program Files (x86)/Git
+$ git config --global user.email "xxuyuanxin@163.com"
