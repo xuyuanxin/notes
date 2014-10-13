@@ -4,6 +4,10 @@
 3 git commit -a -m "message"                      提交到本地版本库
 4 git push origin master                          提交到github
 
+---->回退修改
+git checkout -- filename  回退filename的修改(进入到文件所在的目录)
+
+
 ----> 删除文件
 1 git rm filename
 2 git commit filename

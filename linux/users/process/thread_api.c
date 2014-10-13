@@ -1,3 +1,6 @@
+typedef unsigned long int pthread_t; /*linux中这么定义*/
+
+
 #include <pthread.h>
 /*Returns: nonzero if equal, 0 otherwise*/
 int pthread_equal(pthread_t tid1,pthread_t tid2);
