@@ -1,0 +1,41 @@
+#isinstance(object, class)	
+#判断object是否是class的实例
+
+#如果继承关系是：
+#object -> Animal -> Dog -> Husky
+#那么，isinstance()就可以告诉我们，一个对象是否是某种类型。先创建3种类型的对象：
+>>> a = Animal()
+>>> d = Dog()
+>>> h = Husky()
+#然后，判断：
+>>> isinstance(h, Husky)
+True
+#没有问题，因为h变量指向的就是Husky对象。再判断：
+>>> isinstance(h, Dog)
+True
+#h虽然自身是Husky类型，但由于Husky是从Dog继承下来的，所以，h也还是Dog类型。
+#换句话说，isinstance()判断的是一个对象是否是该类型本身，或者位于该类型的父继承链上。
+#因此，我们可以确信，h还是Animal类型：
+>>> isinstance(h, Animal)
+True
+#同理，实际类型是Dog的d也是Animal类型：
+>>> isinstance(d, Dog) and isinstance(d, Animal)
+True
+#但是，d不是Husky类型：
+>>> isinstance(d, Husky)
+False
+#能用type()判断的基本类型也可以用isinstance()判断：
+>>> isinstance('a', str)
+True
+>>> isinstance(u'a', unicode)
+True
+>>> isinstance('a', unicode)
+False
+#并且还可以判断一个变量是否是某些类型中的一种，比如下面的代码就可以判断是否是str或者unicode：
+>>> isinstance('a', (str, unicode))
+True
+>>> isinstance(u'a', (str, unicode))
+True
+#由于str和unicode都是从basestring继承下来的，所以，还可以把上面的代码简化为：
+>>> isinstance(u'a', basestring)
+True
