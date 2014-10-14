@@ -22,7 +22,7 @@ bstnode *bst_insert(bstnode *root_node,int key)
 		root_node->bst_depth = treedepth - 1;		
 		root_node->bst_index = treeindex;
 	} 
-	else if(key < root_node->bst_key)/*æ’å…¥å·¦å­æ ‘*/
+	else if(key < root_node->bst_key)/*²åÈë×ó×ÓÊ÷*/
 	{	    
 	    treeindex = treeindex*2;
 		root_node->bst_left = bst_insert(root_node->bst_left,key);
@@ -43,22 +43,22 @@ bstnode *bst_insert(bstnode *root_node,int key)
 
 bstnode *bst_delete(bstnode *proot,bstnode *pnode)
 {    
-	bstnode *pdel;      /*å¾…åˆ é™¤èŠ‚ç‚¹ï¼Œå¯èƒ½å°±æ˜¯pnode(pnodeæœ€å¤šæœ‰ä¸€ä¸ªå­©å­)ï¼Œä¹Ÿå¯èƒ½ä½¿pnodeçš„åç»§(pnodeæœ‰ä¸¤ä¸ªå­©å­)*/
-	bstnode *pchild_del;/*å¾…åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
+	bstnode *pdel;      /*´ıÉ¾³ı½Úµã£¬¿ÉÄÜ¾ÍÊÇpnode(pnode×î¶àÓĞÒ»¸öº¢×Ó)£¬Ò²¿ÉÄÜÊ¹pnodeµÄºó¼Ì(pnodeÓĞÁ½¸öº¢×Ó)*/
+	bstnode *pchild_del;/*´ıÉ¾³ı½ÚµãµÄ×Ó½Úµã*/
 
-    /*ç¡®å®šå¾…åˆ é™¤çš„èŠ‚ç‚¹ï¼Œpnodeæˆ–è€…pnodeçš„åç»§*/
+    /*È·¶¨´ıÉ¾³ıµÄ½Úµã£¬pnode»òÕßpnodeµÄºó¼Ì*/
     if(NULL == pnode->bst_left || NULL == pnode->bst_right)
 		pdel = pnode;
 	else
 		pdel = tree_successor(pnode);
 
-	/*pdelæœ€å¤šæœ‰ä¸€ä¸ªå­å¥³ï¼Œæ‰¾åˆ°éNULLå­å¥³ï¼Œæ²¡æœ‰å­å¥³pchild_delä¸ºç©º*/
+	/*pdel×î¶àÓĞÒ»¸ö×ÓÅ®£¬ÕÒµ½·ÇNULL×ÓÅ®£¬Ã»ÓĞ×ÓÅ®pchild_delÎª¿Õ*/
 	if(NULL != pdel->bst_left)
 		pchild_del = pdel->bst_left;
 	else
 		pchild_del = pdel->bst_right;
 
-    /*pchild_deléç©º,è¯´æ˜æœ‰ä¸”åªæœ‰ä¸€ä¸ªå­©å­*/
+    /*pchild_del·Ç¿Õ,ËµÃ÷ÓĞÇÒÖ»ÓĞÒ»¸öº¢×Ó*/
 	if(NULL != pchild_del)
 		pchild_del->bst_parent = pdel->bst_parent;
 
@@ -197,3 +197,4 @@ void bst_test()
 {
     bst_test_insert();
 }
+
