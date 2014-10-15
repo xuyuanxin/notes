@@ -44,7 +44,7 @@ void tree_node_coordinate_adjust(tree_node_t * pnode,int flag)
 		g_tree_depth = g_node_depth;
 }
 
-/*ÉèÖÃÊ÷ÖĞÃ¿¸ö½ÚµãµÄ×ø±ê*/
+/*è®¾ç½®æ ‘ä¸­æ¯ä¸ªèŠ‚ç‚¹çš„åæ ‡*/
 void tree_node_coordinate_set(tree_node_t *pnode)
 {   
 	tree_node_coordinate_adjust(pnode,0);
@@ -176,6 +176,16 @@ int tree_struct_show(tree_node_t *pnode)
 	tree_struct_set(pnode);
 	tree_struct_printf();
 }
+
+int tree_show(tree_node_t *pnode,int depth)
+{
+    tree_struct_init();
+	tree_struct_set(pnode);
+	
+	g_tree_depth = depth;
+	tree_struct_printf();
+}
+
 
 int main_t()
 {
