@@ -40,7 +40,7 @@ bstnode *bst_insert(bstnode *root_node,int key)
 		root_node->bst_depth = nodedepth - 1;		
 		root_node->bst_index = nodeindex;
 	} 
-	else if(key < root_node->bst_key)/*æ’å…¥å·¦å­æ ‘*/
+	else if(key < root_node->bst_key)/*²åÈë×ó×ÓÊ÷*/
 	{	    
 	    nodeindex = nodeindex*2;
 		root_node->bst_left = bst_insert(root_node->bst_left,key);
@@ -61,8 +61,8 @@ bstnode *bst_insert(bstnode *root_node,int key)
 
 bstnode *bst_delete(bstnode *proot,int key)
 {    
-	bstnode *pdel;   /*å¾…åˆ é™¤èŠ‚ç‚¹*/
-	bstnode *pchild; /*å¾…åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
+	bstnode *pdel;   /*´ıÉ¾³ı½Úµã*/
+	bstnode *pchild; /*´ıÉ¾³ı½ÚµãµÄ×Ó½Úµã*/
 	bstnode *pnode = NULL;
 
     pnode = bst_search(proot,key);
@@ -73,27 +73,27 @@ bstnode *bst_delete(bstnode *proot,int key)
 		return proot;
     }
 
-    /*ç¡®å®šå¾…åˆ é™¤çš„èŠ‚ç‚¹ï¼Œpnodeæˆ–è€…pnodeçš„åç»§*/
+    /*È·¶¨´ıÉ¾³ıµÄ½Úµã£¬pnode»òÕßpnodeµÄºó¼Ì*/
     if(NULL == pnode->bst_left || NULL == pnode->bst_right)
 		pdel = pnode;
 	else
-		pdel = tree_successor(pnode);/*æœ‰ä¸¤ä¸ªå­©å­,ä¸€å®šæœ‰åç»§*/
+		pdel = tree_successor(pnode);/*ÓĞÁ½¸öº¢×Ó,Ò»¶¨ÓĞºó¼Ì*/
 
-	/*pdelæœ€å¤šæœ‰ä¸€ä¸ªå­å¥³ï¼Œæ‰¾åˆ°éNULLå­å¥³ï¼Œæ²¡æœ‰å­å¥³pchildä¸ºç©º*/
+	/*pdel×î¶àÓĞÒ»¸ö×ÓÅ®£¬ÕÒµ½·ÇNULL×ÓÅ®£¬Ã»ÓĞ×ÓÅ®pchildÎª¿Õ*/
 	if(NULL != pdel->bst_left)
 		pchild = pdel->bst_left;
 	else
 		pchild = pdel->bst_right;
 
-    /*pchildéç©º,è¯´æ˜æœ‰ä¸”åªæœ‰ä¸€ä¸ªå­©å­*/
+    /*pchild·Ç¿Õ,ËµÃ÷ÓĞÇÒÖ»ÓĞÒ»¸öº¢×Ó*/
 	if(NULL != pchild)
-		pchild->bst_parent = pdel->bst_parent;/*å…ˆæŠŠè¦åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹è®¾ç½®å¥½*/
+		pchild->bst_parent = pdel->bst_parent;/*ÏÈ°ÑÒªÉ¾³ı½ÚµãµÄ×Ó½ÚµãµÄ¸¸½ÚµãÉèÖÃºÃ*/
 
-	/*è®¾ç½®è¦åˆ é™¤èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
+	/*ÉèÖÃÒªÉ¾³ı½ÚµãµÄ¸¸½ÚµãµÄ×Ó½Úµã*/
 
 	if(NULL == pdel->bst_parent)
 	{
-        proot = pchild;/*è¦åˆ é™¤èŠ‚ç‚¹æ²¡æœ‰çˆ¶èŠ‚ç‚¹,è¯´æ˜å®ƒæ˜¯æ ‘æ ¹*/
+        proot = pchild;/*ÒªÉ¾³ı½ÚµãÃ»ÓĞ¸¸½Úµã,ËµÃ÷ËüÊÇÊ÷¸ù*/
 	}
 	else
 	{
@@ -104,7 +104,7 @@ bstnode *bst_delete(bstnode *proot,int key)
 	}
 
 	if(pnode != pdel)
-		pnode->bst_key = pdel->bst_key;/*ä¸ç­‰è¯´æ˜åˆ é™¤çš„æ˜¯åç»§,æ­¤æ—¶è¦ä¿®æ”¹key*/
+		pnode->bst_key = pdel->bst_key;/*²»µÈËµÃ÷É¾³ıµÄÊÇºó¼Ì,´ËÊ±ÒªĞŞ¸Äkey*/
 
 	return proot;	
 }
@@ -267,3 +267,4 @@ void bst_test()
     bst_test_insert();
     //bst_test_delete();
 }
+
