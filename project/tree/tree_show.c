@@ -71,6 +71,7 @@ void tree_node_coordinate_clear(tree_node_t *pnode)
     }
 }
 
+/*修改*/
 int tree_struct_init()
 {
     int i,j,k,f;
@@ -82,44 +83,44 @@ int tree_struct_init()
 		for(j = 0;j <= TREE_LINE;++j)
 	        tree_str_info[i][j] = ' ';
     
-    pstring = "                                |------------------------------NN------------------------------|";
+    pstring = "                                |------------------------------..------------------------------|";
 	strcpy(tree_str_info[0],pstring);
 
 	pstring = "                                |                                                              |";
 	strcpy(tree_str_info[1],pstring);
 
-	pstring = "                |--------------NN--------------|                                |--------------NN--------------|";
+	pstring = "                |--------------..--------------|                                |--------------..--------------|";
 	strcpy(tree_str_info[2],pstring);
 	
 	pstring = "                |                              |                                |                              |";
 	strcpy(tree_str_info[3],pstring);
 
-	pstring = "        |------NN------|                |------NN------|                |------NN------|                |------NN------|";
+	pstring = "        |------..------|                |------..------|                |------..------|                |------..------|";
 	strcpy(tree_str_info[4],pstring);
 	
 	pstring = "        |              |                |              |                |              |                |              |";
 	strcpy(tree_str_info[5],pstring);
 
-	pstring = "    |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|";
+	pstring = "    |--..--|        |--..--|        |--..--|        |--..--|        |--..--|        |--..--|        |--..--|        |--..--|";
 	strcpy(tree_str_info[6],pstring);
 
 	pstring = "    |      |        |      |        |      |        |      |        |      |        |      |        |      |        |      |";
 	strcpy(tree_str_info[7],pstring);
 
-	pstring = "   NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN";
+	pstring = "   ..      ..      ..      ..      ..      ..      ..      ..      ..      ..      ..      ..      ..      ..      ..      ..";
 	strcpy(tree_str_info[8],pstring);
 
 	pstring = "  |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |";
 	strcpy(tree_str_info[9],pstring);
 
-	pstring = " NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN";
+	pstring = " ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..  ..";
 	strcpy(tree_str_info[10],pstring);
 
 	pstring = " ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||";
 	strcpy(tree_str_info[11],pstring);
 
 	pstring = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-	pstring = "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN";
+	pstring = "................................................................................................................................";
 	strcpy(tree_str_info[12],pstring);
 }
 
