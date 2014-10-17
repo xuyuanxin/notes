@@ -11,9 +11,9 @@ bstnode *bst_search(bstnode *proot, int key)
 		return proot;
 
 	if(key < proot->bst_key)
-		return tree_search(proot->bst_left,key);
+		return bst_search(proot->bst_left,key);
 	else
-		return tree_search(proot->bst_right,key);
+		return bst_search(proot->bst_right,key);
 }
 
 bstnode *bst_insert(bstnode *root_node,int key)
@@ -37,10 +37,10 @@ bstnode *bst_insert(bstnode *root_node,int key)
 		root_node->bst_left  = NULL;
 		root_node->bst_right = NULL;
 		root_node->bst_key   = key;
-		root_node->bst_depth = nodedepth - 1;		
-		root_node->bst_index = nodeindex;
+		//root_node->bst_depth = nodedepth - 1;		
+		//root_node->bst_index = nodeindex;
 	} 
-	else if(key < root_node->bst_key)/*²åÈë×ó×ÓÊ÷*/
+	else if(key < root_node->bst_key)/*æ’å…¥å·¦å­æ ‘*/
 	{	    
 	    nodeindex = nodeindex*2;
 		root_node->bst_left = bst_insert(root_node->bst_left,key);
@@ -61,8 +61,8 @@ bstnode *bst_insert(bstnode *root_node,int key)
 
 bstnode *bst_delete(bstnode *proot,int key)
 {    
-	bstnode *pdel;   /*´ıÉ¾³ı½Úµã*/
-	bstnode *pchild; /*´ıÉ¾³ı½ÚµãµÄ×Ó½Úµã*/
+	bstnode *pdel;   /*å¾…åˆ é™¤èŠ‚ç‚¹*/
+	bstnode *pchild; /*å¾…åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
 	bstnode *pnode = NULL;
 
     pnode = bst_search(proot,key);
@@ -73,27 +73,27 @@ bstnode *bst_delete(bstnode *proot,int key)
 		return proot;
     }
 
-    /*È·¶¨´ıÉ¾³ıµÄ½Úµã£¬pnode»òÕßpnodeµÄºó¼Ì*/
+    /*ç¡®å®šå¾…åˆ é™¤çš„èŠ‚ç‚¹ï¼Œpnodeæˆ–è€…pnodeçš„åç»§*/
     if(NULL == pnode->bst_left || NULL == pnode->bst_right)
 		pdel = pnode;
 	else
-		pdel = tree_successor(pnode);/*ÓĞÁ½¸öº¢×Ó,Ò»¶¨ÓĞºó¼Ì*/
+		pdel = tree_successor(pnode);/*æœ‰ä¸¤ä¸ªå­©å­,ä¸€å®šæœ‰åç»§*/
 
-	/*pdel×î¶àÓĞÒ»¸ö×ÓÅ®£¬ÕÒµ½·ÇNULL×ÓÅ®£¬Ã»ÓĞ×ÓÅ®pchildÎª¿Õ*/
+	/*pdelæœ€å¤šæœ‰ä¸€ä¸ªå­å¥³ï¼Œæ‰¾åˆ°éNULLå­å¥³ï¼Œæ²¡æœ‰å­å¥³pchildä¸ºç©º*/
 	if(NULL != pdel->bst_left)
 		pchild = pdel->bst_left;
 	else
 		pchild = pdel->bst_right;
 
-    /*pchild·Ç¿Õ,ËµÃ÷ÓĞÇÒÖ»ÓĞÒ»¸öº¢×Ó*/
+    /*pchildéç©º,è¯´æ˜æœ‰ä¸”åªæœ‰ä¸€ä¸ªå­©å­*/
 	if(NULL != pchild)
-		pchild->bst_parent = pdel->bst_parent;/*ÏÈ°ÑÒªÉ¾³ı½ÚµãµÄ×Ó½ÚµãµÄ¸¸½ÚµãÉèÖÃºÃ*/
+		pchild->bst_parent = pdel->bst_parent;/*å…ˆæŠŠè¦åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹è®¾ç½®å¥½*/
 
-	/*ÉèÖÃÒªÉ¾³ı½ÚµãµÄ¸¸½ÚµãµÄ×Ó½Úµã*/
+	/*è®¾ç½®è¦åˆ é™¤èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
 
 	if(NULL == pdel->bst_parent)
 	{
-        proot = pchild;/*ÒªÉ¾³ı½ÚµãÃ»ÓĞ¸¸½Úµã,ËµÃ÷ËüÊÇÊ÷¸ù*/
+        proot = pchild;/*è¦åˆ é™¤èŠ‚ç‚¹æ²¡æœ‰çˆ¶èŠ‚ç‚¹,è¯´æ˜å®ƒæ˜¯æ ‘æ ¹*/
 	}
 	else
 	{
@@ -103,21 +103,33 @@ bstnode *bst_delete(bstnode *proot,int key)
 			pdel->bst_parent->bst_right = pchild;
 	}
 
-	if(pnode != pdel)
-		pnode->bst_key = pdel->bst_key;/*²»µÈËµÃ÷É¾³ıµÄÊÇºó¼Ì,´ËÊ±ÒªĞŞ¸Äkey*/
+	if(pnode != pdel)/*æ¡ä»¶æˆç«‹è¯´æ˜åˆ é™¤çš„æ˜¯åç»§,æ­¤æ—¶è¦ä¿®æ”¹key*/
+	{
+		pnode->bst_key = pdel->bst_key;
+		
+	}
 
+	free(pdel);
+
+    bst_set(proot);
+	
 	return proot;	
 }
 
-
-
 void bst_inorder(bstnode *root)
 {  
+    bstnode *parent;
+
     if(NULL != root)
     {
+        parent = root->bst_parent;
+		
         bst_inorder(root->bst_left);
 		
-		printf("\r\nkey:%2d depth:%d index:%d",root->bst_key,root->bst_depth,root->bst_index);
+		printf("\r\nkey:%2d depth:%d index:%d  ",root->bst_key,root->bst_depth,root->bst_index);
+
+		if(NULL != parent)			
+		    printf("key:%2d depth:%d index:%d",parent->bst_key,parent->bst_depth,parent->bst_index);
 		
 		bst_inorder(root->bst_right);
     }
@@ -198,33 +210,51 @@ bstnode *bst_predecessor(bstnode *pnode)
 	return pparent;
 }
 
-void __bst_depth(bstnode *root)
-{    
+int bst_depth(bstnode *root)
+{ 
+    treedepth = 0;
     nodedepth++;
 	
     if(NULL != root)
     {
-        __bst_depth(root->bst_left);		
-		__bst_depth(root->bst_right);
+        bst_depth(root->bst_left);		
+		bst_depth(root->bst_right);
     }
 	
 	nodedepth--;
 	
 	if(nodedepth > treedepth)
 		treedepth = nodedepth;
-}
-
-int bst_depth(bstnode *proot)
-{
-    treedepth = 0;
-
-	__bst_depth(proot);
 
 	return treedepth;
 }
 
+void bst_set(bstnode *pnode)
+{  
+    bstnode *parent = NULL;
 
-/*********************************************************************/
+	nodedepth++;
+	nodeindex = nodeindex*2;
+
+    if(NULL != pnode)
+    {
+        parent = pnode->bst_parent;
+		
+		if( (NULL != parent) && (pnode == parent->bst_right) )
+			nodeindex++;
+		
+		pnode->bst_depth = nodedepth - 1;
+		pnode->bst_index = nodeindex;
+		
+        bst_set(pnode->bst_left);		
+		bst_set(pnode->bst_right);
+    }
+	
+	nodedepth--;
+    nodeindex = nodeindex/2;	
+}
+
+#if 1/*********************************************************************/
 bstnode *test_tree_root = NULL;
 
 void bst_test_insert()
@@ -237,13 +267,24 @@ void bst_test_insert()
 	test_tree_root = bst_insert(test_tree_root,15);
 	test_tree_root = bst_insert(test_tree_root,17);
 	test_tree_root = bst_insert(test_tree_root,16);
+	test_tree_root = bst_insert(test_tree_root,18);
+	test_tree_root = bst_insert(test_tree_root,19);
+	test_tree_root = bst_insert(test_tree_root,20);
 	
-	test_tree_root = bst_insert(test_tree_root,16);
-
+	printf("\r\ntree depth : %d",bst_depth(test_tree_root));
+	bst_inorder(test_tree_root);
+	
+	bst_set(test_tree_root);
+	
+	printf("\r\ntree depth : %d",bst_depth(test_tree_root));
 	bst_inorder(test_tree_root);
 
-	printf("\r\ntree depth : %d",bst_depth(test_tree_root));
-	tree_show(test_tree_root,bst_depth(test_tree_root));
+    printf("\r\n");
+
+	tree_struct_after_init();
+	tree_show(test_tree_root,bst_depth(test_tree_root)+1);
+	
+	//printf("\r\ntree depth : %d",bst_depth(test_tree_root));
 
 	bst_destory(test_tree_root);
 }
@@ -251,10 +292,19 @@ void bst_test_insert()
 void bst_test_delete()
 {
     test_tree_root = bst_insert(test_tree_root,15);
-	test_tree_root = bst_insert(test_tree_root,25);
 	test_tree_root = bst_insert(test_tree_root,10);
+	test_tree_root = bst_insert(test_tree_root,25);
 
-	printf("\r\ntree depth : %d",bst_depth(test_tree_root));
+    test_tree_root = bst_delete(test_tree_root,15);
+	test_tree_root = bst_delete(test_tree_root,10);
+
+    #if 0
+	printf("\r\ntree depth : %d rootkey:%d",bst_depth(test_tree_root),test_tree_root->bst_key);	
+	test_tree_root = bst_delete(test_tree_root,15);	
+	printf("\r\ntree depth : %d rootkey:%d",bst_depth(test_tree_root),test_tree_root->bst_key);	
+	tree_show(test_tree_root,bst_depth(test_tree_root));
+	#endif
+	
 	tree_show(test_tree_root,bst_depth(test_tree_root));
 
 	bst_destory(test_tree_root);
@@ -267,4 +317,4 @@ void bst_test()
     bst_test_insert();
     //bst_test_delete();
 }
-
+#endif
