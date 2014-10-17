@@ -1,0 +1,32 @@
+#type(object)
+#判断对象类型，使用type()函数：
+#基本类型都可以用type()判断：
+>>> type(123)
+<type 'int'>
+>>> type('str')
+<type 'str'>
+>>> type(None)
+<type 'NoneType'>
+#如果一个变量指向函数或者类，也可以用type()判断：
+>>> type(abs)
+<type 'builtin_function_or_method'>
+#但是type()函数返回的是什么类型呢？它返回type类型。如果我们要在if语句中判断，就需要比较两个变量的type类型是否相同：
+>>> type(123)==type(456)
+True
+>>> type('abc')==type('123')
+True
+>>> type('abc')==type(123)
+False
+#但是这种写法太麻烦，Python把每种type类型都定义好了常量，放在types模块里，使用之前，需要先导入：
+>>> import types
+>>> type('abc')==types.StringType
+True
+>>> type(u'abc')==types.UnicodeType
+True
+>>> type([])==types.ListType
+True
+>>> type(str)==types.TypeType
+True
+#最后注意到有一种类型就叫TypeType，所有类型本身的类型就是TypeType，比如：
+>>> type(int)==type(str)==types.TypeType
+True
