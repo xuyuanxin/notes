@@ -81,7 +81,7 @@ int tree_test_traverse()
 {
     tree_init();
 	
-	tree_struct_show(&root);
+	//tree_struct_show(&root);
 
 	printf("\r\npreorder recursion: \r\n");
 	tree_traverse_preorder_recursion(&root);
@@ -201,19 +201,19 @@ int tree_test_search()
 int tree_test_del()
 { 
     tree_init();
-	tree_struct_show(&root);
+	//tree_struct_show(&root);
 
 	printf("\r\n\r\ndel node03 key:%d",node03.key);
 	tree_delete(tree,&node03);
-	tree_struct_show(tree);
+	//tree_struct_show(tree);
 	
 	printf("\r\n\r\ndel root key:%d",root.key);
     tree_delete(tree,&root);
-	tree_struct_show(tree);
+	//tree_struct_show(tree);
 
 	printf("\r\n\r\ndel node02 key:%d",node02.key);
     tree_delete(tree,&node02);
-	tree_struct_show(tree);
+	//tree_struct_show(tree);
 }
 
 int tree_test()

@@ -15,7 +15,7 @@ RMS = $(ROOT)/build/exes $(ROOT)/build/libs
 #-r禁用隐式规则
 #make a=test 给makefile中的变量a赋值test
 all clean mytest:
-	rm -r $(ROOT)/build/exes/test.exe
+	rm -rf $(ROOT)/build/exes/test.exe
 	@set -e; \
 	for dir in $(DIRS); \
 	do \

@@ -3,7 +3,7 @@
 @mode:
 If the mode argument is negative,fwide will try to make the specified stream byte oriented.
 If the mode argument is positive,fwide will try to make the specified stream wide oriented.
-If the mode argument is zero,fwide will not try to set the orientation, but will still return a value identifying the streamâ€™s orientation.
+If the mode argument is zero,fwide will not try to set the orientation, but will still return a value identifying the stream¡¯s orientation.
 
 Note thatfwidewill not change the orientation of a stream that is already oriented.
 Also note that there is no error return.  Consider what would happen if the stream is
@@ -17,7 +17,7 @@ int fwide(FILE *fp,int mode);
 
 
 /*
-è®¾ç½®æµçš„ç¼“å†²ç±»å‹
+ÉèÖÃÁ÷µÄ»º³åÀàĞÍ
 @fp:
 @buf:point to a buffer of length BUFSIZ( defined in<stdio.h>)
 
@@ -29,11 +29,11 @@ void setbuf(FILE *restrict fp,char *restrict buf);
 
 /*
 @fp:
-@buf:ç¼“å†²åŒºæŒ‡é’ˆ
-@mode:ç¼“å†²åŒºæ¨¡å¼
-@size:ç¼“å†²åŒºå¤§å°
+@buf:»º³åÇøÖ¸Õë
+@mode:»º³åÇøÄ£Ê½
+@size:»º³åÇø´óĞ¡
 
-function:è®¾ç½®æµçš„ç¼“å†²ç±»å‹
+function:ÉèÖÃÁ÷µÄ»º³åÀàĞÍ
 return:0 if OK, non zero on error
 
 mode argument:
@@ -41,8 +41,8 @@ _IOFBF fully buffered
 _IOLBF line buffered
 _IONBF unbuffered
 
-å¦‚æœæ˜¯æ— ç¼“å†²æ¨¡å¼ï¼Œ@bufå’Œ@sizeå°†è¢«å¿½ç•¥
-å¦‚æœæ˜¯æœ‰ç¼“å†²æ¨¡å¼ï¼Œä½†@bufä¼ NULLï¼Œåˆ™ä¼šè‡ªåŠ¨åˆ†é…ç¼“å†²åŒºå¤§å°ä¸ºBUFSIZ
+Èç¹ûÊÇÎŞ»º³åÄ£Ê½£¬@bufºÍ@size½«±»ºöÂÔ
+Èç¹ûÊÇÓĞ»º³åÄ£Ê½£¬µ«@buf´«NULL£¬Ôò»á×Ô¶¯·ÖÅä»º³åÇø´óĞ¡ÎªBUFSIZ
 */
 int setvbuf(FILE *restrict fp,char *restrict buf,int mode, size_t size);
 
@@ -71,9 +71,9 @@ fdopen:takes an existing file descriptor,which we could obtain from the open,dup
     and then associate this descriptor with a standardI/O stream usingfdopen.
 return: All three return file pointer if OK,NULL on error
 
-Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C doesnâ€™t deal with file descriptors
+Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C doesn¡¯t deal with file descriptors
 
----->å…³äºtype
+---->¹ØÓÚtype
 
 */
 #include <stdio.h>
@@ -140,8 +140,8 @@ int putchar(int c);
 
 
 /*Both specify the address of the buffef to read the line into. The gets function reads from standard input, whereas fgets reads from the specified stream.
-fgets:ä¸€æ¬¡è¯»å…¥ä¸€è¡Œï¼Œæœ€å¤šè¯»n-1ä¸ªå­—ç¬¦ï¼Œç¬¬nä¸ªå­—ç¬¦è‡ªåŠ¨å¡«NULLã€‚å¦‚æœä¸€è¡Œå¤šäºn-1ä¸ªå­—ç¬¦ï¼Œå¯ä»¥åˆ†ä¸¤æ¬¡è¯»å–ï¼Œå¯¹fgetsçš„ä¸‹æ¬¡è¯»å–è¿˜ä¼šç»§ç»­è¯¥è¡Œã€‚
-gets:ä¸æ¨èä½¿ç”¨ï¼Œå¯èƒ½é€ æˆç¼“å†²åŒºæº¢å‡ºã€‚å¦å¤–getsä¸è¯»å–æ¢è¡Œç¬¦ã€‚
+fgets:Ò»´Î¶ÁÈëÒ»ĞĞ£¬×î¶à¶Án-1¸ö×Ö·û£¬µÚn¸ö×Ö·û×Ô¶¯ÌîNULL¡£Èç¹ûÒ»ĞĞ¶àÓÚn-1¸ö×Ö·û£¬¿ÉÒÔ·ÖÁ½´Î¶ÁÈ¡£¬¶ÔfgetsµÄÏÂ´Î¶ÁÈ¡»¹»á¼ÌĞø¸ÃĞĞ¡£
+gets:²»ÍÆ¼öÊ¹ÓÃ£¬¿ÉÄÜÔì³É»º³åÇøÒç³ö¡£ÁíÍâgets²»¶ÁÈ¡»»ĞĞ·û¡£
 Both return:buf if OK,NULL on end of file or erro*/
 #include <stdio.h>
 char *fgets(char *restrict buf,int n,FILE *restrict fp);
@@ -160,12 +160,12 @@ int puts(const char *str);
 
 
 /*
-å‡½æ•°åç§°ï¼šfilenoï¼ˆåœ¨VC++6.0ä¸‹ä¸º_fileno[1] ï¼‰
-å‡½æ•°åŸå‹ï¼šint _fileno( FILE *stream );
-å‡½æ•°åŠŸèƒ½ï¼šfileno()ç”¨æ¥å–å¾—å‚æ•°streamæŒ‡å®šçš„æ–‡ä»¶æµæ‰€ä½¿ç”¨çš„æ–‡ä»¶æè¿°ç¬¦
-è¿”å›å€¼ï¼šæŸä¸ªæ•°æ®æµçš„æ–‡ä»¶æè¿°ç¬¦
-å¤´æ–‡ä»¶ï¼šstdio.h
-ç›¸å…³å‡½æ•°ï¼šopenï¼Œfopenï¼Œfclose  
+º¯ÊıÃû³Æ£ºfileno£¨ÔÚVC++6.0ÏÂÎª_fileno[1] £©
+º¯ÊıÔ­ĞÍ£ºint _fileno( FILE *stream );
+º¯Êı¹¦ÄÜ£ºfileno()ÓÃÀ´È¡µÃ²ÎÊıstreamÖ¸¶¨µÄÎÄ¼şÁ÷ËùÊ¹ÓÃµÄÎÄ¼şÃèÊö·û
+·µ»ØÖµ£ºÄ³¸öÊı¾İÁ÷µÄÎÄ¼şÃèÊö·û
+Í·ÎÄ¼ş£ºstdio.h
+Ïà¹Øº¯Êı£ºopen£¬fopen£¬fclose  
 */
 int fileno( FILE *stream );
 

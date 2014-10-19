@@ -8,70 +8,10 @@
 
 char tree_str_info[TREE_DEPTH][TREE_LINE+1] = {0};
 
-int g_node_depth = 0;
-int g_node_index = 0;
 int g_tree_depth = 0;
 
-void tree_node_coordinate_get(int *depth,int *index)
-{
-    *depth = g_node_depth - 1;
-	*index = g_node_index;
-}
 
-void tree_node_coordinate_adjust(tree_node_t * pnode,int flag)
-{
-    tree_node_t *pparent;
-	
-    if(0 == flag)	
-	    g_node_depth++;
-    else if(1 == flag)
-		g_node_depth--;
-
-	if(NULL != pnode)
-		pparent = pnode->parent;
-
-	if(NULL != pnode && NULL != pparent)
-	{
-		if(0 == flag && pnode == pparent->left) 
-			g_node_index = g_node_index*2;
-	    else if(0 == flag && pnode == pparent->right)
-			g_node_index = g_node_index*2 + 1;
-        else if(1 == flag && pnode == pparent->right) 
-			g_node_index = g_node_index/2;	
-	}
-
-    if( (g_node_depth > g_tree_depth) && (1 == flag) )
-		g_tree_depth = g_node_depth;
-}
-
-/*设置树中每个节点的坐标*/
-void tree_node_coordinate_set(tree_node_t *pnode)
-{   
-	tree_node_coordinate_adjust(pnode,0);
-
-    if(NULL != pnode)
-    {
-        tree_node_coordinate_set(pnode->left);
-		pnode->depth = g_node_depth - 1;
-		pnode->index = g_node_index;
-		tree_node_coordinate_set(pnode->right);
-    }
-	
-	tree_node_coordinate_adjust(pnode,1);
-}
-
-void tree_node_coordinate_clear(tree_node_t *pnode)
-{
-    if(NULL != pnode)
-    {
-        tree_node_coordinate_clear(pnode->left);
-		pnode->depth = 0;
-		pnode->index = 0;
-		tree_node_coordinate_clear(pnode->right);
-    }
-}
-
-/*修改*/
+/*�޸�*/
 int tree_struct_init()
 {
     int i,j,k,f;
@@ -170,14 +110,6 @@ int tree_struct_after_init()
 	    printf("\r\n%s",tree_str_info[i]);
 }
 
-int tree_struct_show(tree_node_t *pnode)
-{
-    tree_struct_init();
-	tree_node_coordinate_set(pnode);
-	tree_struct_set(pnode);
-	tree_struct_printf();
-}
-
 int tree_show(tree_node_t *pnode,int depth)
 {
     tree_struct_init();
@@ -187,34 +119,3 @@ int tree_show(tree_node_t *pnode,int depth)
 	tree_struct_printf();
 }
 
-
-int main_t()
-{
-	tree_struct_after_init();
-
-	return 0;
-}
-
-
-
-
-/*
-
-                                |------------------------------NN------------------------------|
-                                |                                                              |
-                |--------------NN--------------|                                |--------------NN--------------|
-                |                              |                                |                              |
-        |------NN------|                |------NN------|                |------NN------|                |------NN------|
-        |              |                |              |                |              |                |              |
-    |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|        |--NN--|
-    |      |        |      |        |      |        |      |        |      |        |      |        |      |        |      |
-   NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN      NN
-  |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |    |  |
- NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN  NN
- ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||  ||
-NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
-
-                                                               64
-                               32                                                              96
-               16                              48                              80                              112
-*/
