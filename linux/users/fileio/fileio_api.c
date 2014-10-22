@@ -1,5 +1,86 @@
+/*If the file exists and if it is successfully opened for either write-only or
+read–write, truncate its length to 0.*/
+
+#define O_APPEND /*Append to the end of file on each write.By default, 
+"current file offset" is initialized to 0 when a file is opened, unless the 
+O_APPEND option is specified.*/
+#define O_CLOEXEC /*Set the FD_CLOEXEC file descriptor flag.*/
+#define	O_CREAT  /*Create the file if it doesn’t exist. This option requires a
+third argument to the open function (a fourth argument to the openat function)—
+the mode,which specifies the access permission bits of the new file.*/
+#define O_EXEC	  /* Open for execute only.*/
+#define O_EXCL	/*Generate an error if O_CREAT is also specified and the file 
+already exists. This test for whether the file already exists and the creation 
+of the file if it doesn’t exist is an atomic operation. */
+
+#define O_RDONLY  /*Open for reading only.*/
+#define O_WRONLY  /*Open for writing only.*/
+#define O_RDWR /*Open for reading and writing.Most implementations define 
+O_RDONLY as 0,O_WRONLY as 1, and O_RDWR as 2, for compatibility with older programs.*/
+#define O_SEARCH  /*Open for search only (applies to directories).*/
+#define	O_TRUNC /*If the file exists and if it is successfully opened for 
+either write-only or read–write, truncate its length to 0.*/
 
 /*
+The purpose of theO_SEARCHconstant is to evaluate search permissions at the time
+adirectory	is	opened. Further  operations  using	the  directory’s  file  descriptor  will
+not  reevaluate  permission  to  search  the  directory.None  of  the  versions  of  the
+operating systems covered in this book supportO_SEARCHyet.
+One  and  only	one  of  the  previous	five  constants  must  be  specified. The  following
+constants areoptional:
+	 
+O_DIRECTORYGenerate an error ifpathdoesn’t refer to a directory.
+	
+O_NOCTTY If pathrefers	to	a  terminal  device,  do  not  allocate  the  device  as  the
+controlling  terminal  for	this  process.	Wetalk	about  controlling
+terminals in Section 9.6.
+O_NOFOLLOW Generate an error ifpathrefers to a symbolic link. We  discuss symbolic
+links in Section 4.17.
+
+O_NONBLOCK	If path refers to a FIFO, a block special file, or a character special file,this option sets the nonblocking mode 
+			for both the opening of the file and subsequent I/O.
+In earlier releases of System V,theO_NDELAY(no delay) flag was introduced.	This
+option	is	similar  to  theO_NONBLOCK(nonblocking)  option,  but  an  ambiguity  was
+introduced in the return value from a read operation. The no-delay option causes a
+read operation to return 0 if there is no data to be read from a pipe, FIFO, or device,
+but  this  conflicts  with	a  return  value  of  0,  indicating  an  end  of  file. SVR4-based
+systems  still	support  the  no-delay	option,  with  the	old  semantics,  but  new
+applications should use the nonblocking option instead.
+
+O_SYNC Have  eachwritewait	for  physical  I/O	to	complete,  including  I/O
+necessary  to  update  file  attributes  modified  as  a  result  of  thewrite.
+We	use this option in Section 3.14.
+
+
+O_TTY_INIT When  opening  a  terminal  device  that  is  not  already  open,  set  the
+nonstandardtermiosparameters to values that result in behavior that
+conforms  to  the  Single  UNIX  Specification. We	discuss  the termios
+structurewhen we discuss terminal I/O in Chapter 18.
+The following two flags arealso optional. They arepart of the synchronized input and
+output option of the Single UNIX Specification (and thus POSIX.1).
+O_DSYNC Have eachwritewait for physical I/O to complete, but don’t wait for
+file attributes to be updated if they don’t affect the ability to read the
+data just written.
+TheO_DSYNCandO_SYNCflags aresimilar,but subtly different.  TheO_DSYNCflag
+affects a file’s attributes only when they need to be updated to reflect a change in the
+file’s data (for example, update the file’s size to reflect moredata).  With theO_SYNC
+flag, data and attributes arealways updated synchronously.When overwriting an
+existing  part	of	a  file  opened  with  theO_DSYNCflag,	the  file  times  wouldn’t  be
+updated synchronously.Incontrast, if we had opened the file with theO_SYNCflag,
+everywriteto  the  file  would	update	the  file’s  times  beforethewritereturns,
+regardless of whether we werewriting over existing bytes or appending to the file.
+O_RSYNC Have eachreadoperation on the file descriptor wait until any pending
+writes for the same portion of the file arecomplete.
+Solaris 10 supports all three synchronization flags. Historically,FreeBSD (and thus
+Mac OS X) have used theO_FSYNCflag, which has the same behavior asO_SYNC.
+Because the two flags areequivalent, they define the flags to have the same value.
+FreeBSD  8.0  doesn’t	support  theO_DSYNCorO_RSYNCflags.	Mac OS	X  doesn’t
+support theO_RSYNCflag, but defines theO_DSYNCflag, treating it the same as the
+O_SYNCflag.  Linux 3.2.0  supports	theO_DSYNCflag,  but  treats  theO_RSYNCflag
+the same asO_SYNC
+*/
+#include <fcntl.h>
+/*******************************************************************************
 @path: 要打开或创建文件的名字
 @oflag:
 @mode: 创建时才会用到
@@ -7,217 +88,237 @@ function:打开一个文件(也可用于创建文件)
 return: file descriptor if OK,-1 on error
 
 1 open返回的文件描述符一定是最小的未用描述符数值。
-2 @path文件名最大字符个数是NAME_MAX
-*/
-
-/*If the file exists and if it is successfully opened for either write-only or read–write, truncate its length to 0.*/
-#define	O_TRUNC   
-
-/*	---->
-	O_RDONLY Open for reading only.
-	O_WRONLY Open for writing only.
-	O_RDWR	 Open for reading and writing.
-			 Most implementations define O_RDONLY as 0,O_WRONLY as 1, and O_RDWR as 2, for compatibility with older programs.
-	O_EXEC	 Open for execute only.
-	O_SEARCH Open for search only (applies to directories).
-	
-	The purpose of theO_SEARCHconstant is to evaluate search permissions at the time
-	adirectory	is	opened. Further  operations  using	the  directory’s  file  descriptor  will
-	not  reevaluate  permission  to  search  the  directory.None  of  the  versions  of  the
-	operating systems covered in this book supportO_SEARCHyet.
-	One  and  only	one  of  the  previous	five  constants  must  be  specified. The  following
-	constants areoptional:
-		
-	O_APPEND  Append to the end of file on each write.
-	
-	O_CLOEXEC Set  theFD_CLOEXECfile  descriptor  flag. We	discuss  file  descriptor
-	flags in Section 3.14.
-	
-	O_CREAT  Create the file if it doesn’t exist. This option requires a third argument to the open function (a fourth argument 
-			 to the openat function) — the mode,which specifies the access permission bits of the new file.
-			 
-	O_DIRECTORYGenerate an error ifpathdoesn’t refer to a directory.
-	
-	O_EXCL	 Generate an error if O_CREAT is also specified and the file already exists. This test for whether the file already 
-			 exists and the creation of the file if it doesn’t exist is an atomic operation. 
-		
-	O_NOCTTY If pathrefers	to	a  terminal  device,  do  not  allocate  the  device  as  the
-	controlling  terminal  for	this  process.	Wetalk	about  controlling
-	terminals in Section 9.6.
-	O_NOFOLLOW Generate an error ifpathrefers to a symbolic link. We  discuss symbolic
-	links in Section 4.17.
-	
-	O_NONBLOCK	If path refers to a FIFO, a block special file, or a character special file,this option sets the nonblocking mode 
-				for both the opening of the file and subsequent I/O.
-	In earlier releases of System V,theO_NDELAY(no delay) flag was introduced.	This
-	option	is	similar  to  theO_NONBLOCK(nonblocking)  option,  but  an  ambiguity  was
-	introduced in the return value from a read operation. The no-delay option causes a
-	read operation to return 0 if there is no data to be read from a pipe, FIFO, or device,
-	but  this  conflicts  with	a  return  value  of  0,  indicating  an  end  of  file. SVR4-based
-	systems  still	support  the  no-delay	option,  with  the	old  semantics,  but  new
-	applications should use the nonblocking option instead.
-	
-	O_SYNC Have  eachwritewait	for  physical  I/O	to	complete,  including  I/O
-	necessary  to  update  file  attributes  modified  as  a  result  of  thewrite.
-	We	use this option in Section 3.14.
-	
-	
-	O_TTY_INIT When  opening  a  terminal  device  that  is  not  already  open,  set  the
-	nonstandardtermiosparameters to values that result in behavior that
-	conforms  to  the  Single  UNIX  Specification. We	discuss  the termios
-	structurewhen we discuss terminal I/O in Chapter 18.
-	The following two flags arealso optional. They arepart of the synchronized input and
-	output option of the Single UNIX Specification (and thus POSIX.1).
-	O_DSYNC Have eachwritewait for physical I/O to complete, but don’t wait for
-	file attributes to be updated if they don’t affect the ability to read the
-	data just written.
-	TheO_DSYNCandO_SYNCflags aresimilar,but subtly different.  TheO_DSYNCflag
-	affects a file’s attributes only when they need to be updated to reflect a change in the
-	file’s data (for example, update the file’s size to reflect moredata).  With theO_SYNC
-	flag, data and attributes arealways updated synchronously.When overwriting an
-	existing  part	of	a  file  opened  with  theO_DSYNCflag,	the  file  times  wouldn’t  be
-	updated synchronously.Incontrast, if we had opened the file with theO_SYNCflag,
-	everywriteto  the  file  would	update	the  file’s  times  beforethewritereturns,
-	regardless of whether we werewriting over existing bytes or appending to the file.
-	O_RSYNC Have eachreadoperation on the file descriptor wait until any pending
-	writes for the same portion of the file arecomplete.
-	Solaris 10 supports all three synchronization flags. Historically,FreeBSD (and thus
-	Mac OS X) have used theO_FSYNCflag, which has the same behavior asO_SYNC.
-	Because the two flags areequivalent, they define the flags to have the same value.
-	FreeBSD  8.0  doesn’t	support  theO_DSYNCorO_RSYNCflags.	Mac OS	X  doesn’t
-	support theO_RSYNCflag, but defines theO_DSYNCflag, treating it the same as the
-	O_SYNCflag.  Linux 3.2.0  supports	theO_DSYNCflag,  but  treats  theO_RSYNCflag
-	the same asO_SYNC
-*/
-#include <fcntl.h>
+2 @path文件名最大字符个数是 NAME_MAX
+*******************************************************************************/
 int open(const char *path,int oflag,... /* mode_t mode*/ );
-int openat(intfd,const char *path,intoflag,... /* mode_tmode*/ );
+int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
 
-/*
-Returns: file descriptor opened for write-only if OK,?1 on error
+/*******************************************************************************
+Returns: file descriptor opened for write-only if OK,-1 on error
 
 1 Note that this function is equivalent to open(path,O_WRONLY | O_CREAT | O_TRUNC,mode);
 2 One deficiency with creat is that the file is opened only for writing. 
-*/
-#include <fcntl.h>
+*******************************************************************************/
 int creat(const char *path,mode_t mode);
 
-/*
-function: An open file is closed by calling the close function.
-Returns: 0 if OK,?1 on error
-
-1 When a process terminates, all of its open files are closed automatically by the kernel.  
-*/
 #include <unistd.h>
+/*******************************************************************************
+function: An open file is closed by calling the close function.
+Returns : 0 if OK,-1 on error
+
+1 When a process terminates, all of its open files are closed automatically by 
+  the kernel.  
+*******************************************************************************/
 int close(int fd);
 
-
-/*
-@fd
+#include <unistd.h>
+/******************************************************************************
+@fd    :
 @offset:
 @whence:
-function:打开一个文件并设置其偏移量
-returns: new file offset if OK,-1 on error
-name: lseek中的l表示长整型
+SEEK_SET(0),the file's offset is set to @offset bytes from the beginning of the file.
+SEEK_CUR(1),the file's offset is set to its current value plus the @offset. The @offset can be positive or negative.
+SEEK_END(2),the file's offset is set to the size of the file plus the @offset. The @offset can be positive or negative.
+function: 打开一个文件并设置其偏移量
+returns : new file offset if OK,-1 on error
+name    : lseek中的l表示长整型
 
-If whence is SEEK_SET(0),the file's offset is set to offset bytes from the beginning of the file.
-If whence is SEEK_CUR(1),the file's offset is set to its current value plus the offset. The offset can be positive or negative.
-If whence is SEEK_END(2),the file's offset is set to the size of the file plus the offset. The offset can be positive or negative.
-
-lseek only records the current file offset within the kernel—it does not cause any I/O to take place.  This offset is then used 
-by the next read or write operation.
-*/
-#include <unistd.h>
+@lseek only records the current file offset within the kernel—it does not cause
+any I/O to take place. This offset is then used by the next read or write operation.
+*******************************************************************************/
 off_t lseek(int fd,off_t offset,int whence);
 
 #include <unistd.h>
-/*
-@fd:读哪个文件(已经打开了)
+/******************************************************************************
+@fd :读哪个文件(已经打开了)
 @buf:把读的数据放入这个buf中
 @nbytes:希望读取数据的长度
 
 function:Data is read from an open file with the @read function.
 Returns: number of bytes read, 0 if end of file,-1 on error
 
-1 参数count是请求读取的字节数，读上来的数据保存在缓冲区buf中，同时文件的当前读写位置向后移。
-2 读常规文件时，在读到count个字节之前已到达文件末尾。例如，距文件末尾还有30个字节而请求读100个字节，则read返回30，下次read将返回0。
-3 面向文本的套接字读操作中,一次read不能保证读入完整的一行或整行,读完整的一行可能需要对此调用read,并检查其中是否出现了换行符*/
+1 参数count是请求读取的字节数，读上来的数据保存在缓冲区buf中，同时文件的当前读
+  写位置向后移。
+2 读常规文件时，在读到count个字节之前已到达文件末尾。例如，距文件末尾还有30个字
+  节而请求读100个字节，则read返回30，下次read将返回0。
+3 面向文本的套接字读操作中,一次read不能保证读入完整的一行或整行,读完整的一行可
+  能需要对此调用read,并检查其中是否出现了换行符
+******************************************************************************/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
-/*
-@fd:写哪个文件(已经打开了)
-@buf:buf中是要写的数据
-@nbytes:写入数据的长度
-funtion:Data is written to an open file with the @write function.
+/******************************************************************************
+@fd    : 写哪个文件(已经打开了)
+@buf   : buf中是要写的数据
+@nbytes: 写入数据的长度
+funtion: Data is written to an open file with the @write function.
 Returns: number of bytes written if OK,-1 on error
 
-For a regular file, the write operation starts at the file’s current offset. If the O_APPEND option was specified when the file 
-was opened, the file’s offset is set to the current end of file before each write operation. After a successful write, the file’s 
-offset is incremented by the number of bytes actually written.
-*/
-#include <unistd.h>
+For a regular file, the write operation starts at the file's current offset. If 
+the O_APPEND option was specified when the file was opened, the file's offset 
+is set to the current end of file before each write operation. After a successful
+write, the file's offset is incremented by the number of bytes actually written.
+******************************************************************************/
 ssize_t write(int fd,const void *buf,size_t nbytes);
 
+#include <unistd.h>
+/******************************************************************************
+@fd    ：要读取数据的文件描述符
+@buf   ：数据缓存区指针，存放读取出来的数据
+@count ：读取数据的字节数
+@offset：读取的起始地址的偏移量，读取地址=文件开始+offset。
+返回值：成功，返回成功读取数据的字节数；失败，返回-1；
 
-/*
-@fd
-@fd2
-function:An existing file descriptor is duplicated by dup dup2
-return: new file descriptor if OK,-1 on error 
+1 执行后，文件偏移指针不变
+2 相当于顺序调用lseek和read,但其定位和读取操作是原子的。lseek和read之间如果被中断
+  可能造成问题。
+******************************************************************************/
+ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
 
-1 The new file descriptor returned by dup is guaranteed to be the lowest-numbered available file descriptor.With dup2, we specify 
-the value of the new descriptor with the fd2 argument. If fd2 is already open, it is first closed. If fd equals fd2,then dup2 
-returns fd2 without closing it. Otherwise, the FD_CLOEXEC file descriptor flag is cleared for fd2,so that fd2 is left open if the
-process calls exec.
-2 The new file descriptor that is returned as the value of the functions shares the same file table entry as the fd argument. 
-they share the same file status flags—read, write, append, and so on—and the same current file offset.
-3 Each descriptor has its own set of file descriptor flags. As we describe in Section  3.14, the close-on-exec file descriptor 
-flag for the new  descriptor  is  always cleared by the dup functions.
-*/
+/*******************************************************************************
+@fd    ：要写入数据的文件描述符
+@buf   ：数据缓存区指针，存放要写入文件中的数据
+@count ：写入文件中的数据的字节数
+@offset：写入地址=文件开始+offset
+返回值 ：成功，返回写入到文件中的字节数；失败，返回-1；
+
+1 执行后，文件偏移指针不变
+2 相当于顺序调用lseek和write,但其定位和读取操作是原子的。lseek和read之间如果被
+  中断可能造成问题。
+******************************************************************************/
+ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
+
+
 
 #include <unistd.h>
+/*******************************************************************************
+ 返回值:成功返回新的描述符,失败返回-1
+ 功能:复制文件描述符@fd
+
+ 1 @dup返回的新描述符一定是当前可用文件描述符中的最小数值
+ 2 新描述符与@fd共享一个文件表项(file table entry)
+ 3 新描述符的执行时关闭(close-on-exec)标志总是由@dup函数清除
+******************************************************************************/
 int dup(int fd);
+
+/*******************************************************************************
+ 返回值:成功返回新的描述符,失败返回-1
+ 功能:复制文件描述符@fd,@fd2是指定的新描述符
+
+ 1 如果@fd2已经打开，则先关闭。
+ 2 如果@fd==@fd2，不关闭@fd2，直接返回@fd2
+ 3 新描述符与@fd共享一个文件表项(file table entry)
+******************************************************************************/
 int dup2(int fd,int fd2);
-
-
 /*
-The @sync function simply queues all the modified block buffers for writing and returns; it does not wait for the disk writes to take place.
-The function @sync is normally called periodically (usually every 30 seconds) from a system daemon, often called update.This 
-guarantees regular flushing of the kernel’s block buffers.  The command sync(1) also calls the sync function.
-The function fsync refers only to a single file, specified by the file descriptor fd, and waits for the disk writes to complete 
-before returning. This function is used when an application, such as a database, needs to be sure that the modified blocks have been
-written to the disk.
-The fdatasync function is similar to fsync,but it affects only the data portions of a file. With fsync,the file’s attributes 
-are also updated synchronously.
+Indeed, the call
+dup(fd);
+is equivalent to
+fcntl(fd, F_DUPFD, 0);
+Similarly, the call
+dup2(fd, fd2);
+is equivalent to
+close(fd2);
+fcntl(fd, F_DUPFD, fd2);
+In this last case, the dup2 is not exactly the same as a close followed by an fcntl.
+The differences are as follows:
+1. dup2 is an atomic operation, whereas the alternate form involves two function
+calls. It is possible in the latter case to have a signal catcher called between the
+close and the fcntl that could modify the file descriptors. The same problem could 
+occur if a different thread changes the file descriptors. 
+2. There are some errno differences between dup2 and fcntl.*/
 
-Returns: 0 if OK,?1 on errors*/
+/******************************************************************************** 
+  Traditional implementations of the UNIX System have a buffer cache or page 
+cache in the kernel through which most disk I/O passes. When we write data to 
+a file, the data is normally copied by the kernel into one of its buffers and 
+queued for writing to disk at some later time. This is called delayed write. 
+  The kernel eventually writes all the delayed-write blocks to disk, normally 
+when it needs to reuse the buffer for some other disk block. To ensure consistency 
+of the file system on disk with the contents of the buffer cache, the sync, 
+fsync, and fdatasync functions are provided.
+
+  The @sync function simply queues all the modified block buffers for writing and 
+returns; it does not wait for the disk writes to take place.
+  The function @sync is normally called periodically (usually every 30 seconds) 
+from a system daemon, often called update.This guarantees regular flushing of 
+the kernel's block buffers. The command sync(1) also calls the sync function.
+  The function @fsync refers only to a single file, specified by the file descriptor
+@fd, and waits for the disk writes to complete before returning. This function 
+is used when an application, such as a database, needs to be sure that the modified 
+blocks have been written to the disk.
+  The @fdatasync function is similar to @fsync,but it affects only the data portions 
+of a file. With @fsync,the file's attributes are also updated synchronously.
+
+  Returns: 0 if OK,-1 on errors
+*********************************************************************************/
 #include <unistd.h>
 int fsync(int fd);
 int fdatasync(int fd);
-
 void sync(void);
 
-/*
-function:The fcntl function can change the properties of a file that is already open.
-The fcntl function is used for five different purposes.
-1.  Duplicate an existing descriptor (cmd=F_DUPFD or F_DUPFD_CLOEXEC)
-2.  Get/set file descriptor flags (cmd=F_GETFD or F_SETFD)
-3.  Get/set file status flags (cmd=F_GETFL or F_SETFL)
-4.  Get/set asynchronous I/O ownership (cmd=F_GETOWNorF_SETOWN)
-5.  Get/setrecordlocks (cmd=F_GETLK,F_SETLK,orF_SETLKW)
+#define F_DUPFD  /*Duplicate the file descriptor @fd.The new file descriptor is 
+returned as the value of the function. It is the lowest-numbered descriptor that 
+is not already open, and that is greater than or equal to the third argument. 
+The new descriptor shares the same file table entry as @fd. But the new descriptor 
+has its own set of file descriptor flags, and its FD_CLOEXEC file descriptor 
+flag is cleared. (This means that the descriptor is left open across an exec)*/
+#define F_DUPFD_CLOEXEC /*Duplicate the file descriptor and set the FD_CLOEXEC 
+file descriptor flag associated with the new descriptor.Returns the new file descriptor.*/
+#define F_GETFD  /*Return the file descriptor flags for @fd as the value of the 
+function. Currently,only one file descriptor flag is defined: the FD_CLOEXEC flag.*/
+#define F_SETFD  /*Set the file descriptor flags for @fd.The new flag value is 
+set from the third argument (taken as an integer).*/
+#define F_GETFL /*Return the file status flags for fd as the value of the function. 
+File status flag    Description
+O_RDONLY            open for reading only
+O_WRONLY            open for writing only
+O_RDWR              open for reading and writing
+O_EXEC              open for execute only
+O_SEARCH            open directory for searching only
+O_APPEND            append on each write
+O_NONBLOCK          nonblocking mode
+O_SYNC              wait for writes to complete (data and attributes)
+O_DSYNC             wait for writes to complete (data only)
+O_RSYNC             synchronize reads and writes
+O_FSYNC             wait for writes to complete (FreeBSD and Mac OS X only)
+O_ASYNC             asynchronous I/O (FreeBSD and Mac OS X only)
+
+Unfortunately, the five access-mode flags—O_RDONLY, O_WRONLY,O_RDWR, O_EXEC, 
+and O_SEARCH —are not separate bits that can be tested. (As we mentioned 
+earlier, the first three often have the values 0, 1,and 2, respectively, for 
+historical reasons. Also, these five values are mutually exclusive; a file can 
+have only one of them enabled.) Therefore, we must first use the O_ACCMODE mask 
+to obtain the access-mode bits and then compare the result against any of the 
+five values.*/
+#define	O_ACCMODE /*<0003>：读写文件操作时，用于取出flag的低2位*/
+
+#define F_SETFL /*Set the file status flags to the value of the third argument 
+(taken as an integer). The only flags that can be changed are O_APPEND, O_NONBLOCK,
+O_SYNC, O_DSYNC, O_RSYNC, O_FSYNC, and O_ASYNC.*/
+#define F_GETOWN /*Get the process ID or process group ID currently receiving
+the SIGIO and SIGURG signals.*/
+#define F_SETOWN /*Set the process ID or process group ID to receive the SIGIO 
+and SIGURG signals. A positive arg specifies a process ID. A negative arg implies 
+a process group ID equal to the absolute value of arg.*/
+
+/*********************************************************************************
+function:The @fcntl function can change the properties of a file that is already open.
+The @fcntl function is used for five different purposes.
+1 Duplicate an existing descriptor (cmd=F_DUPFD or F_DUPFD_CLOEXEC)
+2 Get/set file descriptor flags (cmd=F_GETFD or F_SETFD)
+3 Get/set file status flags (cmd=F_GETFL or F_SETFL)
+4 Get/set asynchronous I/O ownership (cmd=F_GETOWNorF_SETOWN)
+5 Get/setrecordlocks (cmd=F_GETLK,F_SETLK,orF_SETLKW)
 Returns: depends on cmd if OK (see following),-1 on error
 
----->fcntl中的第二个参数
-F_DUPFD  Duplicate the file descriptor @fd.The new file descriptor is returned as the value of the function. It is the lowest-numbered
-         descriptor that is not already open, and that is greater than or equal to the third argument (taken as an integer). The new
-         descriptor shares the same file table entry as @fd. But the new descriptor has its own set of file descriptor flags, and its 
-		FD_CLOEXEC file descriptor flag is cleared. (This means that the descriptor is left open across an exec)
-F_DUPFD_CLOEXEC Duplicate the file descriptor and set the FD_CLOEXEC file descriptor flag associated with the new descriptor.Returns the
-                new file descriptor.
-F_GETFD  Return the file descriptor flags for @fd as the value of the function. Currently,only one file descriptor flag is defined: the FD_CLOEXEC flag.
-F_SETFD  Set the file descriptor flags for @fd.The new flag value is set from the third argument (taken as an integer).*/
+The return value from @fcntl depends on the command. All commands return -1 on 
+an error or some other value if OK. The following four commands have special
+return values: F_DUPFD, F_GETFD, F_GETFL, and F_GETOWN. The first command returns 
+the new file descriptor, the next two return the corresponding flags, and the 
+final command returns a positive process ID or a negative process group ID.
+**********************************************************************************/
 #include <fcntl.h>
-int fcntl(int fd,int cmd,... /* intarg */ );
+int fcntl(int fd,int cmd,... /* int arg */ );
 
 
 

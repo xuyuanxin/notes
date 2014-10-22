@@ -1,19 +1,26 @@
 #include <sys/stat.h>
 
-/*@pathname:文件名
-  @buf;返回文件的相关信息
-  return: 0 if OK,-1 on error*/
+/*******************************************************************************
+ @pathname:文件名
+ @buf     ;返回文件的相关信息
+ return   : 0 if OK,-1 on error
+*******************************************************************************/
 int stat(const char *restrict pathname,struct stat *restrict buf);
 
-/*
-function:根据描述符@fd获取文件信息
-return: 0 if OK,-1 on error*/
+/*******************************************************************************  
+ @buf    ;返回文件的相关信息
+ function:根据描述符@fd获取文件信息
+ return  :0 if OK,-1 on error
+*******************************************************************************/
 int fstat(int fd,struct stat *buf);
 
-/*
-function:when the named file is asymbolic link, @lstat returns information about the symbolic link, not the file
-         referenced by the symbolic link. 
-return: 0 if OK,-1 on error*/
+/*******************************************************************************
+ @pathname:文件名
+ @buf     ;返回文件的相关信息
+ function :when the named file is asymbolic link, @lstat returns information about 
+           the symbolic link, not the file referenced by the symbolic link.  
+ return   :0 if OK,-1 on error
+*******************************************************************************/
 int lstat(const char *restrict pathname,struct stat *restrict buf);
 
 /*return: 0 if OK,-1 on error*/
