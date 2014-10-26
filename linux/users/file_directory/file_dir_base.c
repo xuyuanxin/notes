@@ -93,7 +93,7 @@ x表示可执行，可运行这个程序
 1、-rwsr-xr-x 表示SUID和所有者权限中可执行位被设置
 2、-rwSr--r-- 表示SUID被设置，但所有者权限中可执行位没有被设置
 3、-rwxr-sr-x 表示SGID和同组用户权限中可执行位被设置
-4、-rw-r-Sr-- 表示SGID被设置，但同组用户权限中可执行位没有被社
+4、-rw-r-Sr-- 表示SGID被设置，但同组用户权限中可执行位没有被设置
 
 其实在UNIX的实现中，文件权限用12个二进制位表示，如果该位置上的值是1，表示有相应的
 权限：
@@ -203,6 +203,15 @@ all files and directories created in that directory will have the same group ID
 as the directory. This group ownership of files and directories will then 
 propagate down the hierarchy from that point. This is used in the Linux directory
 /var/mail, for example.
+
+********************************************************************************
+---->i节点
+每一个新创建的文件分配一个Inode(索引结点),每个文件都有一个惟一的inode号
+i节点中存放着:文件的所有者、文件所属的组、文件大小、文件数据块在盘上的位置等信息
+
+
+---->目录项
+目录项包括两个内容: i节点号和文件名
 
 
 

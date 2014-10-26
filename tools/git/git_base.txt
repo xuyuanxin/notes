@@ -1,6 +1,23 @@
+********************************************************************************
+fork别人的工程，修改，推送
+1 点击 Fork ，他人的代码库(假设是test2工程)就会复制到自己的github账号上，
+2 从自己的账号下载代码(我的账号名是xuyuanxin)
+  $ git clone https://github.com/xuyuanxin/test2.git
+3 Configuring a remote for a fork
+  $ git remote add upstream https://github.com/xyxin/test2.git
+  git remote -v             查看一些信息
+4 获取原始代码库的更新
+  git fetch upstream        只是把原始代码库下载到本地，还没有合并到你的代码中
+  git merge upstream/master 把原始代码合并到本地，本地修改不会丢失
+5 Syncing your fork only updates your local copy of the repository. To update 
+  your fork on GitHub, you must push your changes.
+
+  
+  
 下载一个代码库,修改,上传
 1 git clone https://github.com/xuyuanxin/notes    下载代码
 2 git add .                                       添加文件到暂存区
+  git add --all
 3 git commit -a -m "message"                      提交到本地版本库
 4 git push origin master                          提交到github
 
