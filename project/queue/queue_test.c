@@ -11,7 +11,7 @@ void queue_test_01()
 {
     int key = 0xffffffff;
 	
-    test_queue = queue_create(NULL,5);
+    test_queue = queue_create("testqueue",5);
 
     if(NULL == test_queue)
 		return;	
@@ -20,8 +20,15 @@ void queue_test_01()
     enqueue(test_queue,2,NULL);
     enqueue(test_queue,3,NULL);
     enqueue(test_queue,4,NULL);
+
+	if(queue_full(test_queue))
+		printf("\r\nqueue full(error)");
+	
     enqueue(test_queue,5,NULL);
     enqueue(test_queue,6,NULL);
+	
+	if(queue_full(test_queue))
+		printf("\r\nqueue full");
 
 	queue_show(test_queue);
 
