@@ -1,4 +1,4 @@
-/*»ùÓÚÊı×éµÄ¶ÓÁĞÊµÏÖ*/
+/*åŸºäºæ•°ç»„çš„é˜Ÿåˆ—å®ç°*/
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -24,25 +24,54 @@ queue_s *queue_create(char *name,int size)
 	queue->q_r_idx = 0;
 	queue->q_count = 0;
     queue->q_size  = size;
+	memcpy(queue->q_name,name,32);
+	queue->q_name[31] = '\0';
 
 	return queue;
 }
 
 void queue_destory(queue_s *queue)
 {
+	if(NULL == queue)
+	{
+	    printf("\r\nError queue destory, inpara NULL");
+		return ;
+	}
+
     (void)free(queue);
 }
 
 int queue_full(queue_s *queue)
 {
+	if(NULL==queue)
+	{
+        printf("\r\nError queue full; input para error");
+		return 0;	    
+	}	
+
+    if(queue->q_count == queue->q_size)
+		return 1;
+
+	return 0;
 }
 
 int queue_empty(queue_s *queue)
 {
+	if(NULL==queue)
+	{
+        printf("\r\nError queue empty; input para error");
+		return 1;
+	}
+
+
+    if(0 == queue->q_count)
+		return 1;
+
+	return 0;
 }
 
 
-/*Ğ´¶ÓÁĞ ³É¹¦·µ»Ø1 Ê§°Ü·µ»Ø0*/
+/*å†™é˜Ÿåˆ— æˆåŠŸè¿”å›1 å¤±è´¥è¿”å›0*/
 int enqueue(queue_s *queue,int key,void *data)
 {
     int i;
@@ -69,7 +98,7 @@ int enqueue(queue_s *queue,int key,void *data)
 	return 1;
 }
 
-/*¶Á¶ÓÁĞ(fifo) ³É¹¦·µ»Ø1 Ê§°Ü·µ»Ø0*/
+/*è¯»é˜Ÿåˆ—(fifo) æˆåŠŸè¿”å›1 å¤±è´¥è¿”å›0*/
 int dequeue(queue_s *queue,int *key,void **data)
 {
     int i = 0;
@@ -108,9 +137,9 @@ void queue_show(queue_s *queue)
 		return ;	    
 	}
 
-	printf("\r\nqueue %s info",queue->q_name);	
-	printf("\r\nw_idx:%d",queue->q_w_idx);
-	printf("\r\nr_idx:%d",queue->q_r_idx);
-	printf("\r\nsize:%d",queue->q_size);
-	printf("\r\ncount:%d",queue->q_count);
+	printf("\r\nqueue %s info:",queue->q_name);	
+	printf("\r\nw_idx :%d",queue->q_w_idx);
+	printf("\r\nr_idx :%d",queue->q_r_idx);
+	printf("\r\nsize  :%d",queue->q_size);
+	printf("\r\ncount :%d",queue->q_count);
 }
