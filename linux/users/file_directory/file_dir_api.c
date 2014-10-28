@@ -209,4 +209,76 @@ ssize_t readlink(const char* restrict pathname, char *restrict buf,size_t bufsiz
 /*return: number of bytes read if OK, -1 on error*/
 ssize_t readlinkat(int fd, const char* restrict pathname,char *restrict buf, size_t bufsize);
 
+#include <sys/stat.h>
+/*return: 0 if OK, -1 on error*/
+int futimens(int fd, const struct timespec times[2]);
+
+/*return: 0 if OK, -1 on error*/
+int utimensat(int fd, const char *path, const struct timespec times[2],int flag);
+
+
+#include <sys/time.h>
+/*Returns: 0 if OK, -1 on error*/
+int utimes(const char *pathname, const struct timeval times[2]);
+
+#include <sys/stat.h>
+/*******************************************************************************
+ function: create a new, empty directory. The entries for dot and dot-dot are
+           created automatically. 
+ return  : 0 if OK, -1 on error
+ *******************************************************************************/
+int mkdir(const char *pathname, mode_t mode);
+
+
+int mkdirat(int fd, const char *pathname, mode_t mode);
+
+
+#include <unistd.h>
+/*******************************************************************************
+ function: An empty directory is deleted with the rmdir function. Recall that an 
+           empty directory is one that contains entries only for dot and dot-dot.
+ return  : 0 if OK, -1 on error
+ 
+ If the link count of the directory becomes 0 with this call, and if no other 
+ process has the directory open, then the space occupied by the directory is 
+ freed. If one or more processes have the directory open when the link count 
+ reaches 0, the last link is removed and the dot and dot-dot entries are removed 
+ before this function returns.Additionally, no new files can be created in the 
+ directory. The directory is not freed,however, until the last process closes it. 
+ (Even though some other process has the directory open, it can¡¯t be doing much 
+ in the directory, as the directory had to be empty for the rmdir function to 
+ succeed.)
+ *******************************************************************************/
+int rmdir(const char *pathname);
+
+
+
+#include <dirent.h>
+/*******************************************************************************
+ The DIR structure is an internal structure used by these seven functions to 
+ maintain information about the directory being read. The purpose of the DIR 
+ structure is similar to that of the FILE structure maintained by the standard 
+ I/O library, which we describe in Chapter 5.
+*******************************************************************************/
+
+
+
+/*return: pointer if OK, NULL on error*/
+DIR *opendir(const char *pathname);
+
+/*return: pointer if OK, NULL on error*/
+DIR *fdopendir(int fd);
+
+/*Returns: pointer if OK, NULL at end of directory or error*/
+struct dirent *readdir(DIR *dp);
+
+void rewinddir(DIR *dp);
+
+/*Returns: 0 if OK, -1 on error*/
+int closedir(DIR *dp);
+
+/*Returns: current location in directory associated with dp*/
+long telldir(DIR *dp);
+
+void seekdir(DIR *dp, long loc);
 

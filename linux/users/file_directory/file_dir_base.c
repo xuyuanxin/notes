@@ -15,6 +15,18 @@ struct stat
     blkcnt_t  st_blocks; /* number of disk blocks allocated */
 };
 
+
+/*******************************************************************************
+ The dirent structure defined in <dirent.h> is implementation dependent.
+ Implementations define the structure to contain at least the following two members:
+ *******************************************************************************/
+struct dirent
+{
+    ino_t d_ino; /* i-node number */
+    char d_name[]; /* null-terminated filename */
+}
+
+
 /*st_mode也包含了文件的范文权限位,下面是9个方位权限位*/
 #define S_IRUSR /*user-read*/
 #define S_IWUSR /*user-write*/
@@ -48,6 +60,23 @@ S_ISGID, respectively.*/
 
 
 /*
+********************************************************************************
+---->目录的读取
+  Directories can be read by anyone who has access permission to read the 
+directory. But only the kernel can write to a directory, to preserve file system 
+sanity. the write permission bits and execute permission bits for a directory
+determine if we can create new files in the directory and remove files from the
+directory — they don't specify if we can write to the directory itself.
+  The actual format of a directory depends on the UNIX System implementation and
+the design of the file system. Earlier systems, such as Version 7, had a simple 
+structure:each directory entry was 16 bytes, with 14 bytes for the filename and 
+2 bytes for the i-node number. When longer filenames were added to 4.2BSD, each 
+entry became variable length, which means that any program that reads a directory 
+is now system dependent. To simplify the process of reading a directory, a set of 
+directory routines were developed and are part of POSIX.1. Many implementations 
+prevent applications from using the read function to access the contents of 
+directories, thereby further isolating applications from the implementation-specific 
+details of directory formats.
 ********************************************************************************
 文件类型
 1 普通文件(regular file)  
@@ -213,5 +242,11 @@ i节点中存放着:文件的所有者、文件所属的组、文件大小、文件数据块在盘上的位置等信息
 ---->目录项
 目录项包括两个内容: i节点号和文件名
 
+********************************************************************************
+---->文件的三个时间字段
+Field     Description                           Example       ls(1) option
+st_atim   last-access time of file data         read          -u
+st_mtim   last-modification time of file data   write         default
+st_ctim   last-change time of i-node status     chmod,chown   -c
 
 

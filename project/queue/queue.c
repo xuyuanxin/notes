@@ -1,4 +1,4 @@
-/*åŸºäºæ•°ç»„çš„é˜Ÿåˆ—å®ç°*/
+/*»ùÓÚÊı×éµÄ¶ÓÁĞÊµÏÖ*/
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -71,7 +71,7 @@ int queue_empty(queue_s *queue)
 }
 
 
-/*å†™é˜Ÿåˆ— æˆåŠŸè¿”å›1 å¤±è´¥è¿”å›0*/
+/*Ğ´¶ÓÁĞ ³É¹¦·µ»Ø1 Ê§°Ü·µ»Ø0*/
 int enqueue(queue_s *queue,int key,void *data)
 {
     int i;
@@ -98,7 +98,7 @@ int enqueue(queue_s *queue,int key,void *data)
 	return 1;
 }
 
-/*è¯»é˜Ÿåˆ—(fifo) æˆåŠŸè¿”å›1 å¤±è´¥è¿”å›0*/
+/*¶Á¶ÓÁĞ(fifo) ³É¹¦·µ»Ø1 Ê§°Ü·µ»Ø0*/
 int dequeue(queue_s *queue,int *key,void **data)
 {
     int i = 0;
@@ -143,3 +143,4 @@ void queue_show(queue_s *queue)
 	printf("\r\nsize  :%d",queue->q_size);
 	printf("\r\ncount :%d",queue->q_count);
 }
+
