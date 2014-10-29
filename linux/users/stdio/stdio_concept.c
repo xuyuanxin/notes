@@ -1,76 +1,132 @@
-/*
----->Á÷ÓëÎÄ¼şÃèÊö·û
-ÎÄ¼şÃèÊö·û:
-Èç¹ûÎÒÃÇÓÃfd±íÊ¾£¬¸Ãfd¿ÉÒÔÊÇopen¡¢pipe¡¢dup¡¢dup2ºÍcreatµÈµ÷ÓÃ·µ»ØµÄ½á¹û£¬ÔÚlinuxÏµÍ³ÖĞ£¬Éè±¸Ò²ÊÇÒÔÎÄ¼şµÄĞÎÊ½´æÔÚ£¬
-Òª¶Ô¸ÃÉè±¸½øĞĞ²Ù×÷¾Í±ØĞëÏÈ´ò¿ªÕâ¸öÎÄ¼ş£¬´ò¿ªÕâ¸öÎÄ¼ş¾Í»á£¬¾Í»á»ñµÃÕâ¸öÎÄ¼şÃèÊö·û£¬ËüÊÇ¸öºÜĞ¡µÄÕıÕûÊı£¬ËüÊÇÒ»¸öË÷ÒıÖµ£¬Ö¸ÏòÄÚºË
-ÎªÃ¿Ò»¸ö½ø³ÌËùÎ¬»¤µÄ¸Ã½ø³Ì´ò¿ªÎÄ¼şµÄ¼ÇÂ¼±í¡£ÎÄ¼şÃèÊö·ûµÄÓÅµã£º¼æÈİPOSIX±ê×¼£¬Ğí¶àLinuxºÍ UNIXÏµÍ³µ÷ÓÃ¶¼ÒÀÀµÓÚËü¡£ÎÄ¼şÃèÊö·ûµÄÈ±
-µã£º²»ÄÜÒÆÖ²µ½UNIXÒÔÍâµÄÏµÍ³ÉÏÈ¥£¬Ò²²»Ö±¹Û¡£fdÖ»ÊÇÒ»¸öË÷Òı.
+/*******************************************************************************
+---->FILE
+When we open a stream, the standard I/O function @fopen returns a pointer to a 
+FILE object. This object is normally a structure that contains all the information
+required by the standard I/O library to manage the stream: the file descriptor 
+used for actual I/O, a pointer to a buffer for the stream, the size of the buffer,
+acount of the number of characters currently in the buffer, an error flag, and 
+the like.
+To reference the stream, we pass its FILE pointer as an argument to each standard
+I/O  function.
 
-ÎÄ¼şÖ¸Õë:
-CÓïÑÔÖĞÊ¹ÓÃµÄÊÇÎÄ¼şÖ¸Õë¶ø²»ÊÇÎÄ¼şÃèÊö·û×öÎªI/OµÄ¾ä±ú."ÎÄ¼şÖ¸Õë(file pointer)"Ö¸Ïò½ø³ÌÓÃ»§ÇøÖĞµÄÒ»¸ö±»³ÆÎªFILE½á¹¹µÄÊı¾İ½á¹¹¡£
-FILE½á¹¹°üÀ¨Ò»¸ö»º³åÇøºÍÒ»¸öÎÄ¼şÃèÊö·ûÖµ.¶øÎÄ¼şÃèÊö·ûÖµÊÇÎÄ¼şÃèÊö·û±íÖĞµÄÒ»¸öË÷Òı.´ÓÄ³ÖÖÒâÒåÉÏËµÎÄ¼şÖ¸Õë¾ÍÊÇ¾ä±úµÄ¾ä±ú¡£
+---->æµå’ŒFILEå¯¹è±¡
+æ–‡ä»¶I/Oéƒ½æ˜¯é’ˆå¯¹æ–‡ä»¶æè¿°ç¬¦çš„ï¼Œæ ‡å‡†I/Oæ˜¯å›´ç»•æµ(stream)è¿›è¡Œçš„ã€‚
+When we open or create a file with the standardI/O library, we say that we have 
+associated a stream with the file.
 
+---->æµä¸æ–‡ä»¶æè¿°ç¬¦
+æ–‡ä»¶æè¿°ç¬¦:
+å¦‚æœæˆ‘ä»¬ç”¨fdè¡¨ç¤ºï¼Œè¯¥fdå¯ä»¥æ˜¯openã€pipeã€dupã€dup2å’Œcreatç­‰è°ƒç”¨è¿”å›çš„ç»“æœï¼Œåœ¨linux
+ç³»ç»Ÿä¸­ï¼Œè®¾å¤‡ä¹Ÿæ˜¯ä»¥æ–‡ä»¶çš„å½¢å¼å­˜åœ¨ï¼Œè¦å¯¹è¯¥è®¾å¤‡è¿›è¡Œæ“ä½œå°±å¿…é¡»å…ˆæ‰“å¼€è¿™ä¸ªæ–‡ä»¶ï¼Œæ‰“å¼€è¿™ä¸ª
+æ–‡ä»¶å°±ä¼šï¼Œå°±ä¼šè·å¾—è¿™ä¸ªæ–‡ä»¶æè¿°ç¬¦ï¼Œå®ƒæ˜¯ä¸ªå¾ˆå°çš„æ­£æ•´æ•°ï¼Œå®ƒæ˜¯ä¸€ä¸ªç´¢å¼•å€¼ï¼ŒæŒ‡å‘å†…æ ¸ä¸ºæ¯
+ä¸€ä¸ªè¿›ç¨‹æ‰€ç»´æŠ¤çš„è¯¥è¿›ç¨‹æ‰“å¼€æ–‡ä»¶çš„è®°å½•è¡¨ã€‚æ–‡ä»¶æè¿°ç¬¦çš„ä¼˜ç‚¹ï¼šå…¼å®¹POSIXæ ‡å‡†ï¼Œè®¸å¤šLinux
+å’ŒUNIXç³»ç»Ÿè°ƒç”¨éƒ½ä¾èµ–äºå®ƒã€‚æ–‡ä»¶æè¿°ç¬¦çš„ç¼ºç‚¹ï¼šä¸èƒ½ç§»æ¤åˆ°UNIXä»¥å¤–çš„ç³»ç»Ÿä¸Šå»ï¼Œä¹Ÿä¸ç›´è§‚ã€‚
+fdåªæ˜¯ä¸€ä¸ªç´¢å¼•.
 
----->Á÷ºÍFILE¶ÔÏó
-ÎÄ¼şI/O¶¼ÊÇÕë¶ÔÎÄ¼şÃèÊö·ûµÄ£¬±ê×¼I/OÊÇÎ§ÈÆÁ÷(stream)½øĞĞµÄ¡£
-When we open or create a file with the standardI/O library, we say that we have associated a stream with the file.
+æ–‡ä»¶æŒ‡é’ˆ:
+Cè¯­è¨€ä¸­ä½¿ç”¨çš„æ˜¯æ–‡ä»¶æŒ‡é’ˆè€Œä¸æ˜¯æ–‡ä»¶æè¿°ç¬¦åšä¸ºI/Oçš„å¥æŸ„."æ–‡ä»¶æŒ‡é’ˆ(file pointer)"æŒ‡
+å‘è¿›ç¨‹ç”¨æˆ·åŒºä¸­çš„ä¸€ä¸ªè¢«ç§°ä¸ºFILEç»“æ„çš„æ•°æ®ç»“æ„ã€‚FILEç»“æ„åŒ…æ‹¬ä¸€ä¸ªç¼“å†²åŒºå’Œä¸€ä¸ªæ–‡ä»¶æ
+è¿°ç¬¦å€¼.è€Œæ–‡ä»¶æè¿°ç¬¦å€¼æ˜¯æ–‡ä»¶æè¿°ç¬¦è¡¨ä¸­çš„ä¸€ä¸ªç´¢å¼•.ä»æŸç§æ„ä¹‰ä¸Šè¯´æ–‡ä»¶æŒ‡é’ˆå°±æ˜¯å¥æŸ„çš„
+å¥æŸ„ã€‚
 
-A stream's orientation determines whether the characters that are read and written are single byte or multibyte. 
-Initially,when a stream is created, it has no orientation. If a multibyte I/O function (see<wchar.h>) is used on a stream 
-without orientation, the stream's orientation is set to wide oriented. If a byte I/O function is used on a stream without 
-orientation, the stream's orientation is set to byte oriented.Only two functions can change the orientation once set. The 
-freopen function (discussed shortly) will clear a stream¡¯s orientation; the fwide function can be used to set a stream's orientation.
-
-When we open a stream, the standardI/O functionfopen(Section 5.5) returns a
-pointer  to  a FILE object.  This object  is  normally  a  structurethat  contains  all  the
-information  required  by  the  standardI/O  library  to  manage  the  stream:  the  file
-descriptor used for actual I/O, a pointer to a buffer for the stream, the size of the buffer,
-acount of the number of characters currently in the buffer, an error flag, and the like.
-Application software should never need to examine a FILE object.  To reference the
-stream,  we  pass  its FILE pointer  as  an  argument  to  each  standardI/O  function.
-Throughout this text, we¡¯ll refer to a pointer to a FILE object, the type FILE *, as a file
-pointer.
+---->æµçš„å®šå‘ stream's orientation
+A stream's orientation determines whether the characters that are read and written 
+are single byte or multibyte. Initially,when a stream is created, it has no 
+orientation. If a multibyte I/O function (see<wchar.h>) is used on a stream 
+without orientation, the stream's orientation is set to wide oriented. If a byte 
+I/O function is used on a stream without  orientation, the stream's orientation 
+is set to byte oriented.Only two functions can change the orientation once set. 
+The freopen function  will clear a streamâ€™s orientation; the fwide function can 
+be used to set a stream's orientation.
 */
-/*Èı¸öÄ¬ÈÏ´ò¿ªµÄÁ÷
-Three streams are predefined and automatically available to a process: standard input, standard output, and standard error.
-These streams refer to the same files as the file descriptors STDIN_FILENO, STDOUT_FILENO,and STDERR_FILENO,respectively,
-These three standard I/O streams are referenced through the predefined file pointers stdin, stdout,and stderr.
-The file pointers are defined in the<stdio.h> header.
+
+/*ä¸‰ä¸ªé»˜è®¤æ‰“å¼€çš„æµ
+Three streams are predefined and automatically available to a process: standard 
+input, standard output, and standard error.These streams refer to the same files 
+as the file descriptors STDIN_FILENO, STDOUT_FILENO,and STDERR_FILENO,respectively.
+These three standard I/O streams are referenced through the predefined file 
+pointers stdin, stdout,and stderr. The file pointers are defined in the<stdio.h> 
+header.
 */
-#define stdin  /*Standard input  ±ê×¼ÊäÈë*/
-#define stdout /*Standard output ±ê×¼Êä³ö*/
-#define stderr /*Standard error  ±ê×¼´íÎó*/
-
-
+#define stdin  /*Standard input  æ ‡å‡†è¾“å…¥*/
+#define stdout /*Standard output æ ‡å‡†è¾“å‡º*/
+#define stderr /*Standard error  æ ‡å‡†é”™è¯¯*/
 
 /*
----->»º³å
-±ê×¼I/O¿âÌá¹©»º³åµÄÄ¿µÄÊÇ¾¡¿ÉÄÜ¼õÉÙÊ¹ÓÃreadºÍwriteµÄ´ÎÊı¡£
-ÈıÖÖÀàĞÍµÄ»º³å
-1 È«»º³å Fully buffered
-    In this  case, actual I/O takes place when the standard I/O buffer is filled. Files residing on disk are normally fully 
-buffered by the standard I/O library.The buffer used is usually obtained by one of the standard I/O functions calling malloc 
-the first time I/O is performed on a stream.
-    The term flush describes the writing of a standardI/O buffer.A buffer can be flushed automatically by the standard I/O 
-routines, such as when a buffer fills, or we can call the function fflush to flush a stream. Unfortunately, in the UNIX environment,
-flush means two different things. In terms of the standard I/O library,it means writing out the contents of a buffer,which may be 
-partially filled. In terms of the terminal driver,such as the tcflush function,it means to discard the data that's already stored in a buffer.
-2 ĞĞ»º³å Line buffered
-Ğ´ÁËÒ»ĞĞÖ®ºó²Å½øĞĞÊµ¼ÊµÄI/O²Ù×÷¡£»º³åĞĞµÄ³¤¶ÈÊÇ¹Ì¶¨µÄ£¬Ğ´ÂúÁË(´ËÊ±¿ÉÄÜ»¹Ã»µ½Ò»ĞĞµÄ½áÊø)Ò²½øĞĞI/O²Ù×÷¡£
-3 ²»´ø»º³å Unbuffered
-±ê×¼I/O¿â²»¶Ô×Ö·û½øĞĞĞĞ»º³å´æ´¢£¬Á¢¼´Ğ´ÖÁÏà¹ØÁªµÄ´ò¿ªÎÄ¼şÉÏ¡£
-±ê×¼³ö´íÁ÷stderrÍ¨³£ÊÇ²»´ø»º³åµÄ¡£
----->ÎÄ¼şÊ¹ÓÃ·½Ê½
-ÎÄ¼şÊ¹ÓÃ·½Ê½ÓÉr,w,a,t,b£¬+Áù¸ö×Ö·ûÆ´³É£¬¸÷×Ö·ûµÄº¬ÒåÊÇ£º
-r(read): ¶Á
-w(write): Ğ´
-a(append): ×·¼Ó
-t(text): ÎÄ±¾ÎÄ¼ş£¬¿ÉÊ¡ÂÔ²»Ğ´
-b(binary): ¶ş½øÖÆÎÄ¼ş
-+: ¶ÁºÍĞ´
+---->ç¼“å†²
+The goal of the buffering provided by the standardI/O library is to use the minimum
+number of read and write calls. Also, this library tries to do its buffering 
+automatically for each I/O stream, obviating the need for the application to
+worry about it.
 
-·²ÓÃ¡°r¡±´ò¿ªÒ»¸öÎÄ¼şÊ±£¬¸ÃÎÄ¼ş±ØĞëÒÑ¾­´æÔÚ£¬ÇÒÖ»ÄÜ´Ó¸ÃÎÄ¼ş¶Á³ö¡£
-ÓÃ¡°w¡±´ò¿ªµÄÎÄ¼şÖ»ÄÜÏò¸ÃÎÄ¼şĞ´Èë¡£Èô´ò¿ªµÄÎÄ¼ş²»´æÔÚ£¬ÔòÒÔÖ¸¶¨µÄÎÄ¼şÃû½¨Á¢¸ÃÎÄ¼ş£¬Èô´ò¿ªµÄÎÄ¼şÒÑ¾­´æÔÚ£¬Ôò½«¸ÃÎÄ¼şÉ¾È¥£¬ÖØ½¨Ò»¸öĞÂÎÄ¼ş¡£
-ÈôÒªÏòÒ»¸öÒÑ´æÔÚµÄÎÄ¼ş×·¼ÓĞÂµÄĞÅÏ¢£¬Ö»ÄÜÓÃ¡°a¡±·½Ê½´ò¿ªÎÄ¼ş¡£µ«´ËÊ±¸ÃÎÄ¼ş±ØĞëÊÇ´æÔÚµÄ£¬·ñÔò½«»á³ö´í¡£
-°ÑÒ»¸öÎÄ±¾ÎÄ¼ş¶ÁÈëÄÚ´æÊ±£¬Òª½«ASCIIÂë×ª»»³É¶ş½øÖÆÂë£¬¶ø°ÑÎÄ¼şÒÔÎÄ±¾·½Ê½Ğ´Èë´ÅÅÌÊ±£¬Ò²Òª°Ñ¶ş½øÖÆÂë×ª»»³ÉASCIIÂë£¬Òò´ËÎÄ±¾ÎÄ¼şµÄ¶ÁĞ´Òª»¨·Ñ½Ï¶àµÄ×ª»»Ê±¼ä¡£¶Ô¶ş½øÖÆÎÄ¼şµÄ¶ÁĞ´²»´æÔÚÕâÖÖ×ª»»¡£
+---->ä¸‰ç§ç±»å‹çš„ç¼“å†²
+1 å…¨ç¼“å†² Fully buffered ç£ç›˜æ–‡ä»¶å¸¸ç”¨
+  In this case, actual I/O takes place when the standard I/O buffer is filled. 
+Files residing on disk are normally fully buffered by the standard I/O library.
+The buffer used is usually obtained by one of the standard I/O functions calling 
+@malloc the first time I/O is performed on a stream.
+  The term flush describes the writing of a standardI/O buffer.A buffer can be 
+flushed automatically by the standard I/O routines, such as when a buffer fills, 
+or we can call the function @fflush to flush a stream. Unfortunately, in the UNIX
+environment,flush means two different things. In terms of the standard I/O library,
+it means writing out the contents of a buffer,which may be partially filled. In 
+terms of the terminal driver,such as the @tcflush function,it means to discard 
+the data that's already stored in a buffer.
 
+2 è¡Œç¼“å†² Line buffered ç»ˆç«¯æ˜¾ç¤ºå¸¸ç”¨
+  å†™äº†ä¸€è¡Œä¹‹åæ‰è¿›è¡Œå®é™…çš„I/Oæ“ä½œã€‚ç¼“å†²è¡Œçš„é•¿åº¦æ˜¯å›ºå®šçš„ï¼Œå†™æ»¡äº†(æ­¤æ—¶å¯èƒ½è¿˜æ²¡åˆ°ä¸€
+  è¡Œçš„ç»“æŸ)ä¹Ÿè¿›è¡ŒI/Oæ“ä½œã€‚
+  
+3 ä¸å¸¦ç¼“å†² Unbuffered
+  The standardI/O library does not buffer the	characters. If we write 15  
+  characters with the standardI/O @fputs function, for example, we expect 
+  these 15 characters to be output as soon as possible, probably with the
+  @write function.
+  
+  The standard error stream, for example, is normally unbuffered so that any 
+error messages are displayed as quickly as possible, regardless of whether they
+contain a newline.
+
+---->ISO C requires the following buffering characteristics:
+1 Standard input and standard output are fully buffered, if and only if they do 
+  not refer to an interactive device.
+2 Standard error is never fully buffered.
+
+  This, however,doesn't tell us whether standard input and standard output are
+unbuffered or line buffered if they refer to an interactive device and whether 
+standard error should be unbuffered or line buffered. Most implementations 
+default  to  the following types of buffering:
+1 Standarderror is always unbuffered.
+2 All other streams are line buffered if they refer to a terminal device; 
+  otherwise,they are fully buffered.
+  The four platforms discussed in this book follow these conventions for 
+  standard I/O buffering:standard error is unbuffered, streams open to terminal 
+  devices areline buffered, and all other streams are fully buffered.
+
+----> æš‚æœªç†è§£
+Be aware that if we allocate a standardI/O buffer as an automatic variable within a
+function, we have to close the stream beforereturning from the function. (Weâ€™ll discuss
+this point further in Section 7.8.) Also, some implementations use part of the buffer for
+internal  bookkeeping,  so  the  actual  number  of  bytes  of  data  that  can  be  stored  in  the
+buffer can be less thansize.Ingeneral, we should let the system choose the buffer size
+and  automatically  allocate  the  buffer.When  we  do  this,  the  standardI/O  library
+automatically releases the buffer when we close the stream.
+
+********************************************************************************
+---->æ–‡ä»¶ä½¿ç”¨æ–¹å¼
+æ–‡ä»¶ä½¿ç”¨æ–¹å¼ç”±r,w,a,t,bï¼Œ+å…­ä¸ªå­—ç¬¦æ‹¼æˆï¼Œå„å­—ç¬¦çš„å«ä¹‰æ˜¯ï¼š
+r : read è¯»
+w : write å†™
+a : append è¿½åŠ 
+t : text æ–‡æœ¬æ–‡ä»¶ï¼Œå¯çœç•¥ä¸å†™
+b : binary äºŒè¿›åˆ¶æ–‡ä»¶
++ : è¯»å’Œå†™
+
+å‡¡ç”¨â€œrâ€æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶æ—¶ï¼Œè¯¥æ–‡ä»¶å¿…é¡»å·²ç»å­˜åœ¨ï¼Œä¸”åªèƒ½ä»è¯¥æ–‡ä»¶è¯»å‡ºã€‚
+ç”¨â€œwâ€æ‰“å¼€çš„æ–‡ä»¶åªèƒ½å‘è¯¥æ–‡ä»¶å†™å…¥ã€‚è‹¥æ‰“å¼€çš„æ–‡ä»¶ä¸å­˜åœ¨ï¼Œåˆ™ä»¥æŒ‡å®šçš„æ–‡ä»¶åå»ºç«‹è¯¥æ–‡ä»¶ï¼Œ
+è‹¥æ‰“å¼€çš„æ–‡ä»¶å·²ç»å­˜åœ¨ï¼Œåˆ™å°†è¯¥æ–‡ä»¶åˆ å»ï¼Œé‡å»ºä¸€ä¸ªæ–°æ–‡ä»¶ã€‚
+è‹¥è¦å‘ä¸€ä¸ªå·²å­˜åœ¨çš„æ–‡ä»¶è¿½åŠ æ–°çš„ä¿¡æ¯ï¼Œåªèƒ½ç”¨â€œaâ€æ–¹å¼æ‰“å¼€æ–‡ä»¶ã€‚ä½†æ­¤æ—¶è¯¥æ–‡ä»¶å¿…é¡»æ˜¯å­˜
+åœ¨çš„ï¼Œå¦åˆ™å°†ä¼šå‡ºé”™ã€‚
+æŠŠä¸€ä¸ªæ–‡æœ¬æ–‡ä»¶è¯»å…¥å†…å­˜æ—¶ï¼Œè¦å°†ASCIIç è½¬æ¢æˆäºŒè¿›åˆ¶ç ï¼Œè€ŒæŠŠæ–‡ä»¶ä»¥æ–‡æœ¬æ–¹å¼å†™å…¥ç£ç›˜æ—¶ï¼Œ
+ä¹Ÿè¦æŠŠäºŒè¿›åˆ¶ç è½¬æ¢æˆASCIIç ï¼Œå› æ­¤æ–‡æœ¬æ–‡ä»¶çš„è¯»å†™è¦èŠ±è´¹è¾ƒå¤šçš„è½¬æ¢æ—¶é—´ã€‚å¯¹äºŒè¿›åˆ¶æ–‡ä»¶
+çš„è¯»å†™ä¸å­˜åœ¨è¿™ç§è½¬æ¢ã€‚
