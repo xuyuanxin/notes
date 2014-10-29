@@ -1,171 +1,288 @@
 
-/*
-@mode:
-If the mode argument is negative,fwide will try to make the specified stream byte oriented.
-If the mode argument is positive,fwide will try to make the specified stream wide oriented.
-If the mode argument is zero,fwide will not try to set the orientation, but will still return a value identifying the stream¡¯s orientation.
-
-Note thatfwidewill not change the orientation of a stream that is already oriented.
-Also note that there is no error return.  Consider what would happen if the stream is
-invalid.  The only recourse we have is to clear errnobeforecallingfwideand check
-the value oferrnowhen we return.
-
-Returns: positive if stream is wide oriented, negative if stream is byte oriented, or 0 if stream has no orientation*/
 #include <stdio.h>
 #include <wchar.h>
+/*******************************************************************************
+ @mode:
+ negative,fwide will try to make the specified stream byte oriented.
+ positive,fwide will try to make the specified stream wide oriented.
+ zero,fwide will not try to set the orientation, but will still return a value 
+ identifying the streams orientation.
+
+ Note that @fwidewill not change the orientation of a stream that is already 
+ oriented.Also note that there is no error return. Consider what would happen 
+ if the stream is invalid. The only recourse we have is to clear errno before 
+ calling @fwide and check the value of errno when we return.
+
+ Returns: positive if stream is wide oriented, negative if stream is byte oriented, 
+ or 0 if stream has no orientation
+ *******************************************************************************/
 int fwide(FILE *fp,int mode);
 
 
-/*
-ÉèÖÃÁ÷µÄ»º³åÀàĞÍ
-@fp:
-@buf:point to a buffer of length BUFSIZ( defined in<stdio.h>)
+/*******************************************************************************
+ è®¾ç½®æµçš„ç¼“å†²ç±»å‹
+ @fp:
+ @buf:point to a buffer of length BUFSIZ( defined in<stdio.h>)
+ returns: 0 if OK, non zero on error
 
-Returns: 0 if OK, non zero on error
-Normally,the stream is then fully buffered, but some systems may set line buffering if the stream is associated
-with a terminal device.To disable buffering, we set buf to NULL.
-*/
+ With @setbuf, we can turn buffering on or off.  To enable buffering,@buf must 
+ point to a buffer of length BUFSIZ,aconstant defined in<stdio.h>.Normally,the 
+ stream is then fully buffered, but some systems may set line buffering if the 
+ stream is associated with a terminal device.To disable buffering, we set @buf 
+ to NULL.
+ 1 must be called after the stream has been opened
+ 2 before any other operation is performed on the stream.
+ *******************************************************************************/
 void setbuf(FILE *restrict fp,char *restrict buf);
 
-/*
-@fp:
-@buf:»º³åÇøÖ¸Õë
-@mode:»º³åÇøÄ£Ê½
-@size:»º³åÇø´óĞ¡
+/*******************************************************************************
+ @fp  :
+ @buf :ç¼“å†²åŒºæŒ‡é’ˆ
+ @mode:ç¼“å†²åŒºæ¨¡å¼
+ @size:ç¼“å†²åŒºå¤§å°
+ function:è®¾ç½®æµçš„ç¼“å†²ç±»å‹
+ return  :0 if OK, non zero on error
 
-function:ÉèÖÃÁ÷µÄ»º³åÀàĞÍ
-return:0 if OK, non zero on error
+ mode argument:
+ _IOFBF fully buffered
+ _IOLBF line buffered
+ _IONBF unbuffered
 
-mode argument:
-_IOFBF fully buffered
-_IOLBF line buffered
-_IONBF unbuffered
-
-Èç¹ûÊÇÎŞ»º³åÄ£Ê½£¬@bufºÍ@size½«±»ºöÂÔ
-Èç¹ûÊÇÓĞ»º³åÄ£Ê½£¬µ«@buf´«NULL£¬Ôò»á×Ô¶¯·ÖÅä»º³åÇø´óĞ¡ÎªBUFSIZ
-*/
+ If we specify an unbuffered stream, the @buf and @size arguments are ignored. 
+ If we specify fully buffered or line buffered,@buf and @size can optionally 
+ specify a buffer and its size.	If the stream	is buffered  and buf is NULL,the 
+ standardI/O library will automatically allocate its own buffer	of the appropriate  
+ size for the stream.
+ By appropriate size, we mean the value specified by the constant BUFSIZ.
+ *******************************************************************************/
 int setvbuf(FILE *restrict fp,char *restrict buf,int mode, size_t size);
 
-
-/*
-The fflush function causes any unwritten data for the stream to be passed to the
-kernel. As a special case, if fp is NULL,fflush causes all output streams to be flushed.
-
-Returns: 0 if OK,EOF on error*/
 #include <stdio.h>
+/*******************************************************************************
+ The @fflush function causes any unwritten data for the stream to be passed to 
+ the kernel. As a special case, if fp is NULL,@fflush causes all output streams 
+ to be flushed.
+
+ Returns: 0 if OK,EOF on error
+*******************************************************************************/
 int fflush(FILE *fp);
 
+/*******************************************************************************
 
-
-
-/*
-
-fopen:opens a specified file.
-freopen:opens a specified file on a specified stream, closing the stream first if it is already open. If the stream previously 
-    had an orientation,freopen clears it. This function is typically used to open a specified file as one of the predefined 
-    streams: standardinput, standardoutput, or standarderror.
-fdopen:takes an existing file descriptor,which we could obtain from the open,dup,dup2,fcntl,pipe,socket,socketpair,or accept
-    functions,and associates a standard I/O stream with the descriptor.This function is often used with descriptors that are 
-    returned by the functions that create pipes and network communication channels. Because these special types of files cannot 
-    be opened with the standard I/O fopen function, we have to call the device-specific function to obtain a file descriptor,
-    and then associate this descriptor with a standardI/O stream usingfdopen.
+fdopen:
 return: All three return file pointer if OK,NULL on error
 
-Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C doesn¡¯t deal with file descriptors
+Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C doesnâ€™t deal with file descriptors
 
----->¹ØÓÚtype
+---->å…³äºtype
 
 */
 #include <stdio.h>
+/*******************************************************************************
+ function:opens a specified file. 
+ return  :return file pointer if OK,NULL on error
+ *******************************************************************************/
 FILE *fopen(const char *restrict pathname,const char *restrict type);
+
+/*******************************************************************************
+ function:opens a specified file on a specified stream, closing the stream first 
+          if it is already open. If the stream previously had an orientation,
+          @freopen clears it. This function is typically used to open a specified 
+          file as one of the predefined streams: standardinput, standardoutput, 
+          or standarderror.
+ return  :return file pointer if OK,NULL on error
+ *******************************************************************************/
 FILE *freopen(const char *restrict pathname,const char *restrict type,FILE *restrict fp);
+
+/*******************************************************************************
+ function:takes an existing file descriptor,which we could obtain from the open,
+          dup,dup2,fcntl,pipe,socket,socketpair,or accept functions,and associates
+          a standard I/O stream with the descriptor.This function is often used 
+          with descriptors that are returned by the functions that create pipes 
+          and network communication channels. Because these special types of files
+          cannot be opened with the standard I/O fopen function, we have to call 
+          the device-specific function to obtain a file descriptor,and then 
+          associate this descriptor with a standardI/O stream usingfdopen.
+ return  :return file pointer if OK,NULL on error
+ *******************************************************************************/
 FILE *fdopen(int fd,const char *type);
 
 
-
-/*
-Three functions allow us to read one character at a time.
-The function getchar is defined to be equivalent to getc(stdin).The difference between getc and fgetc is that getc can be 
-implemented as a macro, whereas fgetc cannot be implemented as a macro.  
-
-All three return: next character if OK,EOF on end of file or error*/
 #include <stdio.h>
+/*******************************************************************************
+ Three functions allow us to read one character at a time.
+ The function getchar is defined to be equivalent to getc(stdin)
+ @getc can be implemented as a macro,@fgetc cannot be implemented as a macro
+
+ All three return: next character if OK,EOF on end of file or error
+ ******************************************************************************/
 int getc(FILE *fp);
 int fgetc(FILE *fp);
 int getchar(void);
 
-/*
-Note that these functions return the same value whether an error occurs or the end
-of file is reached. To distinguish between the two, we must call either ferror or feof.
+/*******************************************************************************
+ In most implementations, two flags are maintained for each stream in the FILE 
+ object:An error flag An end-of-file flag
+ @getc @fgetc @getchar return the same value whether an error occurs or the end
+ of file is reached.To distinguish between the two, we must call either @ferror 
+ or @feof.@ferrorè¡¨ç¤ºè¿™ä¸ªæµå‡ºé”™è¿”å›ï¼Œ@feofé‡åˆ°ç»“æŸç¬¦è¿”å›
 
-Both return: nonzero(true) if condition is true, 0 (false) otherwise
-*/
+ Both return: nonzero(true) if condition is true, 0 (false) otherwise
+ ******************************************************************************/
 #include <stdio.h>
 int ferror(FILE *fp);
 int feof(FILE *fp);
 
-
-/*
-In most implementations, two flags are maintained for each stream in the FILE object:
-An error flag An end-of-file flag
-Both flags arecleared by calling clearerr.
-*/
+/*******************************************************************************
+ In most implementations, two flags are maintained for each stream in the FILE 
+ object:An error flag An end-of-file flag
+ Both flags are cleared by calling @clearerr.
+ ******************************************************************************/
 void clearerr(FILE *fp);
 
+/*******************************************************************************
+ ä»æµä¸­è¯»å–æ•°æ®åå¯ä»¥è°ƒç”¨@ungetcå†å‹å›æµä¸­ã€‚ä¸€æ¬¡åªèƒ½å‹å›ä¸€ä¸ªå­—ç¬¦ï¼Œå¯ä»¥å¤šæ¬¡å‹å›ã€‚
+ å‹å›çš„å­—ç¬¦ä¸ä¸€å®šæ˜¯åˆšè¯»å–å¾—ï¼Œå¯ä»¥æ˜¯é™¤EOFå¤–çš„ä»»æ„å­—ç¬¦ã€‚å‹å›å¤šä¸ªå­—ç¬¦å†è¯»å–æ—¶ï¼Œè¯»å–
+ çš„é¡ºåºå’Œå‹å›çš„é¡ºåºç›¸åã€‚
+ 
+ When we reach the end of file, however,we can push back a character.The next 
+ read will return that character,and the read after that will return EOF.
+ 
+ When we push characters back with @ungetc,they are not written back to the 
+ underlying file or device. Instead, they are kept incore in the standardI/O 
+ library's buffer for the stream.
 
-/*
-    After reading from a stream, we can push back characters by calling ungetc
-    The characters that arepushed back arereturned by subsequent reads on the stream in reverse  order  of  their  pushing. 
-    The character that we push back does not have to be the same character that was read. We are notable to push back EOF.When we 
-reach the end of file, however,we can push back a character.The next read will return that character,and the read after that 
-will return EOF.
-    When we push characters back with ungetc,they are not written back to the underlying file or device. Instead, they are kept 
-incore in the standardI/O library's buffer for the stream.
-
-
-Returns:c if OK,EOF on error */
+ returns:c if OK,EOF on error 
+ ******************************************************************************/
 #include <stdio.h>
-int ungetc(intc,FILE *fp);
+int ungetc(int c,FILE *fp);
 
 
-/*
-putchar(c) is equivalent to putc(c, stdout),and putc can be implemented as a macro, whereas fputc cannot be implemented as a macro.
+/*******************************************************************************
+ putchar(c) is equivalent to putc(c, stdout),
+ @putc can be implemented as a macro, @fputc cannot be implemented as a macro.
 
-All three return:c if OK,EOF on error*/
+ All three return:c if OK,EOF on error
+ ******************************************************************************/
 #include <stdio.h>
 int putc(int c,FILE *fp);
 int fputc(int c,FILE *fp);
 int putchar(int c);
 
 
-
-/*Both specify the address of the buffef to read the line into. The gets function reads from standard input, whereas fgets reads from the specified stream.
-fgets:Ò»´Î¶ÁÈëÒ»ĞĞ£¬×î¶à¶Án-1¸ö×Ö·û£¬µÚn¸ö×Ö·û×Ô¶¯ÌîNULL¡£Èç¹ûÒ»ĞĞ¶àÓÚn-1¸ö×Ö·û£¬¿ÉÒÔ·ÖÁ½´Î¶ÁÈ¡£¬¶ÔfgetsµÄÏÂ´Î¶ÁÈ¡»¹»á¼ÌĞø¸ÃĞĞ¡£
-gets:²»ÍÆ¼öÊ¹ÓÃ£¬¿ÉÄÜÔì³É»º³åÇøÒç³ö¡£ÁíÍâgets²»¶ÁÈ¡»»ĞĞ·û¡£
-Both return:buf if OK,NULL on end of file or erro*/
 #include <stdio.h>
+/*******************************************************************************
+ @buf:å­˜æ”¾è¯»å–çš„å­—ç¬¦
+ @fp :ä»å“ªä¸ªæµè¯»å–å­—ç¬¦
+ return:buf if OK,NULL on end of file or erro
+
+ ä¸€æ¬¡è¯»å…¥ä¸€è¡Œï¼Œæœ€å¤šè¯»n-1ä¸ªå­—ç¬¦ï¼Œç¬¬nä¸ªå­—ç¬¦è‡ªåŠ¨å¡«NULLã€‚å¦‚æœä¸€è¡Œå¤šäºn-1ä¸ªå­—ç¬¦ï¼Œå¯ä»¥
+ åˆ†ä¸¤æ¬¡è¯»å–ï¼Œå¯¹@fgetsçš„ä¸‹æ¬¡è¯»å–è¿˜ä¼šç»§ç»­è¯¥è¡Œã€‚
+ ******************************************************************************/
 char *fgets(char *restrict buf,int n,FILE *restrict fp);
+
+/*******************************************************************************
+ @buf:å­˜æ”¾è¯»å–çš„å­—ç¬¦ reads from standard input
+ return:buf if OK,NULL on end of file or erro
+
+ gets:ä¸æ¨èä½¿ç”¨ï¼Œå¯èƒ½é€ æˆç¼“å†²åŒºæº¢å‡ºã€‚å¦å¤–getsä¸è¯»å–æ¢è¡Œç¬¦ã€‚
+ ******************************************************************************/
 char *gets(char *buf);
 
 
+/*******************************************************************************
+ writes the null-terminated string to the specified stream.The null byte at the 
+ end is not written. 
+ string need not contai  a newline as the last non-null character.
 
-/*
-fputs: writes the null-terminated string to the specified stream.The null byte at the end is not written. 
-puts:  writes the null-terminated string to the standardoutput, without writing the null byte. But puts then writes a newline character to the standard output.
-
-Both return: non-negative value if OK,EOF on error*/
-#include <stdio.h>
+ return: non-negative value if OK,EOF on error
+ ******************************************************************************/
 int fputs(const char *restrict str,FILE *restrict fp);
+
+/*******************************************************************************
+ writes the null-terminated string to the standard output, without writing the 
+ null byte. But @puts then writes a newline character to the standard output.
+ string need not contai  a newline as the last non-null character.
+
+ return: non-negative value if OK,EOF on error
+ ******************************************************************************/
 int puts(const char *str);
 
 
 /*
-º¯ÊıÃû³Æ£ºfileno£¨ÔÚVC++6.0ÏÂÎª_fileno[1] £©
-º¯ÊıÔ­ĞÍ£ºint _fileno( FILE *stream );
-º¯Êı¹¦ÄÜ£ºfileno()ÓÃÀ´È¡µÃ²ÎÊıstreamÖ¸¶¨µÄÎÄ¼şÁ÷ËùÊ¹ÓÃµÄÎÄ¼şÃèÊö·û
-·µ»ØÖµ£ºÄ³¸öÊı¾İÁ÷µÄÎÄ¼şÃèÊö·û
-Í·ÎÄ¼ş£ºstdio.h
-Ïà¹Øº¯Êı£ºopen£¬fopen£¬fclose  
+å‡½æ•°åç§°ï¼šfilenoï¼ˆåœ¨VC++6.0ä¸‹ä¸º_fileno[1] ï¼‰
+å‡½æ•°åŸå‹ï¼šint _fileno( FILE *stream );
+å‡½æ•°åŠŸèƒ½ï¼šfileno()ç”¨æ¥å–å¾—å‚æ•°streamæŒ‡å®šçš„æ–‡ä»¶æµæ‰€ä½¿ç”¨çš„æ–‡ä»¶æè¿°ç¬¦
+è¿”å›å€¼ï¼šæŸä¸ªæ•°æ®æµçš„æ–‡ä»¶æè¿°ç¬¦
+å¤´æ–‡ä»¶ï¼šstdio.h
+ç›¸å…³å‡½æ•°ï¼šopenï¼Œfopenï¼Œfclose  
 */
 int fileno( FILE *stream );
+
+
+#include <stdio.h>
+/*******************************************************************************
+ @ptr:
+ function:ä»¥ç»“æ„ä¸ºå•ä½è¯»
+ return: number of objects read
+
+ For the read case,return value can be less than @nobj if an error occurs or if 
+ the end of file is encountered. 
+ ******************************************************************************/
+size_t fread(void *restrict ptr,size_t size,size_t nobj,FILE *restrict fp);
+
+/*******************************************************************************
+ @ptr    : å­˜æ”¾è¦å†™çš„æ•°æ®
+ @size   : ä¸€ä¸ªç»“æ„çš„å¤§å°
+ @nobj   : è¦å†™çš„ç»“æ„çš„ä¸ªæ•°
+ function: ä»¥ç»“æ„ä¸ºå•ä½å†™
+ return: number of objects written
+
+ 1 å¦‚æœè¿”å›å€¼å°äº@nobjè®¤ä¸ºå‡ºé”™
+
+ A fundamental problem with binary I/O is that it can be used to read only data 
+ that has been written on the same system. This was OK many years ago, when all 
+ the UNIX systems were PDP-11s, but the norm today is to have heterogeneous 
+ systems connected together with networks. It is common to want to write data 
+ on one system and process it on another.These two functions won't work, for 
+ two reasons.
+ 1 The offset of a	 member within a  structure can differ between compilers and
+ systems because of different alignment requirements.Indeed,some compilers have 
+ an option allowing structures to be packed tightly,to save space with a possible 
+ runtime	performance penalty,or aligned accurately, to optimize runtime access 
+ of each member.This means that even on a single system, the binary layout of a 
+ structurecan differ,depending on compiler options.
+ 2.  The binary formats used to	store multibyte integers and  floating-point values
+ differ among machine architectures. We'll touch on some of these issues when we 
+ discuss sockets. The real solution for exchanging binary data among different 
+ systems is to use an agreed-upon canonical format. 
+ *******************************************************************************/
+size_t fwrite(const void *restrict ptr,size_t size,size_t nobj,FILE *restrict fp);
+
+/*Returns: current file position indicator if OK,-1L on error*/
+long ftell(FILE *fp);
+
+/*******************************************************************************
+ @whence: lseek
+ *******************************************************************************/
+int fseek(FILE *fp,long offset,int whence);
+
+/*Returns: 0 if OK,-1 on error*/
+void rewind(FILE *fp);
+
+
+#include <stdio.h>
+/*Returns: current file position indicator if OK,(off_t)-1 on error*/
+off_t ftello(FILE *fp);
+
+/*Returns: 0 if OK,-1 on error*/
+int fseeko(FILE *fp,off_t offset,int whence);
+
+
+#include <stdio.h>
+/*return: 0 if OK, nonzero on error*/
+int fgetpos(FILE *restrict fp,fpos_t *restrict pos);
+
+/*return: 0 if OK, nonzero on error*/
+int fsetpos(FILE *fp,const fpos_t *pos);
 
