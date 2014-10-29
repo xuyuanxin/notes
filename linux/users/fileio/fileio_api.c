@@ -12,6 +12,9 @@ the mode,which specifies the access permission bits of the new file.*/
 #define O_EXCL	/*Generate an error if O_CREAT is also specified and the file 
 already exists. This test for whether the file already exists and the creation 
 of the file if it doesn¡¯t exist is an atomic operation. */
+#define	O_NONBLOCK /*If path refers to a FIFO, a block special file, or a character
+special file,this option sets the nonblocking mode for both the opening of the file 
+and subsequent I/O.*/
 
 #define O_RDONLY  /*Open for reading only.*/
 #define O_WRONLY  /*Open for writing only.*/
@@ -37,8 +40,7 @@ terminals in Section 9.6.
 O_NOFOLLOW Generate an error ifpathrefers to a symbolic link. We  discuss symbolic
 links in Section 4.17.
 
-O_NONBLOCK	If path refers to a FIFO, a block special file, or a character special file,this option sets the nonblocking mode 
-			for both the opening of the file and subsequent I/O.
+
 In earlier releases of System V,theO_NDELAY(no delay) flag was introduced.	This
 option	is	similar  to  theO_NONBLOCK(nonblocking)  option,  but  an  ambiguity  was
 introduced in the return value from a read operation. The no-delay option causes a
@@ -319,6 +321,16 @@ final command returns a positive process ID or a negative process group ID.
 **********************************************************************************/
 #include <fcntl.h>
 int fcntl(int fd,int cmd,... /* int arg */ );
+
+/*¼ÇÂ¼Ëø*/
+struct flock 
+{
+    short l_type; /* F_RDLCK, F_WRLCK, or F_UNLCK */
+    short l_whence; /* SEEK_SET, SEEK_CUR, or SEEK_END */
+    off_t l_start; /* offset in bytes, relative to l_whence */
+    off_t l_len; /* length, in bytes; 0 means lock to EOF */
+    pid_t l_pid; /* returned with F_GETLK */
+};
 
 
 

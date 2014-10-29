@@ -195,7 +195,7 @@ extern void bst_clear(bstnode *pnode);
 
 
 /*dbg printf*/
-#define bst_dbgp(fmt, args...)  \ 
+#define bst_dbgp(fmt, args...)  \
     do \
 	{\
 	    if(1 == bstdbg_flag)\

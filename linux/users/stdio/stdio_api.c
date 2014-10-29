@@ -20,7 +20,7 @@ int fwide(FILE *fp,int mode);
 
 
 /*******************************************************************************
- è®¾ç½®æµçš„ç¼“å†²ç±»å‹
+ ÉèÖÃÁ÷µÄ»º³åÀàĞÍ
  @fp:
  @buf:point to a buffer of length BUFSIZ( defined in<stdio.h>)
  returns: 0 if OK, non zero on error
@@ -37,10 +37,10 @@ void setbuf(FILE *restrict fp,char *restrict buf);
 
 /*******************************************************************************
  @fp  :
- @buf :ç¼“å†²åŒºæŒ‡é’ˆ
- @mode:ç¼“å†²åŒºæ¨¡å¼
- @size:ç¼“å†²åŒºå¤§å°
- function:è®¾ç½®æµçš„ç¼“å†²ç±»å‹
+ @buf :»º³åÇøÖ¸Õë
+ @mode:»º³åÇøÄ£Ê½
+ @size:»º³åÇø´óĞ¡
+ function:ÉèÖÃÁ÷µÄ»º³åÀàĞÍ
  return  :0 if OK, non zero on error
 
  mode argument:
@@ -72,9 +72,9 @@ int fflush(FILE *fp);
 fdopen:
 return: All three return file pointer if OK,NULL on error
 
-Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C doesnâ€™t deal with file descriptors
+Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C doesn¡¯t deal with file descriptors
 
----->å…³äºtype
+---->¹ØÓÚtype
 
 */
 #include <stdio.h>
@@ -125,7 +125,7 @@ int getchar(void);
  object:An error flag An end-of-file flag
  @getc @fgetc @getchar return the same value whether an error occurs or the end
  of file is reached.To distinguish between the two, we must call either @ferror 
- or @feof.@ferrorè¡¨ç¤ºè¿™ä¸ªæµå‡ºé”™è¿”å›ï¼Œ@feofé‡åˆ°ç»“æŸç¬¦è¿”å›
+ or @feof.@ferror±íÊ¾Õâ¸öÁ÷³ö´í·µ»Ø£¬@feofÓöµ½½áÊø·û·µ»Ø
 
  Both return: nonzero(true) if condition is true, 0 (false) otherwise
  ******************************************************************************/
@@ -141,9 +141,9 @@ int feof(FILE *fp);
 void clearerr(FILE *fp);
 
 /*******************************************************************************
- ä»æµä¸­è¯»å–æ•°æ®åå¯ä»¥è°ƒç”¨@ungetcå†å‹å›æµä¸­ã€‚ä¸€æ¬¡åªèƒ½å‹å›ä¸€ä¸ªå­—ç¬¦ï¼Œå¯ä»¥å¤šæ¬¡å‹å›ã€‚
- å‹å›çš„å­—ç¬¦ä¸ä¸€å®šæ˜¯åˆšè¯»å–å¾—ï¼Œå¯ä»¥æ˜¯é™¤EOFå¤–çš„ä»»æ„å­—ç¬¦ã€‚å‹å›å¤šä¸ªå­—ç¬¦å†è¯»å–æ—¶ï¼Œè¯»å–
- çš„é¡ºåºå’Œå‹å›çš„é¡ºåºç›¸åã€‚
+ ´ÓÁ÷ÖĞ¶ÁÈ¡Êı¾İºó¿ÉÒÔµ÷ÓÃ@ungetcÔÙÑ¹»ØÁ÷ÖĞ¡£Ò»´ÎÖ»ÄÜÑ¹»ØÒ»¸ö×Ö·û£¬¿ÉÒÔ¶à´ÎÑ¹»Ø¡£
+ Ñ¹»ØµÄ×Ö·û²»Ò»¶¨ÊÇ¸Õ¶ÁÈ¡µÃ£¬¿ÉÒÔÊÇ³ıEOFÍâµÄÈÎÒâ×Ö·û¡£Ñ¹»Ø¶à¸ö×Ö·ûÔÙ¶ÁÈ¡Ê±£¬¶ÁÈ¡
+ µÄË³ĞòºÍÑ¹»ØµÄË³ĞòÏà·´¡£
  
  When we reach the end of file, however,we can push back a character.The next 
  read will return that character,and the read after that will return EOF.
@@ -172,20 +172,20 @@ int putchar(int c);
 
 #include <stdio.h>
 /*******************************************************************************
- @buf:å­˜æ”¾è¯»å–çš„å­—ç¬¦
- @fp :ä»å“ªä¸ªæµè¯»å–å­—ç¬¦
+ @buf:´æ·Å¶ÁÈ¡µÄ×Ö·û
+ @fp :´ÓÄÄ¸öÁ÷¶ÁÈ¡×Ö·û
  return:buf if OK,NULL on end of file or erro
 
- ä¸€æ¬¡è¯»å…¥ä¸€è¡Œï¼Œæœ€å¤šè¯»n-1ä¸ªå­—ç¬¦ï¼Œç¬¬nä¸ªå­—ç¬¦è‡ªåŠ¨å¡«NULLã€‚å¦‚æœä¸€è¡Œå¤šäºn-1ä¸ªå­—ç¬¦ï¼Œå¯ä»¥
- åˆ†ä¸¤æ¬¡è¯»å–ï¼Œå¯¹@fgetsçš„ä¸‹æ¬¡è¯»å–è¿˜ä¼šç»§ç»­è¯¥è¡Œã€‚
+ Ò»´Î¶ÁÈëÒ»ĞĞ£¬×î¶à¶Án-1¸ö×Ö·û£¬µÚn¸ö×Ö·û×Ô¶¯ÌîNULL¡£Èç¹ûÒ»ĞĞ¶àÓÚn-1¸ö×Ö·û£¬¿ÉÒÔ
+ ·ÖÁ½´Î¶ÁÈ¡£¬¶Ô@fgetsµÄÏÂ´Î¶ÁÈ¡»¹»á¼ÌĞø¸ÃĞĞ¡£
  ******************************************************************************/
 char *fgets(char *restrict buf,int n,FILE *restrict fp);
 
 /*******************************************************************************
- @buf:å­˜æ”¾è¯»å–çš„å­—ç¬¦ reads from standard input
+ @buf:´æ·Å¶ÁÈ¡µÄ×Ö·û reads from standard input
  return:buf if OK,NULL on end of file or erro
 
- gets:ä¸æ¨èä½¿ç”¨ï¼Œå¯èƒ½é€ æˆç¼“å†²åŒºæº¢å‡ºã€‚å¦å¤–getsä¸è¯»å–æ¢è¡Œç¬¦ã€‚
+ gets:²»ÍÆ¼öÊ¹ÓÃ£¬¿ÉÄÜÔì³É»º³åÇøÒç³ö¡£ÁíÍâgets²»¶ÁÈ¡»»ĞĞ·û¡£
  ******************************************************************************/
 char *gets(char *buf);
 
@@ -209,21 +209,17 @@ int fputs(const char *restrict str,FILE *restrict fp);
 int puts(const char *str);
 
 
-/*
-å‡½æ•°åç§°ï¼šfilenoï¼ˆåœ¨VC++6.0ä¸‹ä¸º_fileno[1] ï¼‰
-å‡½æ•°åŸå‹ï¼šint _fileno( FILE *stream );
-å‡½æ•°åŠŸèƒ½ï¼šfileno()ç”¨æ¥å–å¾—å‚æ•°streamæŒ‡å®šçš„æ–‡ä»¶æµæ‰€ä½¿ç”¨çš„æ–‡ä»¶æè¿°ç¬¦
-è¿”å›å€¼ï¼šæŸä¸ªæ•°æ®æµçš„æ–‡ä»¶æè¿°ç¬¦
-å¤´æ–‡ä»¶ï¼šstdio.h
-ç›¸å…³å‡½æ•°ï¼šopenï¼Œfopenï¼Œfclose  
-*/
+/*******************************************************************************
+ ¹¦ÄÜ  £ºfileno()ÓÃÀ´È¡µÃ²ÎÊıstreamÖ¸¶¨µÄÎÄ¼şÁ÷ËùÊ¹ÓÃµÄÎÄ¼şÃèÊö·û
+ ·µ»ØÖµ£ºÄ³¸öÊı¾İÁ÷µÄÎÄ¼şÃèÊö·û
+ ******************************************************************************/
 int fileno( FILE *stream );
 
 
 #include <stdio.h>
 /*******************************************************************************
  @ptr:
- function:ä»¥ç»“æ„ä¸ºå•ä½è¯»
+ function:ÒÔ½á¹¹Îªµ¥Î»¶Á
  return: number of objects read
 
  For the read case,return value can be less than @nobj if an error occurs or if 
@@ -232,13 +228,13 @@ int fileno( FILE *stream );
 size_t fread(void *restrict ptr,size_t size,size_t nobj,FILE *restrict fp);
 
 /*******************************************************************************
- @ptr    : å­˜æ”¾è¦å†™çš„æ•°æ®
- @size   : ä¸€ä¸ªç»“æ„çš„å¤§å°
- @nobj   : è¦å†™çš„ç»“æ„çš„ä¸ªæ•°
- function: ä»¥ç»“æ„ä¸ºå•ä½å†™
+ @ptr    : ´æ·ÅÒªĞ´µÄÊı¾İ
+ @size   : Ò»¸ö½á¹¹µÄ´óĞ¡
+ @nobj   : ÒªĞ´µÄ½á¹¹µÄ¸öÊı
+ function: ÒÔ½á¹¹Îªµ¥Î»Ğ´
  return: number of objects written
 
- 1 å¦‚æœè¿”å›å€¼å°äº@nobjè®¤ä¸ºå‡ºé”™
+ 1 Èç¹û·µ»ØÖµĞ¡ÓÚ@nobjÈÏÎª³ö´í
 
  A fundamental problem with binary I/O is that it can be used to read only data 
  that has been written on the same system. This was OK many years ago, when all 
@@ -267,7 +263,11 @@ long ftell(FILE *fp);
  *******************************************************************************/
 int fseek(FILE *fp,long offset,int whence);
 
-/*Returns: 0 if OK,-1 on error*/
+/*******************************************************************************
+ ¹¦ÄÜ:½«ÎÄ¼şÄÚ²¿µÄÎ»ÖÃÖ¸ÕëÖØĞÂÖ¸ÏòÒ»¸öÁ÷£¨Êı¾İÁ÷/ÎÄ¼ş£©µÄ¿ªÍ·
+
+ Returns: 0 if OK,-1 on error
+ ******************************************************************************/
 void rewind(FILE *fp);
 
 
@@ -285,4 +285,94 @@ int fgetpos(FILE *restrict fp,fpos_t *restrict pos);
 
 /*return: 0 if OK, nonzero on error*/
 int fsetpos(FILE *fp,const fpos_t *pos);
+
+
+
+#include <stdio.h>
+#define L_tmpnam
+#define TMP_MAX
+
+/*******************************************************************************
+ @ptr;@tmpnam´´½¨Ò»¸öÁÙÊ±ÎÄ¼ş£¬ptr´æ·ÅÕâ¸öÎÄ¼şµÄÃû×Ö
+ returns: pointer to unique pathname
+
+ 1 Ã¿´Îµ÷ÓÃ¶¼»á²úÉúÒ»¸öĞÂµÄÎÄ¼ş£¬×î¶àµ÷ÓÃTMP_MAX´Î
+ 2 @ptr¿ÉÒÔÎªNULL£¬Ëù²úÉúµÄÂ·¾¶Ãû·ÅÔÚÒ»¸ö¾²Ì¬ÇøÖĞ£¬·µ»ØÖµÊÇÕâ¸ö¾²Ì¬ÇøµÄµØÖ·£¬ÔÙ
+   ´ÎÓÃNULLµ÷ÓÃ@tmpnamÊ±£¬»áÖØĞ´¸Ã¾²Ì¬Çø
+ 3 Èô@ptr²»ÊÇNULL£¬ÔòÈÏÎªËüÖ¸Ïò³¤¶ÈÖÁÉÙÊÇL_tmpnam¸ö×Ö·ûµÄÊı×é
+ ******************************************************************************/
+char *tmpnam(char *ptr);
+
+/*******************************************************************************
+ ¹¦ÄÜ: ´´½¨Ò»¸öÁÙÊ±¶ş½øÖÆÎÄ¼ş(ÀàĞÍwb+)£¬¹Ø±Õ¸ÃÎÄ¼ş»ò³ÌĞò½áÊøÊ±×Ô¶¯É¾³ı¡£
+ Returns: file pointer if OK, NULL on error
+ ******************************************************************************/
+FILE *tmpfile(void);
+
+
+
+#include <stdio.h>
+/*return: number of characters output if OK, negative value if output error*/
+int printf(const char *restrict format, . ..);
+
+/*return: number of characters output if OK, negative value if output error*/
+int fprintf(FILE *restrict fp, const char *restrict format, . ..);
+
+/*return: number of characters output if OK, negative value if output error*/
+int dprintf(int fd, const char *restrict format, . ..);
+
+/*Returns: number of characters stored in array if OK, negative value if encoding error*/
+int sprintf(char *restrict buf, const char *restrict format, . ..);
+
+/*Returns: number of characters that would have been stored in array
+if buffer was large enough, negative value if encoding error*/
+int snprintf(char *restrict buf, size_t n,const char *restrict format, . ..);
+
+#include <stdarg.h>
+#include <stdio.h>
+/*return: number of characters output if OK, negative value if output error*/
+int vprintf(const char *restrict format, va_list arg);
+
+/*return: number of characters output if OK, negative value if output error*/
+int vfprintf(FILE *restrict fp, const char *restrict format,va_list arg);
+
+/*return: number of characters output if OK, negative value if output error*/
+int vdprintf(int fd, const char *restrict format, va_list arg);
+
+/*Returns: number of characters stored in array if OK, negative value if encoding error*/
+int vsprintf(char *restrict buf, const char *restrict format,va_list arg);
+
+/*Returns: number of characters that would have been stored in array
+if buffer was large enough, negative value if encoding error*/
+int vsnprintf(char *restrict buf, size_t n,const char *restrict format, va_list arg);
+
+#include <stdio.h>
+/*return: number of input items assigned,
+EOF if input error or end of file before any conversion*/
+int scanf(const char *restrict format, . ..);
+
+/*return: number of input items assigned,
+EOF if input error or end of file before any conversion*/
+int fscanf(FILE *restrict fp, const char *restrict format, . ..);
+
+/*return: number of input items assigned,
+EOF if input error or end of file before any conversion*/
+int sscanf(const char *restrict buf, const char *restrict format, . ..);
+
+
+
+#include <stdarg.h>
+#include <stdio.h>
+/*return: number of input items assigned,
+EOF if input error or end of file before any conversion*/
+int vscanf(const char *restrict format, va_list arg);
+
+/*return: number of input items assigned,
+EOF if input error or end of file before any conversion*/
+int vfscanf(FILE *restrict fp, const char *restrict format,va_list arg);
+
+/*return: number of input items assigned,
+EOF if input error or end of file before any conversion*/
+int vsscanf(const char *restrict buf, const char *restrict format,va_list arg);
+
 

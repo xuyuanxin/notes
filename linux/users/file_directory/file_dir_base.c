@@ -26,6 +26,21 @@ struct dirent
     char d_name[]; /* null-terminated filename */
 }
 
+/*DIR 结构体的原型为：struct_dirstream
+  在linux系统中：*/
+typedef struct __dirstream DIR;
+struct __dirstream
+{
+    void *__fd; /* `struct hurd_fd' pointer for descriptor.   */
+    char *__data; /* Directory block.   */
+    int __entry_data; /* Entry number `__data' corresponds to.   */
+    char *__ptr; /* Current pointer into the block.   */
+    int __entry_ptr; /* Entry number `__ptr' corresponds to.   */
+    size_t __allocation; /* Space allocated for the block.   */
+    size_t __size; /* Total valid data in the block.   */
+    __libc_lock_define (, __lock) /* Mutex lock for this structure.   */
+};
+
 
 /*st_mode也包含了文件的范文权限位,下面是9个方位权限位*/
 #define S_IRUSR /*user-read*/

@@ -254,6 +254,8 @@ int rmdir(const char *pathname);
 
 
 #include <dirent.h>
+
+
 /*******************************************************************************
  The DIR structure is an internal structure used by these seven functions to 
  maintain information about the directory being read. The purpose of the DIR 
@@ -281,4 +283,41 @@ int closedir(DIR *dp);
 long telldir(DIR *dp);
 
 void seekdir(DIR *dp, long loc);
+
+#include <unistd.h>
+/*******************************************************************************
+ function: 更改当前工作目录为@pathname
+ return  : 0 if OK, -1 on error
+ ******************************************************************************/
+int chdir(const char *pathname);
+
+/*******************************************************************************
+ function: 更改当前工作目录为@fd
+ return: 0 if OK, -1 on error
+ ******************************************************************************/
+int fchdir(int fd);
+
+
+#include <unistd.h>
+
+/*******************************************************************************
+ @buf   : 存放当前工作目录(据对路径)
+ @size  : @buf的长度
+ returns: buf if OK, NULL on error
+ 
+ pass to this function the address of a buffer, @buf, and its size (in bytes). 
+ The buffer must be large enough to accommodate the absolute pathname plus a 
+ terminating null byte, or else an error will be returned.
+
+ What we need is a function that starts at the current working directory (dot) 
+ and works its way up the directory hierarchy, using dot-dot to move up one 
+ level. At each level, the function reads the directory entries until it finds 
+ the name that corresponds to the i-node of the directory that it just came 
+ from. Repeating this procedure until the root is encountered yields the entire
+ absolute pathname of the current working directory. Fortunately, a function 
+ already exists that does this work for us.
+ ******************************************************************************/
+char *getcwd(char *buf, size_t size);
+
+
 
