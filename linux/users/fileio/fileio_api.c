@@ -1,17 +1,17 @@
 /*If the file exists and if it is successfully opened for either write-only or
-readâ€“write, truncate its length to 0.*/
+read¨Cwrite, truncate its length to 0.*/
 
 #define O_APPEND /*Append to the end of file on each write.By default, 
 "current file offset" is initialized to 0 when a file is opened, unless the 
 O_APPEND option is specified.*/
 #define O_CLOEXEC /*Set the FD_CLOEXEC file descriptor flag.*/
-#define	O_CREAT  /*Create the file if it doesnâ€™t exist. This option requires a
-third argument to the open function (a fourth argument to the openat function)â€”
+#define	O_CREAT  /*Create the file if it doesn¡¯t exist. This option requires a
+third argument to the open function (a fourth argument to the openat function)¡ª
 the mode,which specifies the access permission bits of the new file.*/
 #define O_EXEC	  /* Open for execute only.*/
 #define O_EXCL	/*Generate an error if O_CREAT is also specified and the file 
 already exists. This test for whether the file already exists and the creation 
-of the file if it doesnâ€™t exist is an atomic operation. */
+of the file if it doesn¡¯t exist is an atomic operation. */
 #define	O_NONBLOCK /*If path refers to a FIFO, a block special file, or a character
 special file,this option sets the nonblocking mode for both the opening of the file 
 and subsequent I/O.*/
@@ -22,17 +22,17 @@ and subsequent I/O.*/
 O_RDONLY as 0,O_WRONLY as 1, and O_RDWR as 2, for compatibility with older programs.*/
 #define O_SEARCH  /*Open for search only (applies to directories).*/
 #define	O_TRUNC /*If the file exists and if it is successfully opened for 
-either write-only or readâ€“write, truncate its length to 0.*/
+either write-only or read¨Cwrite, truncate its length to 0.*/
 
 /*
 The purpose of theO_SEARCHconstant is to evaluate search permissions at the time
-adirectory	is	opened. Further  operations  using	the  directoryâ€™s  file  descriptor  will
+adirectory	is	opened. Further  operations  using	the  directory¡¯s  file  descriptor  will
 not  reevaluate  permission  to  search  the  directory.None  of  the  versions  of  the
 operating systems covered in this book supportO_SEARCHyet.
 One  and  only	one  of  the  previous	five  constants  must  be  specified. The  following
 constants areoptional:
 	 
-O_DIRECTORYGenerate an error ifpathdoesnâ€™t refer to a directory.
+O_DIRECTORYGenerate an error ifpathdoesn¡¯t refer to a directory.
 	
 O_NOCTTY If pathrefers	to	a  terminal  device,  do  not  allocate  the  device  as  the
 controlling  terminal  for	this  process.	Wetalk	about  controlling
@@ -60,37 +60,37 @@ conforms  to  the  Single  UNIX  Specification. We	discuss  the termios
 structurewhen we discuss terminal I/O in Chapter 18.
 The following two flags arealso optional. They arepart of the synchronized input and
 output option of the Single UNIX Specification (and thus POSIX.1).
-O_DSYNC Have eachwritewait for physical I/O to complete, but donâ€™t wait for
-file attributes to be updated if they donâ€™t affect the ability to read the
+O_DSYNC Have eachwritewait for physical I/O to complete, but don¡¯t wait for
+file attributes to be updated if they don¡¯t affect the ability to read the
 data just written.
 TheO_DSYNCandO_SYNCflags aresimilar,but subtly different.  TheO_DSYNCflag
-affects a fileâ€™s attributes only when they need to be updated to reflect a change in the
-fileâ€™s data (for example, update the fileâ€™s size to reflect moredata).  With theO_SYNC
+affects a file¡¯s attributes only when they need to be updated to reflect a change in the
+file¡¯s data (for example, update the file¡¯s size to reflect moredata).  With theO_SYNC
 flag, data and attributes arealways updated synchronously.When overwriting an
-existing  part	of	a  file  opened  with  theO_DSYNCflag,	the  file  times  wouldnâ€™t  be
+existing  part	of	a  file  opened  with  theO_DSYNCflag,	the  file  times  wouldn¡¯t  be
 updated synchronously.Incontrast, if we had opened the file with theO_SYNCflag,
-everywriteto  the  file  would	update	the  fileâ€™s  times  beforethewritereturns,
+everywriteto  the  file  would	update	the  file¡¯s  times  beforethewritereturns,
 regardless of whether we werewriting over existing bytes or appending to the file.
 O_RSYNC Have eachreadoperation on the file descriptor wait until any pending
 writes for the same portion of the file arecomplete.
 Solaris 10 supports all three synchronization flags. Historically,FreeBSD (and thus
 Mac OS X) have used theO_FSYNCflag, which has the same behavior asO_SYNC.
 Because the two flags areequivalent, they define the flags to have the same value.
-FreeBSD  8.0  doesnâ€™t	support  theO_DSYNCorO_RSYNCflags.	Mac OS	X  doesnâ€™t
+FreeBSD  8.0  doesn¡¯t	support  theO_DSYNCorO_RSYNCflags.	Mac OS	X  doesn¡¯t
 support theO_RSYNCflag, but defines theO_DSYNCflag, treating it the same as the
 O_SYNCflag.  Linux 3.2.0  supports	theO_DSYNCflag,  but  treats  theO_RSYNCflag
 the same asO_SYNC
 */
 #include <fcntl.h>
 /*******************************************************************************
-@path: è¦æ‰“å¼€æˆ–åˆ›å»ºæ–‡ä»¶çš„åå­—
+@path: Òª´ò¿ª»ò´´½¨ÎÄ¼şµÄÃû×Ö
 @oflag:
-@mode: åˆ›å»ºæ—¶æ‰ä¼šç”¨åˆ°
-function:æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶(ä¹Ÿå¯ç”¨äºåˆ›å»ºæ–‡ä»¶)
+@mode: ´´½¨Ê±²Å»áÓÃµ½
+function:´ò¿ªÒ»¸öÎÄ¼ş(Ò²¿ÉÓÃÓÚ´´½¨ÎÄ¼ş)
 return: file descriptor if OK,-1 on error
 
-1 openè¿”å›çš„æ–‡ä»¶æè¿°ç¬¦ä¸€å®šæ˜¯æœ€å°çš„æœªç”¨æè¿°ç¬¦æ•°å€¼ã€‚
-2 @pathæ–‡ä»¶åæœ€å¤§å­—ç¬¦ä¸ªæ•°æ˜¯ NAME_MAX
+1 open·µ»ØµÄÎÄ¼şÃèÊö·ûÒ»¶¨ÊÇ×îĞ¡µÄÎ´ÓÃÃèÊö·ûÊıÖµ¡£
+2 @pathÎÄ¼şÃû×î´ó×Ö·û¸öÊıÊÇ NAME_MAX
 *******************************************************************************/
 int open(const char *path,int oflag,... /* mode_t mode*/ );
 int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
@@ -124,37 +124,37 @@ int close(int fd);
 SEEK_SET(0),the file's offset is set to @offset bytes from the beginning of the file.
 SEEK_CUR(1),the file's offset is set to its current value plus the @offset. The @offset can be positive or negative.
 SEEK_END(2),the file's offset is set to the size of the file plus the @offset. The @offset can be positive or negative.
-function: æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶å¹¶è®¾ç½®å…¶åç§»é‡
+function: ´ò¿ªÒ»¸öÎÄ¼ş²¢ÉèÖÃÆäÆ«ÒÆÁ¿
 returns : new file offset if OK,-1 on error
-name    : lseekä¸­çš„lè¡¨ç¤ºé•¿æ•´å‹
+name    : lseekÖĞµÄl±íÊ¾³¤ÕûĞÍ
 
-@lseek only records the current file offset within the kernelâ€”it does not cause
+@lseek only records the current file offset within the kernel¡ªit does not cause
 any I/O to take place. This offset is then used by the next read or write operation.
 *******************************************************************************/
 off_t lseek(int fd,off_t offset,int whence);
 
 #include <unistd.h>
 /******************************************************************************
-@fd :è¯»å“ªä¸ªæ–‡ä»¶(å·²ç»æ‰“å¼€äº†)
-@buf:æŠŠè¯»çš„æ•°æ®æ”¾å…¥è¿™ä¸ªbufä¸­
-@nbytes:å¸Œæœ›è¯»å–æ•°æ®çš„é•¿åº¦
+@fd :¶ÁÄÄ¸öÎÄ¼ş(ÒÑ¾­´ò¿ªÁË)
+@buf:°Ñ¶ÁµÄÊı¾İ·ÅÈëÕâ¸öbufÖĞ
+@nbytes:Ï£Íû¶ÁÈ¡Êı¾İµÄ³¤¶È
 
 function:Data is read from an open file with the @read function.
 Returns: number of bytes read, 0 if end of file,-1 on error
 
-1 å‚æ•°countæ˜¯è¯·æ±‚è¯»å–çš„å­—èŠ‚æ•°ï¼Œè¯»ä¸Šæ¥çš„æ•°æ®ä¿å­˜åœ¨ç¼“å†²åŒºbufä¸­ï¼ŒåŒæ—¶æ–‡ä»¶çš„å½“å‰è¯»
-  å†™ä½ç½®å‘åç§»ã€‚
-2 è¯»å¸¸è§„æ–‡ä»¶æ—¶ï¼Œåœ¨è¯»åˆ°countä¸ªå­—èŠ‚ä¹‹å‰å·²åˆ°è¾¾æ–‡ä»¶æœ«å°¾ã€‚ä¾‹å¦‚ï¼Œè·æ–‡ä»¶æœ«å°¾è¿˜æœ‰30ä¸ªå­—
-  èŠ‚è€Œè¯·æ±‚è¯»100ä¸ªå­—èŠ‚ï¼Œåˆ™readè¿”å›30ï¼Œä¸‹æ¬¡readå°†è¿”å›0ã€‚
-3 é¢å‘æ–‡æœ¬çš„å¥—æ¥å­—è¯»æ“ä½œä¸­,ä¸€æ¬¡readä¸èƒ½ä¿è¯è¯»å…¥å®Œæ•´çš„ä¸€è¡Œæˆ–æ•´è¡Œ,è¯»å®Œæ•´çš„ä¸€è¡Œå¯
-  èƒ½éœ€è¦å¯¹æ­¤è°ƒç”¨read,å¹¶æ£€æŸ¥å…¶ä¸­æ˜¯å¦å‡ºç°äº†æ¢è¡Œç¬¦
+1 ²ÎÊıcountÊÇÇëÇó¶ÁÈ¡µÄ×Ö½ÚÊı£¬¶ÁÉÏÀ´µÄÊı¾İ±£´æÔÚ»º³åÇøbufÖĞ£¬Í¬Ê±ÎÄ¼şµÄµ±Ç°¶Á
+  Ğ´Î»ÖÃÏòºóÒÆ¡£
+2 ¶Á³£¹æÎÄ¼şÊ±£¬ÔÚ¶Áµ½count¸ö×Ö½ÚÖ®Ç°ÒÑµ½´ïÎÄ¼şÄ©Î²¡£ÀıÈç£¬¾àÎÄ¼şÄ©Î²»¹ÓĞ30¸ö×Ö
+  ½Ú¶øÇëÇó¶Á100¸ö×Ö½Ú£¬Ôòread·µ»Ø30£¬ÏÂ´Îread½«·µ»Ø0¡£
+3 ÃæÏòÎÄ±¾µÄÌ×½Ó×Ö¶Á²Ù×÷ÖĞ,Ò»´Îread²»ÄÜ±£Ö¤¶ÁÈëÍêÕûµÄÒ»ĞĞ»òÕûĞĞ,¶ÁÍêÕûµÄÒ»ĞĞ¿É
+  ÄÜĞèÒª¶Ô´Ëµ÷ÓÃread,²¢¼ì²éÆäÖĞÊÇ·ñ³öÏÖÁË»»ĞĞ·û
 ******************************************************************************/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
 /******************************************************************************
-@fd    : å†™å“ªä¸ªæ–‡ä»¶(å·²ç»æ‰“å¼€äº†)
-@buf   : bufä¸­æ˜¯è¦å†™çš„æ•°æ®
-@nbytes: å†™å…¥æ•°æ®çš„é•¿åº¦
+@fd    : Ğ´ÄÄ¸öÎÄ¼ş(ÒÑ¾­´ò¿ªÁË)
+@buf   : bufÖĞÊÇÒªĞ´µÄÊı¾İ
+@nbytes: Ğ´ÈëÊı¾İµÄ³¤¶È
 funtion: Data is written to an open file with the @write function.
 Returns: number of bytes written if OK,-1 on error
 
@@ -167,28 +167,28 @@ ssize_t write(int fd,const void *buf,size_t nbytes);
 
 #include <unistd.h>
 /******************************************************************************
-@fd    ï¼šè¦è¯»å–æ•°æ®çš„æ–‡ä»¶æè¿°ç¬¦
-@buf   ï¼šæ•°æ®ç¼“å­˜åŒºæŒ‡é’ˆï¼Œå­˜æ”¾è¯»å–å‡ºæ¥çš„æ•°æ®
-@count ï¼šè¯»å–æ•°æ®çš„å­—èŠ‚æ•°
-@offsetï¼šè¯»å–çš„èµ·å§‹åœ°å€çš„åç§»é‡ï¼Œè¯»å–åœ°å€=æ–‡ä»¶å¼€å§‹+offsetã€‚
-è¿”å›å€¼ï¼šæˆåŠŸï¼Œè¿”å›æˆåŠŸè¯»å–æ•°æ®çš„å­—èŠ‚æ•°ï¼›å¤±è´¥ï¼Œè¿”å›-1ï¼›
+@fd    £ºÒª¶ÁÈ¡Êı¾İµÄÎÄ¼şÃèÊö·û
+@buf   £ºÊı¾İ»º´æÇøÖ¸Õë£¬´æ·Å¶ÁÈ¡³öÀ´µÄÊı¾İ
+@count £º¶ÁÈ¡Êı¾İµÄ×Ö½ÚÊı
+@offset£º¶ÁÈ¡µÄÆğÊ¼µØÖ·µÄÆ«ÒÆÁ¿£¬¶ÁÈ¡µØÖ·=ÎÄ¼ş¿ªÊ¼+offset¡£
+·µ»ØÖµ£º³É¹¦£¬·µ»Ø³É¹¦¶ÁÈ¡Êı¾İµÄ×Ö½ÚÊı£»Ê§°Ü£¬·µ»Ø-1£»
 
-1 æ‰§è¡Œåï¼Œæ–‡ä»¶åç§»æŒ‡é’ˆä¸å˜
-2 ç›¸å½“äºé¡ºåºè°ƒç”¨lseekå’Œread,ä½†å…¶å®šä½å’Œè¯»å–æ“ä½œæ˜¯åŸå­çš„ã€‚lseekå’Œreadä¹‹é—´å¦‚æœè¢«ä¸­æ–­
-  å¯èƒ½é€ æˆé—®é¢˜ã€‚
+1 Ö´ĞĞºó£¬ÎÄ¼şÆ«ÒÆÖ¸Õë²»±ä
+2 Ïàµ±ÓÚË³Ğòµ÷ÓÃlseekºÍread,µ«Æä¶¨Î»ºÍ¶ÁÈ¡²Ù×÷ÊÇÔ­×ÓµÄ¡£lseekºÍreadÖ®¼äÈç¹û±»ÖĞ¶Ï
+  ¿ÉÄÜÔì³ÉÎÊÌâ¡£
 ******************************************************************************/
 ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
 
 /*******************************************************************************
-@fd    ï¼šè¦å†™å…¥æ•°æ®çš„æ–‡ä»¶æè¿°ç¬¦
-@buf   ï¼šæ•°æ®ç¼“å­˜åŒºæŒ‡é’ˆï¼Œå­˜æ”¾è¦å†™å…¥æ–‡ä»¶ä¸­çš„æ•°æ®
-@count ï¼šå†™å…¥æ–‡ä»¶ä¸­çš„æ•°æ®çš„å­—èŠ‚æ•°
-@offsetï¼šå†™å…¥åœ°å€=æ–‡ä»¶å¼€å§‹+offset
-è¿”å›å€¼ ï¼šæˆåŠŸï¼Œè¿”å›å†™å…¥åˆ°æ–‡ä»¶ä¸­çš„å­—èŠ‚æ•°ï¼›å¤±è´¥ï¼Œè¿”å›-1ï¼›
+@fd    £ºÒªĞ´ÈëÊı¾İµÄÎÄ¼şÃèÊö·û
+@buf   £ºÊı¾İ»º´æÇøÖ¸Õë£¬´æ·ÅÒªĞ´ÈëÎÄ¼şÖĞµÄÊı¾İ
+@count £ºĞ´ÈëÎÄ¼şÖĞµÄÊı¾İµÄ×Ö½ÚÊı
+@offset£ºĞ´ÈëµØÖ·=ÎÄ¼ş¿ªÊ¼+offset
+·µ»ØÖµ £º³É¹¦£¬·µ»ØĞ´Èëµ½ÎÄ¼şÖĞµÄ×Ö½ÚÊı£»Ê§°Ü£¬·µ»Ø-1£»
 
-1 æ‰§è¡Œåï¼Œæ–‡ä»¶åç§»æŒ‡é’ˆä¸å˜
-2 ç›¸å½“äºé¡ºåºè°ƒç”¨lseekå’Œwrite,ä½†å…¶å®šä½å’Œè¯»å–æ“ä½œæ˜¯åŸå­çš„ã€‚lseekå’Œreadä¹‹é—´å¦‚æœè¢«
-  ä¸­æ–­å¯èƒ½é€ æˆé—®é¢˜ã€‚
+1 Ö´ĞĞºó£¬ÎÄ¼şÆ«ÒÆÖ¸Õë²»±ä
+2 Ïàµ±ÓÚË³Ğòµ÷ÓÃlseekºÍwrite,µ«Æä¶¨Î»ºÍ¶ÁÈ¡²Ù×÷ÊÇÔ­×ÓµÄ¡£lseekºÍreadÖ®¼äÈç¹û±»
+  ÖĞ¶Ï¿ÉÄÜÔì³ÉÎÊÌâ¡£
 ******************************************************************************/
 ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
@@ -196,22 +196,22 @@ ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
 #include <unistd.h>
 /*******************************************************************************
- è¿”å›å€¼:æˆåŠŸè¿”å›æ–°çš„æè¿°ç¬¦,å¤±è´¥è¿”å›-1
- åŠŸèƒ½:å¤åˆ¶æ–‡ä»¶æè¿°ç¬¦@fd
+ ·µ»ØÖµ:³É¹¦·µ»ØĞÂµÄÃèÊö·û,Ê§°Ü·µ»Ø-1
+ ¹¦ÄÜ:¸´ÖÆÎÄ¼şÃèÊö·û@fd
 
- 1 @dupè¿”å›çš„æ–°æè¿°ç¬¦ä¸€å®šæ˜¯å½“å‰å¯ç”¨æ–‡ä»¶æè¿°ç¬¦ä¸­çš„æœ€å°æ•°å€¼
- 2 æ–°æè¿°ç¬¦ä¸@fdå…±äº«ä¸€ä¸ªæ–‡ä»¶è¡¨é¡¹(file table entry)
- 3 æ–°æè¿°ç¬¦çš„æ‰§è¡Œæ—¶å…³é—­(close-on-exec)æ ‡å¿—æ€»æ˜¯ç”±@dupå‡½æ•°æ¸…é™¤
+ 1 @dup·µ»ØµÄĞÂÃèÊö·ûÒ»¶¨ÊÇµ±Ç°¿ÉÓÃÎÄ¼şÃèÊö·ûÖĞµÄ×îĞ¡ÊıÖµ
+ 2 ĞÂÃèÊö·ûÓë@fd¹²ÏíÒ»¸öÎÄ¼ş±íÏî(file table entry)
+ 3 ĞÂÃèÊö·ûµÄÖ´ĞĞÊ±¹Ø±Õ(close-on-exec)±êÖ¾×ÜÊÇÓÉ@dupº¯ÊıÇå³ı
 ******************************************************************************/
 int dup(int fd);
 
 /*******************************************************************************
- è¿”å›å€¼:æˆåŠŸè¿”å›æ–°çš„æè¿°ç¬¦,å¤±è´¥è¿”å›-1
- åŠŸèƒ½:å¤åˆ¶æ–‡ä»¶æè¿°ç¬¦@fd,@fd2æ˜¯æŒ‡å®šçš„æ–°æè¿°ç¬¦
+ ·µ»ØÖµ:³É¹¦·µ»ØĞÂµÄÃèÊö·û,Ê§°Ü·µ»Ø-1
+ ¹¦ÄÜ:¸´ÖÆÎÄ¼şÃèÊö·û@fd,@fd2ÊÇÖ¸¶¨µÄĞÂÃèÊö·û
 
- 1 å¦‚æœ@fd2å·²ç»æ‰“å¼€ï¼Œåˆ™å…ˆå…³é—­ã€‚
- 2 å¦‚æœ@fd==@fd2ï¼Œä¸å…³é—­@fd2ï¼Œç›´æ¥è¿”å›@fd2
- 3 æ–°æè¿°ç¬¦ä¸@fdå…±äº«ä¸€ä¸ªæ–‡ä»¶è¡¨é¡¹(file table entry)
+ 1 Èç¹û@fd2ÒÑ¾­´ò¿ª£¬ÔòÏÈ¹Ø±Õ¡£
+ 2 Èç¹û@fd==@fd2£¬²»¹Ø±Õ@fd2£¬Ö±½Ó·µ»Ø@fd2
+ 3 ĞÂÃèÊö·ûÓë@fd¹²ÏíÒ»¸öÎÄ¼ş±íÏî(file table entry)
 ******************************************************************************/
 int dup2(int fd,int fd2);
 /*
@@ -288,14 +288,14 @@ O_RSYNC             synchronize reads and writes
 O_FSYNC             wait for writes to complete (FreeBSD and Mac OS X only)
 O_ASYNC             asynchronous I/O (FreeBSD and Mac OS X only)
 
-Unfortunately, the five access-mode flagsâ€”O_RDONLY, O_WRONLY,O_RDWR, O_EXEC, 
-and O_SEARCH â€”are not separate bits that can be tested. (As we mentioned 
+Unfortunately, the five access-mode flags¡ªO_RDONLY, O_WRONLY,O_RDWR, O_EXEC, 
+and O_SEARCH ¡ªare not separate bits that can be tested. (As we mentioned 
 earlier, the first three often have the values 0, 1,and 2, respectively, for 
 historical reasons. Also, these five values are mutually exclusive; a file can 
 have only one of them enabled.) Therefore, we must first use the O_ACCMODE mask 
 to obtain the access-mode bits and then compare the result against any of the 
 five values.*/
-#define	O_ACCMODE /*<0003>ï¼šè¯»å†™æ–‡ä»¶æ“ä½œæ—¶ï¼Œç”¨äºå–å‡ºflagçš„ä½2ä½*/
+#define	O_ACCMODE /*<0003>£º¶ÁĞ´ÎÄ¼ş²Ù×÷Ê±£¬ÓÃÓÚÈ¡³öflagµÄµÍ2Î»*/
 
 #define F_SETFL /*Set the file status flags to the value of the third argument 
 (taken as an integer). The only flags that can be changed are O_APPEND, O_NONBLOCK,
@@ -326,7 +326,7 @@ final command returns a positive process ID or a negative process group ID.
 int fcntl(int fd,int cmd,... /* int arg */ );
 
 /******************************************************************************\
-                                 è®°å½•é”
+                                 ¼ÇÂ¼Ëø
 \******************************************************************************/
 
 #define F_RDLCK /*a shared read lock*/
@@ -356,6 +356,17 @@ int fcntl(int fd,int cmd,... /* int arg */ );
  of the file and specify a length (l_len) of 0.(There are several ways to specify
  the beginning of the file, but most applications specify @l_start as 0 and
  @l_whence as SEEK_SET.)
+
+ ---->Ê¹ÓÃ¹æÔò
+  We previously mentioned two types of locks: a shared read lock (l_type of
+F_RDLCK) and an exclusive write lock (F_WRLCK). The basic rule is that any number 
+of processes can have a shared read lock on a given byte, but only one process 
+can have an exclusive write lock on a given byte. Furthermore, if there are one 
+or more read locks on a byte, there can't be any write locks on that byte; if 
+there is an exclusive write lock on a byte, there can¡¯t be any read locks on 
+that byte. 
+
+---->½¨ÒéĞÔËøºÍÇ¿ÖÆĞÔËø Advisory versus Mandatory Locking
  ******************************************************************************/
 struct flock 
 {
@@ -389,7 +400,7 @@ lock becomes available or when interrupted by a signal.*/
 int fcntl(int fd,int cmd,struct flock *flockptr);
 
 /*******************************************************************************
-é”çš„ç»§æ‰¿ä¸é‡Šæ”¾
+ËøµÄ¼Ì³ĞÓëÊÍ·Å
 1 when a process terminates, all its locks are released. whenever a descriptor is 
   closed, any locks on the file referenced by that descriptor for that process are 
   released. This means that if we make the calls
@@ -430,21 +441,21 @@ struct timeval
 };
 
 /*
-@maxfdp1: æè¿°ç¬¦ä¸ªæ•°+1
-@readset: è¯»æè¿°ç¬¦é›†ï¼Œå¯ä»¥ä¸ºNULL
-@readset: å†™æè¿°ç¬¦é›†ï¼Œå¯ä»¥ä¸ºNULL
-@readset: å¼‚å¸¸æè¿°ç¬¦é›†ï¼Œå¯ä»¥ä¸ºNULL
-@timeout: ç­‰å¾…æ—¶é—´
+@maxfdp1: ÃèÊö·û¸öÊı+1
+@readset: ¶ÁÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
+@readset: Ğ´ÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
+@readset: Òì³£ÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
+@timeout: µÈ´ıÊ±¼ä
 function: 
-å‘Šè¯‰å†…æ ¸
-1 å…³å¿ƒçš„æè¿°ç¬¦
-2 å…³å¿ƒæè¿°ç¬¦çš„å“ªäº›çŠ¶æ€ï¼Œæ¯”å¦‚æ˜¯å¦å¯è¯»ã€æ˜¯å¦å¯å†™ã€æè¿°ç¬¦çš„å¼‚å¸¸çŠ¶æ€
-3 ç­‰å¾…æ—¶é—´
-ä»selectè¿”å›å†…æ ¸å‘Šè¯‰æˆ‘ä»¬
-1 å·²ç»å‡†å¤‡å¥½çš„æè¿°ç¬¦æ•°é‡
-2 å¯¹äºè¯»ã€å†™æˆ–å¼‚å¸¸è¿™ä¸‰ä¸ªçŠ¶æ€ä¸­çš„æ¯ä¸€ä¸ªï¼Œå“ªäº›æè¿°ç¬¦å·²ç»å‡†å¤‡å¥½ã€‚
-  ä½¿ç”¨è¿™äº›è¿”å›ä¿¡æ¯å°±å¯ä»¥è°ƒç”¨ç›¸åº”çš„I/Oå‡½æ•°ï¼Œå¹¶ç¡®åˆ‡çŸ¥é“å‡½æ•°ä¸ä¼šé˜»å¡
-Returns: positive count of ready descriptors, 0 on timeout, â€“1 on error
+¸æËßÄÚºË
+1 ¹ØĞÄµÄÃèÊö·û
+2 ¹ØĞÄÃèÊö·ûµÄÄÄĞ©×´Ì¬£¬±ÈÈçÊÇ·ñ¿É¶Á¡¢ÊÇ·ñ¿ÉĞ´¡¢ÃèÊö·ûµÄÒì³£×´Ì¬
+3 µÈ´ıÊ±¼ä
+´Óselect·µ»ØÄÚºË¸æËßÎÒÃÇ
+1 ÒÑ¾­×¼±¸ºÃµÄÃèÊö·ûÊıÁ¿
+2 ¶ÔÓÚ¶Á¡¢Ğ´»òÒì³£ÕâÈı¸ö×´Ì¬ÖĞµÄÃ¿Ò»¸ö£¬ÄÄĞ©ÃèÊö·ûÒÑ¾­×¼±¸ºÃ¡£
+  Ê¹ÓÃÕâĞ©·µ»ØĞÅÏ¢¾Í¿ÉÒÔµ÷ÓÃÏàÓ¦µÄI/Oº¯Êı£¬²¢È·ÇĞÖªµÀº¯Êı²»»á×èÈû
+Returns: positive count of ready descriptors, 0 on timeout, ¨C1 on error
 Ther eare three possible return values from @select.
 1 return -1 means that an error occurred. This can happen, for example, if a signal is caught before any of the specified descriptors are ready.
   In this case, none of the descriptor sets will be modified.
@@ -453,17 +464,17 @@ Ther eare three possible return values from @select.
 3 A positive return value specifies the number of descriptors that are ready.This value is the sum of the descriptors ready in all three sets, so 
   if the same descriptor is ready to be read and written, it will be counted twice in the return value. The only bits left on in the three descriptor  
   sets are the bits corresponding to the descriptors that are ready.
----->ç­‰å¾…çš„æ—¶é—´
-1 æ°¸è¿œç­‰å¾…  timeout == NULL
-2 ç­‰å¾…æŒ‡å®šçš„æ—¶é—´ å…·ä½“çš„æ—¶é—´ç”±timeoutæŒ‡å®š
-3 ä¸ç­‰å¾…  timeoutä¸­çš„æ—¶é—´ä¸º0
+---->µÈ´ıµÄÊ±¼ä
+1 ÓÀÔ¶µÈ´ı  timeout == NULL
+2 µÈ´ıÖ¸¶¨µÄÊ±¼ä ¾ßÌåµÄÊ±¼äÓÉtimeoutÖ¸¶¨
+3 ²»µÈ´ı  timeoutÖĞµÄÊ±¼äÎª0
 The wait in the first two scenarios is normally interrupted if the process catches a signal and returns from the signal handler.
----->å‡†å¤‡å¥½
-1 å¯¹äºè¯»æè¿°ç¬¦é›†ä¸­çš„ä¸€ä¸ªæè¿°ç¬¦çš„readæ“ä½œå°†ä¸ä¼šé˜»å¡ï¼Œåˆ™æ­¤æè¿°ç¬¦æ˜¯å‡†å¤‡å¥½çš„
-2 å¯¹äºå†™æè¿°ç¬¦é›†ä¸­çš„ä¸€ä¸ªæè¿°ç¬¦çš„writeæ“ä½œå°†ä¸ä¼šé˜»å¡ï¼Œåˆ™æ­¤æè¿°ç¬¦æ˜¯å‡†å¤‡å¥½çš„
-3 è‹¥å¼‚å¸¸æè¿°ç¬¦é›†ä¸­çš„ä¸€ä¸ªæè¿°ç¬¦æœ‰ä¸€ä¸ªæœªå†³å¼‚å¸¸çŠ¶æ€ï¼Œåˆ™æ­¤æè¿°ç¬¦æ˜¯å‡†å¤‡å¥½çš„ã€‚å¼‚å¸¸çŠ¶æ€åŒ…æ‹¬
-  a åœ¨ç½‘ç»œè¿æ¥ä¸Šåˆ°è¾¾çš„å¸¦å¤–æ•°æ®
-  b å¤„äºæ•°æ®åŒ…æ¨¡å¼çš„ä¼ªç»ˆç«¯ä¸Šå‘ç”Ÿäº†æŸäº›çŠ¶æ€ã€‚
+---->×¼±¸ºÃ
+1 ¶ÔÓÚ¶ÁÃèÊö·û¼¯ÖĞµÄÒ»¸öÃèÊö·ûµÄread²Ù×÷½«²»»á×èÈû£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ
+2 ¶ÔÓÚĞ´ÃèÊö·û¼¯ÖĞµÄÒ»¸öÃèÊö·ûµÄwrite²Ù×÷½«²»»á×èÈû£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ
+3 ÈôÒì³£ÃèÊö·û¼¯ÖĞµÄÒ»¸öÃèÊö·ûÓĞÒ»¸öÎ´¾öÒì³£×´Ì¬£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ¡£Òì³£×´Ì¬°üÀ¨
+  a ÔÚÍøÂçÁ¬½ÓÉÏµ½´ïµÄ´øÍâÊı¾İ
+  b ´¦ÓÚÊı¾İ°üÄ£Ê½µÄÎ±ÖÕ¶ËÉÏ·¢ÉúÁËÄ³Ğ©×´Ì¬¡£
 4 File descriptors for regular files always return ready for reading, writing, and exception conditions.
 */
 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout);
@@ -476,7 +487,7 @@ void FD_SET(int fd,fd_set *fdset);
 void FD_ZERO(fd_set *fdset); 
 /*
 After declaring a descriptor set, we must zerothe set usingFD_ZERO.Wethen set
-bits in the set for each descriptor that weâ€™reinterested in, as in
+bits in the set for each descriptor that we¡¯reinterested in, as in
 fd_set  rset;
 int  fd;
 FD_ZERO(&rset);
@@ -512,18 +523,18 @@ int pselect(int maxfdp1,fd_set *restrict readfds,fd_set *restrict writefds,fd_se
 
 
 #include <poll.h>
-#define POLLIN       /*æ™®é€šæˆ–ä¼˜å…ˆçº§å¸¦æ•°æ®å¯è¯»*/
-#define POLLRDNORM   /*æ™®é€šæ•°æ®å¯è¯»*/
-#define POLLRDBAND   /*ä¼˜å…ˆçº§å¸¦æ•°æ®å¯è¯»*/
-#define POLLPRI      /*é«˜ä¼˜å…ˆçº§æ•°æ®å¯è¯»*/
-#define POLLOUT      /*æ™®é€šæ•°æ®å¯å†™*/
-#define POLLWRNORM   /*æ™®é€šæ•°æ®å¯å†™*/
-#define POLLWRBAND   /*ä¼˜å…ˆçº§å¸¦æ•°æ®å¯å†™*/
-#define POLLERR      /*å‘ç”Ÿé”™è¯¯*/
-#define POLLHUP      /*å‘ç”ŸæŒ‚èµ·*/
-#define POLLNVAL     /*æè¿°å­—ä¸æ˜¯ä¸€ä¸ªæ‰“å¼€çš„æ–‡ä»¶*/
+#define POLLIN       /*ÆÕÍ¨»òÓÅÏÈ¼¶´øÊı¾İ¿É¶Á*/
+#define POLLRDNORM   /*ÆÕÍ¨Êı¾İ¿É¶Á*/
+#define POLLRDBAND   /*ÓÅÏÈ¼¶´øÊı¾İ¿É¶Á*/
+#define POLLPRI      /*¸ßÓÅÏÈ¼¶Êı¾İ¿É¶Á*/
+#define POLLOUT      /*ÆÕÍ¨Êı¾İ¿ÉĞ´*/
+#define POLLWRNORM   /*ÆÕÍ¨Êı¾İ¿ÉĞ´*/
+#define POLLWRBAND   /*ÓÅÏÈ¼¶´øÊı¾İ¿ÉĞ´*/
+#define POLLERR      /*·¢Éú´íÎó*/
+#define POLLHUP      /*·¢Éú¹ÒÆğ*/
+#define POLLNVAL     /*ÃèÊö×Ö²»ÊÇÒ»¸ö´ò¿ªµÄÎÄ¼ş*/
 
-#define INFTIM       /*æ˜¯ä¸€ä¸ªè´Ÿå€¼ pollçš„ç¬¬ä¸‰ä¸ªå‚æ•°,è¡¨ç¤ºæ°¸è¿œç­‰å¾…*/
+#define INFTIM       /*ÊÇÒ»¸ö¸ºÖµ pollµÄµÚÈı¸ö²ÎÊı,±íÊ¾ÓÀÔ¶µÈ´ı*/
 
 struct pollfd 
 {
@@ -533,9 +544,9 @@ struct pollfd
 };
 
 /*
-@fdarray: æ¯ä¸ªæ•°ç»„å…ƒç´ æŒ‡å®šä¸€ä¸ªæè¿°ç¬¦ç¼–å·ä»¥åŠå¯¹å…¶æ‰€å…³å¿ƒçš„çŠ¶æ€ã€‚
-@nfds:æ•°ç»„å…ƒç´ çš„ä¸ªæ•°
-@timeout: INFTIMæ°¸è¿œç­‰å¾… 0ä¸ç­‰å¾… å¤§äº0ç­‰å¾…æŒ‡å®šçš„æ—¶é—´
+@fdarray: Ã¿¸öÊı×éÔªËØÖ¸¶¨Ò»¸öÃèÊö·û±àºÅÒÔ¼°¶ÔÆäËù¹ØĞÄµÄ×´Ì¬¡£
+@nfds:Êı×éÔªËØµÄ¸öÊı
+@timeout: INFTIMÓÀÔ¶µÈ´ı 0²»µÈ´ı ´óÓÚ0µÈ´ıÖ¸¶¨µÄÊ±¼ä
 Returns: count of ready descriptors, 0 on timeout,-1 on error*/
 int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 
@@ -545,24 +556,24 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 #define PROT_WRITE  /*Region can be written.*/
 #define PROT_EXEC   /*Region can be executed.*/
 #define PROT_NONE   /*Region cannot be accessed.*/
-#define MAP_FIXED   /*è¿”å›å€¼å¿…é¡»ç­‰äº@addr*/
-#define MAP_SHARED	/*å­˜å‚¨æ“ä½œç›¸å½“äºå¯¹è¯¥æ–‡ä»¶çš„write.MAP_SHAREDå’ŒMAP_PRIVATEå¿…é¡»æŒ‡å®šä¸€ä¸ªï¼Œä½†ä¸èƒ½åŒæ—¶æŒ‡å®šã€‚*/
-#define MAP_PRIVATE /*å¯¹æ˜ å°„åŒºçš„å­˜å‚¨æ“ä½œå¯¼è‡´åˆ›å»ºè¯¥æ˜ å°„æ–‡ä»¶çš„ä¸€ä¸ªç§æœ‰å‰¯æœ¬ã€‚*/
+#define MAP_FIXED   /*·µ»ØÖµ±ØĞëµÈÓÚ@addr*/
+#define MAP_SHARED	/*´æ´¢²Ù×÷Ïàµ±ÓÚ¶Ô¸ÃÎÄ¼şµÄwrite.MAP_SHAREDºÍMAP_PRIVATE±ØĞëÖ¸¶¨Ò»¸ö£¬µ«²»ÄÜÍ¬Ê±Ö¸¶¨¡£*/
+#define MAP_PRIVATE /*¶ÔÓ³ÉäÇøµÄ´æ´¢²Ù×÷µ¼ÖÂ´´½¨¸ÃÓ³ÉäÎÄ¼şµÄÒ»¸öË½ÓĞ¸±±¾¡£*/
 
 /*
-@addr:æ˜ å°„å­˜å‚¨åŒºçš„èµ·å§‹åœ°å€,0è¡¨ç¤ºè®©ç³»ç»Ÿè‡ªåŠ¨é€‰æ‹©ã€‚é¡µè¾¹ç•Œå¯¹é½
-@len: æ˜ å°„çš„å­—èŠ‚æ•°
-@prot:æ˜ å°„åŒºçš„ä¿æŠ¤è¦æ±‚(æŒ‰ä½æˆ–)
+@addr:Ó³Éä´æ´¢ÇøµÄÆğÊ¼µØÖ·,0±íÊ¾ÈÃÏµÍ³×Ô¶¯Ñ¡Ôñ¡£Ò³±ß½ç¶ÔÆë
+@len: Ó³ÉäµÄ×Ö½ÚÊı
+@prot:Ó³ÉäÇøµÄ±£»¤ÒªÇó(°´Î»»ò)
       PROT_READ Region can be read.
       PROT_WRITE Region can be written.
       PROT_EXEC Region can be executed.
       PROT_NONE Region cannot be accessed.
-@flag:æ˜ å°„å­˜å‚¨åŒºçš„å±æ€§
-      MAP_FIXED   è¿”å›å€¼å¿…é¡»ç­‰äº@addr
-      MAP_SHARED  å­˜å‚¨æ“ä½œç›¸å½“äºå¯¹è¯¥æ–‡ä»¶çš„write.MAP_SHAREDå’ŒMAP_PRIVATEå¿…é¡»æŒ‡å®šä¸€ä¸ªï¼Œä½†ä¸èƒ½åŒæ—¶æŒ‡å®šã€‚
-      MAP_PRIVATE å¯¹æ˜ å°„åŒºçš„å­˜å‚¨æ“ä½œå¯¼è‡´åˆ›å»ºè¯¥æ˜ å°„æ–‡ä»¶çš„ä¸€ä¸ªç§æœ‰å‰¯æœ¬ã€‚
-@fd:  è¢«æ˜ å°„æ–‡ä»¶çš„æè¿°ç¬¦,æ˜ å°„æ–‡ä»¶å‰è¦æ‰“å¼€è¯¥æ–‡ä»¶
-@off: è¦æ˜ å°„å­—èŠ‚åœ¨æ–‡ä»¶ä¸­çš„èµ·å§‹åç§»é‡
+@flag:Ó³Éä´æ´¢ÇøµÄÊôĞÔ
+      MAP_FIXED   ·µ»ØÖµ±ØĞëµÈÓÚ@addr
+      MAP_SHARED  ´æ´¢²Ù×÷Ïàµ±ÓÚ¶Ô¸ÃÎÄ¼şµÄwrite.MAP_SHAREDºÍMAP_PRIVATE±ØĞëÖ¸¶¨Ò»¸ö£¬µ«²»ÄÜÍ¬Ê±Ö¸¶¨¡£
+      MAP_PRIVATE ¶ÔÓ³ÉäÇøµÄ´æ´¢²Ù×÷µ¼ÖÂ´´½¨¸ÃÓ³ÉäÎÄ¼şµÄÒ»¸öË½ÓĞ¸±±¾¡£
+@fd:  ±»Ó³ÉäÎÄ¼şµÄÃèÊö·û,Ó³ÉäÎÄ¼şÇ°Òª´ò¿ª¸ÃÎÄ¼ş
+@off: ÒªÓ³Éä×Ö½ÚÔÚÎÄ¼şÖĞµÄÆğÊ¼Æ«ÒÆÁ¿
 Returns: starting address of mapped region if OK,MAP_FAILED on error*/
 void *mmap(void *addr,size_t len,int prot,int flag,int fd,off_t off);
 
@@ -580,26 +591,26 @@ int mprotect(void *addr,size_t len,int prot);
 
 #include <sys/mman.h>
 /*
-flags: MS_ASYNC       MS_ASYNCå’ŒMS_SYNCå¿…é¡»æŒ‡å®šä¸€ä¸ª
-       MS_SYNC        ç­‰å¾…å†²æ´—å®Œæˆ
+flags: MS_ASYNC       MS_ASYNCºÍMS_SYNC±ØĞëÖ¸¶¨Ò»¸ö
+       MS_SYNC        µÈ´ı³åÏ´Íê³É
        MS_INVALIDATE
-function:ä¿®æ”¹å†²æ´—åˆ°æ–‡ä»¶ä¸­ã€‚
+function:ĞŞ¸Ä³åÏ´µ½ÎÄ¼şÖĞ¡£
 Returns: 0 if OK,-1 on error*/
 int msync(void *addr,size_t len,int flags);
 
 
 #include <sys/mman.h>
 /*
-function:è§£é™¤æ˜ å°„
+function:½â³ıÓ³Éä
 Returns: 0 if OK,-1 on error
 
 Amemory-mapped region is automatically unmapped when the process terminates
 or  we  can  unmap  a  region  directly  by  calling  themunmapfunction.  Closing the  file
 descriptor used when we mapped the region does not unmap the region.
-Themunmapfunction  does  not  affect  the  object  that  was  mappedâ€”that  is,  the  call  to
+Themunmapfunction  does  not  affect  the  object  that  was  mapped¡ªthat  is,  the  call  to
 munmapdoes not cause the contents of the mapped region to be written to the disk file.
 The updating of the disk file for aMAP_SHAREDregion happens automatically by the
-kernelâ€™s virtual memory algorithm sometime after we storeinto the memory-mapped
+kernel¡¯s virtual memory algorithm sometime after we storeinto the memory-mapped
 region.  Modifications to  memory  in  aMAP_PRIVATEregion  arediscarded  when  the
 region is unmapped.*/
 int munmap(void *addr,size_t len);
@@ -607,11 +618,11 @@ int munmap(void *addr,size_t len);
 
 
 include <sys/socket.h>
-	/*return: number of bytes read or written if OK, â€“1 on error */
+	/*return: number of bytes read or written if OK, ¨C1 on error */
  
 ssize_t recv(int sockfd, void *buff, size_t nbytes, int flags);
  
-/*return: number of bytes read or written if OK, â€“1 on error */
+/*return: number of bytes read or written if OK, ¨C1 on error */
 ssize_t send(int sockfd, const void *buff, size_t nbytes, int flags);
  
 
@@ -621,11 +632,11 @@ struct iovec {
   size_t  iov_len;    /* size of buffer */
 };
 
-/* return: number of bytes read or written, â€“1 on error */ 
+/* return: number of bytes read or written, ¨C1 on error */ 
 ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 
-/*@iov:ç»“æ„ä½“æ•°ç»„æŒ‡é’ˆ
-  return: number of bytes read or written, â€“1 on error */
+/*@iov:½á¹¹ÌåÊı×éÖ¸Õë
+  return: number of bytes read or written, ¨C1 on error */
 ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
  
  
@@ -640,10 +651,10 @@ socklen_t	  msg_controllen;  /* length of ancillary data */
 int 		  msg_flags;	   /* flags returned by recvmsg() */
 };
 
-  /*Both return: number of bytes read or written if OK, â€“1 on error */
+  /*Both return: number of bytes read or written if OK, ¨C1 on error */
  ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags);
 
-/*return: number of bytes read or written if OK, â€“1 on error */  
+/*return: number of bytes read or written if OK, ¨C1 on error */  
 ssize_t sendmsg(int sockfd, struct msghdr *msg, int flags);
  
 
@@ -653,3 +664,4 @@ ssize_t sendmsg(int sockfd, struct msghdr *msg, int flags);
 
 
 */
+
