@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include<stdio.h>
+#include<stdlib.h>
 
 
 int  globvar=6;/*external variable in initialized data */
@@ -14,7 +15,9 @@ int main(void)
     if (write(STDOUT_FILENO, buf, sizeof(buf)-1) != sizeof(buf)-1)
         printf("write error");
 	
-    printf("before fork\n"); /* we don’t flush stdout */
+    printf("before fork "); 
+
+    //printf("before fork \n");
 	
     if ((pid = fork()) < 0) 
 	{
@@ -33,35 +36,33 @@ int main(void)
     printf("pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,var);
     exit(0);
 }
-/*
+
+/*******************************************************************************
 write:不带缓冲
 printf:标准I/O库带缓冲，如果标准输出连接到终端设备，则它是行缓冲的，否则它是全缓冲的。
 
-When we run the program interactively, we get only a single copy of the first printf line, because the standard output buffer 
-is flushed by the newline. When we redirect standard output to a file, however, we get two copies of the printf line. In this 
-second case, the printf before the fork is called once, but the line remains in the buffer when fork is called. This buffer is 
-then copied into the child when the parent’s data space is copied to the child. Both the parent and the child now have a 
-standard I/O buffer with this line in it.The second printf,right before the exit,just appends its data to the existing buffer.
-When each process terminates, its copy of the buffer is finally flushed.
+printf("before fork\n");
+1 输出到终端时(此时printf是行缓冲的)
+  调用前已经刷新缓冲区，所以子进程不会输出"before fork"
+2 输出到文件(此时printf是全缓冲的)
+  虽然有\n，由于此时是全缓冲的，所以子进程也会输出。
+
+
+
 
 */
 
 /*
-yuanxin@xw /cygdrive/g/notes/myproject/linux/process
+printf("before fork\n");的输出情况
+
 $ ./a.exe
 a write to stdout
 before fork
 pid = 5928, glob = 7, var = 89
 pid = 6832, glob = 6, var = 88
 
-yuanxin@xw /cygdrive/g/notes/myproject/linux/process
-$ ./a.ext out.txt
--bash: ./a.ext: No such file or directory
 
-yuanxin@xw /cygdrive/g/notes/myproject/linux/process
 $ ./a.exe >out.txt
-
-yuanxin@xw /cygdrive/g/notes/myproject/linux/process
 $ cat out.txt
 a write to stdout
 before fork

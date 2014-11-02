@@ -1,8 +1,33 @@
 /*
+---->进程标识符
+每个进程都有一个非负整数表示的唯一进程ID。
+进程ID为0的进程:调度进程也被称为交换进程(swapper)
+进程ID为1的进程:init进程
+进程ID为2的进程:也守护进程(pagedaemon)。
 
-----> 僵死(zombie)进程
-If a process terminates, and that process has children in the zombie state, the parent process ID of all the zombie children 
-is set to 1 (the init process), which will inherit the children and clean them up (i.e., init will wait for them, which removes the zombie). 
+---->进程退出
+进程正常或异常终止时，内核就向其父进程发送SIGCHLD信号(异步信号，默认忽略)。
+
+---->竞争条件(race conditions) 
+a race condition occurs when multiple processes are trying to do something with 
+shared data and the final outcome depends on the order in which the processes run. 
+
+
+----> 僵死(zombie)进程 孤儿进程
+unix提供了一种机制可以保证只要父进程想知道子进程结束时的状态信息， 就可以得到。
+这种机制就是: 在每个进程退出的时候,内核释放该进程所有的资源,包括打开的文件,占
+用的内存等。 但是仍然为其保留一定的信息(包括进程号the process ID,退出状态the 
+termination status of the process,运行时间the amount of CPU time taken by the 
+process等)。直到父进程通过wait / waitpid来取时才释放。
+
+孤儿进程：一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为
+孤儿进程。孤儿进程将被init进程(进程号为1)所收养，并由init进程对它们完成状态收集
+工作。
+
+僵尸进程：一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或
+waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称
+之为僵死进程。
+
 
 ----> 进程组:
 进程组就是一些进程的组合,他们彼此之间或者存在父子、兄弟关系，或者在功能上有相近的联系。

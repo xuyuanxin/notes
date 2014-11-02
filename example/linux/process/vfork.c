@@ -1,31 +1,38 @@
 #include <unistd.h>
 #include<stdio.h>
+#include<stdlib.h>
 
-int  globvar=6;/*external variable in initialized data */
+int  globvar=6;
+
 int main(void)
 {
-    int  var; /* automatic variable on the stack */
+    int  var; 
     pid_t  pid;
     var = 88;
-    printf("before vfork\n"); /* we don¡¯t flush stdio */
+    printf("before vfork\n"); /* we don't flush stdio */
+	
     if ((pid = vfork()) < 0) 
 	{
         printf("vfork error");
     }
-	else if (pid == 0) 
-	{ /* child */
-        globvar++;  /* modify parent¡¯s variables */
+	else if (pid == 0)  /* child */
+	{
+        globvar++; 
         var++;
-        _exit(0);  /* child terminates */
+		
+		printf("child pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,var);
+        _exit(0);
     }
 	
-    /* parent continues here */
-    printf("pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,var);
+	sleep(2);  /* parent */
+    printf("parant pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,var);
     exit(0);
 }
 
 /*
 $ ./a.exe
 before vfork
-pid = 3176, glob = 6, var = 88
+child pid = 12116, glob = 7, var = 89
+parant pid = 8660, glob = 6, var = 88
+
 */

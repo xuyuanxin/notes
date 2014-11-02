@@ -134,3 +134,13 @@ cache, the sync, fsync,and fdatasync functions are provided.
 使一个磁盘文件与存储空间中的一个缓冲区相映射.当从缓冲区读取数据就相当于读取文件中的相应字节。将数据存入缓冲区则相应字节就自动地写入文件。
 这样就可以在不使用read和write的情况下执行I/O。
 fork之后子进程继承存储映射区
+
+---->Interruptibility of select and poll
+When the automatic restarting of interrupted system calls was introduced with
+4.2BSD(Section 10.5), the @select function was never restarted. This 
+characteristic continues with most systems even if the SA_RESTART option is 
+specified. But under SVR4, if SA_RESTART was specified, even @select and @poll 
+were automatically restarted. To prevent this from catching us when we port 
+software to systems derived from SVR4,we'll always use the signal_intr 
+function (Figure 10.19) if the signal could interrupt a call to @select or @poll
+

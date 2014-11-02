@@ -31,35 +31,39 @@ Returns: 0 if OK, nonzero on error
 int atexit(void (*func)(void));
 
 
-
-/*
-@status:不为0都表示异常退出,0表示正常退出
-function:用来终止进程(要先执行一些清除操作，然后将控制权交给内核)
-
-1 exit()函数在调用exit系统之前要检查文件的打开情况，把文件缓冲区的内容写回文件。
-2 exit函数会调用终止处理程序(通过atexit注册),然后关闭所有标准I/O流等。
-3 exit函数是在_exit函数之上的一个封装，其会调用_exit，并在调用之前先刷新流。
-*/
 #include<stdlib.h>
+
+/*******************************************************************************
+ @status:不为0都表示异常退出,0表示正常退出
+ function:用来终止进程(要先执行一些清除操作，然后将控制权交给内核)
+
+ 1 exit()函数在调用exit系统之前要检查文件的打开情况，把文件缓冲区的内容写回文件。
+ 2 exit函数会调用终止处理程序(通过atexit注册),然后关闭所有标准I/O流等。
+ 3 exit函数是在_exit函数之上的一个封装，其会调用_exit，并在调用之前先刷新流。
+ ******************************************************************************/
 void exit(int status);
 
 /*不清洗标准I/O流*/
 void _Exit(int status);
 
 
-/*
+/*******************************************************************************
 1 _exit()执行后立即返回给内核，而exit()要先执行一些清除操作，然后将控制权交给内核。
-2 调用_exit函数时，其会关闭进程所有的文件描述符，清理内存以及其他一些内核清理函数，但不会刷新流(stdin, stdout, stderr ...).    
-3 如有一些数据，认为已经写入了文件，实际上因为没有满足特定的条件，它们还只是保存在缓冲区内，这时用_exit()函数直接将进程关闭，缓冲区的数据就会丢失。*/
+2 调用_exit函数时，其会关闭进程所有的文件描述符，清理内存以及其他一些内核清理函数，
+  但不会刷新流(stdin, stdout, stderr ...).    
+3 如有一些数据，认为已经写入了文件，实际上因为没有满足特定的条件，它们还只是保存
+  在缓冲区内，这时用_exit()函数直接将进程关闭，缓冲区的数据就会丢失。
+*******************************************************************************/
  
 #include <unistd.h>    /* POSIX */ 
 void _exit(int status); 
 
 
+#include <unistd.h>
 
 /*
-Besides the open files, numerous other properties of the parent areinherited by the
-child:
+@fork时，子进程会进程父进程的
+ 打开的文件:共享文件表(file table entry)
 ?Real user ID, real group ID, effective user ID, and effective group ID
 ?Supplementary group IDs
 ?Process group ID
@@ -75,27 +79,40 @@ child:
 ?Attached shared memory segments
 ?Memory mappings
 ?Resource limits
-The differences between the parent and child are
-?The return values fromforkaredifferent.
-?The process IDs aredifferent.
+
+ The differences between the parent and child are:
+ The return values from fork are different.
+ The process IDs are different.
 ?The two processes have different parent process IDs: the parent process ID of the
 child is the parent; the parent process ID of the parent doesn’t change.
 ?The  child’stms_utime, tms_stime, tms_cutime,andtms_cstimevalues
 areset to 0 (these times arediscussed in Section 8.17).
 ?File locks set by the parent arenot inherited by the child.
 ?Pending alarms arecleared for the child.
-?The set of pending signals for the child is set to the empty set
-
-Returns: 0 in child, process ID of child in parent,-1 on error
-1 The new process created by fork is called the child process.This function is called once but returns twice. 
-  子进程返回0，父进程返回子进程的进程ID
-2 父子进程共享代码段，父子进程的执行顺序取决于调度算法*/
-#include <unistd.h>
+?The set of pending signals for the child is set to the empty set*/
+/*******************************************************************************
+ Returns: 0 in child, process ID of child in parent,-1 on error
+ 1 The new process created by @fork is called the child process.This function is 
+   called once but returns twice. 子进程返回0，父进程返回子进程的进程ID
+ 2 父子进程共享代码段，但各有自己的数据段、堆和栈空间。
+ 3 父子进程的执行顺序取决于调度算法
+ 4 Modern implementations don't perform a complete copy of the parent's data, stack,
+   and heap, since a @fork is often followed by an @exec. Instead, a technique 
+   called copy-on-write (COW) is used. These regions are shared by the parent and 
+   the child and have their protection changed by the kernel to read-only. If 
+   either process tries to modify these regions, the kernel then makes a copy 
+   of that piece of memory only, typically a "page" in a virtual memory system. 
+ ******************************************************************************/
 pid_t fork(void);
 
-/*vfork用于创建一个新进程，而该新进程的目的是exec一个新进程。vfork保证子进程先运行，在调用exec或_exit之前与父进程数据是共享的,
-  在它调用exec或_exit之后父进程才可能被调度运行。*/
+/*******************************************************************************
+ vfork用于创建一个新进程，而该新进程的目的是exec一个新进程。vfork保证子进程先运
+ 行，在调用exec或_exit之前与父进程数据是共享的,在它调用exec或_exit之后父进程才
+ 可能被调度运行。
+ ******************************************************************************/
 pid_t vfork(void);
+
+
 
 #include <unistd.h>
 pid_t getpid(void);/*Returns: process ID of calling process*/
@@ -107,46 +124,92 @@ gid_t getegid(void);/*Returns: effective group ID of calling process*/
 
 
 #include <sys/wait.h>
-/*@statloc:返回进程的退出状态
-return: process ID if OK, 0 (see later), or -1 on error
-1 如果所有子进程都还在运行，则阻塞，有一个终止wait就返回。
-2 如果它没有任何子进程，则立即出错返回。这是唯一的出错原因*/
+
+/*检查wait waitpid终止状态的宏 进程可能:正常终止 由某个信号杀死 由作业控制停止*/
+#define WEXITSTATUS(status) /*WExitStatus to fetch the low-order 8 bits of the 
+argument that the child passed to exit,_exit,or_Exit*/
+#define WTERMSIG(status)  /*wtermsig to fetch the signal number that caused the 
+termination.*/
+#define WSTOPSIG(status)  /*Wstopsig to fetch the signal number that caused the 
+child to stop*/
+#define WIFEXITED(status)   /*WIFexited 正常终止则为真。正常终止时可以执行
+WEXITSTATUS()*/
+#define WIFSIGNALED(status) /*WIFsignaled 异常终止则为真(接收一个不捕获的信号)。
+此时可以调用WTERMSIG()获取子进程终止的信号编号*/
+#define WIFSTOPPED(status)  /*WIFstopped True if status was returned for a child 
+that is currently stopped.此时可以调用WSTOPSIG()获取使子进程暂停的信号编号*/
+#define WIFCONTINUED(status) /* True if status was returned for a child that has 
+been continued after a job control stop (XSI option; waitpid only).*/
+
+
+
+/*******************************************************************************
+ @statloc:返回进程的退出状态(可以传NULL)，其中某些位表示退出状态(正常返回)，其他
+          位则指示信号编号(异常返回)
+ return: process ID(退出进程) if OK, 0 (see later), or -1 on error
+ 1 如果所有子进程都还在运行，则阻塞，有一个终止wait就返回。
+ 2 如果它没有任何子进程，则立即出错返回。这是唯一的出错原因
+ ******************************************************************************/
 pid_t wait(int *statloc);
 
-/*
-@pid: pid == -1 等待任意子进程
-      pid > 0   等待其进程ID与pid相等的子进程
-      pid == 0  等待其组ID等于进程组ID的任意子进程
-      pid < -1  等待其组ID等于pid绝对值的任意子进程
-@statloc:返回进程的退出状态
-@options:可以为 0 或可以用"|"运算符把它们连接起来使用,如 WNOHANG | WUNTRACED
-      0         等待
-      WNOHANG   若pid指定的子进程没有结束，则waitpid()函数返回0，不予以等待。若结束，则返回该子进程的ID。
-      WUNTRACED 若子进程进入暂停状态，则马上返回，但子进程的结束状态不予以理会。WIFSTOPPED(status)宏确定返回值是否对应与一个暂停子进程。
-return: process ID if OK, 0 (see later), or -1 on error
 
-1 如果指定的进程或进程组不存在，或者参数pid指定的进程不是调用进程的子进程则都将出错*/
+#define WNOHANG
+#define WUNTRACED
+/*******************************************************************************
+ @pid: pid == -1 等待任意子进程
+       pid > 0   等待其进程ID与pid相等的子进程
+       pid == 0  等待其组ID等于进程组ID的任意子进程
+       pid < -1  等待其组ID等于pid绝对值的任意子进程
+ @statloc:返回进程的退出状态
+ @options:可以为 0 或可以用"|"运算符把它们连接起来使用,如 WNOHANG | WUNTRACED
+      0         等待
+      WNOHANG   若pid指定的子进程没有结束，则waitpid()函数返回0，不予以等待。若结
+                束，则返回该子进程的ID。
+      WUNTRACED 若子进程进入暂停状态，则马上返回，但子进程的结束状态不予以理会。
+                WIFSTOPPED(status)宏确定返回值是否对应与一个暂停子进程。
+                
+ return: process ID if OK, 0 (see later), or -1 on error
+
+ 1 如果指定的进程或进程组不存在，或者参数pid指定的进程不是调用进程的子进程则都将出错
+ ******************************************************************************/
 pid_t waitpid(pid_t pid,int *statloc,int options);
 
-/*检查wait waitpid终止状态的宏 
-  进程可能:正常终止 由某个信号杀死 由作业控制停止*/
-WEXITSTATUS(status) /*wexitstatus to fetch the low-order 8 bits of the argument that the child passed to exit,_exit,or_Exit*/
-WTERMSIG(status)    /*wtermsig to fetch the signal number that caused the termination.*/
-WSTOPSIG(status)    /*Wstopsig to fetch the signal number that caused the child to stop*/
 
-WIFEXITED(status)   /*WIFexited 正常终止则为真。*/
-WIFSIGNALED(status) /*WIFsignaled 异常终止则为真(接收一个不捕获的信号)。*/
-WIFSTOPPED(status)  /*WIFstopped True if status was returned for a child that is currently stopped*/
-WIFCONTINUED(status) /* True if status was returned for a child that has been continued after a job control stop (XSI option; waitpidonly).*/
+#include <sys/wait.h>
+#define P_PID /*Wait for a particular process: id contains the process ID of the 
+child to wait for.*/
+#define P_PGID /*Wait for any child process in a particular process group: id 
+contains the process group ID of the children to wait for.*/
+#define P_ALL /*Wait for any child process: id is ignored*/
 
-/*
-Both return: process ID if OK, 0, or -1 on error*/
+#define WCONTINUED /*Wait for a process that has previously stopped and has been 
+continued, and whose status has not yet been reported.*/
+#define WEXITED /*Wait for processes that have exited.*/
+#define WNOHANG /*Return immediately instead of blocking if there is no child 
+exit status available.*/
+#define WNOWAIT /*Don't destroy the child exit status. The child's exit status 
+can be retrieved by a subsequent call to wait, waitid, or waitpid.*/
+#define WSTOPPED /*Wait for a process that has stopped and whose status has not 
+yet been reported*/
+
+/*******************************************************************************
+ @idtype : 参数@id的类型，P_PID P_PGID P_ALL
+ @id     :
+ @infop  : 
+ @options: WCONTINUED WEXITED WNOHANG  WNOWAIT WSTOPPED
+ Returns: 0 if OK, -1 on error
+ ******************************************************************************/
+int waitid(idtype_t idtype, id_t id, siginfo_t *infop, int options);
+
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-
+/*return: process ID if OK, 0, or -1 on error*/
 pid_t wait3(int *statloc,int options,struct rusage *rusage);
+
+/*return: process ID if OK, 0, or -1 on error*/
 pid_t wait4(pid_t pid,int *statloc,int options,struct rusage *rusage);
 
 

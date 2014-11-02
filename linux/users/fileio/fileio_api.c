@@ -434,49 +434,62 @@ int fcntl(int fd,int cmd,struct flock *flockptr);
 #include <sys/select.h>
 #include <sys/time.h>
 
+#define FD_SETSIZE  /*@select的第一个参数，最大的描述符个数，通常是1024*/
+
 struct timeval	
 {
   long	 tv_sec;  /* seconds */
   long	 tv_usec; /* microseconds */
 };
 
-/*
-@maxfdp1: 描述符个数+1
-@readset: 读描述符集，可以为NULL
-@readset: 写描述符集，可以为NULL
-@readset: 异常描述符集，可以为NULL
-@timeout: 等待时间
-function: 
-告诉内核
-1 关心的描述符
-2 关心描述符的哪些状态，比如是否可读、是否可写、描述符的异常状态
-3 等待时间
-从select返回内核告诉我们
-1 已经准备好的描述符数量
-2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
-  使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
-Returns: positive count of ready descriptors, 0 on timeout, –1 on error
-Ther eare three possible return values from @select.
-1 return -1 means that an error occurred. This can happen, for example, if a signal is caught before any of the specified descriptors are ready.
-  In this case, none of the descriptor sets will be modified.
-2 return 0 means that no descriptors are ready.This happens if the time limit expires before any of the descriptors are ready.When this happens,
-  all the descriptor sets will be zeroed out.
-3 A positive return value specifies the number of descriptors that are ready.This value is the sum of the descriptors ready in all three sets, so 
-  if the same descriptor is ready to be read and written, it will be counted twice in the return value. The only bits left on in the three descriptor  
-  sets are the bits corresponding to the descriptors that are ready.
----->等待的时间
-1 永远等待  timeout == NULL
-2 等待指定的时间 具体的时间由timeout指定
-3 不等待  timeout中的时间为0
-The wait in the first two scenarios is normally interrupted if the process catches a signal and returns from the signal handler.
----->准备好
-1 对于读描述符集中的一个描述符的read操作将不会阻塞，则此描述符是准备好的
-2 对于写描述符集中的一个描述符的write操作将不会阻塞，则此描述符是准备好的
-3 若异常描述符集中的一个描述符有一个未决异常状态，则此描述符是准备好的。异常状态包括
-  a 在网络连接上到达的带外数据
-  b 处于数据包模式的伪终端上发生了某些状态。
-4 File descriptors for regular files always return ready for reading, writing, and exception conditions.
-*/
+/*******************************************************************************
+ @maxfdp1: 描述符个数+1
+ @readset: 读描述符集，可以为NULL
+ @readset: 写描述符集，可以为NULL
+ @readset: 异常描述符集，可以为NULL
+ @timeout: 等待时间
+ function: 
+ 告诉内核
+ 1 关心的描述符
+ 2 关心描述符的哪些状态，比如是否可读、是否可写、描述符的异常状态
+ 3 等待时间
+ 从select返回内核告诉我们
+ 1 已经准备好的描述符数量
+ 2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
+   使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
+ Returns: positive count of ready descriptors, 0 on timeout, –1 on error
+ There are three possible return values from @select.
+ 1 return -1 means that an error occurred. This can happen, for example, if a 
+   signal is caught before any of the specified descriptors are ready.In this 
+   case, none of the descriptor sets will be modified.
+ 2 return 0 means that no descriptors are ready.This happens if the time limit 
+   expires before any of the descriptors are ready.When this happens,all the 
+   descriptor sets will be zeroed out.
+ 3 A positive return value specifies the number of descriptors that are ready.
+   This value is the sum of the descriptors ready in all three sets, so if the 
+   same descriptor is ready to be read and written, it will be counted twice in 
+   the return value. The only bits left on in the three descriptor sets are the 
+   bits corresponding to the descriptors that are ready.
+ ---->等待的时间
+ 1 永远等待  timeout == NULL
+ 2 等待指定的时间 具体的时间由timeout指定
+ 3 不等待  timeout中的时间为0
+ The wait in the first two scenarios is normally interrupted if the process 
+ catches a signal and returns from the signal handler.
+
+ If we encounter the end of file on a descriptor, that descriptor is considered 
+ readable by @select. We then call read and it returns 0—the way to signify end 
+ of file on UNIX systems. 
+ ---->准备好
+ 1 对于读描述符集中的一个描述符的read操作将不会阻塞，则此描述符是准备好的
+ 2 对于写描述符集中的一个描述符的write操作将不会阻塞，则此描述符是准备好的
+ 3 若异常描述符集中的一个描述符有一个未决异常状态，则此描述符是准备好的。
+   异常状态包括
+   a 在网络连接上到达的带外数据
+   b 处于数据包模式的伪终端上发生了某些状态。
+ 4 File descriptors for regular files always return ready for reading, writing, 
+   and exception conditions.
+ *******************************************************************************/
 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout);
 
  
@@ -506,24 +519,24 @@ if (FD_ISSET(fd, &rset)) {
  
 struct timespec {
   time_t tv_sec;       /* seconds */
-  long   tv_nsec;      /* nanoseconds */
+  long   tv_nsec;      /* nanoseconds 纳秒 */
 };
 
+/*******************************************************************************
+ When @pselect is called, it replaces the signal mask of the process with an 
+ @sigmask set (i.e., zeromask) and then checks the descriptors, possibly going 
+ to sleep. But when @pselect returns, the signal mask of the process is reset 
+ to its value before @pselect was called (i.e., SIGINT is blocked).
 
-/*
-When @pselect is called, it replaces the signal mask of the process with an @sigmask set (i.e., zeromask) and then checks 
-the descriptors, possibly going to sleep. But when @pselect returns, the signal mask of the process is reset to its value 
-before pselect was called (i.e., SIGINT is blocked).
-
-Returns: count of ready descriptors, 0 on timeout,-1 on error*/
+ Returns: count of ready descriptors, 0 on timeout,-1 on error
+ ******************************************************************************/
 int pselect(int maxfdp1,fd_set *restrict readfds,fd_set *restrict writefds,fd_set *restrict exceptfds,
              const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 
 
 
-
 #include <poll.h>
-#define POLLIN       /*普通或优先级带数据可读*/
+#define POLLIN       /*普通或优先级带数据可读  Figure 14.17.*/
 #define POLLRDNORM   /*普通数据可读*/
 #define POLLRDBAND   /*优先级带数据可读*/
 #define POLLPRI      /*高优先级数据可读*/
@@ -534,20 +547,27 @@ int pselect(int maxfdp1,fd_set *restrict readfds,fd_set *restrict writefds,fd_se
 #define POLLHUP      /*发生挂起*/
 #define POLLNVAL     /*描述字不是一个打开的文件*/
 
-#define INFTIM       /*是一个负值 poll的第三个参数,表示永远等待*/
+#define INFTIM       /*是一个负值 @poll的第三个参数,表示永远等待*/
 
+/*******************************************************************************
+ To tell the kernel which events we're interested in for each descriptor, we have
+ to set the @events member of each array element to one or more of the values in 
+ Figure 14.17. On return, the @revents member is set by the kernel, thereby 
+ specifying which events have occurred for each descriptor. 
+ ******************************************************************************/
 struct pollfd 
 {
     int  fd; /* file descriptor to check, or <0 to ignore */
-    short  events; /* events of interest on fd */
+    short  events; /* events of interest on fd POLLIN等值*/
     short  revents;  /* events that occurred on fd */
 };
 
-/*
-@fdarray: 每个数组元素指定一个描述符编号以及对其所关心的状态。
-@nfds:数组元素的个数
-@timeout: INFTIM永远等待 0不等待 大于0等待指定的时间
-Returns: count of ready descriptors, 0 on timeout,-1 on error*/
+/*******************************************************************************
+ @fdarray: 每个数组元素指定一个描述符编号以及对其所关心的状态。
+ @nfds   : 数组元素的个数
+ @timeout: INFTIM永远等待 0不等待 大于0等待指定的时间
+ Returns: count of ready descriptors, 0 on timeout,-1 on error
+ ******************************************************************************/
 int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 
 

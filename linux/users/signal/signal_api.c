@@ -2,15 +2,18 @@
 #define SIG_DFL (void (*)())0
 #define SIG_IGN (void (*)())1
 
-/*@signo:信号编号
-  @func: 信号处理函数。
+#include <signal.h>
+
+/*******************************************************************************
+ @signo:信号编号
+ @func: 信号处理函数。
          SIG_IGN 忽略此信号(SIGKILL和SIGSTOP不能忽略)
          SIG_DFL 使用默认处理函数
-Returns: previous disposition of signal if OK,SIG_ERR on error
+ function: 给信号@signo注册处理函数@func.
+ Returns : previous disposition of signal if OK,SIG_ERR on error
 
-1 不改变信号的处理方式就不能确定当前处理方式*/
-#include <signal.h>
-void signal();
+ 1 不改变信号的处理方式就不能确定当前处理方式
+ ******************************************************************************/
 void (*signal(int signo,void (*func)(int)))(int);
 
 
