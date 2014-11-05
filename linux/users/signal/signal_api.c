@@ -1,146 +1,330 @@
-#define SIG_ERR (void (*)())-1
-#define SIG_DFL (void (*)())0
-#define SIG_IGN (void (*)())1
-
 #include <signal.h>
 
 /*******************************************************************************
- @signo:ĞÅºÅ±àºÅ
- @func: ĞÅºÅ´¦Àíº¯Êı¡£
-         SIG_IGN ºöÂÔ´ËĞÅºÅ(SIGKILLºÍSIGSTOP²»ÄÜºöÂÔ)
-         SIG_DFL Ê¹ÓÃÄ¬ÈÏ´¦Àíº¯Êı
- function: ¸øĞÅºÅ@signo×¢²á´¦Àíº¯Êı@func.
+ @signo:ä¿¡å·ç¼–å·
+ @func: ä¿¡å·å¤„ç†å‡½æ•°ã€‚
+         SIG_IGN å¿½ç•¥æ­¤ä¿¡å·(SIGKILLå’ŒSIGSTOPä¸èƒ½å¿½ç•¥)
+         SIG_DFL ä½¿ç”¨é»˜è®¤å¤„ç†å‡½æ•°
+ function: ç»™ä¿¡å·@signoæ³¨å†Œå¤„ç†å‡½æ•°@func.
  Returns : previous disposition of signal if OK,SIG_ERR on error
 
- 1 ²»¸Ä±äĞÅºÅµÄ´¦Àí·½Ê½¾Í²»ÄÜÈ·¶¨µ±Ç°´¦Àí·½Ê½
+ 1 ä¸æ”¹å˜ä¿¡å·çš„å¤„ç†æ–¹å¼å°±ä¸èƒ½ç¡®å®šå½“å‰å¤„ç†æ–¹å¼
  ******************************************************************************/
 void (*signal(int signo,void (*func)(int)))(int);
 
 
-/*
-@seconds:Ãë
-function:¾­¹ı@secondsÃëºó²úÉúSIGALRMĞÅºÅ
-Returns: 0 or number of seconds until previously set alarm
+/*******************************************************************************
+ pid>0   The signal is sent to the process whose process ID is @pid.
+ pid==0  The signal is sent to all processes whose process group ID equals the
+         process group ID of the sender and for which the sender has permission to 
+         send the signal. Note that the term all processes excludes an 
+         implementation-defined set of system processes. For most UNIX systems, this 
+         set of system processes includes the kernel processes and init(pid 1).
+ pid<0   The signal is sent to all processes whose process group ID equals the absolute 
+         value of @pid and for which the sender has permission to send the signal. 
+         Again, the set of all processes excludes certain system processes, as 
+         described earlier.
+ pid==-1 The signal is sent to all processes on the system for which the sender has
+         permission to send the signal. As before, the set of processes excludes
+         certain system processes.
+ @signo: If is 0, then the normal error checking is performed by @kill,but no 
+         signal is sent.
+ return: 0 if OK,-1 on error
 
-1 Ã¿¸ö½ø³ÌÖ»ÄÜÉèÖÃÒ»¸öÄÖÖÓ,Èç¹ûµ÷ÓÃalarmÊ±,ÒÔÇ°ÉèÖÃµÄÄÖÖÓ»¹Ã»ÓĞ³¬Ê±,ÔòÓÃ@seconds¸üĞÂÄÖÖÓµÄ³¬Ê±Ê±¼ä¡£
-  ÉÏ´ÎÄÖÖÓµÄ²ĞÁôÖµ×÷Îª±¾´Îµ÷ÓÃalarmµÄ·µ»ØÖµ
-2 Èç¹ûÉÏ´ÎÄÖÖÓ»¹Ã»³¬Ê±,¶øÇÒ±¾´Îµ÷ÓÃ@secondsÎª0,ÔòÈ¡ÏûÒÔÇ°µÄÄÖÖÓ,²ĞÁôÖµ×÷Îª±¾´Îµ÷ÓÃalarmµÄ·µ»ØÖµ
-3 SIGALRMĞÅºÅµÄÄ¬ÈÏ¶¯×÷ÊÇÖÕÖ¹½ø³Ì
+ The superuser can send a signal to any process.  For other users, the basic rule
+ is that the real or effective user ID of the sender has to equal the real or 
+ effective user ID of the receiver.If the implementation supports _POSIX_SAVED_IDS
+ (as POSIX.1 now requires), the saved set-user-ID of the receiver is checked 
+ instead of its effective user ID.One special case for the permission testing also  
+ exists: if the signal being sent is SIGCONT,a process can send it to any other 
+ process in the same session.
 
-*/
+ If we send the process the null signal and it doesn't exist, @kill returns -1 
+ and errno is set to ESRCH.
+
+ If the call to kill causes the signal to be generated for the calling process 
+ and if the signal is not blocked, either @signo or some other pending, unblocked 
+ signal is delivered to the process before @kill returns. 
+ ******************************************************************************/
+int kill(pid_t pid,int signo);
+
+
+/*******************************************************************************
+ return: 0 if OK,-1 on error
+
+ raise(signo); ç­‰ä»·äº kill(getpid(), signo);
+ ******************************************************************************/
+int raise(int signo);
+
 #include <unistd.h>
+
+/*******************************************************************************
+ @seconds:ç§’
+ function:ç»è¿‡@secondsç§’åäº§ç”ŸSIGALRMä¿¡å·
+ Returns: 0 or number of seconds until previously set alarm
+
+ 1 æ¯ä¸ªè¿›ç¨‹åªèƒ½è®¾ç½®ä¸€ä¸ªé—¹é’Ÿ,å¦‚æœè°ƒç”¨alarmæ—¶,ä»¥å‰è®¾ç½®çš„é—¹é’Ÿè¿˜æ²¡æœ‰è¶…æ—¶,åˆ™ç”¨@seconds
+   æ›´æ–°é—¹é’Ÿçš„è¶…æ—¶æ—¶é—´ã€‚ä¸Šæ¬¡é—¹é’Ÿçš„æ®‹ç•™å€¼ä½œä¸ºæœ¬æ¬¡è°ƒç”¨alarmçš„è¿”å›å€¼
+ 2 å¦‚æœä¸Šæ¬¡é—¹é’Ÿè¿˜æ²¡è¶…æ—¶,è€Œä¸”æœ¬æ¬¡è°ƒç”¨@secondsä¸º0,åˆ™å–æ¶ˆä»¥å‰çš„é—¹é’Ÿ,æ®‹ç•™å€¼ä½œä¸ºæœ¬æ¬¡è°ƒ
+   ç”¨alarmçš„è¿”å›å€¼
+ 3 SIGALRMä¿¡å·çš„é»˜è®¤åŠ¨ä½œæ˜¯ç»ˆæ­¢è¿›ç¨‹
+ ******************************************************************************/
 unsigned int alarm(unsigned int seconds);
 
-/*
-function:¹ÒÆğ½ø³ÌÖ±ÖÁ²¶»ñµ½Ò»¸öĞÅºÅ
-Returns:-1with errno set to EINTR
+/*******************************************************************************
+ function:æŒ‚èµ·è¿›ç¨‹ç›´è‡³æ•è·åˆ°ä¸€ä¸ªä¿¡å·
+ Returns:-1 with errno set to EINTR
 
-1 Ö»ÓĞµ±Ö´ĞĞÁËÒ»¸öĞÅºÅ´¦Àí³ÌĞò²¢´ÓÆä·µ»ØÊ±,pause²Å»á·µ»Ø¡£*/
-#include <unistd.h>
+ 1 åªæœ‰å½“æ‰§è¡Œäº†ä¸€ä¸ªä¿¡å·å¤„ç†ç¨‹åºå¹¶ä»å…¶è¿”å›æ—¶,pauseæ‰ä¼šè¿”å›ã€‚
+ ******************************************************************************/
 int pause(void);
 
 
 
 #include <signal.h>
-/*
-function:Çå³ı@setÖ¸ÏòµÄĞÅºÅ¼¯
-return: 0 if OK,-1 on error*/
+
+/*******************************************************************************
+ function:æ¸…é™¤@setæŒ‡å‘çš„ä¿¡å·é›†
+ return: 0 if OK,-1 on error
+
+ All applications have to call either @sigemptyset or @sigfillset once for each 
+ signal set, before using the signal set.
+ ******************************************************************************/
 int sigemptyset(sigset_t *set);
 
 /*
-function:Ê¹ĞÅºÅ¼¯@set°üº¬ËùÓĞµÄĞÅºÅ
+function:ä½¿ä¿¡å·é›†@setåŒ…å«æ‰€æœ‰çš„ä¿¡å·
 return: 0 if OK,-1 on error*/
 int sigfillset(sigset_t *set);
 
 /*
-function:°ÑĞÅºÅ@signoÌí¼Ó½øĞÅºÅ¼¯@set
+function:æŠŠä¿¡å·@signoæ·»åŠ è¿›ä¿¡å·é›†@set
 return: 0 if OK,-1 on error*/
 int sigaddset(sigset_t *set,int signo);
 
 /*
-function:´ÓĞÅºÅ¼¯@setÖĞÉ¾³ıĞÅºÅ@signo
+function:ä»ä¿¡å·é›†@setä¸­åˆ é™¤ä¿¡å·@signo
 return: 0 if OK,-1 on error*/
 int sigdelset(sigset_t *set,int signo);
 
 /*Returns: 1 if true, 0 if false,-1 on error*/
-int sigismember(const sigset_t *set,intsigno);
+int sigismember(const sigset_t *set,int signo);
 
+#if 1
+/*å¦‚æœä¿¡å·çš„ä¸ªæ•°å°äº31ä¸ªï¼Œä¸Šé¢äº”ä¸ªå‡½æ•°çš„å®ç°å¦‚ä¸‹*/
+
+#include  <signal.h>
+#include  <errno.h>
+/*<signal.h> usually defines NSIG to include signal number 0.*/
+#define SIGBAD(signo) ((signo) <= 0 || (signo) >= NSIG)
+
+#define sigemptyset(ptr) (*(ptr) = 0)
+
+/*******************************************************************************
+ Note that @sigfillset must return 0, in addition to setting all the bits on in 
+ the signal set, so we use C's comma operator,which returns the value after the 
+ comma as the value of the expression.
+ ******************************************************************************/
+#define sigfillset(ptr) (*(ptr) = ~(sigset_t)0, 0) /*~æŒ‰ä½å–å*/
+
+int sigaddset(sigset_t *set, int signo)
+{
+    if (SIGBAD(signo)) 
+	{
+        errno = EINVAL;
+        return(-1);
+    }
+	
+    *set |= 1 << (signo - 1); /* turn bit on */
+	
+    return(0);
+}
+
+int sigdelset(sigset_t *set, int signo)
+{
+    if (SIGBAD(signo)) 
+	{
+        errno = EINVAL;
+        return(-1);
+    }
+	
+    *set &= ~(1 << (signo - 1)); /* turn bit off */
+	
+    return(0);
+}
+
+int sigismember(const sigset_t *set, int signo)
+{
+    if (SIGBAD(signo)) 
+	{
+        errno = EINVAL;
+        return(-1);
+    }
+	
+    return((*set & (1 << (signo - 1))) != 0);
+}
+#endif
 
 
 #include <signal.h>
-/*
-@how:Ö¸Ê¾ÈçºÎĞŞ¸Äµ±Ç°ĞÅºÅÆÁ±Î×Ö
-     SIG_BLOCK °Ñ@setÖ¸ÏòµÄĞÅºÅ¼¯¼ÓÈëµ±Ç°½ø³ÌµÄÆÁ±Î×Ö
-     SIG_UNBLOCK
-     SIG_SETMASK  °Ñ½ø³ÌµÄĞÅºÅÆÁ±Î×ÖÉèÖÃÎª@setÖ¸ÏòµÄĞÅºÅ¼¯
-@set:½áºÏ@howÀ´Ê¹ÓÃ,@setÎª¿ÕÊ±,@howÎŞÒâÒå
-@oset:Èô@osetÊÇ·Ç¿ÕÖ¸Õë,ÄÇÃ´½ø³Ìµ±Ç°µÄĞÅºÅÆÁ±Î×ÖÍ¨¹ı@oset·µ»Ø
-Returns: 0 if OK,-1 on error
+#define SIG_BLOCK   /*The new signal mask for the process is the union of its 
+current signal mask and the signal set pointed to by @set.That is,@set contains 
+the additional signals that we want to block.*/
+#define SIG_UNBLOCK /*The new signal mask for the process is the intersection 
+of its current signal mask and the complement of the signal set pointed to by @set.
+That is,@set contains the signals that we want to unblock.*/
+#define SIG_SETMASK /*The new signal mask for the process is replaced by the 
+value of the signal set pointed to by @set*/
 
-1 µ÷ÓÃ@sigprocmaskºóÈç¹ûÓĞÈÎºÎÎ´¾öµÄ,²»ÔÙ×èÈûµÄĞÅºÅ,ÔòÔÚ@sigprocmask·µ»ØÇ°ÖÁÉÙ»á½«ÆäÖĞÒ»¸öĞÅºÅµİËÍ¸ø¸Ä½ø³Ì*/
+/*******************************************************************************
+ @how : æŒ‡ç¤ºå¦‚ä½•ä¿®æ”¹å½“å‰ä¿¡å·å±è”½å­— SIG_BLOCK SIG_UNBLOCK SIG_SETMASK
+ @set : ç»“åˆ@howæ¥ä½¿ç”¨,@setä¸ºç©ºæ—¶,@howæ— æ„ä¹‰
+ @oset: è‹¥@osetæ˜¯éç©ºæŒ‡é’ˆ,é‚£ä¹ˆè¿›ç¨‹å½“å‰çš„ä¿¡å·å±è”½å­—é€šè¿‡@osetè¿”å›
+ returns: 0 if OK,-1 on error
+
+ 1 è°ƒç”¨@sigprocmaskåå¦‚æœæœ‰ä»»ä½•æœªå†³çš„,ä¸å†é˜»å¡çš„ä¿¡å·,åˆ™åœ¨@sigprocmaskè¿”å›å‰è‡³å°‘
+   ä¼šå°†å…¶ä¸­ä¸€ä¸ªä¿¡å·é€’é€ç»™æ”¹è¿›ç¨‹
+ 2 The @sigprocmask function is defined only for single-threaded processes.  
+ ******************************************************************************/
 int sigprocmask(int how,const sigset_t *restrict set,sigset_t *restrict oset);
 
+
+
 #include <signal.h>
-/*
-function:Í¨¹ı@set·µ»Ø½ø³Ì×èÈûµÄĞÅºÅ
-Returns: 0 if OK,-1 on error*/
+/*******************************************************************************
+ function:é€šè¿‡@setè¿”å›è¿›ç¨‹é˜»å¡çš„ä¿¡å·
+ Returns: 0 if OK,-1 on error
+ ******************************************************************************/
 int sigpending(sigset_t *set);
 
+#define SIG_ERR (void (*)())-1
+#define SIG_DFL (void (*)())0
+#define SIG_IGN (void (*)())1
+
+/*ä»¥ä¸‹æ˜¯struct sigactionç»“æ„ä½“sa_flagså­—æ®µå¯èƒ½çš„å€¼*/
+#define SA_SIGINFO /*This option provides additional information to a signal 
+handler: a pointer to a siginfo structure and a pointer to an identifier for the 
+process context */
+
+
+/*******************************************************************************
+ @sa_mask:æ˜¯ä¸€ä¸ªä¿¡å·é›†ï¼Œè°ƒç”¨@sa_handlerä¹‹å‰åŠ å…¥åˆ°è¿›ç¨‹çš„ä¿¡å·å±è”½å­—ä¸­ï¼Œå½“ä»ä¿¡å·å¤„ç†
+ ç¨‹åºä¸­è¿”å›æ—¶å†å›å¤è¿›ç¨‹åŸæ¥çš„ä¿¡å·å±è”½å­—ã€‚The operating system includes the signal 
+ being delivered in the signal mask when the handler is invoked. Hence, we 
+ areguaranteed that whenever we are processing a given signal, another occurrence 
+ of that same signal is blocked until we're finished processing the first occurrence. 
+
+ @sa_sigaction:The @sa_sigaction field is an alternative signal handler used when 
+ the SA_SIGINFO flag is used with sigaction.Implementations might use the same
+ storage for both the @sa_sigaction field and the @sa_handler field, so applications
+ can use only one of these fields at a time.
+ ******************************************************************************/
 struct sigaction 
 {
     void  (*sa_handler)(int); /* addr of signal handler,or SIG_IGN, or SIG_DFL */
-    sigset_t sa_mask; /* additional signals to block */
-    int  sa_flags; /* signal options, Figure 10.16 */
+    sigset_t sa_mask;         /* additional signals to block */
+    int  sa_flags;            /* signal options,SA_INTERRUPT ç­‰*/
     void  (*sa_sigaction)(int, siginfo_t *, void *);/* alternate handler */
 };
 
-#include <signal.h>
-/*
-@signo:the signal number whose action we are examining or modifying.
-@act: If the @act pointer is non-null, we are modifying the action. 
-@oact: If the @oact pointer is non-null, the system returns the previous action for the signal through the @oact pointer.
+/*******************************************************************************
+ The @siginfo structure contains information about why the signal was generated.
+ An example of what it might look like is shown below.All POSIX.1-compliant
+ implementations must include at least the @si_signo and @si_code members.
+ Additionally,implementations that are XSI compliant contain at least the following
+ fields:
+ ******************************************************************************/
+struct siginfo 
+{
+int  si_signo; /* signal number */
+int  si_errno; /* if nonzero, errno value from errno.h */
+int  si_code; /* additional info (depends on signal) */
+pid_t  si_pid; /* sending process ID */
+uid_t  si_uid; /* sending process real user ID */
+void  *si_addr; /* address that caused the fault */
+int  si_status; /* exit value or signal number */
+union sigval si_value; /* application-specific value */
+/* possibly other fields also */
+};
 
-function:The @sigaction function allows us to examine or modify (or both) the action associated with a particular signal. 
-Returns: 0 if OK,-1 on error
 
-1 sa_mask×Ö¶ÎËµÃ÷ÁËÒ»¸öĞÅºÅ¼¯,ÔÚµ÷ÓÃ¸ÃĞÅºÅ²¶×½º¯ÊıÖ®Ç°,ÕâÒ»ĞÅºÅ¼¯Òª¼Óµ½½ø³ÌµÄĞÅºÅÆÁ±Î×ÖÖĞ¡£µ±ĞÅºÅ²¶×½º¯Êı·µ»ØÊ±,½ø³ÌµÄÆÁ±Î×Ö»Ö¸´µ½Ô­À´µÄÖµ
-2 µ±ĞÅºÅ²¶×½º¯ÊıÔËĞĞÊ±,Í¬Ê±»áÆÁ±ÎÕâ¸öĞÅºÅ(@signo)
-3 Í¬Ò»ÖÖĞÅºÅ¶à´Î·¢ÉúÍ¨³£²»ÅÅ¶Ó,Ò²¾ÍÊÇ½â³ı×èÈûºóÍ¨³£Ö»»áµ÷ÓÃÒ»´ÎĞÅºÅ²¶×½º¯Êı£¬¼´Ê¹ÕâÆÚ¼ä·¢ÉúÁËºÜ¶à´ÎÕâ¸öĞÅºÅ¡£
-4 Once we install an action for a given signal, that action remains installed until we explicitly change it by calling @sigaction.*/
+/*******************************************************************************
+ @signo: the signal number whose action we are examining or modifying.
+ @act  : If the @act pointer is non-null, we are modifying the action. 
+ @oact : If the @oact pointer is non-null, the system returns the previous action 
+         for the signal through the @oact pointer.
+
+ function:examine or modify (or both) the action associated with a particular signal.
+ Returns: 0 if OK,-1 on error
+
+ 1 sa_maskå­—æ®µè¯´æ˜äº†ä¸€ä¸ªä¿¡å·é›†,åœ¨è°ƒç”¨è¯¥ä¿¡å·æ•æ‰å‡½æ•°ä¹‹å‰,è¿™ä¸€ä¿¡å·é›†è¦åŠ åˆ°è¿›ç¨‹çš„ä¿¡å·
+   å±è”½å­—ä¸­ã€‚å½“ä¿¡å·æ•æ‰å‡½æ•°è¿”å›æ—¶,è¿›ç¨‹çš„å±è”½å­—æ¢å¤åˆ°åŸæ¥çš„å€¼
+ 2 å½“ä¿¡å·æ•æ‰å‡½æ•°è¿è¡Œæ—¶,åŒæ—¶ä¼šå±è”½è¿™ä¸ªä¿¡å·(@signo)
+ 3 åŒä¸€ç§ä¿¡å·å¤šæ¬¡å‘ç”Ÿé€šå¸¸ä¸æ’é˜Ÿ,ä¹Ÿå°±æ˜¯è§£é™¤é˜»å¡åé€šå¸¸åªä¼šè°ƒç”¨ä¸€æ¬¡ä¿¡å·æ•æ‰å‡½æ•°ï¼Œå³ä½¿
+   è¿™æœŸé—´å‘ç”Ÿäº†å¾ˆå¤šæ¬¡è¿™ä¸ªä¿¡å·ã€‚
+ 4 Once we install an action for a given signal, that action remains installed 
+   until we explicitly change it by calling @sigaction.
+ ******************************************************************************/
 int sigaction(int signo,const struct sigaction *restrict act,struct sigaction *restrict oact);
 
 
 
 #include <signal.h>
-/*
-@sigmask:½«½ø³ÌµÄĞÅºÅÆÁ±Î×ÖÉèÖÃÎªÓÉ@sigmaskÖ¸ÏòµÄÖµ¡£
-Returns:-1 with errno set to EINTR
-sigsuspendµÄÕû¸öÔ­×Ó²Ù×÷¹ı³ÌÎª£º
-(1) ÉèÖÃĞÂµÄmask×èÈûµ±Ç°½ø³Ì£¬Ö®ºó½ø³Ì¹ÒÆğ£»
-(2) ÊÕµ½ĞÅºÅ£¬»Ö¸´Ô­ÏÈmask£»
-(3) µ÷ÓÃ¸Ã½ø³ÌÉèÖÃµÄĞÅºÅ´¦Àíº¯Êı£»
-(4) ´ıĞÅºÅ´¦Àíº¯Êı·µ»Øºó£¬sigsuspend·µ»Ø¡£*/
+/*******************************************************************************
+ @sigmask:å°†è¿›ç¨‹çš„ä¿¡å·å±è”½å­—è®¾ç½®ä¸ºç”±@sigmaskæŒ‡å‘çš„å€¼ã€‚
+ Returns:-1 with errno set to EINTR
+ 
+ sigsuspendçš„æ•´ä¸ªåŸå­æ“ä½œè¿‡ç¨‹ä¸ºï¼š
+(1) è®¾ç½®æ–°çš„maské˜»å¡å½“å‰è¿›ç¨‹ï¼Œä¹‹åè¿›ç¨‹æŒ‚èµ·ï¼›
+(2) æ”¶åˆ°ä¿¡å·ï¼Œæ¢å¤åŸå…ˆmaskï¼›
+(3) è°ƒç”¨è¯¥è¿›ç¨‹è®¾ç½®çš„ä¿¡å·å¤„ç†å‡½æ•°ï¼›
+(4) å¾…ä¿¡å·å¤„ç†å‡½æ•°è¿”å›åï¼Œsigsuspendè¿”å›ã€‚
+*******************************************************************************/
 int sigsuspend(const sigset_t *sigmask);
 
 
+#include <setjmp.h>
+/*******************************************************************************
+ Returns: 0 if called directly,nonzero if returning from a call to @siglongjmp
+
+ The only difference between these functions and the @setjmp and @longjmp functions 
+ is that @sigsetjmp has an additional argument. If @savemask is nonzero, then 
+ @sigsetjmp also saves the current signal mask of the process in env.When @siglongjmp 
+ is called, if the env argument was saved by a call to @sigsetjmp with a nonzero 
+ @savemask,then @siglongjmp restores the saved signal mask.
+ ******************************************************************************/
+int sigsetjmp(sigjmp_buf env,int savemask);
+
+void siglongjmp(sigjmp_buf env,int val);
+
+
+
 #include <stdlib.h>
-/*
-function: sends the SIGABRT signal to the caller.(Processes should not ignore this signal.) 
-return:This function never returns*/
+/*******************************************************************************
+ function: sends the SIGABRT signal to the caller.(Processes should not ignore 
+           this signal.) 
+ return:This function never returns
+ ******************************************************************************/
 void abort(void);
 
 
 #include <unistd.h>
-/*
-Returns: 0 or number of unslept seconds
+/*******************************************************************************
+ Returns: 0 or number of unslept seconds
 
-This function causes the calling process to be suspended until either
-1.  The amount of wall clock time specified by @seconds has elapsed.
-2.  A signal is caught by the process and the signal handler returns.
-In case 1, the return value is 0. When sleep returns early because of some signal
-being caught (case 2), the return value is the number of unslept seconds (the requested
-time minus the actual time slept)*/
+ This function causes the calling process to be suspended until either
+ 1 The amount of wall clock time specified by @seconds has elapsed.
+ 2 A signal is caught by the process and the signal handler returns.
+ In case 1, the return value is 0. When sleep returns early because of some signal
+ being caught (case 2), the return value is the number of unslept seconds (the requested
+ time minus the actual time slept)
+
+ @sleepçš„é—®é¢˜
+ 1 å¦‚æœä¸€ä¸ªè¿›ç¨‹é¦–å…ˆè°ƒç”¨äº†alarm(10); ç„¶ååˆè°ƒç”¨äº†sleep(5);ä¼šå‘ç”Ÿä»€ä¹ˆ
+   The @sleep will return in 5 seconds (assuming that some other signal isn't 
+   caught in the interim), but will another SIGALRM be generated 5 seconds later?
+   These details depend on the implementation.
+ ******************************************************************************/
 unsigned int sleep(unsigned int seconds);
-
 
 
