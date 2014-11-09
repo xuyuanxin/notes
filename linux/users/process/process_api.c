@@ -1,19 +1,19 @@
-/*========================= è¿›ç¨‹çš„å¯åŠ¨ =========================
----->å¯åŠ¨ä¾‹ç¨‹
-å†…æ ¸ç”¨execå‡½æ•°æ‰§è¡ŒCç¨‹åºæ—¶ï¼Œåœ¨è°ƒç”¨mainå‰å…ˆè°ƒç”¨ä¸€ä¸ªç‰¹æ®Šçš„å¯åŠ¨ä¾‹ç¨‹ã€‚
-å¯åŠ¨ä¾‹ç¨‹å–å¾—å‘½ä»¤è¡Œå‚æ•°å’Œç¯å¢ƒå˜é‡å€¼ï¼Œç„¶åè°ƒç”¨mainå‡½æ•°ã€‚ä»mainå‡½æ•°è¿”å›åï¼Œå¯åŠ¨ä¾‹ç¨‹ç«‹å³è°ƒç”¨exitå‡½æ•°ã€‚
+/*========================= ½ø³ÌµÄÆô¶¯ =========================
+---->Æô¶¯Àı³Ì
+ÄÚºËÓÃexecº¯ÊıÖ´ĞĞC³ÌĞòÊ±£¬ÔÚµ÷ÓÃmainÇ°ÏÈµ÷ÓÃÒ»¸öÌØÊâµÄÆô¶¯Àı³Ì¡£
+Æô¶¯Àı³ÌÈ¡µÃÃüÁîĞĞ²ÎÊıºÍ»·¾³±äÁ¿Öµ£¬È»ºóµ÷ÓÃmainº¯Êı¡£´Ómainº¯Êı·µ»Øºó£¬Æô¶¯Àı³ÌÁ¢¼´µ÷ÓÃexitº¯Êı¡£
 
 */
 
 
-/*========================= è¿›ç¨‹çš„é€€å‡º =========================
----->æ­£å¸¸é€€å‡º
-1 è°ƒç”¨returnï¼Œç­‰æ•ˆäºexit
-2 è°ƒç”¨exit
-3 è°ƒç”¨_exitæˆ–_Exit
----->å¼‚å¸¸é€€å‡º
-1 è°ƒç”¨aboutå‡½æ•° 
-2 è¿›ç¨‹æ”¶åˆ°æŸä¸ªä¿¡å·ï¼Œè€Œè¯¥ä¿¡å·ä½¿ç¨‹åºç»ˆæ­¢ã€‚ 
+/*========================= ½ø³ÌµÄÍË³ö =========================
+---->Õı³£ÍË³ö
+1 µ÷ÓÃreturn£¬µÈĞ§ÓÚexit
+2 µ÷ÓÃexit
+3 µ÷ÓÃ_exit»ò_Exit
+---->Òì³£ÍË³ö
+1 µ÷ÓÃaboutº¯Êı 
+2 ½ø³ÌÊÕµ½Ä³¸öĞÅºÅ£¬¶ø¸ÃĞÅºÅÊ¹³ÌĞòÖÕÖ¹¡£ 
 
 
 Returning an integer value from the main function is equivalent to calling exitwith the same value. Thus
@@ -34,25 +34,25 @@ int atexit(void (*func)(void));
 #include<stdlib.h>
 
 /*******************************************************************************
- @status:ä¸ä¸º0éƒ½è¡¨ç¤ºå¼‚å¸¸é€€å‡º,0è¡¨ç¤ºæ­£å¸¸é€€å‡º
- function:ç”¨æ¥ç»ˆæ­¢è¿›ç¨‹(è¦å…ˆæ‰§è¡Œä¸€äº›æ¸…é™¤æ“ä½œï¼Œç„¶åå°†æ§åˆ¶æƒäº¤ç»™å†…æ ¸)
+ @status:²»Îª0¶¼±íÊ¾Òì³£ÍË³ö,0±íÊ¾Õı³£ÍË³ö
+ function:ÓÃÀ´ÖÕÖ¹½ø³Ì(ÒªÏÈÖ´ĞĞÒ»Ğ©Çå³ı²Ù×÷£¬È»ºó½«¿ØÖÆÈ¨½»¸øÄÚºË)
 
- 1 exit()å‡½æ•°åœ¨è°ƒç”¨exitç³»ç»Ÿä¹‹å‰è¦æ£€æŸ¥æ–‡ä»¶çš„æ‰“å¼€æƒ…å†µï¼ŒæŠŠæ–‡ä»¶ç¼“å†²åŒºçš„å†…å®¹å†™å›æ–‡ä»¶ã€‚
- 2 exitå‡½æ•°ä¼šè°ƒç”¨ç»ˆæ­¢å¤„ç†ç¨‹åº(é€šè¿‡atexitæ³¨å†Œ),ç„¶åå…³é—­æ‰€æœ‰æ ‡å‡†I/Oæµç­‰ã€‚
- 3 exitå‡½æ•°æ˜¯åœ¨_exitå‡½æ•°ä¹‹ä¸Šçš„ä¸€ä¸ªå°è£…ï¼Œå…¶ä¼šè°ƒç”¨_exitï¼Œå¹¶åœ¨è°ƒç”¨ä¹‹å‰å…ˆåˆ·æ–°æµã€‚
+ 1 exit()º¯ÊıÔÚµ÷ÓÃexitÏµÍ³Ö®Ç°Òª¼ì²éÎÄ¼şµÄ´ò¿ªÇé¿ö£¬°ÑÎÄ¼ş»º³åÇøµÄÄÚÈİĞ´»ØÎÄ¼ş¡£
+ 2 exitº¯Êı»áµ÷ÓÃÖÕÖ¹´¦Àí³ÌĞò(Í¨¹ıatexit×¢²á),È»ºó¹Ø±ÕËùÓĞ±ê×¼I/OÁ÷µÈ¡£
+ 3 exitº¯ÊıÊÇÔÚ_exitº¯ÊıÖ®ÉÏµÄÒ»¸ö·â×°£¬Æä»áµ÷ÓÃ_exit£¬²¢ÔÚµ÷ÓÃÖ®Ç°ÏÈË¢ĞÂÁ÷¡£
  ******************************************************************************/
 void exit(int status);
 
-/*ä¸æ¸…æ´—æ ‡å‡†I/Oæµ*/
+/*²»ÇåÏ´±ê×¼I/OÁ÷*/
 void _Exit(int status);
 
 
 /*******************************************************************************
-1 _exit()æ‰§è¡Œåç«‹å³è¿”å›ç»™å†…æ ¸ï¼Œè€Œexit()è¦å…ˆæ‰§è¡Œä¸€äº›æ¸…é™¤æ“ä½œï¼Œç„¶åå°†æ§åˆ¶æƒäº¤ç»™å†…æ ¸ã€‚
-2 è°ƒç”¨_exitå‡½æ•°æ—¶ï¼Œå…¶ä¼šå…³é—­è¿›ç¨‹æ‰€æœ‰çš„æ–‡ä»¶æè¿°ç¬¦ï¼Œæ¸…ç†å†…å­˜ä»¥åŠå…¶ä»–ä¸€äº›å†…æ ¸æ¸…ç†å‡½æ•°ï¼Œ
-  ä½†ä¸ä¼šåˆ·æ–°æµ(stdin, stdout, stderr ...).    
-3 å¦‚æœ‰ä¸€äº›æ•°æ®ï¼Œè®¤ä¸ºå·²ç»å†™å…¥äº†æ–‡ä»¶ï¼Œå®é™…ä¸Šå› ä¸ºæ²¡æœ‰æ»¡è¶³ç‰¹å®šçš„æ¡ä»¶ï¼Œå®ƒä»¬è¿˜åªæ˜¯ä¿å­˜
-  åœ¨ç¼“å†²åŒºå†…ï¼Œè¿™æ—¶ç”¨_exit()å‡½æ•°ç›´æ¥å°†è¿›ç¨‹å…³é—­ï¼Œç¼“å†²åŒºçš„æ•°æ®å°±ä¼šä¸¢å¤±ã€‚
+1 _exit()Ö´ĞĞºóÁ¢¼´·µ»Ø¸øÄÚºË£¬¶øexit()ÒªÏÈÖ´ĞĞÒ»Ğ©Çå³ı²Ù×÷£¬È»ºó½«¿ØÖÆÈ¨½»¸øÄÚºË¡£
+2 µ÷ÓÃ_exitº¯ÊıÊ±£¬Æä»á¹Ø±Õ½ø³ÌËùÓĞµÄÎÄ¼şÃèÊö·û£¬ÇåÀíÄÚ´æÒÔ¼°ÆäËûÒ»Ğ©ÄÚºËÇåÀíº¯Êı£¬
+  µ«²»»áË¢ĞÂÁ÷(stdin, stdout, stderr ...).    
+3 ÈçÓĞÒ»Ğ©Êı¾İ£¬ÈÏÎªÒÑ¾­Ğ´ÈëÁËÎÄ¼ş£¬Êµ¼ÊÉÏÒòÎªÃ»ÓĞÂú×ãÌØ¶¨µÄÌõ¼ş£¬ËüÃÇ»¹Ö»ÊÇ±£´æ
+  ÔÚ»º³åÇøÄÚ£¬ÕâÊ±ÓÃ_exit()º¯ÊıÖ±½Ó½«½ø³Ì¹Ø±Õ£¬»º³åÇøµÄÊı¾İ¾Í»á¶ªÊ§¡£
 *******************************************************************************/
  
 #include <unistd.h>    /* POSIX */ 
@@ -62,8 +62,8 @@ void _exit(int status);
 #include <unistd.h>
 
 /*
-@forkæ—¶ï¼Œå­è¿›ç¨‹ä¼šè¿›ç¨‹çˆ¶è¿›ç¨‹çš„
- æ‰“å¼€çš„æ–‡ä»¶:å…±äº«æ–‡ä»¶è¡¨(file table entry)
+@forkÊ±£¬×Ó½ø³Ì»á½ø³Ì¸¸½ø³ÌµÄ
+ ´ò¿ªµÄÎÄ¼ş:¹²ÏíÎÄ¼ş±í(file table entry)
 ?Real user ID, real group ID, effective user ID, and effective group ID
 ?Supplementary group IDs
 ?Process group ID
@@ -84,8 +84,8 @@ void _exit(int status);
  The return values from fork are different.
  The process IDs are different.
 ?The two processes have different parent process IDs: the parent process ID of the
-child is the parent; the parent process ID of the parent doesnâ€™t change.
-?The  childâ€™stms_utime, tms_stime, tms_cutime,andtms_cstimevalues
+child is the parent; the parent process ID of the parent doesn¡¯t change.
+?The  child¡¯stms_utime, tms_stime, tms_cutime,andtms_cstimevalues
 areset to 0 (these times arediscussed in Section 8.17).
 ?File locks set by the parent arenot inherited by the child.
 ?Pending alarms arecleared for the child.
@@ -93,9 +93,9 @@ areset to 0 (these times arediscussed in Section 8.17).
 /*******************************************************************************
  Returns: 0 in child, process ID of child in parent,-1 on error
  1 The new process created by @fork is called the child process.This function is 
-   called once but returns twice. å­è¿›ç¨‹è¿”å›0ï¼Œçˆ¶è¿›ç¨‹è¿”å›å­è¿›ç¨‹çš„è¿›ç¨‹ID
- 2 çˆ¶å­è¿›ç¨‹å…±äº«ä»£ç æ®µï¼Œä½†å„æœ‰è‡ªå·±çš„æ•°æ®æ®µã€å †å’Œæ ˆç©ºé—´ã€‚
- 3 çˆ¶å­è¿›ç¨‹çš„æ‰§è¡Œé¡ºåºå–å†³äºè°ƒåº¦ç®—æ³•
+   called once but returns twice. ×Ó½ø³Ì·µ»Ø0£¬¸¸½ø³Ì·µ»Ø×Ó½ø³ÌµÄ½ø³ÌID
+ 2 ¸¸×Ó½ø³Ì¹²Ïí´úÂë¶Î£¬µ«¸÷ÓĞ×Ô¼ºµÄÊı¾İ¶Î¡¢¶ÑºÍÕ»¿Õ¼ä¡£
+ 3 ¸¸×Ó½ø³ÌµÄÖ´ĞĞË³ĞòÈ¡¾öÓÚµ÷¶ÈËã·¨
  4 Modern implementations don't perform a complete copy of the parent's data, stack,
    and heap, since a @fork is often followed by an @exec. Instead, a technique 
    called copy-on-write (COW) is used. These regions are shared by the parent and 
@@ -106,9 +106,9 @@ areset to 0 (these times arediscussed in Section 8.17).
 pid_t fork(void);
 
 /*******************************************************************************
- vforkç”¨äºåˆ›å»ºä¸€ä¸ªæ–°è¿›ç¨‹ï¼Œè€Œè¯¥æ–°è¿›ç¨‹çš„ç›®çš„æ˜¯execä¸€ä¸ªæ–°è¿›ç¨‹ã€‚vforkä¿è¯å­è¿›ç¨‹å…ˆè¿
- è¡Œï¼Œåœ¨è°ƒç”¨execæˆ–_exitä¹‹å‰ä¸çˆ¶è¿›ç¨‹æ•°æ®æ˜¯å…±äº«çš„,åœ¨å®ƒè°ƒç”¨execæˆ–_exitä¹‹åçˆ¶è¿›ç¨‹æ‰
- å¯èƒ½è¢«è°ƒåº¦è¿è¡Œã€‚
+ vforkÓÃÓÚ´´½¨Ò»¸öĞÂ½ø³Ì£¬¶ø¸ÃĞÂ½ø³ÌµÄÄ¿µÄÊÇexecÒ»¸öĞÂ½ø³Ì¡£vfork±£Ö¤×Ó½ø³ÌÏÈÔË
+ ĞĞ£¬ÔÚµ÷ÓÃexec»ò_exitÖ®Ç°Óë¸¸½ø³ÌÊı¾İÊÇ¹²ÏíµÄ,ÔÚËüµ÷ÓÃexec»ò_exitÖ®ºó¸¸½ø³Ì²Å
+ ¿ÉÄÜ±»µ÷¶ÈÔËĞĞ¡£
  ******************************************************************************/
 pid_t vfork(void);
 
@@ -125,30 +125,30 @@ gid_t getegid(void);/*Returns: effective group ID of calling process*/
 
 #include <sys/wait.h>
 
-/*æ£€æŸ¥wait waitpidç»ˆæ­¢çŠ¶æ€çš„å® è¿›ç¨‹å¯èƒ½:æ­£å¸¸ç»ˆæ­¢ ç”±æŸä¸ªä¿¡å·æ€æ­» ç”±ä½œä¸šæ§åˆ¶åœæ­¢*/
+/*¼ì²éwait waitpidÖÕÖ¹×´Ì¬µÄºê ½ø³Ì¿ÉÄÜ:Õı³£ÖÕÖ¹ ÓÉÄ³¸öĞÅºÅÉ±ËÀ ÓÉ×÷Òµ¿ØÖÆÍ£Ö¹*/
 #define WEXITSTATUS(status) /*WExitStatus to fetch the low-order 8 bits of the 
 argument that the child passed to exit,_exit,or_Exit*/
 #define WTERMSIG(status)  /*wtermsig to fetch the signal number that caused the 
 termination.*/
 #define WSTOPSIG(status)  /*Wstopsig to fetch the signal number that caused the 
 child to stop*/
-#define WIFEXITED(status)   /*WIFexited æ­£å¸¸ç»ˆæ­¢åˆ™ä¸ºçœŸã€‚æ­£å¸¸ç»ˆæ­¢æ—¶å¯ä»¥æ‰§è¡Œ
+#define WIFEXITED(status)   /*WIFexited Õı³£ÖÕÖ¹ÔòÎªÕæ¡£Õı³£ÖÕÖ¹Ê±¿ÉÒÔÖ´ĞĞ
 WEXITSTATUS()*/
-#define WIFSIGNALED(status) /*WIFsignaled å¼‚å¸¸ç»ˆæ­¢åˆ™ä¸ºçœŸ(æ¥æ”¶ä¸€ä¸ªä¸æ•è·çš„ä¿¡å·)ã€‚
-æ­¤æ—¶å¯ä»¥è°ƒç”¨WTERMSIG()è·å–å­è¿›ç¨‹ç»ˆæ­¢çš„ä¿¡å·ç¼–å·*/
+#define WIFSIGNALED(status) /*WIFsignaled Òì³£ÖÕÖ¹ÔòÎªÕæ(½ÓÊÕÒ»¸ö²»²¶»ñµÄĞÅºÅ)¡£
+´ËÊ±¿ÉÒÔµ÷ÓÃWTERMSIG()»ñÈ¡×Ó½ø³ÌÖÕÖ¹µÄĞÅºÅ±àºÅ*/
 #define WIFSTOPPED(status)  /*WIFstopped True if status was returned for a child 
-that is currently stopped.æ­¤æ—¶å¯ä»¥è°ƒç”¨WSTOPSIG()è·å–ä½¿å­è¿›ç¨‹æš‚åœçš„ä¿¡å·ç¼–å·*/
+that is currently stopped.´ËÊ±¿ÉÒÔµ÷ÓÃWSTOPSIG()»ñÈ¡Ê¹×Ó½ø³ÌÔİÍ£µÄĞÅºÅ±àºÅ*/
 #define WIFCONTINUED(status) /* True if status was returned for a child that has 
 been continued after a job control stop (XSI option; waitpid only).*/
 
 
 
 /*******************************************************************************
- @statloc:è¿”å›è¿›ç¨‹çš„é€€å‡ºçŠ¶æ€(å¯ä»¥ä¼ NULL)ï¼Œå…¶ä¸­æŸäº›ä½è¡¨ç¤ºé€€å‡ºçŠ¶æ€(æ­£å¸¸è¿”å›)ï¼Œå…¶ä»–
-          ä½åˆ™æŒ‡ç¤ºä¿¡å·ç¼–å·(å¼‚å¸¸è¿”å›)
- return: process ID(é€€å‡ºè¿›ç¨‹) if OK, 0 (see later), or -1 on error
- 1 å¦‚æœæ‰€æœ‰å­è¿›ç¨‹éƒ½è¿˜åœ¨è¿è¡Œï¼Œåˆ™é˜»å¡ï¼Œæœ‰ä¸€ä¸ªç»ˆæ­¢waitå°±è¿”å›ã€‚
- 2 å¦‚æœå®ƒæ²¡æœ‰ä»»ä½•å­è¿›ç¨‹ï¼Œåˆ™ç«‹å³å‡ºé”™è¿”å›ã€‚è¿™æ˜¯å”¯ä¸€çš„å‡ºé”™åŸå› 
+ @statloc:·µ»Ø½ø³ÌµÄÍË³ö×´Ì¬(¿ÉÒÔ´«NULL)£¬ÆäÖĞÄ³Ğ©Î»±íÊ¾ÍË³ö×´Ì¬(Õı³£·µ»Ø)£¬ÆäËû
+          Î»ÔòÖ¸Ê¾ĞÅºÅ±àºÅ(Òì³£·µ»Ø)
+ return: process ID(ÍË³ö½ø³Ì) if OK, 0 (see later), or -1 on error
+ 1 Èç¹ûËùÓĞ×Ó½ø³Ì¶¼»¹ÔÚÔËĞĞ£¬Ôò×èÈû£¬ÓĞÒ»¸öÖÕÖ¹wait¾Í·µ»Ø¡£
+ 2 Èç¹ûËüÃ»ÓĞÈÎºÎ×Ó½ø³Ì£¬ÔòÁ¢¼´³ö´í·µ»Ø¡£ÕâÊÇÎ¨Ò»µÄ³ö´íÔ­Òò
  ******************************************************************************/
 pid_t wait(int *statloc);
 
@@ -156,21 +156,21 @@ pid_t wait(int *statloc);
 #define WNOHANG
 #define WUNTRACED
 /*******************************************************************************
- @pid: pid == -1 ç­‰å¾…ä»»æ„å­è¿›ç¨‹
-       pid > 0   ç­‰å¾…å…¶è¿›ç¨‹IDä¸pidç›¸ç­‰çš„å­è¿›ç¨‹
-       pid == 0  ç­‰å¾…å…¶ç»„IDç­‰äºè¿›ç¨‹ç»„IDçš„ä»»æ„å­è¿›ç¨‹
-       pid < -1  ç­‰å¾…å…¶ç»„IDç­‰äºpidç»å¯¹å€¼çš„ä»»æ„å­è¿›ç¨‹
- @statloc:è¿”å›è¿›ç¨‹çš„é€€å‡ºçŠ¶æ€
- @options:å¯ä»¥ä¸º 0 æˆ–å¯ä»¥ç”¨"|"è¿ç®—ç¬¦æŠŠå®ƒä»¬è¿æ¥èµ·æ¥ä½¿ç”¨,å¦‚ WNOHANG | WUNTRACED
-      0         ç­‰å¾…
-      WNOHANG   è‹¥pidæŒ‡å®šçš„å­è¿›ç¨‹æ²¡æœ‰ç»“æŸï¼Œåˆ™waitpid()å‡½æ•°è¿”å›0ï¼Œä¸äºˆä»¥ç­‰å¾…ã€‚è‹¥ç»“
-                æŸï¼Œåˆ™è¿”å›è¯¥å­è¿›ç¨‹çš„IDã€‚
-      WUNTRACED è‹¥å­è¿›ç¨‹è¿›å…¥æš‚åœçŠ¶æ€ï¼Œåˆ™é©¬ä¸Šè¿”å›ï¼Œä½†å­è¿›ç¨‹çš„ç»“æŸçŠ¶æ€ä¸äºˆä»¥ç†ä¼šã€‚
-                WIFSTOPPED(status)å®ç¡®å®šè¿”å›å€¼æ˜¯å¦å¯¹åº”ä¸ä¸€ä¸ªæš‚åœå­è¿›ç¨‹ã€‚
+ @pid: pid == -1 µÈ´ıÈÎÒâ×Ó½ø³Ì
+       pid > 0   µÈ´ıÆä½ø³ÌIDÓëpidÏàµÈµÄ×Ó½ø³Ì
+       pid == 0  µÈ´ıÆä×éIDµÈÓÚ½ø³Ì×éIDµÄÈÎÒâ×Ó½ø³Ì
+       pid < -1  µÈ´ıÆä×éIDµÈÓÚpid¾ø¶ÔÖµµÄÈÎÒâ×Ó½ø³Ì
+ @statloc:·µ»Ø½ø³ÌµÄÍË³ö×´Ì¬
+ @options:¿ÉÒÔÎª 0 »ò¿ÉÒÔÓÃ"|"ÔËËã·û°ÑËüÃÇÁ¬½ÓÆğÀ´Ê¹ÓÃ,Èç WNOHANG | WUNTRACED
+      0         µÈ´ı
+      WNOHANG   ÈôpidÖ¸¶¨µÄ×Ó½ø³ÌÃ»ÓĞ½áÊø£¬Ôòwaitpid()º¯Êı·µ»Ø0£¬²»ÓèÒÔµÈ´ı¡£Èô½á
+                Êø£¬Ôò·µ»Ø¸Ã×Ó½ø³ÌµÄID¡£
+      WUNTRACED Èô×Ó½ø³Ì½øÈëÔİÍ£×´Ì¬£¬ÔòÂíÉÏ·µ»Ø£¬µ«×Ó½ø³ÌµÄ½áÊø×´Ì¬²»ÓèÒÔÀí»á¡£
+                WIFSTOPPED(status)ºêÈ·¶¨·µ»ØÖµÊÇ·ñ¶ÔÓ¦ÓëÒ»¸öÔİÍ£×Ó½ø³Ì¡£
                 
  return: process ID if OK, 0 (see later), or -1 on error
 
- 1 å¦‚æœæŒ‡å®šçš„è¿›ç¨‹æˆ–è¿›ç¨‹ç»„ä¸å­˜åœ¨ï¼Œæˆ–è€…å‚æ•°pidæŒ‡å®šçš„è¿›ç¨‹ä¸æ˜¯è°ƒç”¨è¿›ç¨‹çš„å­è¿›ç¨‹åˆ™éƒ½å°†å‡ºé”™
+ 1 Èç¹ûÖ¸¶¨µÄ½ø³Ì»ò½ø³Ì×é²»´æÔÚ£¬»òÕß²ÎÊıpidÖ¸¶¨µÄ½ø³Ì²»ÊÇµ÷ÓÃ½ø³ÌµÄ×Ó½ø³ÌÔò¶¼½«³ö´í
  ******************************************************************************/
 pid_t waitpid(pid_t pid,int *statloc,int options);
 
@@ -193,7 +193,7 @@ can be retrieved by a subsequent call to wait, waitid, or waitpid.*/
 yet been reported*/
 
 /*******************************************************************************
- @idtype : å‚æ•°@idçš„ç±»å‹ï¼ŒP_PID P_PGID P_ALL
+ @idtype : ²ÎÊı@idµÄÀàĞÍ£¬P_PID P_PGID P_ALL
  @id     :
  @infop  : 
  @options: WCONTINUED WEXITED WNOHANG  WNOWAIT WSTOPPED
@@ -215,7 +215,7 @@ pid_t wait4(pid_t pid,int *statloc,int options,struct rusage *rusage);
 
 #include <unistd.h>
 /*
-Weâ€™ve mentioned that the process ID does not change after an exec,but the new
+We¡¯ve mentioned that the process ID does not change after an exec,but the new
 program inherits additional properties from the calling process:
 ?Process ID and parent process ID
 ?Real user ID and real group ID
@@ -247,7 +247,7 @@ All seven return:-1 on error, no return on success
 
 
 The process ID does not change across an exec,because a new process is not created; exec merely replaces the current process
-â€”its text, data, heap,  and  stack segments â€” with a brand-new program from disk.*/
+¡ªits text, data, heap,  and  stack segments ¡ª with a brand-new program from disk.*/
 int execl(const char *pathname,const char *arg0,... /* (char *)0 */ );
 int execv(const char *pathname,char *const argv[]);
 int execle(const char *pathname,const char *arg0,.../* (char *)0, char *const envp[] */ );
@@ -265,8 +265,8 @@ int fexecve(int fd,char *const argv[], char *const envp[]);
 function:
 return: 0 if OK,-1 on error
 
----->ä¿®æ”¹è§„åˆ™
-1 è‹¥è¿›ç¨‹å…·æœ‰è¶…çº§ç”¨æˆ·æƒé™ï¼Œåˆ™setuidå‡½æ•°å°†å®é™…ç”¨æˆ·IDã€æœ‰æ•ˆç”¨æˆ·ID,ä»¥åŠä¿å­˜çš„è®¾ç½®ç”¨æˆ·IDè®¾ç½®ä¸ºuid
+---->ĞŞ¸Ä¹æÔò
+1 Èô½ø³Ì¾ßÓĞ³¬¼¶ÓÃ»§È¨ÏŞ£¬Ôòsetuidº¯Êı½«Êµ¼ÊÓÃ»§ID¡¢ÓĞĞ§ÓÃ»§ID,ÒÔ¼°±£´æµÄÉèÖÃÓÃ»§IDÉèÖÃÎªuid
 2 If the process does not have superuser privileges, but uid equals either the real user ID or the saved set-user-ID,
   setuid sets only the effective user ID to uid. The real user ID and the saved set-user-ID are not changed.
 3 If neither of these two conditions is true,errno is set to EPERM and -1 is returned.
@@ -277,8 +277,8 @@ We can make a few statements about the three user IDs that the kernel maintains.
 2 The effective user ID is set by the exec functions only if the set-user-ID bit is set for the program file. 
   If the set-user-ID bit is not set, the exec functions leave the effective user ID as its current value. 
   We can call setuid at any time to set the effective user ID to either the real user ID or the saved set-user-ID.  
-  Naturally, we canâ€™t set the effective user ID to any random value.
-3 The saved set-user-ID is copied from the effective user ID by exec.If the fileâ€™s set-user-ID bit is set, this copy is saved after exec stores 
+  Naturally, we can¡¯t set the effective user ID to any random value.
+3 The saved set-user-ID is copied from the effective user ID by exec.If the file¡¯s set-user-ID bit is set, this copy is saved after exec stores 
   the effective user ID from the file's user ID.*/
 int setuid(uid_t uid);
 int setgid(gid_t gid);
@@ -299,19 +299,19 @@ pid_t getpgid(pid_t pid);
   function:A process joins an existing process group or creates a new process group by calling @setpgid
   Returns: 0 if OK,-1 on error
 
-  1 æŠŠè¿›ç¨‹@pidçš„è¿›ç¨‹ç»„IDè®¾ç½®æˆ@pgid,å¦‚æœ@pid==@pgid,åˆ™è¿›ç¨‹@pidå˜æˆè¿›ç¨‹ç»„ç»„é•¿.
-  2 if @pid==0  ä½¿ç”¨è°ƒç”¨è€…çš„è¿›ç¨‹ID
-  3 if @pgid==0 åˆ™è¿›ç¨‹@pidçš„è¿›ç¨‹IDä½œä¸ºè¿›ç¨‹ç»„ID
-  4 ä¸€ä¸ªè¿›ç¨‹åªèƒ½ä¸ºè‡ªå·±æˆ–å®ƒçš„å­è¿›ç¨‹è®¾ç½®è¿›ç¨‹ç»„ID
-  5 å­è¿›ç¨‹è°ƒç”¨execç³»åˆ—å‡½æ•°å,è¿›ç¨‹ç»„ä¸èƒ½æ”¹å˜*/
+  1 °Ñ½ø³Ì@pidµÄ½ø³Ì×éIDÉèÖÃ³É@pgid,Èç¹û@pid==@pgid,Ôò½ø³Ì@pid±ä³É½ø³Ì×é×é³¤.
+  2 if @pid==0  Ê¹ÓÃµ÷ÓÃÕßµÄ½ø³ÌID
+  3 if @pgid==0 Ôò½ø³Ì@pidµÄ½ø³ÌID×÷Îª½ø³Ì×éID
+  4 Ò»¸ö½ø³ÌÖ»ÄÜÎª×Ô¼º»òËüµÄ×Ó½ø³ÌÉèÖÃ½ø³Ì×éID
+  5 ×Ó½ø³Ìµ÷ÓÃexecÏµÁĞº¯Êıºó,½ø³Ì×é²»ÄÜ¸Ä±ä*/
 int setpgid(pid_t pid,pid_t pgid);
 
 /*
 function:A process establishes a new session by calling the @setsid function.
 returns: process group ID if OK,-1 on error
 
-1 å¦‚æœè°ƒç”¨è¯¥å‡½æ•°çš„è¿›ç¨‹æ˜¯ç»„é•¿è¿›ç¨‹,åˆ™å‡½æ•°è¿”å›å‡ºé”™.
-2 å¦‚æœä¸æ˜¯ç»„é•¿è¿›ç¨‹,åˆ™@setsidåˆ›å»ºä¸€ä¸ªæ–°ä¼šè¯.
+1 Èç¹ûµ÷ÓÃ¸Ãº¯ÊıµÄ½ø³ÌÊÇ×é³¤½ø³Ì,Ôòº¯Êı·µ»Ø³ö´í.
+2 Èç¹û²»ÊÇ×é³¤½ø³Ì,Ôò@setsid´´½¨Ò»¸öĞÂ»á»°.
 2.1 The process becomes the session leader of this new session. (A session leader is
     the process that creates a session.) The process is the only process in this new session.
 2.2 The process becomes the process group leader of a new process group. The new
@@ -333,13 +333,14 @@ pid_t getsid(pid_t pid);
 
 #include <setjmp.h>
 /*******************************************************************************
- @env: ä¸€èˆ¬æ˜¯ä¸ªå…¨å±€å˜é‡ï¼Œå­˜å‚¨æ ˆä¿¡æ¯ã€‚å°†æ¥è°ƒç”¨@longjmpæ—¶ç”¨æ¥æ¢å¤æ ˆã€‚
+ @env: Ò»°ãÊÇ¸öÈ«¾Ö±äÁ¿£¬´æ´¢Õ»ĞÅÏ¢¡£½«À´µ÷ÓÃ@longjmpÊ±ÓÃÀ´»Ö¸´Õ»¡£
  Returns: 0 if called directly,nonzero if returning from a call to @longjmp
  ******************************************************************************/
 int setjmp(jmp_buf env);
 
 /*******************************************************************************
- @env:è°ƒç”¨@setjmpæ—¶ä½¿ç”¨çš„@env
- @val:ä»@setjmpè¿”å›çš„å€¼ï¼Œå…¥å‚å¿…é¡»å¤§äº0
+ @env:µ÷ÓÃ@setjmpÊ±Ê¹ÓÃµÄ@env
+ @val:´Ó@setjmp·µ»ØµÄÖµ£¬Èë²Î±ØĞë´óÓÚ0
  ******************************************************************************/
 void longjmp(jmp_buf env,int val);
+

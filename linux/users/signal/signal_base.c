@@ -1,25 +1,25 @@
 /*******************************************************************************
----->å®šä¹‰
-ä¿¡å·æ˜¯è½¯ä»¶ä¸­æ–­ã€‚ä¿¡å·æä¾›äº†ä¸€ç§å¤„ç†å¼‚æ­¥äº‹ä»¶çš„æ–¹æ³•ï¼Œä¾‹å¦‚ï¼Œç»ˆç«¯ç”¨æˆ·é”®å…¥ç»ˆç«¯é”®ï¼Œåˆ™ä¼š
-é€šè¿‡ä¿¡å·æœºåˆ¶åœæ­¢ä¸€ä¸ªç¨‹åºã€‚æ¯ä¸ªä¿¡å·éƒ½æœ‰ä¸€ä¸ªåå­—(ä»¥SIGå¼€å¤´),ä¿¡å·éƒ½è¢«å®šä¹‰ä¸ºæ­£æ•´æ•°ï¼Œ
-ä¸å­˜åœ¨ç¼–å·ä¸º0çš„ä¿¡å·ã€‚
+---->¶¨Òå
+ĞÅºÅÊÇÈí¼şÖĞ¶Ï¡£ĞÅºÅÌá¹©ÁËÒ»ÖÖ´¦ÀíÒì²½ÊÂ¼şµÄ·½·¨£¬ÀıÈç£¬ÖÕ¶ËÓÃ»§¼üÈëÖÕ¶Ë¼ü£¬Ôò»á
+Í¨¹ıĞÅºÅ»úÖÆÍ£Ö¹Ò»¸ö³ÌĞò¡£Ã¿¸öĞÅºÅ¶¼ÓĞÒ»¸öÃû×Ö(ÒÔSIG¿ªÍ·),ĞÅºÅ¶¼±»¶¨ÒåÎªÕıÕûÊı£¬
+²»´æÔÚ±àºÅÎª0µÄĞÅºÅ¡£
 
-ä¿¡å·å¯ä»¥:
-a:ç”±ä¸€ä¸ªè¿›ç¨‹å‘ç»™å¦å¤–ä¸€ä¸ªè¿›ç¨‹(æˆ–è‡ªèº«)
-b:ç”±å†…æ ¸å‘ç»™æŸä¸ªè¿›ç¨‹
-æ¯ä¸ªä¿¡å·éƒ½æœ‰ä¸€ä¸ªä¸ä¹‹å…³è”çš„å¤„ç†(disposition),ä¹Ÿç§°ä¸ºè¡Œä¸º(action).ä¿¡å·çš„å¤„ç½®æœ‰ä¸‰ç§é€‰æ‹©
-1 æ•è·
-2 å¿½ç•¥ SIG_IGN
-3 é»˜è®¤å¤„ç† 
+ĞÅºÅ¿ÉÒÔ:
+a:ÓÉÒ»¸ö½ø³Ì·¢¸øÁíÍâÒ»¸ö½ø³Ì(»ò×ÔÉí)
+b:ÓÉÄÚºË·¢¸øÄ³¸ö½ø³Ì
+Ã¿¸öĞÅºÅ¶¼ÓĞÒ»¸öÓëÖ®¹ØÁªµÄ´¦Àí(disposition),Ò²³ÆÎªĞĞÎª(action).ĞÅºÅµÄ´¦ÖÃÓĞÈıÖÖÑ¡Ôñ
+1 ²¶»ñ
+2 ºöÂÔ SIG_IGN
+3 Ä¬ÈÏ´¦Àí 
 
-äº§ç”Ÿä¿¡å·çš„æ¡ä»¶:
-1 æŸäº›ç‰¹å®šæŒ‰é”®ï¼Œå¼•å‘ç»ˆç«¯äº§ç”Ÿä¿¡å·ã€‚ä¾‹å¦‚Ctrl+Cé€šå¸¸äº§ç”Ÿä¸­æ–­ä¿¡å·(SIGINT)
-2 ç¡¬ä»¶å¼‚å¸¸äº§ç”Ÿä¿¡å·:These conditions are usually detected by the hardware, and the
+²úÉúĞÅºÅµÄÌõ¼ş:
+1 Ä³Ğ©ÌØ¶¨°´¼ü£¬Òı·¢ÖÕ¶Ë²úÉúĞÅºÅ¡£ÀıÈçCtrl+CÍ¨³£²úÉúÖĞ¶ÏĞÅºÅ(SIGINT)
+2 Ó²¼şÒì³£²úÉúĞÅºÅ:These conditions are usually detected by the hardware, and the
   kernel is notified. The kernel then generates the appropriate signal for the
   process that was running at the time the condition occurred. For example,SIGSEGV 
   is generated for a process that executes an invalid memory reference.
-3 killå‘½ä»¤
-4 è½¯ä»¶æ¡ä»¶:Software conditions can generate signals when a process should be 
+3 killÃüÁî
+4 Èí¼şÌõ¼ş:Software conditions can generate signals when a process should be 
   notified of various events. These aren't hardware-generated conditions (as is 
   the divideby-0 condition), but software conditions. Examples are SIGURG 
   (generated when out-of-band data arrives over a network connection), SIGPIPE 
@@ -38,15 +38,15 @@ meaning in the new program file that is executed.)
 
 Process Creation
 When a process calls fork,the child inherits the parent's signal dispositions. 
-Here,since the child starts off with a copy of the parentâ€™s memory image, the 
+Here,since the child starts off with a copy of the parent¡¯s memory image, the 
 address of a signal-catching function has meaning in the child.
 
----->ä¸€äº›æ¦‚å¿µ
-  generated    äº§ç”Ÿ
-  delivered    é€’äº¤
-  pending      æ‚¬æŒ‚
-  blocking     é˜»å¡
-  signal mask  ä¿¡å·æ©ç 
+---->Ò»Ğ©¸ÅÄî
+  generated    ²úÉú
+  delivered    µİ½»
+  pending      Ğü¹Ò
+  blocking     ×èÈû
+  signal mask  ĞÅºÅÑÚÂë
 
   generated: a signal is generated for a process (or sent to a process) when the 
 event that causes the signal occurs. The event could be a hardware exception 
@@ -60,7 +60,7 @@ a signal is taken.
   pending: During the time between the generation of a signal and its delivery,
 the signal is said to be pending.
 
-  blocking:é˜»æ­¢æ˜¯é˜»æ­¢ä¿¡å·çš„é€’äº¤(delivery)ã€‚ä¹Ÿå°±æ˜¯ä½¿äº§ç”Ÿçš„ä¿¡å·å¤„äºpendingçŠ¶æ€ã€‚
+  blocking:×èÖ¹ÊÇ×èÖ¹ĞÅºÅµÄµİ½»(delivery)¡£Ò²¾ÍÊÇÊ¹²úÉúµÄĞÅºÅ´¦ÓÚpending×´Ì¬¡£
 If a signal that is blocked is generated for a process, and if the action for 
 that signal is either the default action or to catch the signal, then the signal 
 remains pending for the process until the process either (a) unblocks the signal 
@@ -78,13 +78,13 @@ signal mask by calling @sigprocmask
 an integer,POSIX.1 defines a data type,called sigset_t,that holds a signal set.
 The signal mask, for example,is	stored in one of these	signal sets. 
 
-  é˜»å¡æœŸé—´ä¸æ­¢äº§ç”Ÿä¸€æ¬¡è¯¥ä¿¡å·ï¼Œå¦‚ä½•å¤„ç†:POSIX.1 allows the system to deliver the 
+  ×èÈûÆÚ¼ä²»Ö¹²úÉúÒ»´Î¸ÃĞÅºÅ£¬ÈçºÎ´¦Àí:POSIX.1 allows the system to deliver the 
 signal either once or more than  once. If the system delivers the signal more 
 than once, we say that the signals are queued. Most UNIX systems, however,do not 
 queue signals unless they support the real-time extensions to POSIX.1. Instead, 
 the UNIX kernel simply delivers the signal once.
 
-  åŒæ—¶äº§ç”Ÿå¤šä¸ªä¿¡å·ï¼Œå¦‚ä½•å¤„ç†:POSIX.1 does not specify the order in which the signals  
+  Í¬Ê±²úÉú¶à¸öĞÅºÅ£¬ÈçºÎ´¦Àí:POSIX.1 does not specify the order in which the signals  
 are delivered to the process.The Rationale for POSIX.1 does suggest, however,that 
 signals related to the current state of the process be delivered before other 
 signals. (SIGSEGV is one such signal.)
@@ -96,7 +96,7 @@ signals. (SIGSEGV is one such signal.)
 /******************************************************************************/
 
 /******************************************************************************
- ä»¥ä¸‹äº”ä¸ªä¿¡å·æ˜¯ä½œä¸šæ§åˆ¶ä¿¡å·
+ ÒÔÏÂÎå¸öĞÅºÅÊÇ×÷Òµ¿ØÖÆĞÅºÅ
  Except for SIGCHLD,most application programs don't handle these signals
 
  There are some interactions between the job-control signals. When any of the four
@@ -115,8 +115,8 @@ signals. (SIGSEGV is one such signal.)
 a job in the foreground or background, the shell sends all the processes in the 
 job the SIGCONT signal.*/
 #define SIGSTOP /*Stop signal (can't be caught or ignored).*/
-#define SIGTSTP /*Interactive stop signal. å½“é”®å…¥æŒ‚èµ·å­—ç¬¦(é€šå¸¸æ˜¯ctrl+z)æ—¶ä¿¡å·
-è¢«é€åˆ°å‰å°è¿›ç¨‹ç»„çš„æ‰€æœ‰è¿›ç¨‹*/
+#define SIGTSTP /*Interactive stop signal. µ±¼üÈë¹ÒÆğ×Ö·û(Í¨³£ÊÇctrl+z)Ê±ĞÅºÅ
+±»ËÍµ½Ç°Ì¨½ø³Ì×éµÄËùÓĞ½ø³Ì*/
 #define SIGTTIN /*Read from controlling terminal by background process group member.*/
 #define SIGTTOU /*Write to controlling terminal by a background process group member.
 if SIGTTIN or SIGTTOU is delivered to a process, the process is stopped by default, and
@@ -132,7 +132,7 @@ program, especially when it's generating a lot of unwanted output on the screen.
 in application programs.*/
 #define SIGBUS /*This signal indicates an implementation-defined  hardware fault.
 Implementations usually generate this signal on certain types of memory faults
-å¦‚æœè®¿é—®æ˜ å°„åŒºçš„æŸä¸ªéƒ¨åˆ†,è€Œåœ¨è®¿é—®æ—¶è¿™ä¸€éƒ¨åˆ†å®é™…ä¸Šå·²ç»ä¸å­˜åœ¨ï¼Œåˆ™äº§ç”ŸSIGBUSä¿¡å·*/
+Èç¹û·ÃÎÊÓ³ÉäÇøµÄÄ³¸ö²¿·Ö,¶øÔÚ·ÃÎÊÊ±ÕâÒ»²¿·ÖÊµ¼ÊÉÏÒÑ¾­²»´æÔÚ£¬Ôò²úÉúSIGBUSĞÅºÅ*/
 #define SIGSEGV /*the process has made an invalid memory reference (which is 
 usually a sign that the program has a bug, such as dereferencing an uninitialized 
 pointer).The name SEGV stands for "segmentation violation."*/
@@ -143,3 +143,4 @@ type SOCK_STREAM that is no longer connected.*/
 default.Because it can be caught by applications, using SIGTERM gives programs
 a chance to terminate gracefully by cleaning up before exiting  (in contrast to 
 SIGKILL,which can't be caught or ignored).*/
+

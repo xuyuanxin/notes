@@ -7,6 +7,7 @@
 #include<string.h>
 #include"net_pub.h"
 
+void sig_chld(int signo);
 
 
 

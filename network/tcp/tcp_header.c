@@ -1,22 +1,22 @@
-/*np:notes not project é¿å…å’Œprojecté‡åï¼Œé˜…è¯»ä¸æ–¹ä¾¿ã€‚
-  ç¤ºä¾‹ç­‰éprojectä¸­çš„å‘½ååŠ å‰ç¼€"np"*/
+/*np:notes not project ±ÜÃâºÍprojectÖØÃû£¬ÔÄ¶Á²»·½±ã¡£
+  Ê¾ÀıµÈ·ÇprojectÖĞµÄÃüÃû¼ÓÇ°×º"np"*/
 
 
-/*tcp åŸºæœ¬å¤´éƒ¨ï¼Œä¸åŒ…æ‹¬å¯é€‰éƒ¨åˆ†*/
+/*tcp »ù±¾Í·²¿£¬²»°üÀ¨¿ÉÑ¡²¿·Ö*/
 struct np_tcphdr 
 {
-	__be16	source; /*æºç«¯å£*/
-	__be16	dest;   /*ç›®çš„ç«¯å£*/
-	__be32	seq;    /*å‘é€åºåˆ—å·*/
-	__be32	ack_seq;/*æœŸæœ›æ¥æ”¶çš„åºåˆ—å·*/
+	__be16	source; /*Ô´¶Ë¿Ú*/
+	__be16	dest;   /*Ä¿µÄ¶Ë¿Ú*/
+	__be32	seq;    /*·¢ËÍĞòÁĞºÅ*/
+	__be32	ack_seq;/*ÆÚÍû½ÓÊÕµÄĞòÁĞºÅ*/
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	__u16	res1:4,/**/
 		doff:4,/**/
 		fin:1,/**/
-		syn:1,/*å»ºç«‹è¿æ¥*/
+		syn:1,/*½¨Á¢Á¬½Ó*/
 		rst:1,/**/
 		psh:1,/**/
-		ack:1,/*åº”ç­”æ ‡å¿—*/
+		ack:1,/*Ó¦´ğ±êÖ¾*/
 		urg:1,/**/
 		ece:1,/**/
 		cwr:1;/**/
@@ -64,7 +64,7 @@ Transmission Control Protocol
 +------------------------------------------+
 SOURCE PORT            : TCP port numbers that identify the application
 DESTINATION PORT       : programs at the ends of the connection
-SEQUENCE NUMBER        : identifies the position in the senderâ€™s octet stream of the data in the segment
+SEQUENCE NUMBER        : identifies the position in the sender¡¯s octet stream of the data in the segment
 ACKNOWLEDGEMENT NUMBER : identifies the number of the octet that the source expects to receive next
 HLEN(4-bit)            : specifies the length of the segment header measured in 32-bit multiples. 
 RESERVED(6-bit)        : reserved for future use
@@ -125,4 +125,6 @@ The TCP LENGTH field specifies the total length of the TCP segment including the
 
 
 */
+
+
 

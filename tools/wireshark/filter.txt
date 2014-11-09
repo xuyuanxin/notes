@@ -1,0 +1,8 @@
+ ip.dst eq www.mit.edu 
+ ip.src == 192.168.1.1
+(ip.src == 192.168.1.100 and ip.dst == 192.168.1.108) or (ip.src == 192.168.1.108 and ip.dst == 192.168.1.100)
+
+ip.dst == 192.168.1.108 or ip.src == 192.168.1.108
+
+(ip.src == 192.168.1.100 and ip.dst == 111.13.100.92) or (ip.src == 111.13.100.92 and ip.dst == 192.168.1.100) or
+(ip.src == 192.168.1.100 and ip.dst == 111.13.100.91) or (ip.src == 111.13.100.91 and ip.dst == 192.168.1.100)

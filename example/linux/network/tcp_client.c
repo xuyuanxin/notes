@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	str_cli_v3(stdin, sockfd);		/* do it all */
+	str_cli_v1(stdin, sockfd);		/* do it all */
 	
 	/*正常终止 2:exit关闭打开的描述符,当关闭套接字时,客户端发送一个FIN给服务器,收到服务器的ack后,TCP前半部分关闭
 	  至此服务器套接字处于CLOSE_WAIT状态,客户端套接字处于FIN_WAIT_2状态*/

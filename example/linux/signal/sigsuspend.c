@@ -48,11 +48,11 @@ static void sig_int(int signo)
 }
 
 /*******************************************************************************
- 在调用sigsuspend之前只有SIGINT被阻塞，调用sigsuspend后，信号屏蔽字集被临时替换成
- SIGUSR1，此时可以递送SIGINT，当SIGINT发生，去执行sig_int，注意：在sig_int里会打出
- in sig_int: SIGINT SIGUSR1 ，是因为操作系统会自动给正在被递送的信号加入屏蔽字集里
- (正在递送的信号也是未决信号，会被添加到信号屏蔽字中），当sig_int返回，sigsuspend也
- 将返回，此时屏蔽字就是SIGINT。
+ �ڵ���sigsuspend֮ǰֻ��SIGINT������������sigsuspend���ź������ּ�����ʱ�滻��
+ SIGUSR1����ʱ���Ե���SIGINT����SIGINT������ȥִ��sig_int��ע�⣺��sig_int�����
+ in sig_int: SIGINT SIGUSR1 ������Ϊ����ϵͳ���Զ������ڱ����͵��źż��������ּ���
+ (���ڵ��͵��ź�Ҳ��δ���źţ��ᱻ���ӵ��ź��������У�����sig_int���أ�sigsuspendҲ
+ �����أ���ʱ�����־���SIGINT��
 */
 
 /*
@@ -64,4 +64,6 @@ after return from sigsuspend: SIGINT
 program exit:
 
 */
+
+
 

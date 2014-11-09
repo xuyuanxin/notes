@@ -1,65 +1,160 @@
-
-#define INITSEQNUM_A 500 /*Açš„ initial sequence number ä¸€èˆ¬æ˜¯éšæœºç”Ÿæˆ*/
-#define INITSEQNUM_B 300 /*Bçš„ initial sequence number ä¸€èˆ¬æ˜¯éšæœºç”Ÿæˆ*/
+/*******************************************************************************
+ RFC793Ö¸³ö³õÊ¼ÐòÁÐºÅ¿ÉÒÔ¿´×÷ÊÇÒ»¸ö32bitµÄ¼ÆÊýÆ÷£¬Ã¿4ms¼Ó1¡£Ñ¡ÔñÐòÁÐºÅµÄÄ¿µÄÔÚÓÚ
+ ·ÀÖ¹ÔÚÍøÂçÖÐ±»ÑÓ³ÙµÄ·Ö×éÔÚÒÔºó±»ÖØ¸´´«Êä£¬¶øµ¼ÖÂÄ³¸öÁ¬½ÓµÄÒ»¶Ë¶ÔËü×÷´íÎóµÄÅÐ¶Ï¡£
+ ******************************************************************************/
 
 /*******************************************************************************
                    Establishing A TCP Connection
- *******************************************************************************                 
- å‡è®¾Aä¸»åŠ¨å‘Bå‘èµ·TCPè¿žæŽ¥(å¯ä»¥åŒæ—¶å‘èµ·è¿žæŽ¥ï¼Œè¿™é‡Œå…ˆè¯´æ˜Žæœ€ç®€å•çš„æƒ…å†µ:Aå‘èµ·BæŽ¥æ”¶)
- 1 é¦–å…ˆAè°ƒç”¨ tcp_open_1 å‘èµ·è¿žæŽ¥
- 2 Bæ”¶åˆ°SYNåŽï¼Œè°ƒç”¨ tcp_open_2 å›žåº”A
- 3 Aæ”¶åˆ°Bçš„å›žåº”åŽï¼Œè°ƒç”¨ tcp_open_3 å›žåº”Bï¼Œè¿žæŽ¥å»ºç«‹ã€‚
+ *******************************************************************************
+ ¼ÙÉèAÖ÷¶¯ÏòB·¢ÆðTCPÁ¬½Ó(¿ÉÒÔÍ¬Ê±·¢ÆðÁ¬½Ó£¬ÕâÀïÏÈËµÃ÷×î¼òµ¥µÄÇé¿ö:A·¢ÆðB½ÓÊÕ)
+ 1 Ê×ÏÈAµ÷ÓÃ tcp_open_1 ·¢ÆðÁ¬½Ó
+ 2 BÊÕµ½SYNºó£¬µ÷ÓÃ tcp_open_2 »ØÓ¦A
+ 3 AÊÕµ½BµÄ»ØÓ¦ºó£¬µ÷ÓÃ tcp_open_3 »ØÓ¦B£¬Á¬½Ó½¨Á¢¡£
 
- ä¸‰æ¬¡æ¡æ‰‹çš„ç›®çš„
- 1 åˆ†åˆ«å‘Šè¯‰å¯¹æ–¹è‡ªå·±çš„"åˆå§‹åºåˆ—å·"
+ Èý´ÎÎÕÊÖµÄÄ¿µÄ
+ 1 ·Ö±ð¸æËß¶Ô·½×Ô¼ºµÄ"³õÊ¼ÐòÁÐºÅ"
  *******************************************************************************/
 
+/*******************************************************************************
+ Õû¸ö¹ý³ÌÈçÏÂ:
+ ¿Í»§¶ËA·¢ÆðÁ¬½Ó£¬½¨Á¢Á¬½Óºó·¢ËÍ"a",·þÎñÆ÷»ØËÍ"recv"£¬È»ºó¿Í»§¶Ë¹Ø±ÕÁ¬½Ó£¬Ëæºó·þ
+ ÎñÆ÷Ò²¹Ø±ÕÁ¬½Ó
+ ******************************************************************************/
 
-/* A send SYN  SYNå ç”¨1ä¸ªåºåˆ—å·*/
+/* A send SYN  SYNÕ¼ÓÃ1¸öÐòÁÐºÅ*/
 int tcp_open_1(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
 {
-    sendhdr->seq     = INITSEQNUM_A;/*æŠŠè‡ªå·±çš„åˆå§‹åºåˆ—å·å‘Šè¯‰å¯¹æ–¹*/ 
-	sendhdr->ack_seq = 0;   /*ä¸€èˆ¬æŒ‡å®šä¸º0ï¼Œè¿™æ¬¡ä¼ è¾“è¿™ä¸ªå€¼æ²¡æœ‰ç”¨é€”*/
+    sendhdr->seq     = 0;   /*°Ñ×Ô¼ºµÄ³õÊ¼ÐòÁÐºÅ¸æËß¶Ô·½£¬¼ÙÉèÊÇ0*/ 
+	sendhdr->ack_seq = 0;   /*Ò»°ãÖ¸¶¨Îª0£¬Õâ´Î´«ÊäÕâ¸öÖµÃ»ÓÐÓÃÍ¾*/
 	sendhdr->syn     = 1;
+	sendhdr->window  = 65535;
 }
 
-/* B send SYN+ACK  ACKä¸å ç”¨åºåˆ—å·*/
+
+/* B send SYN+ACK  ACK²»Õ¼ÓÃÐòÁÐºÅ*/
 int tcp_open_2(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
 {
-    sendhdr->seq     = INITSEQNUM_B;     /*æŠŠè‡ªå·±çš„åˆå§‹åºåˆ—å·å‘Šè¯‰å¯¹æ–¹*/  
-	sendhdr->ack_seq = recvhdr->seq + 1; /*å‘Šè¯‰Aï¼Œæˆ‘æœŸæœ›ä¸‹æ¬¡æ”¶åˆ°è¿™ä¸ªåºåˆ—å·*/
-	sendhdr->syn = 1;	
-	sendhdr->ack = 1;
+    sendhdr->seq     = 0;     /*initial sequence number Ò»°ãÊÇËæ»úÉú³É*/  
+	sendhdr->ack_seq = recvhdr->seq + 1; /*0+1£¬¸æËß¶Ô·½£¬ÎÒÏÂ´ÎÆÚÍû½ÓÊÕ1*/
+	sendhdr->syn     = 1;	
+	sendhdr->ack     = 1;	
+	sendhdr->window  = 8192;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
 }
+
 
 /* A send ACK */
 int tcp_open_3(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
 {
-    sendhdr->seq     = INITSEQNUM_A + 1;
-	sendhdr->ack_seq = recvhdr->seq + 1;/*å‘Šè¯‰Bï¼Œæˆ‘æœŸæœ›ä¸‹æ¬¡æ”¶åˆ°è¿™ä¸ªåºåˆ—å·*/
+    sendhdr->seq     = 1;
+	sendhdr->ack_seq = recvhdr->seq + 1;/*0+1£¬¸æËß¶Ô·½£¬ÎÒÏÂ´ÎÆÚÍû½ÓÊÕ1*/
 	sendhdr->ack     = 1;
+	sendhdr->window  = 212992;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+
 }
 
-/*ä¸‰æ¬¡æ¡æ‰‹åŽï¼Œè¿žæŽ¥å»ºç«‹ã€‚åŒå‘éƒ½çŸ¥é“äº†å¯¹æ–¹çš„åˆå§‹åºåˆ—å·ï¼Œå¾€åŽå¯ä»¥å‘é€æ•°æ®äº†ã€‚
-  å»ºç«‹è¿žæŽ¥åŽï¼ŒAç¬¬ä¸€æ¬¡å‘Bå‘æ•°æ®
-  A  seq:INITSEQNUM_A + 1    ack:INITSEQNUM_B + 1
-  */
 
-/* A å‡è®¾AæŽ¥ç€å‘é€http get ï¼Œå…¶æ•°æ®é•¿åº¦æ˜¯1150ï¼Œå³å°è£…åœ¨tcpåŽé¢çš„æ•°æ®é•¿åº¦æ˜¯1150*/
-int http_get_send(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+/* A ¿Í»§¶ËAÏò·þÎñÆ÷·¢ËÍ×Ö·û"a"*/
+int tcp_send1(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
 {
-    sendhdr->seq     = INITSEQNUM_A + 1;
-	sendhdr->ack_seq = INITSEQNUM_B + 1;
-	//sendhdr->ack     = 1;
+    sendhdr->seq     = 1;
+	sendhdr->ack_seq = 1;
+	sendhdr->ack     = 1;
+	sendhdr->psh     = 1;
+	sendhdr->window  = 212992;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
 
-	/*http data len :1150*/
+	/*data len :2*/
 }
 
-/* B è¿”å›žhttp ack*/
-int http_ack_send(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+
+/* B ·þÎñÆ÷½ÓÊÕµ½"a"ºó£¬»ØËÍ"recv"µ½¿Í»§¶Ë*/
+int tcp_send2(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
 {
-    sendhdr->seq     = INITSEQNUM_B + 1;
-	sendhdr->ack_seq = recvhdr->seq + 1150;/*http data len 1150*/
+    sendhdr->seq     = 1;
+	sendhdr->ack_seq = recvhdr->seq + 2;/*1+2==3*/
+	sendhdr->ack     = 1;
+	sendhdr->psh     = 1;
+	sendhdr->window  = 65531;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+	/*data len :5*/	
 }
 
-/*A å†å‘æ•°æ® seq: INITSEQNUM_A + 1 + 1150 */
+
+/* A ½ÓÊÕµ½·þÎñÆ÷·¢À´µÄ"recv"£¬ÏìÓ¦ack*/
+int tcp_send3(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+{
+    sendhdr->seq     = 3;
+	sendhdr->ack_seq = recvhdr->seq + 4;/*1+5==6*/
+	sendhdr->ack     = 1;
+	sendhdr->window  = 212988;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+	/*data len :0*/	
+}
+
+
+/*******************************************************************************
+ A ¿Í»§¶ËAÊ×ÏÈ¹Ø±ÕtcpÁ¬½Ó ·¢ËÍfin
+ ¿Í»§¶ËAÍê³ÉËüµÄÊý¾Ý·¢ËÍÈÎÎñºó£¬»áÏò·þÎñÆ÷·¢ËÍÒ»¸öÖÕÖ¹Êý¾Ý°ü£¬ÒÔ¹Ø±ÕÔÚÕâ¸ö·½ÏòÉÏ
+ µÄTCPÁ¬½Ó¡£¸ÃÊý¾Ý°üÖÐ£¬ÐòÁÐºÅÎª·þÎñÆ÷·¢ËÍµÄÉÏÒ»¸öÊý¾Ý°üÖÐµÄÈ·ÈÏºÅÖµ£¬¶øÈ·ÈÏºÅÎª
+ ·þÎñÆ÷½ÓÊÕµÄÉÏÒ»¸öÊý¾Ý°üÖÐµÄÐòÁÐºÅ+¸ÃÊý¾Ý°üËù´øµÄÊý¾ÝµÄ´óÐ¡£»
+ 
+ FINºÍSYNÒ»Ñù£¬Ò²ÒªÕ¼Ò»¸öÐòºÅ¡£ÀíÂÛÉÏ·þÎñÆ÷ÔÚTCPÁ¬½Ó¹Ø±ÕÊ±·¢ËÍµÄÖÕÖ¹Êý¾Ý°üÖÐ£¬
+ Ö»ÓÐÖÕÖ¹Î»ÊÇÖÃ1£¬È»ºó¿Í»§¶Ë½øÐÐÈ·ÈÏ¡£µ«ÊÇÔÚÊµ¼ÊµÄ TCPÊµÏÖÖÐ£¬ÔÚÖÕÖ¹Êý¾Ý°üÖÐ£¬
+ È·ÈÏÎ»ºÍÖÕÖ¹Î»ÊÇÍ¬Ê±ÖÃÎª1µÄ£¬È·ÈÏÎ»ÖÃÎª1±íÊ¾¶Ô×îºóÒ»´Î´«ÊäµÄÊý¾Ý½øÐÐÈ·ÈÏ£¬ÖÕÖ¹
+ Î»ÖÃÎª1±íÊ¾¹Ø±Õ¸Ã·½ÏòµÄTCPÁ¬½Ó¡£
+
+ ******************************************************************************/
+int tcp_close_1(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+{
+    sendhdr->seq     = 3;
+	sendhdr->ack_seq = 6;	
+	sendhdr->ack     = 1;
+	sendhdr->fin     = 1;
+	sendhdr->window  = 212988;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+}
+
+
+/******************************************************************************* 
+ B ·þÎñÆ÷BÏìÓ¦ack 
+ ·þÎñÆ÷ÊÕµ½¿Í»§¶Ë·¢ËÍµÄÖÕÖ¹Êý¾Ý°üºó£¬½«¶Ô¿Í»§¶Ë·¢ËÍÈ·ÈÏÐÅÏ¢£¬ÒÔ¹Ø±Õ¸Ã·½ÏòÉÏµÄTCP
+ Á¬½Ó¡£ÕâÊ±µÄÊý¾Ý°üÖÐ£¬ÐòÁÐºÅÎªµÚ1²½ÖÐµÄÈ·ÈÏºÅÖµ£¬¶øÈ·ÈÏºÅÎªµÚ1²½µÄÊý¾Ý°üÖÐµÄÐò
+ ÁÐºÅ+1£»
+ ******************************************************************************/
+int tcp_close_2(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+{  
+    sendhdr->seq     = 6;
+	sendhdr->ack_seq = 3 + 1;/*1±íÊ¾ÊÕµ½fin*/
+	sendhdr->ack     = 1;	
+	sendhdr->window  = 65533;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+}
+
+
+/*******************************************************************************
+ ¿Í»§¶Ëµ½·þÎñÆ÷µÄÁ¬½Ó¹Ø±ÕÁË£¬µ«ÊÇ·þÎñÆ÷¿ÉÒÔ¼ÌÐøÍù¿Í»§¶Ë·¢ËÍÊý¾Ý¡£·¢ËÍ½áÊøºó£¬ÔÙ·¢
+ ËÍfin¹Ø±ÕÁ¬½Ó£¬±¾Àý×ÓÖÐ·þÎñÆ÷Ö±½Ó¹Ø±ÕÁíÒ»°ëÁ´½Ó
+
+ B ·þÎñÆ÷B·¢ËÍfin
+ ·þÎñÆ÷Íê³ÉËüµÄÊý¾Ý·¢ËÍÈÎÎñºó£¬Ò²»áÏò¿Í»§¶Ë·¢ËÍÒ»¸öÖÕÖ¹Êý¾Ý°ü£¬ÒÔ¹Ø±ÕÔÚÕâ¸ö·½Ïò
+ ÉÏµÄTCPÁ¬½Ó£¬¸ÃÊý¾Ý°üÖÐ£¬ÐòÁÐºÅÎª¿Í»§¶Ë·¢ËÍµÄÉÏÒ»¸öÊý¾Ý°üÖÐµÄÈ·ÈÏºÅÖµ£¬¶øÈ·ÈÏºÅ
+ Îª·þÎñÆ÷·¢ËÍµÄÉÏÒ»¸öÊý¾Ý°üÖÐµÄÐòÁÐºÅ+¸ÃÊý¾Ý°üËù´øÊý¾ÝµÄ´óÐ¡£»
+******************************************************************************/
+int tcp_close_3(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+{  
+	sendhdr->seq	 = 6;/*tcp_ack_sendÖÐµÄacknum*/
+	sendhdr->ack_seq = 4;/*Ä¿Ç°ÎªÖ¹ÊÕµ½:syn(1) "a"(2) fin(1)*/
+	sendhdr->ack	 = 1;	
+	sendhdr->fin     = 1;
+	sendhdr->window  = 65533;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+}
+
+
+/*******************************************************************************
+ A ¿Í»§¶ËAÏìÓ¦ack
+ ¿Í»§¶ËÊÕµ½·þÎñÆ÷·¢ËÍµÄÖÕÖ¹Êý¾Ý°üºó£¬½«¶Ô·þÎñÆ÷·¢ËÍÈ·ÈÏÐÅÏ¢£¬ÒÔ¹Ø±Õ¸Ã·½ÏòÉÏµÄTCP
+ Á¬½Ó¡£ÕâÊ±ÔÚÊý¾Ý°üÖÐ£¬ÐòÁÐºÅÎªµÚ3²½ÖÐµÄÈ·ÈÏºÅÖµ£¬¶øÈ·ÈÏºÅÎªµÚ3²½Êý¾Ý°üÖÐµÄÐòÁÐºÅ+1£»
+ ******************************************************************************/
+int tcp_close_4(struct np_tcphdr *sendhdr,struct np_tcphdr *recvhdr)
+{  
+	sendhdr->seq	 = 4;/*A·¢ËÍÁË:syn(1) ack(0) "a"(2) fin(1)*/
+	sendhdr->ack_seq = 7;/*AÊÕµ½ÁË:ack(0)+syn(1) "recv"(5) fin(1) */
+	sendhdr->ack	 = 1;	
+	sendhdr->window  = 212988;/*¸ù¾ÝÇé¿öµ÷Õû´°¿Ú´óÐ¡*/
+}
+
