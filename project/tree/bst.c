@@ -148,12 +148,12 @@ void bst_postorder_v2(bstnode *root)
 	while(!stack_empty())
 	{
 		cur = stack_pop();
-		(void)stack_push(cur);/*åªæƒ³çœ‹æ ˆé¡¶å…ƒç´ ï¼Œå¹¶ä¸æƒ³å¼¹å‡º*/
+		(void)stack_push(cur);/*Ö»Ïë¿´Õ»¶¥ÔªËØ£¬²¢²»Ïëµ¯³ö*/
 
 		if(((NULL == cur->bst_right) && (NULL == cur->bst_left)) || 
 		   ((NULL != pre) && (pre==cur->bst_right||pre==cur->bst_left)))
 		{
-			/*å¦‚æœå½“å‰ç»“ç‚¹æ²¡æœ‰å­©å­ç»“ç‚¹æˆ–è€…å­©å­èŠ‚ç‚¹éƒ½å·²è¢«è®¿é—®è¿‡*/
+			/*Èç¹ûµ±Ç°½áµãÃ»ÓĞº¢×Ó½áµã»òÕßº¢×Ó½Úµã¶¼ÒÑ±»·ÃÎÊ¹ı*/
 			if(NULL != cur)
 			{
 				printf("%02d  ",cur->bst_key);
@@ -164,7 +164,7 @@ void bst_postorder_v2(bstnode *root)
 		}
 		else
 		{
-			if(cur->bst_right!=NULL)/*æ³¨æ„å…ˆå³åå·¦å…¥æ ˆ(è¿™æ ·æ‰èƒ½å·¦å…ˆå‡ºæ ˆ)*/
+			if(cur->bst_right!=NULL)/*×¢ÒâÏÈÓÒºó×óÈëÕ»(ÕâÑù²ÅÄÜ×óÏÈ³öÕ»)*/
 				stack_push(cur->bst_right);
 			if(cur->bst_left!=NULL)    
 				stack_push(cur->bst_left);
@@ -208,7 +208,7 @@ bstnode *bst_insert(bstnode *root_node,int key)
 		//root_node->bst_index = nodeindex;
 		bst_dbgp("\r\nnew node:%p key:%d insert tree",root_node,root_node->bst_key);
 	} 
-	else if(key < root_node->bst_key)/*æ’å…¥å·¦å­æ ‘*/
+	else if(key < root_node->bst_key)/*²åÈë×ó×ÓÊ÷*/
 	{	    
 	    nodeindex = nodeindex*2;
 		root_node->bst_left = bst_insert(root_node->bst_left,key);
@@ -259,7 +259,7 @@ bstnode *bst_insert_v2(bstnode *proot,int key)
 
 	if(NULL == pfather)
 	{
-		return pnode;/*æ ‘ä¸ºç©ºï¼Œnodeä½œä¸ºæ ¹èŠ‚ç‚¹*/
+		return pnode;/*Ê÷Îª¿Õ£¬node×÷Îª¸ù½Úµã*/
 	}
 	else
 	{
@@ -274,8 +274,8 @@ bstnode *bst_insert_v2(bstnode *proot,int key)
 
 bstnode *bst_delete(bstnode *proot,int key)
 {    
-	bstnode *pdel;   /*å¾…åˆ é™¤èŠ‚ç‚¹*/
-	bstnode *pchild; /*å¾…åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
+	bstnode *pdel;   /*´ıÉ¾³ı½Úµã*/
+	bstnode *pchild; /*´ıÉ¾³ı½ÚµãµÄ×Ó½Úµã*/
 	bstnode *pnode = NULL;
 
     pnode = bst_search(proot,key);
@@ -286,27 +286,27 @@ bstnode *bst_delete(bstnode *proot,int key)
 		return proot;
     }
 
-    /*ç¡®å®šå¾…åˆ é™¤çš„èŠ‚ç‚¹ï¼Œpnodeæˆ–è€…pnodeçš„åç»§*/
+    /*È·¶¨´ıÉ¾³ıµÄ½Úµã£¬pnode»òÕßpnodeµÄºó¼Ì*/
     if(NULL == pnode->bst_left || NULL == pnode->bst_right)
 		pdel = pnode;
 	else
-		pdel = tree_successor(pnode);/*æœ‰ä¸¤ä¸ªå­©å­,ä¸€å®šæœ‰åç»§*/
+		pdel = tree_successor(pnode);/*ÓĞÁ½¸öº¢×Ó,Ò»¶¨ÓĞºó¼Ì*/
 
-	/*pdelæœ€å¤šæœ‰ä¸€ä¸ªå­å¥³ï¼Œæ‰¾åˆ°éNULLå­å¥³ï¼Œæ²¡æœ‰å­å¥³pchildä¸ºç©º*/
+	/*pdel×î¶àÓĞÒ»¸ö×ÓÅ®£¬ÕÒµ½·ÇNULL×ÓÅ®£¬Ã»ÓĞ×ÓÅ®pchildÎª¿Õ*/
 	if(NULL != pdel->bst_left)
 		pchild = pdel->bst_left;
 	else
 		pchild = pdel->bst_right;
 
-    /*pchildéç©º,è¯´æ˜æœ‰ä¸”åªæœ‰ä¸€ä¸ªå­©å­*/
+    /*pchild·Ç¿Õ,ËµÃ÷ÓĞÇÒÖ»ÓĞÒ»¸öº¢×Ó*/
 	if(NULL != pchild)
-		pchild->bst_parent = pdel->bst_parent;/*å…ˆæŠŠè¦åˆ é™¤èŠ‚ç‚¹çš„å­èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹è®¾ç½®å¥½*/
+		pchild->bst_parent = pdel->bst_parent;/*ÏÈ°ÑÒªÉ¾³ı½ÚµãµÄ×Ó½ÚµãµÄ¸¸½ÚµãÉèÖÃºÃ*/
 
-	/*è®¾ç½®è¦åˆ é™¤èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹çš„å­èŠ‚ç‚¹*/
+	/*ÉèÖÃÒªÉ¾³ı½ÚµãµÄ¸¸½ÚµãµÄ×Ó½Úµã*/
 
 	if(NULL == pdel->bst_parent)
 	{
-        proot = pchild;/*è¦åˆ é™¤èŠ‚ç‚¹æ²¡æœ‰çˆ¶èŠ‚ç‚¹,è¯´æ˜å®ƒæ˜¯æ ‘æ ¹*/
+        proot = pchild;/*ÒªÉ¾³ı½ÚµãÃ»ÓĞ¸¸½Úµã,ËµÃ÷ËüÊÇÊ÷¸ù*/
 	}
 	else
 	{
@@ -316,7 +316,7 @@ bstnode *bst_delete(bstnode *proot,int key)
 			pdel->bst_parent->bst_right = pchild;
 	}
 
-	if(pnode != pdel)/*æ¡ä»¶æˆç«‹è¯´æ˜åˆ é™¤çš„æ˜¯åç»§,æ­¤æ—¶è¦ä¿®æ”¹key*/
+	if(pnode != pdel)/*Ìõ¼ş³ÉÁ¢ËµÃ÷É¾³ıµÄÊÇºó¼Ì,´ËÊ±ÒªĞŞ¸Äkey*/
 	{
 		pnode->bst_key = pdel->bst_key;
 		
@@ -703,3 +703,4 @@ void bst_test()
 	queue_destory(bstqueue);
 }
 #endif
+
