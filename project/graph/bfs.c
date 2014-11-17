@@ -1,21 +1,23 @@
 /*
-bfs:breadth first search å¹¿åº¦ä¼˜å…ˆæœç´¢
-
-ä»é¡¶ç‚¹Så¼€å§‹åœ¨å›¾Gä¸­æœç´¢
-
-color[u] é¡¶ç‚¹é¢œè‰² æœ‰ä¸‰ç§ white gray black 
-white ç™½è‰²è¡¨ç¤ºå°šæœªæœç´¢
-gray  ç°è‰²è¡¨ç¤º
-black é»‘è‰²è¡¨ç¤º
+bfs:breadth first search ¹ã¶ÈÓÅÏÈËÑË÷ 
+1 ËÑË÷×î¶ÌÂ·¾¶
+ for any vertex v reachable from s,BFS computes a shortest path from s to v
 
 
 
+color[u] ¶¥µãÑÕÉ« ÓĞÈıÖÖ white gray black 
+white °×É«±íÊ¾ÉĞÎ´ËÑË÷
+gray vertices, which are discovered vertices that have not yet had their adjacency 
+lists fully examined. 
+black ºÚÉ«±íÊ¾
+
+´Ó¶¥µãS¿ªÊ¼ÔÚÍ¼GÖĞËÑË÷
 BFS(G, s) 
 {
 	for each vertex uin G
 	{
 	    color[u] = WHITE 
-	    d[u] = âˆ
+	    d[u] = ¡Ş
 	    p[u] = NIL
 	}
 	
@@ -23,14 +25,14 @@ BFS(G, s)
 	d[s] = 0 
 	p[s] = NIL 
 	    
-	Q = NULL (ç©º)
+	Q = NULL (¿Õ)
 	ENQUEUE(Q, s)
 
-	while Q â‰  NULL
+	while Q ¡Ù NULL
 	{
 	    u = DEQUEUE(Q)
 	    
-	    for each v in Adj[u] 
+	    for each vin Adj[u] 
 	    {
 	        if color[v] == WHITE
 	        {
@@ -43,6 +45,10 @@ BFS(G, s)
 	    color[u] = BLACK 
 	}
 }
+
+
+
 */
+
 
 
