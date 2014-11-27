@@ -212,3 +212,39 @@ int string5()
 {
 }
 
+
+
+/*******************************************************************************
+ std::string::substr  string substr (size_t pos = 0, size_t len = npos) const;
+ @pos:Position of the first character to be copied as a substring.If this is equal 
+ to the string length, the function returns an empty string. If this is greater 
+ than the string length, it throws out_of_range.Note: The first character is 
+ denoted by a value of 0 (not 1).
+ @len:Number of characters to include in the substring (if the string is shorter, 
+ as many characters as possible are used).A value of string::npos indicates all 
+ characters until the end of the string.
+ @return:A string object with a substring of this object.The substring is the 
+ portion of the object that starts at character position pos and spans len 
+ characters (or until the end of the string, whichever comes first).
+ ******************************************************************************/
+ 
+int string_mf_substr()
+{
+	std::string str="We think in generalities, but we live in details.";
+											 // (quoting Alfred N. Whitehead)
+	
+	std::string str2 = str.substr (12,12);	 // "generalities"
+	
+	std::size_t pos = str.find("live"); 	 // position of "live" in str
+	
+	std::string str3 = str.substr (pos);	 // get from "live" to the end
+	
+	std::cout << str2 << ' ' << str3 << '\n';
+	
+	return 0;
+
+/*
+ Output:
+ generalities live in details.*/
+}
+

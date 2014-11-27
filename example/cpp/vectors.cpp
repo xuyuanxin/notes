@@ -31,11 +31,19 @@ using namespace std;
  For a vector v, the size and capacity can be recovered with the member functions 
  v.size( ) and v.capacity( ) .
  可以使用系统默认的capacity，也可以自己设置
+
+
+ public member function
+ std::vector::pop_back  void pop_back();
+ Delete last element Removes the last element in the vector, effectively reducing 
+ the container size by one.
+
+ 
  ******************************************************************************/
 int main( )
 {
-    vector<int> v;	
-    
+    vector<int> v;
+	
     v.push_back(6);/*push_back添加数据*/
     v.push_back(9);
     v.push_back(1);
@@ -48,6 +56,14 @@ int main( )
     for (unsigned int i = 0; i < v.size( ); i++)
         cout << v[i] << " ";
 	
+    cout << endl;
+	
+    cout << "vector v(after pop):";
+    v.pop_back();
+    for (unsigned int i = 0; i < v.size( ); i++)
+        cout << v[i] << " ";
+
+
     cout << endl;
 	
 /*******************************************************************************
