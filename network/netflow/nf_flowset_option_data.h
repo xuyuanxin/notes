@@ -83,9 +83,10 @@ struct otd_sys
 {
     u16   flowid;         /* 1 */
 	u16   total_len;      /* sizeof(struct od_sys) */   
-    u32   total_flow_exp; /* 1 è¾“å‡ºæµçš„æ€»ä¸ªæ•°*/
-    u32   total_pkt_exp;  /* 2 è·¯ç”±å™¨è¾“å‡ºæŠ¥æ–‡çš„ä¸ªæ•°*/
-    u16   as_type;        /* 3 peer or origin ï¼Œ0ä¸ºpeerï¼Œ1ä¸ºorigin*/
-    u16   pad;            /* 4 å¡«å……å­—æ®µ*/
+    u32   total_flow_exp; /* 1 Êä³öÁ÷µÄ×Ü¸öÊı*/
+    u32   total_pkt_exp;  /* 2 Â·ÓÉÆ÷Êä³ö±¨ÎÄµÄ¸öÊı*/
+    u16   as_type;        /* 3 peer or origin £¬0Îªpeer£¬1Îªorigin*/
+    u16   pad;            /* 4 Ìî³ä×Ö¶Î*/
 };
+
 

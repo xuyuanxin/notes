@@ -7,22 +7,22 @@
 
 
 /*******************************************************************************
-é€‰é¡¹æ¨¡æ¿
-    ç›®å‰æœ‰5ä¸­ç±»åž‹çš„é€‰é¡¹æ¨¡æ¿(SFT_SYS SFT_IF SFT_LC SFT_C SFT_T),æ¯ä¸ªé€‰æ‹©æ¨¡æ¿é‡Œå¯ä»¥
-    åŒ…å«å¤šç§ç±»åž‹çš„æ¨¡æ¿ã€‚
+Ñ¡ÏîÄ£°å
+    Ä¿Ç°ÓÐ5ÖÐÀàÐÍµÄÑ¡ÏîÄ£°å(SFT_SYS SFT_IF SFT_LC SFT_C SFT_T),Ã¿¸öÑ¡ÔñÄ£°åÀï¿ÉÒÔ
+    °üº¬¶àÖÖÀàÐÍµÄÄ£°å¡£
     
-    æ¯ä¸€ç§é€‰é¡¹æ¨¡æ¿ç§°ä¸ºä¸€ä¸ªscopeï¼Œç”¨ scope filed type å’Œ scope file length è¡¨ç¤ºã€‚type
-    è¡¨ç¤ºæ˜¯é‚£ç§é€‰é¡¹æ¨¡æ¿ï¼Œå®žé™…ä¸­æ˜¯ç”¨ä¸€ä¸ªå˜é‡è¡¨ç¤ºæ¨¡æ¿ç±»åž‹ï¼Œlengthè¡¨ç¤ºè¿™ä¸ªå˜é‡å ç”¨å‡ ä¸ªå­—èŠ‚
-    lengthå˜é‡æœ¬èº«ä¸€èˆ¬å 2ä¸ªå­—èŠ‚ã€‚
+    Ã¿Ò»ÖÖÑ¡ÏîÄ£°å³ÆÎªÒ»¸öscope£¬ÓÃ scope filed type ºÍ scope file length ±íÊ¾¡£type
+    ±íÊ¾ÊÇÄÇÖÖÑ¡ÏîÄ£°å£¬Êµ¼ÊÖÐÊÇÓÃÒ»¸ö±äÁ¿±íÊ¾Ä£°åÀàÐÍ£¬length±íÊ¾Õâ¸ö±äÁ¿Õ¼ÓÃ¼¸¸ö×Ö½Ú
+    length±äÁ¿±¾ÉíÒ»°ãÕ¼2¸ö×Ö½Ú¡£
 
 Option Scope Length
-    æ‰€æœ‰scopeå ç”¨çš„å­—èŠ‚ï¼Œå¦‚æžœæ¨¡æ¿é‡ŒåŒ…å«ä¸¤ä¸ªé€‰é¡¹æ¨¡æ¿ï¼Œè¿™ä¸ªå­—æ®µçš„å€¼å°±æ˜¯8.
+    ËùÓÐscopeÕ¼ÓÃµÄ×Ö½Ú£¬Èç¹ûÄ£°åÀï°üº¬Á½¸öÑ¡ÏîÄ£°å£¬Õâ¸ö×Ö¶ÎµÄÖµ¾ÍÊÇ8.
 
 Option Length
-    æ¯ç§ç±»åž‹çš„é€‰é¡¹æ¨¡æ¿åŒ…å«è‹¥å¹²ä¸ªoptionï¼Œæ¯ä¸ªoptionæœ‰ä¸€ä¸ªoption field type å’Œ ä¸€ä¸ª
-    option field lengthã€‚typeè¡¨ç¤ºæ˜¯é‚£ç§optionç±»åž‹(TOTAL_PKTS_EXPç­‰)ï¼Œå®žé™…ä¸­æ˜¯ç”¨
-    ä¸€ä¸ªå˜é‡è¡¨ç¤ºæ¨¡æ¿ç±»åž‹ï¼Œlengthè¡¨ç¤ºè¿™ä¸ªå˜é‡å ç”¨å‡ ä¸ªå­—èŠ‚ï¼Œlengthå˜é‡æœ¬èº«ä¸€èˆ¬å 2
-    ä¸ªå­—èŠ‚ã€‚
+    Ã¿ÖÖÀàÐÍµÄÑ¡ÏîÄ£°å°üº¬Èô¸É¸öoption£¬Ã¿¸öoptionÓÐÒ»¸öoption field type ºÍ Ò»¸ö
+    option field length¡£type±íÊ¾ÊÇÄÇÖÖoptionÀàÐÍ(TOTAL_PKTS_EXPµÈ)£¬Êµ¼ÊÖÐÊÇÓÃ
+    Ò»¸ö±äÁ¿±íÊ¾Ä£°åÀàÐÍ£¬length±íÊ¾Õâ¸ö±äÁ¿Õ¼ÓÃ¼¸¸ö×Ö½Ú£¬length±äÁ¿±¾ÉíÒ»°ãÕ¼2
+    ¸ö×Ö½Ú¡£
 
 Options Template FlowSet Format
     The Options Template Record (and its corresponding Options Data Record) is 
@@ -124,32 +124,32 @@ Options Template FlowSet Example
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    
 Option Scope Length = 4      
-    ä¸€ä¸ªé€‰é¡¹æ¨¡æ¿æœ‰è‹¥å¹²ä¸ªscopeï¼Œè¿™é‡Œåªæœ‰ä¸€ä¸ªscopeï¼Œè¿™ä¸ªscopeæœ‰ä¸€ä¸ªscope type
-    å’Œä¸€ä¸ªscope lenã€‚scope typeè¡¨ç¤ºscopeçš„ç±»åž‹(è¿™é‡Œæ˜¯SFT_LCï¼Œå ä¸¤ä¸ªå­—èŠ‚)ï¼Œ
-    scope len è¡¨ç¤ºscope typeå˜é‡å ç”¨2ä¸ªå­—èŠ‚ã€‚
+    Ò»¸öÑ¡ÏîÄ£°åÓÐÈô¸É¸öscope£¬ÕâÀïÖ»ÓÐÒ»¸öscope£¬Õâ¸öscopeÓÐÒ»¸öscope type
+    ºÍÒ»¸öscope len¡£scope type±íÊ¾scopeµÄÀàÐÍ(ÕâÀïÊÇSFT_LC£¬Õ¼Á½¸ö×Ö½Ú)£¬
+    scope len ±íÊ¾scope type±äÁ¿Õ¼ÓÃ2¸ö×Ö½Ú¡£
     
 Option Length = 8 
-    æ¯ä¸ªscopeä¸‹æœ‰è‹¥å¹²ä¸ªoptionï¼Œè¿™é‡Œåªæœ‰1ä¸ªscopeï¼Œè¿™ä¸ªscopeæœ‰ä¸¤ä¸ªoption(åŒ…æ•°å’Œæµæ•°)
-    æ¯ä¸ªoptionåˆåŒ…å«ä¸€ä¸ªtypeå’Œlenï¼Œtypeå ç”¨2ä¸ªå­—èŠ‚ï¼Œlenå ç”¨2ä¸ªå­—èŠ‚ã€‚æ‰€ä»¥ä¸€ä¸ªoption
-    å ç”¨4ä¸ªå­—èŠ‚ï¼Œä¸¤ä¸ªoptionå ç”¨8ä¸ªå­—èŠ‚ã€‚
+    Ã¿¸öscopeÏÂÓÐÈô¸É¸öoption£¬ÕâÀïÖ»ÓÐ1¸öscope£¬Õâ¸öscopeÓÐÁ½¸öoption(°üÊýºÍÁ÷Êý)
+    Ã¿¸öoptionÓÖ°üº¬Ò»¸ötypeºÍlen£¬typeÕ¼ÓÃ2¸ö×Ö½Ú£¬lenÕ¼ÓÃ2¸ö×Ö½Ú¡£ËùÒÔÒ»¸öoption
+    Õ¼ÓÃ4¸ö×Ö½Ú£¬Á½¸öoptionÕ¼ÓÃ8¸ö×Ö½Ú¡£
   
 Scope 1 Field Type 3         
-    scopeæŒ‡çš„æ˜¯SFT_SYSç­‰ç±»åž‹ï¼Œè¿™é‡ŒæŒ‡SFT_LCï¼Œå³è¦æŠ¥å‘ŠæŽ¥å£ç›¸å…³çš„ä¸œè¥¿
+    scopeÖ¸µÄÊÇSFT_SYSµÈÀàÐÍ£¬ÕâÀïÖ¸SFT_LC£¬¼´Òª±¨¸æ½Ó¿ÚÏà¹ØµÄ¶«Î÷
     
 Scope 1 Field Length = 2    
-    ç”¨ä¸€ä¸ªå˜é‡è¡¨ç¤ºscipeç±»åž‹ï¼Œè¿™ä¸ªå˜é‡å ç”¨2ä¸ªå­—èŠ‚
+    ÓÃÒ»¸ö±äÁ¿±íÊ¾scipeÀàÐÍ£¬Õâ¸ö±äÁ¿Õ¼ÓÃ2¸ö×Ö½Ú
 
 Option 1 Field Type      TOTAL_EXP_PKTS_SENT = 41      
-    è¿™ä¸ªscopeä¸‹è¦æŠ¥å‘Šä¿¡æ¯çš„ç±»åž‹ï¼Œè¿™é‡Œæ˜¯41ï¼Œè¡¨ç¤ºè¦æŠ¥å‘ŠåŒ…çš„ä¸ªæ•°(TOTAL_PKTS_EXP)
+    Õâ¸öscopeÏÂÒª±¨¸æÐÅÏ¢µÄÀàÐÍ£¬ÕâÀïÊÇ41£¬±íÊ¾Òª±¨¸æ°üµÄ¸öÊý(TOTAL_PKTS_EXP)
 
 Option 1 Field Length  2  
-    ç”¨ä¸€ä¸ªå˜é‡è¡¨ç¤ºåŒ…çš„ä¸ªæ•°ï¼Œè¿™ä¸ªå˜é‡å ç”¨2ä¸ªå­—èŠ‚
+    ÓÃÒ»¸ö±äÁ¿±íÊ¾°üµÄ¸öÊý£¬Õâ¸ö±äÁ¿Õ¼ÓÃ2¸ö×Ö½Ú
 
 Option 2 Field Type      TOTAL_FLOWS_EXP = 42      
-    è¿™ä¸ªscopeä¸‹è¦æŠ¥å‘Šçš„ç¬¬äºŒä¸ªä¿¡æ¯çš„ç±»åž‹ï¼Œè¿™é‡Œæ˜¯42ï¼Œè¡¨ç¤ºè¦æŠ¥å‘Šæµçš„ä¸ªæ•°(TOTAL_FLOWS_EXP)
+    Õâ¸öscopeÏÂÒª±¨¸æµÄµÚ¶þ¸öÐÅÏ¢µÄÀàÐÍ£¬ÕâÀïÊÇ42£¬±íÊ¾Òª±¨¸æÁ÷µÄ¸öÊý(TOTAL_FLOWS_EXP)
 
 Option 2 Field Length  2  
-    ç”¨ä¸€ä¸ªå˜é‡è¡¨ç¤ºæµçš„ä¸ªæ•°ï¼Œè¿™ä¸ªå˜é‡å ç”¨2ä¸ªå­—èŠ‚
+    ÓÃÒ»¸ö±äÁ¿±íÊ¾Á÷µÄ¸öÊý£¬Õâ¸ö±äÁ¿Õ¼ÓÃ2¸ö×Ö½Ú
 
 *******************************************************************************/
 
@@ -159,20 +159,21 @@ struct ot_sys
 	u16   flowid;		    /* 1 */
 	u16   total_len;	    /* sizeof(struct ot_sys) */
 	
-    u16   templateid;       /* æ˜¯å¤šå°‘è¿˜ä¸å¤ªæ¸…æ¥š(è‡ªå·±å®šçš„å§) */
-    u16   option_scope_len; /* Option Templateä¸­åŒ…å«çš„æ‰€æœ‰scopeåŸŸçš„å­—èŠ‚é•¿åº¦*/
-    u16   option_len;       /* Option Templateä¸­åŒ…å«çš„æ‰€æœ‰OptionåŸŸçš„å­—èŠ‚é•¿åº¦*/
-    u16   scope_field_type; /* 0x0001 Systemï¼Œ0x0002 Interface */
-    u16   scope_field_len;  /* è¯¥åŸŸç»™å‡ºäº†ScopeåŸŸçš„é•¿åº¦(å­—èŠ‚)ï¼Œå–0ï¼Œå³ä¸è¾“å‡ºè¯¥åŸŸå€¼*/
+    u16   templateid;       /* ÊÇ¶àÉÙ»¹²»Ì«Çå³þ(×Ô¼º¶¨µÄ°É) */
+    u16   option_scope_len; /* Option TemplateÖÐ°üº¬µÄËùÓÐscopeÓòµÄ×Ö½Ú³¤¶È*/
+    u16   option_len;       /* Option TemplateÖÐ°üº¬µÄËùÓÐOptionÓòµÄ×Ö½Ú³¤¶È*/
+    u16   scope_field_type; /* 0x0001 System£¬0x0002 Interface */
+    u16   scope_field_len;  /* ¸ÃÓò¸ø³öÁËScopeÓòµÄ³¤¶È(×Ö½Ú)£¬È¡0£¬¼´²»Êä³ö¸ÃÓòÖµ*/
     
-    u16   total_flow_exp_type; /*è¾“å‡ºæµçš„æ€»ä¸ªæ•°*/
+    u16   total_flow_exp_type; /*Êä³öÁ÷µÄ×Ü¸öÊý*/
     u16   total_flow_exp_len; 
-    u16   total_exp_pkts_send_type; /*è·¯ç”±å™¨è¾“å‡ºæŠ¥æ–‡çš„ä¸ªæ•°*/
+    u16   total_exp_pkts_send_type; /*Â·ÓÉÆ÷Êä³ö±¨ÎÄµÄ¸öÊý*/
     u16   total_exp_pkts_send_len;
-    u16   as_type;                    /* peer or origin ï¼Œ0ä¸ºpeerï¼Œ1ä¸ºorigin*/
+    u16   as_type;                    /* peer or origin £¬0Îªpeer£¬1Îªorigin*/
     u16   as_len;
-    u16   pad_type;                          /*å››å­—èŠ‚å¯¹é½*/
+    u16   pad_type;                          /*ËÄ×Ö½Ú¶ÔÆë*/
     u16   pad_len;
-    u16   pad;                       /*å››å­—èŠ‚å¯¹é½*/
+    u16   pad;                       /*ËÄ×Ö½Ú¶ÔÆë*/
 };
+
 

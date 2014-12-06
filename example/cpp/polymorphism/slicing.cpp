@@ -36,6 +36,25 @@ int main()
 
     Pet *ppet;
     ppet = pdog;
+/*******************************************************************************
+print() was declared virtual by the base class, Pet. So, when the compiler sees 
+the call
+        ppet->print();
+it checks the virtual table for classes Pet and Dog and sees that ppet points to
+an object of type Dog. It therefore uses the code generated for
+        Dog::print(),
+rather than the code for
+        Pet::print()
+
+1. If the domain type of the pointer p_ancestor is a base class for the domain type 
+of the pointer p_descendant, then the following assignment of pointers is allowed:
+        p_ancestor = p_descendant;
+Moreover, none of the data members or member functions of the dynamic variable 
+being pointed to by p_descendant will be lost.
+2. Although all the extra fields of the dynamic variable are there, you will need 
+virtual member functions to access them.        
+********************************************************************************/
+	
     ppet->print();  // These two print the same output:
     pdog->print();  // name: Tiny breed: Great Dane
 
@@ -63,4 +82,13 @@ void Pet::print()
     cout << "name: " << endl;//Note no breed mentioned
 }
 
+/*
+output:
+
+name: Tiny
+breed: Great Dane
+name: Tiny
+breed: Great Dane
+
+*/
 

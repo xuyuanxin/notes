@@ -1,7 +1,7 @@
 
 unsigned int nf_pkt_seq;
 
-/* åªå‘é€ä¸€ä¸ªasèšåˆæ—¶çš„NetFlowæŠ¥æ–‡å¤´ */
+/* Ö»·¢ËÍÒ»¸öas¾ÛºÏÊ±µÄNetFlow±¨ÎÄÍ· */
 void nfv9_send_template_as( )
 {  
 	t_as tas;
@@ -9,7 +9,7 @@ void nfv9_send_template_as( )
 
     /* NetFlow Head */
 	v9head.ver          = 9;
-	v9head.count        = 1; /*æŠ¥æ–‡é‡Œåªæœ‰1ä¸ªasèšåˆæ¨¡æ¿*/
+	v9head.count        = 1; /*±¨ÎÄÀïÖ»ÓĞ1¸öas¾ÛºÏÄ£°å*/
     v9head.sys_uptime   = get_boot_mseconds();
 	v9head.unix_seconds = get_seconds_since_1970();
 	v9head.pkt_seq      = nf_pkt_seq++;
@@ -20,10 +20,10 @@ void nfv9_send_template_as( )
     tas.total_len      = sizeof(struct t_as);
 
     tas.templateid     = NFT_AS;	/* as aggre template id */
-    tas.filedcnt	   = 11;	/* nfa_asä¸­å˜é‡çš„ä¸ªæ•° */
+    tas.filedcnt	   = 11;	/* nfa_asÖĞ±äÁ¿µÄ¸öÊı */
 
-    tas.flows_type     = FLOWS;   /* æŒ‡ç¤º nfa_as ä¸­ as_flows çš„æ„æ€(æµçš„ä¸ªæ•°) */
-    tas.flows_len	   = 4;	   /* æŒ‡ç¤º nfa_as ä¸­ as_flows çš„å¤§å°(å››ä¸ªå­—èŠ‚) ä¸‹é¢ç±»ä¼¼*/
+    tas.flows_type     = FLOWS;   /* Ö¸Ê¾ nfa_as ÖĞ as_flows µÄÒâË¼(Á÷µÄ¸öÊı) */
+    tas.flows_len	   = 4;	   /* Ö¸Ê¾ nfa_as ÖĞ as_flows µÄ´óĞ¡(ËÄ¸ö×Ö½Ú) ÏÂÃæÀàËÆ*/
     tas.pkts_type      = IN_PKTS;	
     tas.pkts_len       = 4; 	  
     tas.octets_type    = IN_BYTES;   
@@ -51,7 +51,7 @@ void nfv9_send_template_as( )
 }
 
 
-/* å‘é€ä¸€ä¸ªasæ•°æ®æ—¶çš„NetFlowæŠ¥æ–‡ */
+/* ·¢ËÍÒ»¸öasÊı¾İÊ±µÄNetFlow±¨ÎÄ */
 void nfv9_send_data_as()
 {
 	struct d_as aggre_as;
@@ -59,7 +59,7 @@ void nfv9_send_data_as()
 
     /* NetFlow Head */
 	v9head.ver          = 9;
-	v9head.count        = 1; /*æŠ¥æ–‡é‡Œåªæœ‰1ä¸ªasèšåˆæ•°æ®*/
+	v9head.count        = 1; /*±¨ÎÄÀïÖ»ÓĞ1¸öas¾ÛºÏÊı¾İ*/
     v9head.sys_uptime   = get_boot_mseconds();
 	v9head.unix_seconds = get_seconds_since_1970();
 	v9head.pkt_seq      = nf_pkt_seq++;
@@ -69,7 +69,7 @@ void nfv9_send_data_as()
     aggre_as.flowid    = NFT_AS; 
     aggre_as.total_len = sizeof(struct d_as);
 
-    /* ä¸‹é¢çš„æ•°æ®æ ¹æ®å®é™…æƒ…å†µå¡«å†™ */
+    /* ÏÂÃæµÄÊı¾İ¸ù¾İÊµ¼ÊÇé¿öÌîĞ´ */
     aggre_as.as_flows = 1;
 
 
@@ -85,7 +85,7 @@ int nfv9_send_option_template()
 
     /* NetFlow Head */
 	v9head.ver          = 9;
-	v9head.count        = 1; /*æŠ¥æ–‡é‡Œåªæœ‰1ä¸ª option template */
+	v9head.count        = 1; /*±¨ÎÄÀïÖ»ÓĞ1¸ö option template */
     v9head.sys_uptime   = get_boot_mseconds();
 	v9head.unix_seconds = get_seconds_since_1970();
 	v9head.pkt_seq      = nf_pkt_seq++;
@@ -125,7 +125,7 @@ int nfv9_send_option_data()
 
     /* NetFlow Head */
 	v9head.ver          = 9;
-	v9head.count        = 1; /*æŠ¥æ–‡é‡Œåªæœ‰1ä¸ª option data system */
+	v9head.count        = 1; /*±¨ÎÄÀïÖ»ÓĞ1¸ö option data system */
     v9head.sys_uptime   = get_boot_mseconds();
 	v9head.unix_seconds = get_seconds_since_1970();
 	v9head.pkt_seq      = nf_pkt_seq++;
@@ -135,7 +135,7 @@ int nfv9_send_option_data()
 	otdsys.flowid    = NFT_OT_SYS;
 	otdsys.total_len = sizeof(struct otd_sys);
 
-	/* æ ¹æ®å®é™…æƒ…å†µå¡«å†™æ•°æ® */
+	/* ¸ù¾İÊµ¼ÊÇé¿öÌîĞ´Êı¾İ */
 	otdsys.total_flow_exp = 1;	
 	otdsys.total_pkt_exp  = 1;	
 	otdsys.as_type        = 1;
@@ -331,4 +331,5 @@ field count 5
 
 
 */
+
 
