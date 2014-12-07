@@ -1,0 +1,41 @@
+BGP-1£¨RFC 1105£©¡¢BGP-2£¨RFC 1163£©ºÍBGP-3£¨RFC 1267£©£¬BGP-4£¨RFC 1771£¬RFC 4271£©
+
+Although it is desirable for routers to exchange routing information, it
+is impractical for all routers in an arbitrarily large internet, such as
+the global Internet, to participate in a single routing update protocol.
+
+Autonomous System (AS)
+For purposes of routing, a group of networks and routers controlled by a single 
+administrative authority is called an Autonomous System (AS). The idea is that 
+we will let each autonomous system choose its own mechanisms for discovering, 
+propagating, validating, and checking the consistency of routes
+
+The Internet is divided into autonomous systems that are each owned and operated 
+by a single administrative authority. An autonomous system is free to choose an 
+internal routing architecture and protocols.
+
+To make it possible for automated routing algorithms to distinguish among autonomous 
+systems,each is assigned an autonomous system number by the central authority 
+that is  charged with assigning all Internet numbers. 
+
+an autonomous system configures one or more of its routers to communicate with 
+routers in other autonomous systems. First, the router must collect information 
+about networks inside its autonomous system and pass the information out. Second, 
+the router must accept information about networks in other autonomous system(s) 
+and disseminate the information inside. 
+
+Border Gateway Protocol (BGP)
+we use the term Exterior Gateway Protocol(EGP) to denote any protocol used to 
+pass network reachability information between two autonomous systems. Currently, 
+a single EGP is used to exchange reachability information in the Internet. Known 
+as the Border Gateway Protocol (BGP), it has evolved through four (quite different) 
+versions. Each version is numbered, which gives rise to the formal name of the 
+current version, BGP-4. Following standard practice in the networking industry, 
+we will use the term BGP in place of BGP-4.
+
+When a pair of autonomous systems agree to use BGP to exchange routing information, 
+each must designate a router that will speak BGP on its behalf; the two routers
+are said to become BGP peers of one another. Because a router speaking BGP must
+communicate with a peer in another autonomous system, it makes sense to select a
+machine that is near the border (i.e., the edge) of the autonomous system. Hence, 
+BGP terminology calls the router a border gateway or border router. 
