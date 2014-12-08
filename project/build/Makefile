@@ -6,6 +6,7 @@ ROOT = $(realpath ..)
 DIRS = $(ROOT)/tree \
        $(ROOT)/stack \
 	   $(ROOT)/queue \
+	   $(ROOT)/list \
 	   $(ROOT)/main
 	   
 RM = rm
