@@ -8,7 +8,7 @@
  * @ptr   : the pointer to the member.
  * @type  : the type of the container struct this is embedded in.
  * @member: the name of the member within the struct.
- *
+ * line 2 : make compile warning when type conflict
  */
 #define container_of(ptr, type, member) ({			\
 	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
