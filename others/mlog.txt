@@ -1,25 +1,6 @@
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-
-        algocoding/
-        language/cpp/container_stack.cpp
-        language/cpp/inheritance.cpp
-        language/cpp/stl_map.cpp
-        language/cpp/stl_set.cpp
-        project/graph/
-
-
-
-Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
-  (use "git checkout -- <file>..." to discard changes in working directory)
-
-        modified:   project/tree/bst.c
-        modified:   project/tree/inc/bst.h
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-
-        language/cpp/
-
-no changes added to commit (use "git add" and/or "git commit -a")
+modified:   project/build/Makefile
+modified:   project/list/inc/lk_list.h
+modified:   project/list/list.c
+modified:   project/list/lk_list.c
+modified:   project/main/Makefile
+modified:   project/main/main_test.c
