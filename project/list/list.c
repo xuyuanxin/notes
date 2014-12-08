@@ -1,3 +1,4 @@
+#if 0
 #define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
 
 
@@ -26,13 +27,13 @@ void __list_add(list_head_t *new,list_head_t *prev,list_head_t *next)
 	prev->next = new;
 }
 
-/*把new加入head之前  new -> head -> others*/
+/*鎶妌ew鍔犲叆head涔嬪墠  new -> head -> others*/
 void list_add_before_head(list_head_t *new,list_head_t *head)
 {
 	__list_add(new, head, head->next);
 }
 
-/*把new加入head之后 head -> new -> others*/
+/*鎶妌ew鍔犲叆head涔嬪悗 head -> new -> others*/
 void list_add_after_head(list_head_t *new, list_head_t *head)
 {
 	__list_add(new, head->prev, head);
@@ -57,6 +58,6 @@ void list_del(list_head_t *entry)
 	}
 }
 
-
+#endif
 
 
