@@ -31,7 +31,8 @@ int main()
 
     //tree_test();
 	//queue_test();
-	bst_test();
+	//bst_test();
 	//queue_test();
+	list_test();
     return 0;
 }
