@@ -1,6 +1,11 @@
-modified:   project/build/Makefile
-modified:   project/list/inc/lk_list.h
-modified:   project/list/list.c
-modified:   project/list/lk_list.c
-modified:   project/main/Makefile
-modified:   project/main/main_test.c
+  (use "git reset HEAD <file>..." to unstage)
+
+        modified:   algocoding/leetcode/partition_list.cpp
+        new file:   algocoding/leetcode/remove_duplicates_from_sorted_list.cpp
+        new file:   algocoding/leetcode/remove_duplicates_from_sorted_list_II.cp
+p
+        new file:   linux/cmd/ps.txt
+        new file:   project/public/bit_flag.c
+        modified:   tools/wireshark/filter.txt
+
+
