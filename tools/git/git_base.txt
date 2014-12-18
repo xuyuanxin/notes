@@ -25,7 +25,7 @@ fork别人的工程，修改，推送
 git checkout -- filename  回退filename的修改(进入到文件所在的目录)
 
 
-----> 删除文件
+----> 删除文件(进入当前目录下)
 1 git rm filename
 2 git commit filename
 
