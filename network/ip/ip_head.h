@@ -58,7 +58,6 @@ Padding
     containing zero that may be needed to ensure the datagram header extends to 
     an exact multiple of 32 bits (recall that the header length field is specified 
     in units of 32-bit words).
-
 */
 
 struct iphdr {
@@ -83,3 +82,108 @@ struct iphdr {
 	/*The options start here. */
 };
 
+
+/* IP options */
+#define IPOPT_COPY		    0x80 /* 1000 0000 */
+#define IPOPT_CLASS_MASK	0x60 /* 0110 0000 */
+#define IPOPT_NUMBER_MASK	0x1f /* 0001 1111 */
+
+#define	IPOPT_COPIED(o)		((o)&IPOPT_COPY)
+#define	IPOPT_CLASS(o)		((o)&IPOPT_CLASS_MASK)
+#define	IPOPT_NUMBER(o)		((o)&IPOPT_NUMBER_MASK)
+
+#define	IPOPT_CONTROL		0x00
+#define	IPOPT_RESERVED1		0x20
+#define	IPOPT_MEASUREMENT	0x40
+#define	IPOPT_RESERVED2		0x60
+
+#define IPOPT_END	(0 |IPOPT_CONTROL)
+#define IPOPT_NOOP	(1 |IPOPT_CONTROL)
+#define IPOPT_SEC	(2 |IPOPT_CONTROL|IPOPT_COPY)
+#define IPOPT_LSRR	(3 |IPOPT_CONTROL|IPOPT_COPY)
+#define IPOPT_TIMESTAMP	(4 |IPOPT_MEASUREMENT)
+#define IPOPT_CIPSO	(6 |IPOPT_CONTROL|IPOPT_COPY)
+#define IPOPT_RR	(7 |IPOPT_CONTROL)
+#define IPOPT_SID	(8 |IPOPT_CONTROL|IPOPT_COPY)
+#define IPOPT_SSRR	(9 |IPOPT_CONTROL|IPOPT_COPY)
+#define IPOPT_RA	(20|IPOPT_CONTROL|IPOPT_COPY)
+
+/*
+IP头中可以包含若干选项，主要用于网络测试和调试。
+
+每个选项有一个8bit的选项码(option code)，结构如下
+
+ +-------------------------------------------------------+
+ | copy(1bit) | option class(2bit) | option number(5bit) |
+ +-------------------------------------------------------+
+
+ copy
+     1表示复制到所有的分片中，0表示仅复制到第一个分片
+ option class 
+	 0 = control	  
+	 1 = reserved for future use	   
+	 2 = debugging and measurement	  
+	 3 = reserved for future use
+
+ option number
+     可以认为是option clas下的子类。
+
+End of Option List ( type 0 )	  
+  +--------+		
+  |00000000|		  
+  +--------+
+  
+  This option indicates the end of the option list. 
+
+No Operation	( type 1 )	
+  +--------+		  
+  |00000001|		
+  +--------+
+
+  This option may be used between options, for example, to align the beginning 
+  of a subsequent option on a 32 bit boundary.
+
+Loose Source and Record Route	( Type=131 )	 
+    +--------+--------+--------+---------//--------+		 
+    |10000011| length | pointer|	  route data	|		 
+    +--------+--------+--------+---------//--------+		  
+
+
+Strict Source and Record Route ( Type=137 )  
+    +--------+--------+--------+---------//--------+		  
+    |10001001| length | pointer|	   route data	 |		  
+    +--------+--------+--------+---------//--------+		   
+
+
+Record Route ( type 7 )
+  +--------+--------+--------+---------//--------+
+  |00000111| length | pointer|	   route data    |
+  +--------+--------+--------+---------//--------+
+
+
+Stream Identifier (  Type=136 Length=4 )       
+  +--------+--------+--------+--------+        
+  |10001000|00000010|    Stream ID    |        
+  +--------+--------+--------+--------+                
+
+  This option provides a way for the 16-bit SATNET stream identifier to be 
+  carried through networks that do not support the stream concept.Must be copied 
+  on fragmentation.  Appears at most once in a  datagram.    
+
+
+Internet Timestamp ( Type = 68 )
+
+  +--------+--------+--------+--------+
+  |01000100| length | pointer|oflw|flg|
+  +--------+--------+--------+--------+
+  | 		internet address		      |
+  +--------+--------+--------+--------+
+  | 			timestamp			      |
+  +--------+--------+--------+--------+
+  | 				.				  |
+					.
+					.
+  
+
+
+*/
