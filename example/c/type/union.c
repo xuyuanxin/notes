@@ -14,13 +14,13 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-struct cat
+struct _cat
 {
     int c_age;
 	int c_weight;
 };
 
-struct dog
+struct _dog
 {
     int d_age;
 	int d_weight;
@@ -31,8 +31,8 @@ struct peta
 {
     union
     {
-    struct cat p_cat;
-    struct dog p_dog;
+    struct _cat p_cat;
+    struct _dog p_dog;
     };
 	int p_type;
 };
@@ -41,8 +41,8 @@ struct petb
 {
     union
     {
-    struct cat p_cat;
-    struct dog p_dog;
+    struct _cat p_cat;
+    struct _dog p_dog;
     }u;
 	int p_type;
 };
@@ -52,13 +52,18 @@ int main()
     struct peta peta;
 	struct petb petb;
 
-	printf("\r\nsizeof(struct peta):%d",sizeof(struct petb));	
-	printf("\r\nsizeof(petb.u):%d",sizeof(petb.u));
+	printf("\r\nsizeof(struct peta) :%d",sizeof(struct petb));	
+	printf("\r\nsizeof(petb.u)      :%d",sizeof(petb.u));
 	printf("\r\nsizeof(petb.u.p_cat):%d",sizeof(petb.u.p_cat));
+	printf("\r\nsizeof(petb.u.p_dog):%d",sizeof(petb.u.p_dog));
+
+	printf("\r\nsizeof(peta.p_cat):%d",sizeof(peta.p_cat));
+	printf("\r\nsizeof(peta.p_dog):%d",sizeof(peta.p_dog));
 	
 	printf("\r\nAddr peta       :%p",&peta);
 	printf("\r\nAddr peta.p_cat :%p",&peta.p_cat);
 	printf("\r\nAddr peta.p_dog :%p",&peta.p_dog);
-	
+
+	return 0;	
 }
 

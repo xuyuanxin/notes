@@ -25,11 +25,26 @@ Version
 IHL
     gives the datagram header length measured in 32-bit words.The most common 
     datagram header, which contains no options and no padding, measures 20 octets 
-    and has a header length field equal to 5.
+    and has a header length field equal to 5. 
+    IP header can be up to 60 bytes long (20+40) 
 
-Total Length
+Total Length (16bits)
     gives the length of the IP datagram measured in octets, including octets in 
-    the header and payload. 
+    the header and payload. the maximum possible size of an IP datagram is 2^16 
+    or 65,535 octets(64KB).
+
+Identification (16bits)
+    发送端发送的IP数据包标识字段都是一个唯一值，该值在分片时被复制到每个片中。
+
+Flags (3bits |R|DF|MF| )    
+    R：保留未用。
+    DF：Don't Fragment，“不分片”位，如果将这一比特置1 ，IP层将不对数据报进行分片。
+    MF：More Fragment，“更多的片”，除了最后一片外，其他每个组成数据报的片都要
+    把该比特置1。
+
+Fragment Offset (13 bits)
+    该片偏移原始数据包开始处的位置。偏移的字节数是该值乘以8。当数据报被分片后，
+    每个片的总长度值要改为该片的长度值。
 
 Protocol
     the value specifies which high-level protocol was used to create the message 
@@ -184,6 +199,43 @@ Internet Timestamp ( Type = 68 )
 					.
 					.
   
+
+
+
+Path MTU discovery is used to discover the biggest size a packet transmitted to 
+a given destination address can have without being fragmented. That parameter 
+is called the Path MTU (PMTU). Basically, the PMTU is the smallest MTU encountered 
+along all the connections along the route from one host to the other.Furthermore, 
+a change of route can lead to a change of PMTU.
+
+
+
+
+校验和的计算
+I.将校验和字段置为0,然后将IP包头按16比特分成多个
+校验和Header Checksum：0x618D将其重置为0X0000
+
+将IP包头分段：
+    1.　　0x4500
+    2.　　0x0029
+    3.　　0x44F1
+    4.　　0x4000
+    5.　　0x8006
+    6.　　0x0000 ------->这个为Header Checksum的值，我们前面将其重置为0了
+    7.　　0xC0A8
+    8.　　0x01AE
+    9.　　0x4A7D
++　10.    0x477D
+-------------------------------------------------------
+将1至10相加求出来的和为：0x29E70 (注意进位保留，这里是2)
+
+II.对各个单元采用反码加法运算(即高位溢出位会加到低位,通常的补码运算是直接丢掉溢
+出的高位),将得到的和的反码填入校验和字段
+0x0002+0x9E70=0x9E72
+0x9E72二进制为：1001 1110 0111 0010
+反码为：0110 0001 1000 1101
+0110 0001 1000 1101的16进制为：0x618D
+
 
 
 */

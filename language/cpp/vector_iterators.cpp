@@ -9,7 +9,7 @@
  its own pointer type. But just as all pointer types behave essentially the same 
  for dynamic variables of their particular data type, so too does each iterator 
  type behave the same, but each iterator is used only with its own container class.
- Like a pointer variable, an iterator variable is located at (‚Äúpoints to‚Äù) one 
+ Like a pointer variable, an iterator variable is located at (°∞points to°±) one 
  data entry in the container.
  
              using std::vector<int>::iterator;
@@ -20,14 +20,14 @@
 
  You manipulate iterators using the following overloaded operators that apply to 
  iterator objects: 
- ‚ñ†Prefix and postfix increment operators ++ for advancing the iterator to the 
+ Prefix and postfix increment operators ++ for advancing the iterator to the 
    next data item. 
- ‚ñ†Prefix and postfix decrement operators -- for moving the iterator to the previous 
+ Prefix and postfix decrement operators -- for moving the iterator to the previous 
    data item. 
- ‚ñ†Equal and unequal operators, ==and !=, to test whether two iterators point to the 
+ Equal and unequal operators, ==and !=, to test whether two iterators point to the 
    same data location. 
- ‚ñ†A dereferencing operator *, so that if p is an iterator variable, then *p gives
-  access to the data located at (‚Äúpointed to by‚Äù) p. This access may be readonly, 
+ A dereferencing operator *, so that if p is an iterator variable, then *p gives
+  access to the data located at (°∞pointed to by°±) p. This access may be readonly, 
   write-only, or allow both reading and changing of the data, depending on the 
   particular container class. 
  *******************************************************************************
@@ -98,7 +98,7 @@ int main()
     vector<int>::iterator p;
 
 /*******************************************************************************
- c.begin()returns an iterator for the container cthat points to the ‚Äúfirst‚Äù data 
+ c.begin()returns an iterator for the container cthat points to the °∞first°± data 
  item in the container c. 
  c.end() returns something that can be used to test when an iterator has passed 
  beyond the last data item in a container c. The iterator c.end()is completely 
@@ -124,7 +124,7 @@ int main()
  The object c is a container class with bidirectional iterators.
 
  rbegin() returns an iterator located at the last element.
- rend() returns a sentinel that marks the ‚Äúend‚Äù of the elements in the reverse 
+ rend() returns a sentinel that marks the °∞end°± of the elements in the reverse 
  order. Note that for an iterator of type reverse_iterator, the increment operator 
  ++ moves backward through the elements. In other words, the meanings of -- and ++ 
  are interchanged. 
@@ -149,5 +149,6 @@ int main()
 	
     return 0;
 }
+
 
 

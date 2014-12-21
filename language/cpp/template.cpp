@@ -94,7 +94,7 @@ int main( )
 	
 /*******************************************************************************
  When the C++ compiler gets to this function call, it notices the types of the 
- arguments—in this case int—and then it uses the template to produce a function 
+ arguments-in this case int-and then it uses the template to produce a function 
  definition with the type parameter T replaced with the type name int. 
  ******************************************************************************/
     swap_values(integer1, integer2);
@@ -109,3 +109,4 @@ int main( )
 	
     return 0;
 }
+
