@@ -1,48 +1,62 @@
 
 /*******************************************************************************
-                  std::vector::begin    public member function
- ret: An iterator to the beginning of the sequence container.
- fun: Return iterator to beginning
+                   std::prev function template C++11
+ *******************************************************************************                  
+ @it: iterator to base position.BidirectionalIterator shall be at least a bidirectional 
+      iterator.
+ @n:  Number of element positions offset (1 by default).difference_type is the numerical 
+      type that represents distances between iterators of the BidirectionalIterator type.
+ ret: An iterator to the element n positions before it.
+ fun: Get iterator to previous element
   
- Returns an iterator pointing to the first element in the vector. 
- Notice that, unlike member vector::front, which returns a reference to the first 
- element, this function returns a random access iterator pointing to it. 
- If the container is empty, the returned iterator value shall not be dereferenced.
-
- If the vector object is const-qualified, the function returns a const_iterator. 
- Otherwise, it returns an iterator. 
- Member types iterator and const_iterator are random access iterator types (pointing 
- to an element and to a const element, respectively).
+ Returns an iterator pointing to the element that it would be pointing to if 
+ advanced -n positions.
+ If it is a random-access iterator, the function uses just once operator+ or 
+ operator-.Otherwise, the function uses repeatedly the increase or decrease 
+ operator (operator++ or operator--) on the copied iterator until n elements 
+ have been advanced.
  ******************************************************************************/
-      iterator begin();                /* c++98 */
-const_iterator begin() const;          /* c++98 */
-      iterator begin() noexcept;         /* c++11 */
-const_iterator begin() const noexcept;   /* c++11 */
+template <class BidirectionalIterator>
+BidirectionalIterator prev (BidirectionalIterator it,
+typename iterator_traits<BidirectionalIterator>::difference_type n = 1);
 
+/*******************************************************************************
+     std::reverse_iterator::reverse_iterator  public member function <iterator>
+ *******************************************************************************       
+ Constructs a reverse iterator object: 
+ 1 default constructor
+   Constructs a reverse iterator that points to no object. The internal base iterator 
+   is value-initialized.
+ 2 initalization constructor
+   Constructs a reverse iterator from some original iterator @it. The behavior of 
+   the constructed object replicates the original, except that it iterates through 
+   its pointed elements in the reverse order.
+ 3 copy / type-cast constructor
+   Constructs a reverse iterator from some other reverse iterator. The constructed 
+   object keeps the same sense of iteration as rev_it.
+
+ @it:An iterator,whose sense of iteration is inverted in the constructed object.
+ Member type iterator_type is the underlying bidirectional iterator type (the class 
+ template parameter: Iterator).
+ @rev_it:An iterator of a reverse_iterator type, whose sense of iteration is preserved.   
+ ******************************************************************************/
+reverse_iterator();
+explicit reverse_iterator (iterator_type it);
+template <class Iter>
+reverse_iterator (const reverse_iterator<Iter>& rev_it);
 
 
 /*******************************************************************************
-                  std::vector::end    public member function
- ret: An iterator to the element past the end of the sequence.
- fun: Return iterator to end
-  
- Returns an iterator referring to the past-the-end element in the vector container.
- The past-the-end element is the theoretical element that would follow the last 
- element in the vector. It does not point to any element, and thus shall not be 
- dereferenced. 
- Because the ranges used by functions of the standard library do not include the 
- element pointed by their closing iterator, this function is often used in combination 
- with vector::begin to specify a range including all the elements in the container. 
- If the container is empty, this function returns the same as vector::begin.
-
- If the vector object is const-qualified, the function returns a const_iterator. 
- Otherwise, it returns an iterator.
- Member types iterator and const_iterator are random access iterator types (pointing 
- to an element and to a const element, respectively).
+        std::reverse_iterator::base public member function <iterator>
+ *******************************************************************************       
+ ret:A copy of the base iterator, which iterates in the opposite direction.Member 
+     type iterator_type is the underlying bidirectional iterator type (the class 
+     template parameter: Iterator).       
+ fun:Return base iterator				   
+				   
+ The base iterator is an iterator of the same type as the one used to construct the 
+ reverse_iterator, but pointing to the element next to the one the reverse_iterator 
+ is currently pointing to (a reverse_iterator has always an offset of -1 with respect 
+ to its base iterator).
  ******************************************************************************/
-      iterator end();                /* c++98 */
-const_iterator end() const;          /* c++98 */
-      iterator end() noexcept;         /* c++11 */
-const_iterator end() const noexcept;   /* c++11 */
-
-
+iterator_type base() const;
