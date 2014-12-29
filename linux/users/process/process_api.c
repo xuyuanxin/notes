@@ -153,7 +153,6 @@ been continued after a job control stop (XSI option; waitpid only).*/
 pid_t wait(int *statloc);
 
 
-#define WNOHANG
 #define WUNTRACED
 /*******************************************************************************
  @pid: pid == -1 等待任意子进程
@@ -185,8 +184,10 @@ contains the process group ID of the children to wait for.*/
 #define WCONTINUED /*Wait for a process that has previously stopped and has been 
 continued, and whose status has not yet been reported.*/
 #define WEXITED /*Wait for processes that have exited.*/
-#define WNOHANG /*Return immediately instead of blocking if there is no child 
-exit status available.*/
+
+#define WNOHANG /* (WithNoHang) Return immediately instead of blocking if there 
+is no child exit status available.*/
+
 #define WNOWAIT /*Don't destroy the child exit status. The child's exit status 
 can be retrieved by a subsequent call to wait, waitid, or waitpid.*/
 #define WSTOPPED /*Wait for a process that has stopped and whose status has not 

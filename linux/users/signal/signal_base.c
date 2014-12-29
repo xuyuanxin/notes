@@ -1,3 +1,4 @@
+ 
 /*******************************************************************************
 ---->定义
 信号是软件中断。信号提供了一种处理异步事件的方法，例如，终端用户键入终端键，则会
@@ -9,8 +10,13 @@ a:由一个进程发给另外一个进程(或自身)
 b:由内核发给某个进程
 每个信号都有一个与之关联的处理(disposition),也称为行为(action).信号的处置有三种选择
 1 捕获
-2 忽略 SIG_IGN
-3 默认处理 
+2 忽略 SIG_IGN  
+  The two signals SIGKILL and SIGSTOP cannot be ignored.
+3 默认处理  default
+  The default is normally to terminate a process on receipt of a signal, with 
+  certain signals also generating a core image of the process in its current 
+  working directory. There are a few signals whose default disposition is to 
+  be ignored: SIGCHLD and SIGURG (sent on the arrival of out-of-band data).
 
 产生信号的条件:
 1 某些特定按键，引发终端产生信号。例如Ctrl+C通常产生中断信号(SIGINT)
@@ -110,10 +116,14 @@ signals. (SIGSEGV is one such signal.)
  continued, even if the signal is blocked or ignored.
  ******************************************************************************/
 
-#define SIGCHLD /*Child process has stopped or terminated.*/
+
+#define SIGCHLD /*Child process has stopped or terminated.sent by the kernel 
+whenever a process terminates, to the parent of the terminating process.*/
+
 #define SIGCONT /*Continue process, if stopped.When we tell the shell to resume 
 a job in the foreground or background, the shell sends all the processes in the 
 job the SIGCONT signal.*/
+
 #define SIGSTOP /*Stop signal (can't be caught or ignored).*/
 #define SIGTSTP /*Interactive stop signal. 当键入挂起字符(通常是ctrl+z)时信号
 被送到前台进程组的所有进程*/
@@ -136,9 +146,11 @@ Implementations usually generate this signal on certain types of memory faults
 #define SIGSEGV /*the process has made an invalid memory reference (which is 
 usually a sign that the program has a bug, such as dereferencing an uninitialized 
 pointer).The name SEGV stands for "segmentation violation."*/
+
 #define SIGPIPE /*If we write to a pipeline but the reader has terminated,SIGPIPE 
 is generated.This signal is also generated when a process writes to a socket of 
 type SOCK_STREAM that is no longer connected.*/
+
 #define SIGTERM /*This is the termination signal sent by the kill(1) command by 
 default.Because it can be caught by applications, using SIGTERM gives programs
 a chance to terminate gracefully by cleaning up before exiting  (in contrast to 

@@ -1,5 +1,5 @@
 
-socklent_t   uint32_t
+/* socklent_t   uint32_t */
 
 #include<netinet/in.h>
 
@@ -28,3 +28,7 @@ struct sockaddr_in {         /*ipv4套接字地址结构*/
 
 ipv4套接字地址结构,也称为网际套接字地址结构 struct sockaddr_in
 通用套接字地址结构 
+
+套接字是通信端点的抽象，访问套接字需要使用套接字描述符(与文件描述符类似)。 
+套接字描述符在UNIX系统是用文件描述符实现的。
+

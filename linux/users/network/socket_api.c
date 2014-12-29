@@ -48,68 +48,152 @@ inet_ntop(AF_INET6, &addr6.sin6_addr, str, sizeof(str));*/
  
 #define INET_ADDRSTRLEN       16       /* for IPv4 dotted-decimal */
 #define INET6_ADDRSTRLEN      46       /* for IPv6 hex string */
-  
 
+/****************************** protocol family *******************************/
+#define AF_INET   /* ipv4 protocols */
+#define AF_INET6  /* ipv6 protocols */
+#define AF_LOCAL  /* unix domain protocols */
+#define AF_ROUTE  /* routing sockets */
+#define AF_KEY	  /* It provides support for cryptographic security. Similar to 
+the way that a routing socket (AF_ROUTE) is an interface to the kernel's routing 
+table, the key socket is an interface into the kernel's key table. */
 
+/******************************** socket type *********************************/
+#define SOCK_STREAM /*stream socket TCP 协议,这样会提供按顺序的,可靠,双向,面向连
+接的比特流. */
+#define SOCK_DGRAM /*datagram socket UDP协议,这样只会提供定长的,不可靠,无连接的
+通信.*/
+#define SOCK_SEQPACKET /*sequenced packet socket*/
+#define SOCK_RAW /*raw socket*/
+#define SOCK_PACKET	/* Linux supports a new socket type, SOCK_PACKET, that provides 
+access to the datalink */
 
+/****************************** socket protocol *******************************/
+#define IPPROTO_TCP   /* TCP transport protocol */
+#define IPPROTO_UDP   /* UDP transport protocol */
+#define IPPROTO_SCTP  /* SCTP transport protocol */
 
+/*******************************************************************************
+                | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
+ ---------------|----------|----------|----------|----------|--------|
+ SOCK_STREAM    | tcp|sctp | tcp|sctp |    yes   |          |        |
+ ---------------|----------|----------|----------|----------|--------|
+ SOCK_DGRAM     |    udp   |   udp    |    yes   |          |        |
+ ---------------|----------|----------|----------|----------|--------| 
+ SOCK_SEQPACKET |   sctp   |   sctp   |    yes   |          |        |
+ ---------------|----------|----------|----------|----------|--------| 
+ SOCK_RAW       |   ipv4   |   ipv6   |          |    yes   |   yes  |
+ ---------------|----------|----------|----------|----------|--------|
+ Figure 4.5 Combinations of @family and @type for the @socket function
+       
+ Not all combinations of @socket @family and @type are valid.Figure 4.5 shows the 
+ valid combinations, along with the actual protocols that are valid for each pair. 
+ The boxes marked "Yes" are valid but do not have handy acronyms. The blank boxes 
+ are not supported.    
+ ******************************************************************************/
 
-
-/*
-套接字是通信端点的抽象，访问套接字需要使用套接字描述符(与文件描述符类似)。 
-套接字描述符在UNIX系统是用文件描述符实现的。
-*/
-
-/*  
-@domain:协议族,也叫协议域，用来确定通信的特性，包括地址格式.AF代表Address Family.
-        AF_UNIX只能够用于单一的Unix 系统进程间通信,
-        AF_INET    ipv4 protocols
-        AF_INET6   ipv6 protocols
-        AF_LOCAL   unix domain protocols
-        AF_ROUTE   routing sockets
-        AF_KEY     key socket
-@type:  套接字类型
-        SOCK_STREAM     stream socket TCP 协议,这样会提供按顺序的,可靠,双向,面向连接的比特流. 
-        SOCK_DGRAM      datagram socket UDP协议,这样只会提供定长的,不可靠,无连接的通信.
-        SOCK_SEQPACKET  sequenced packet socket
-        SOCK_RAW        raw socket
-@protocol: 协议类型
-        0             选择domain和type组合的系统默认值
-        IPPROTO_TCP   TCP transport protocol
-        IPPROTO_UDP   UDP transport protocol
-        IPPROTO_SCTP  SCTP transport protocol
-        
-When multiple protocols are supported for the same domain and socket type, we can use the protocol argument to select a particular protocol. 
-The default protocol for a SOCK_STREAM socket in the AF_INET communication domain is TCP(Transmission Control Protocol).
-The default protocol for a SOCK_DGRAM socket in the AF_INET communication  domain  is  UDP(User  Datagram  Protocol).
- 
-return:
-成功时返回文件描述符(有的也称为套接字描述符),失败时返回-1,看errno可知道出错的详细情况.*/
+/*******************************************************************************
+ @domain: AF_INET等
+    协议族,也叫协议域，用来确定通信的特性，包括地址格式.We note that you may 
+    encounter AF_UNIX (the historical Unix name)instead of AF_LOCAL (the POSIX 
+    name).You may also encounter the corresponding PF_xxx constant as the first 
+    argument to socket.
+ @type: SOCK_STREAM等 
+    套接字类型 
+ @protocol: IPPROTO_TCP等
+    协议类型 0表示选择domain和type组合的系统默认值。When multiple protocols are 
+    supported for the same @domain and socket @type,we can use the @protocol 
+    argument to select a particular protocol.The default protocol for a SOCK_STREAM 
+    socket in the AF_INET communication domain is TCP(Transmission Control Protocol).
+    The default protocol for a SOCK_DGRAM socket in the AF_INET communication domain  
+    is UDP(User Datagram  Protocol).
+ return:
+    成功时返回文件描述符(有的也称为套接字描述符),失败时返回-1,看errno可知道出错
+    的详细情况.On success, the socket function returns a small non-negative 
+    integer value, similar to a file descriptor. We call this a socket descriptor, 
+    or a sockfd.
+ AF_xxx Versus PF_xxx
+    The "AF_" prefix stands for "address family" and the "PF_" prefix stands for 
+    "protocol family." Historically, the intent was that a single protocol family 
+    might support multiple address families and that the PF_ value was used to 
+    create the socket and the AF_ value was used in socket address structures. 
+    But in actuality, a protocol family supporting multiple address families has 
+    never been supported and the <sys/socket.h> header defines the PF_ value for 
+    a given protocol to be equal to the AF_ value for that protocol. While there 
+    is no guarantee that this equality between the two will always be true, should 
+    anyone change this for existing protocols, lots of existing code would break. 
+    To conform to existing coding practice, we use only the AF_ constants in this 
+    text, although you may encounter the PF_ value, mainly in calls to socket.
+ ******************************************************************************/
 int socket(int domain, int type,int protocol);
 
-/*
-@sockfd: is a socket descriptor returned by the socket function. 
-@servaddr: The socket address structure must contain the IP address and port number of the server. 
-@servlen: The second and third arguments are a pointer to a socket address structure and its size,
-function:The connect function is used by a TCP client to establish a connection with a TCP server.
-Returns: 0 if OK, -1 on error
+/**************************** @connect error type ****************************/
+#define ETIMEDOUT
+#define ECONNREFUSED
+#define EHOSTUNREACH
+#define ENETUNREACH 
 
-1 The client does not have to call @bind before calling connect: the kernel will choose 
-  both an ephemeral port and the source IP address if necessary.
-2 In the case of a TCP socket, the @connect function initiates TCP's three-way handshake. 
-  The function returns only when the connection is established or an error occurs
-3 each time connect fails, we must close the socket descriptor and call socket again.
-*/
+/*******************************************************************************
+ @sockfd: 
+   is a socket descriptor returned by the @socket function. 
+ @servaddr: 
+   The socket address structure must contain the IP address and port number of 
+   the server. 
+ @servlen: 
+   The second and third arguments are a pointer to a socket address structure 
+   and its size 
+ function:
+   The connect function is used by a TCP client to establish a connection with 
+   a TCP server.
+ returns:
+   0 if OK, -1 on error
+
+ 1 The client does not have to call @bind before calling connect: the kernel 
+   will choose both an ephemeral port and the source IP address if necessary.
+ 2 In the case of a TCP socket, the @connect function initiates TCP's three-way 
+   handshake.The function returns only when the connection is established or an 
+   error occurs
+ 3 each time connect fails, we must close the socket descriptor and call socket 
+   again.
+ 4 客户端connect发起三次握手,收到ack后返回(第二次握手),而服务器要第三个握手才返回
+ 5 When @connect is interrupted by a caught signal and is not automatically 
+   restarted.If this function returns EINTR, we cannot call it again, as doing 
+   so will return an immediate error.
+
+There are several different error returns possible.
+1 If the client TCP receives no response to its SYN segment, ETIMEDOUT is returned. 
+  4.4BSD, for example, sends one SYN when connect is called, another 6 seconds 
+  later, and another 24 seconds later. If no response is received after a total 
+  of 75 seconds, the error is returned.Some systems provide administrative control 
+  over this timeout;
+2 If the server's response to the client's SYN is a reset (RST), this indicates 
+  that no process is waiting for connections on the server host at the port 
+  specified (i.e., the server process is probably not running). This is a hard 
+  error and the error ECONNREFUSED is returned to the client as soon as the RST 
+  is received.An RST is a type of TCP segment that is sent by TCP when something 
+  is wrong. Three conditions that generate an RST are: when a SYN arrives for a 
+  port that has no listening server (what we just described), when TCP wants to 
+  abort an existing connection, and when TCP receives a segment for a connection 
+  that does not exist. (TCPv1 [pp. 246–250] contains additional information.)
+3 If the client's SYN elicits an ICMP "destination unreachable" from some 
+  intermediate router, this is considered a soft error. The client kernel saves 
+  the message but keeps sending SYNs with the same time between each SYN as in 
+  the first scenario. If no response is received after some fixed amount of time 
+  (75 seconds for 4.4BSD), the saved ICMP error is returned to the process as 
+  either EHOSTUNREACH or ENETUNREACH. It is also possible that the remote system 
+  is not reachable by any route in the local system's forwarding table, or that 
+  the connect call returns without waiting at all.
+*******************************************************************************/
 #include <sys/socket.h>	 
 int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
 	 
 	
-/*
-@sockfd:
-@myaddr:要与@sockfd绑定的地址
-@addrlen:地址长度
-function:The @bind function assigns a local protocol address to a socket.
-Returns: 0 if OK,-1 on error
+/*******************************************************************************
+ @sockfd:
+ @myaddr:要与@sockfd绑定的地址
+ @addrlen:地址长度
+ function:The @bind function assigns a local protocol address to a socket.
+ returns: 0 if OK,-1 on error
 
 1 With TCP, calling @bind lets us specify a port number, an IP address, both, or neither.
   A process can bind a specific IP address to its socket. The IP address must belong to an interface on the host.
@@ -152,23 +236,39 @@ b) A completed connection queue, which contains an entry for each client with wh
 #include <sys/socket.h>
 int listen (int sockfd, int backlog);
 	      
-/*
-@cliaddr:The cliaddr and addrlen arguments are used to return the protocol address of the connected peer process (the client). 
-@addrlen:Before the call, we set the integer value referenced by *addrlen to the size of the socket address structure pointed to by cliaddr; 
-         on return, this integer value contains the actual number of bytes stored by the kernel in the socket address structure.
+/*******************************************************************************
+ @cliaddr:
+   The @cliaddr and @addrlen arguments are used to return the protocol address 
+   of the connected peer process (the client). 
+ @addrlen:
+   Before the call, we set the integer value referenced by *@addrlen to the size 
+   of the socket address structure pointed to by cliaddr;on return, this integer 
+   value contains the actual number of bytes stored by the kernel in the socket 
+   address structure.
+ function:
+   @accept is called by a TCP server to return the next completed connection from 
+   the front of the completed connection queue. If the completed connection queue 
+   is empty, the process is put to sleep (assuming the default of a blocking socket).
+ returns: 
+   non-negative descriptor if OK, -1 on error
 
-function:@accept is called by a TCP server to return the next completed connection from the front of the completed connection queue . 
-         If the completed connection queue is empty, the process is put to sleep (assuming the default of a blocking socket).
-Returns: non-negative descriptor if OK, -1 on error
-
-1 If accept is successful, its return value is a brand-new descriptor automatically created by the kernel. 
-  This new descriptor refers to the TCP connection with the client. 
-2 When discussing accept, we call the first argument to accept the listening socket (the descriptor created by socket and then 
-  used as the first argument to both bind and listen), and we call the return value from accept the connected socket.
-3 A given server normally creates only one listening socket, which then exists for the lifetime of the server. The kernel 
-  creates one connected socket for each client connection that is accepted (i.e., for which the TCP three-way handshake completes). 
-  When the server is finished serving a given client, the connected socket is closed.
-*/
+ 1 If accept is successful, its return value is a brand-new descriptor automatically 
+   created by the kernel.This new descriptor refers to the TCP connection with 
+   the client.
+ 2 When discussing @accept, we call the first argument to @accept the listening 
+   socket (the descriptor created by socket and then used as the first argument 
+   to both @bind and @listen), and we call the return value from accept the 
+   connected socket.
+ 3 A given server normally creates only one listening socket, which then exists 
+   for the lifetime of the server.The kernel creates one connected socket for 
+   each client connection that is accepted (i.e., for which the TCP three-way 
+   handshake completes). When the server is finished serving a given client, the 
+   connected socket is closed.
+ 4 服务器accept要第三个握手完成才返回。
+ 5 signal was caught by the parent(例如子进程终止) while the parent was blocked 
+   in a slow system call (accept), the kernel causes the accept to return an error 
+   of EINTR (interrupted system call). 
+*******************************************************************************/
 #include <sys/socket.h>
 int accept (int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen);
  

@@ -32,14 +32,13 @@
    call it ChangeNumber	
  3 Swap the PartitionNumber and ChangeNumber;  
  4 Reverse all the digits on the right of partition index  
-
  
- 第一步以后，a[k]以后的是一个递减序列，已经是最大的了，再折腾也没用；
- 第二步，如果带上a[k]，那么lexicographical order的下一个一定是以比a[k]大的一个数
- 打头的，从后面找到刚好比a[k]大的那一个，假设是a[l]； 
- 第三步，将a[l]提到前面，与a[k]互换，这时候，a[k]后面的仍然是降序的。
- 第四步，把a[k]后面的逆转一下，从降序到升序，这样就得到了恰好比之前序列大一号的
- 序列（打头的是刚好更大的那个，后面的是升序）。  
+ ��һ���Ժ�a[k]�Ժ����һ���ݼ����У��Ѿ��������ˣ�������Ҳû�ã�
+ �ڶ������������a[k]����ôlexicographical order����һ��һ�����Ա�a[k]���һ����
+ ��ͷ�ģ��Ӻ����ҵ��պñ�a[k]�����һ����������a[l]�� 
+ ����������a[l]�ᵽǰ�棬��a[k]��������ʱ��a[k]�������Ȼ�ǽ���ġ�
+ ���Ĳ�����a[k]�������תһ�£��ӽ������������͵õ���ǡ�ñ�֮ǰ���д�һ�ŵ�
+ ���У���ͷ���Ǹպø�����Ǹ�������������򣩡�  
  ******************************************************************************/
 
 #include <iostream>
@@ -115,4 +114,5 @@ int main()
 {
     next_permutation_test01();
 }
+
 

@@ -9,7 +9,11 @@
  Returns : previous disposition of signal if OK,SIG_ERR on error
 
  1 不改变信号的处理方式就不能确定当前处理方式
+ 2 信号处理函数原型 void (*func)(int)
+ 3 @signal是一个函数，@signal函数有两个入参，第一个是int，第二个是函数指针
+   @signal返回值是一个函数指针(所指向的函数有一个int型入参，这个函数的返回值为void)。
  ******************************************************************************/
+void signal();/* 为了source insight 能跳转过来*/
 void (*signal(int signo,void (*func)(int)))(int);
 
 
@@ -255,7 +259,7 @@ union sigval si_value; /* application-specific value */
          for the signal through the @oact pointer.
 
  function:examine or modify (or both) the action associated with a particular signal.
- Returns: 0 if OK,-1 on error
+ returns: 0 if OK,-1 on error
 
  1 sa_mask字段说明了一个信号集,在调用该信号捕捉函数之前,这一信号集要加到进程的信号
    屏蔽字中。当信号捕捉函数返回时,进程的屏蔽字恢复到原来的值

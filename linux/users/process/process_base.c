@@ -12,6 +12,22 @@
 a race condition occurs when multiple processes are trying to do something with 
 shared data and the final outcome depends on the order in which the processes run. 
 
+----> 进程状态
+zombie
+    The purpose of the zombie state is to maintain information about the child 
+    for the parent to fetch at some later time. This information includes the 
+    process ID of the child, its termination status, and information on the 
+    resource utilization of the child (CPU time, memory, etc.). If a process 
+    terminates, and that process has children in the zombie state, the parent 
+    process ID of all the zombie children is set to 1 (the init process), which 
+    will inherit the children and clean them up (i.e., init will wait for them, 
+    which removes the zombie). Some Unix systems show the COMMAND column for a 
+    zombie process as <defunct>.
+
+    Obviously we do not want to leave zombies around. They take up space in the 
+    kernel and eventually we can run out of processes. Whenever we fork children, 
+    we must wait for them to prevent them from becoming zombies.
+
 
 ----> 僵死(zombie)进程 孤儿进程
 unix提供了一种机制可以保证只要父进程想知道子进程结束时的状态信息， 就可以得到。

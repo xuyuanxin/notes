@@ -177,7 +177,7 @@ int putchar(int c);
  return:buf if OK,NULL on end of file or erro
 
  一次读入一行，最多读n-1个字符，第n个字符自动填NULL。如果一行多于n-1个字符，可以
- 分两次读取，对@fgets的下次读取还会继续该行。
+ 分两次读取，对@fgets的下次读取还会继续该行。当键入EOF,fgets返回NULL
  ******************************************************************************/
 char *fgets(char *restrict buf,int n,FILE *restrict fp);
 

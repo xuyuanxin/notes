@@ -84,7 +84,8 @@ void str_echo(int sockfd)
 	char		buf[MAXLINE];
 
 again:
-	/*正常终止 3:服务器收到FIN时,递送一个EOF给子进程阻塞中的read,收到后read返回EOF,从而子进程终止*/
+	/*cli_close_normal 3:服务器收到FIN时,递送一个EOF给子进程阻塞中的read,收到后
+	  read返回EOF,从而子进程终止*/
 	while ( (n = read(sockfd, buf, MAXLINE)) > 0)
 	{
 		if(n != x_writen(sockfd, buf, n))
@@ -98,7 +99,23 @@ again:
 }
 
 
-/*不要用wait,防止多个信号但只处理一次*/
+/*******************************************************************************
+ 如果多个客户端同时关闭，服务器会同时收到多个SIGCHLD信号，由于UNIX信号一般不排队
+ 有可能服务器只处理1次SIGCHLD信号，这会在系统中留下僵尸进程。
+
+ The correct solution is to call @waitpid instead of wait.we call @waitpid within 
+ a loop, fetching the status of any of our children that have terminated. We must 
+ specify the WNOHANG option: This tells @waitpid not to block if there are running 
+ children that have not yet terminated.we cannot call @wait in a loop, because 
+ there is no way to prevent @wait from blocking if there are running children 
+ that have not yet terminated.
+ 
+ 不要用wait,防止多个信号但只处理一次
+
+ Warning: Calling standard I/O functions such as printf in a signal handler is 
+ not recommended, for reasons that we will discuss in Section 11.18. We call 
+ printf here as a diagnostic tool to see when the child terminates.
+ ******************************************************************************/
 void sig_chld(int signo)
 {
     pid_t    pid;

@@ -148,21 +148,36 @@ Returns: number of bytes read, 0 if end of file,-1 on error
   节而请求读100个字节，则read返回30，下次read将返回0。
 3 面向文本的套接字读操作中,一次read不能保证读入完整的一行或整行,读完整的一行可
   能需要对此调用read,并检查其中是否出现了换行符
+4 服务器收到FIN时,递送一个EOF给进程阻塞中的read,收到后read返回EOF
 ******************************************************************************/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
 /******************************************************************************
-@fd    : 写哪个文件(已经打开了)
-@buf   : buf中是要写的数据
-@nbytes: 写入数据的长度
-funtion: Data is written to an open file with the @write function.
-Returns: number of bytes written if OK,-1 on error
+ @fd    : 写哪个文件(已经打开了)
+ @buf   : buf中是要写的数据
+ @nbytes: 写入数据的长度
+ funtion: Data is written to an open file with the @write function.
+ Returns: number of bytes written if OK,-1 on error
 
-For a regular file, the write operation starts at the file's current offset. If 
-the O_APPEND option was specified when the file was opened, the file's offset 
-is set to the current end of file before each write operation. After a successful
-write, the file's offset is incremented by the number of bytes actually written.
-******************************************************************************/
+ For a regular file, the write operation starts at the file's current offset. If 
+ the O_APPEND option was specified when the file was opened, the file's offset 
+ is set to the current end of file before each write operation. After a successful
+ write, the file's offset is incremented by the number of bytes actually written.
+
+ It is okay to write to a socket that has received a FIN, but it is an error to 
+ write to a socket that has received an RST.
+
+ What happens if the client ignores the error return from read and writes more 
+ data to the server? This can happen, for example, if the client needs to perform 
+ two writes to the server before reading anything back, with the first write 
+ eliciting the RST.
+ 
+ When a process writes to a socket that has received an RST, the SIGPIPE signal 
+ is sent to the process. The default action of this signal is to terminate the 
+ process, so the process must catch the signal to avoid being involuntarily 
+ terminated.If the process either catches the signal and returns from the signal 
+ handler, or ignores the signal, the write operation returns EPIPE.
+ *****************************************************************************/
 ssize_t write(int fd,const void *buf,size_t nbytes);
 
 #include <unistd.h>

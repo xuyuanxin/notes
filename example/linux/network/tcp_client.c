@@ -134,7 +134,7 @@ void str_cli_v1(FILE *fp, int sockfd)
 
     do
     {
-        /*正常终止1:当客户端键入EOF,fgets返回NULL,则客户端调用exit退出*/
+        /*cli_close_normal 1(客户端发起正常终止):当客户端键入EOF,fgets返回NULL,则客户端调用exit退出*/
 	    read_string = fgets(sendline, MAXLINE, fp);
 
 	    if( read_string == NULL && ferror(fp))
@@ -142,11 +142,22 @@ void str_cli_v1(FILE *fp, int sockfd)
 
 		if(NULL != read_string)
 		{
-
-		    /*假设服务器异常终止,发送一个FIN.客户端收到FIN后返回ack.此时客户端可能阻塞在fgets,当获得字符后,走到这里
-			  调用write发往服务器,这个消息可以发过去因为TCP只关闭了一半.服务器收到消息后,由于先前打开的那个套接字的
-			  进程已经终止,于是响应一个RST(第一次写引发RST,第二次写产生SIGPIPE信号,写返回EPIPE错误).然而客户进程看不
-			  到这个RST,因为它在调用write后立即调用readline,并且由于上面的FIN报文,所以readline立即返回0(EOF)*/
+		    /*假设服务器异常终止,发送一个FIN.客户端收到FIN后返回ack.此时客户端可
+		       能阻塞在fgets,当获得字符后,走到这里调用write发往服务器,这个消息可
+		       以发过去因为TCP只关闭了一半.服务器收到消息后,由于先前打开的那个套
+		       接字的进程已经终止,于是响应一个RST(第一次写引发RST,第二次写产生
+		       SIGPIPE信号,写返回EPIPE错误).然而客户进程看不到这个RST,因为它在调
+		       用write后立即调用readline,并且由于上面的FIN报文,所以readline立即
+		       返回0(EOF)
+			   The problem in this example is that the client is blocked in the 
+			   call to @fgets when the FIN arrives on the socket. The client is 
+			   really working with two descriptors—the socket and the user input
+			   —and instead of blocking on input from only one of the two sources 
+			   (as str_cli is currently coded), it should block on input from either 
+			   source. Indeed, this is one purpose of the @select and @poll functions, 
+			   which we will describe in Chapter 6. When we recode the str_cli 
+			   function in Section 6.4, as soon as we kill the server child, the 
+			   client is notified of the received FIN.*/
 			if(strlen(sendline) != x_writen(sockfd, sendline, strlen(sendline)))
 			    printf("\r\ntcp client error:str_cli -> x_writen");
 
@@ -199,6 +210,14 @@ int main(int argc, char **argv)
 	servaddr.sin_port = htons(SERV_PORT);
 	inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
 
+    /* The foreign IP address and foreign port must be specified by the client 
+        in the call to @connect. The two local values are normally chosen by the 
+        kernel as part of the @connect function. The client has the option of 
+        specifying either or both of the local values, by calling @bind before 
+        @connect, but this is not common.the client can obtain the two local 
+        values chosen by the kernel by calling @getsockname after the connection 
+        is established.*/
+
     /*客户端connect发起三次握手,收到ack后返回(第二次握手),而服务器要第三个握手才返回*/
 	ret = connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
 	if(ret < 0)
@@ -209,8 +228,9 @@ int main(int argc, char **argv)
 
 	str_cli_v1(stdin, sockfd);		/* do it all */
 	
-	/*正常终止 2:exit关闭打开的描述符,当关闭套接字时,客户端发送一个FIN给服务器,收到服务器的ack后,TCP前半部分关闭
-	  至此服务器套接字处于CLOSE_WAIT状态,客户端套接字处于FIN_WAIT_2状态*/
+	/*cli_close_normal 2:exit关闭打开的描述符,当关闭套接字时,客户端发送一个FIN给
+	  服务器,收到服务器的ack后,TCP前半部分关闭至此服务器套接字处于CLOSE_WAIT状态,
+	  客户端套接字处于FIN_WAIT_2状态*/
 
     /*close decrements the descriptor's reference count and closes the socket only if the count reaches 0. 
 	  close terminates both directions of data transfer, reading and writing. */
