@@ -1,3 +1,34 @@
+// vector::begin/end
+#include <iostream>
+#include <vector>
+
+/* 
+ test begin/end 
+ output:
+ myvector contains: 1 2 3 4 5
+ */
+int cpp_vector_test01 ()
+{
+    std::vector<int> myvector;
+	
+    for (int i=1; i<=5; i++) 
+		myvector.push_back(i);
+
+    std::cout << "myvector contains:";
+
+	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+        std::cout << ' ' << *it;
+	
+    std::cout << '\n';
+
+    return 0;
+}
+
+int main()
+{
+    cpp_vector_test01();
+}
+
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -30,7 +61,7 @@ using namespace std;
  vector is the number of elements for which it currently has memory allocated. 
  For a vector v, the size and capacity can be recovered with the member functions 
  v.size( ) and v.capacity( ) .
- 可以使用系统默认的capacity，也可以自己设置
+ 鍙互浣跨敤绯荤粺榛樿鐨刢apacity锛屼篃鍙互鑷繁璁剧疆
 
 
  public member function
@@ -44,7 +75,7 @@ int main( )
 {
     vector<int> v;
 	
-    v.push_back(6);/*push_back添加数据*/
+    v.push_back(6);/*push_back娣诲姞鏁版嵁*/
     v.push_back(9);
     v.push_back(1);
 
@@ -89,4 +120,3 @@ int main( )
 	
     return 0;
 }
-
