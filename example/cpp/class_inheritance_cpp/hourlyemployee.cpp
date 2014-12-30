@@ -1,7 +1,7 @@
 //This is the file: hourlyemployee.cpp
 //This is the implementation for the class HourlyEmployee.
-//The interface for the class HourlyEmployee is in
-//the header file hourlyemployee.h.
+//The interface for the class HourlyEmployee is in the header file hourlyemployee.h
+
 #include <string>
 #include <iostream>
 #include "hourlyemployee.h"
@@ -11,17 +11,17 @@ namespace employeessavitch
 {
 
 /*******************************************************************************
-If a constructor definition for a derived class does not include an invocation of 
-a constructor for the base class, then the default (zero-argument) version of the 
-base class constructor will be invoked automatically. So, the following definition 
-of the default constructor for the class HourlyEmployee (with Employee( )  omitted) 
-is equivalent to the version we just discussed:
-    HourlyEmployee::HourlyEmployee( ) : wage_rate(0), hours(0)
-    {
-         //deliberately empty
-    }
-The call to the base class constructor is the first action taken by a derived
-class constructor.     
+ If a constructor definition for a derived class does not include an invocation 
+ of a constructor for the base class, then the default (zero-argument) version of 
+ the base class constructor will be invoked automatically. So, the following 
+ definition of the default constructor for the class HourlyEmployee(with Employee() 
+ omitted) is equivalent to the version we just discussed:
+         HourlyEmployee::HourlyEmployee( ) : wage_rate(0), hours(0)
+         {
+             //deliberately empty
+         }
+ The call to the base class constructor is the first action taken by a derived
+ class constructor.     
 *******************************************************************************/
 HourlyEmployee::HourlyEmployee( ) : Employee( ), wage_rate(0), hours(0)
 {
@@ -29,24 +29,25 @@ HourlyEmployee::HourlyEmployee( ) : Employee( ), wage_rate(0), hours(0)
 }
 
 /*******************************************************************************
-Note that you do not give definitions for the inherited member functions unless 
-the definition of the member function is changed in the derived class
-*******************************************************************************/
+ Note that you do not give definitions for the inherited member functions unless 
+ the definition of the member function is changed in the derived class
+ ******************************************************************************/
 
 /*******************************************************************************
-The portion after the colon is the initialization section of the constructor 
-definition for the constructor HourlyEmployee::HourlyEmployee. The part
-Employee(the_name, the_number) is an invocation of the two-argument constructor 
-for the base class Employee. Note that the syntax for invoking the base class 
-constructor is analogous to the syntax used to set member variables:The entry 
-wage_rate(the_wage_rate) sets the value of the member variable wage_rate to 
-the_wage_rate; the entry Employee(the_name, the_number) invokes the base class 
-constructor Employee with the arguments the_name and the_number. Since all the 
-work is done in the initialization section, the body of the constructor definition 
-is empty.
+ The portion after the colon is the initialization section of the constructor 
+ definition for the constructor HourlyEmployee::HourlyEmployee. The part 
+ Employee(the_name, the_number) is an invocation of the two-argument constructor 
+ for the base class Employee. Note that the syntax for invoking the base class 
+ constructor is analogous to the syntax used to set member variables:The entry 
+ wage_rate(the_wage_rate) sets the value of the member variable wage_rate to 
+ @the_wage_rate; the entry Employee(the_name, the_number) invokes the base class 
+ constructor Employee with the arguments @the_name and @the_number. Since all the 
+ work is done in the initialization section, the body of the constructor definition 
+ is empty.
 *******************************************************************************/
-HourlyEmployee::HourlyEmployee(string the_name, string the_number,double the_wage_rate, double the_hours)
-: Employee(the_name, the_number), wage_rate(the_wage_rate), hours(the_hours)
+HourlyEmployee::HourlyEmployee(string the_name, string the_number,
+double the_wage_rate, double the_hours): Employee(the_name, the_number), 
+wage_rate(the_wage_rate), hours(the_hours)
 {
     //deliberately empty
 }
@@ -72,18 +73,43 @@ double HourlyEmployee::get_hours( ) const
 }
 
 /*******************************************************************************
-The definition of an inherited member function can be changed in the definition 
-of a derived class so that it has a meaning in the derived class that is different 
-from what it is in the base class. This is called redefining the inherited member 
-function. For example, the member function print_check( ) is redefined in the 
-definition of the derived class HourlyEmployee. 
-*******************************************************************************
-A member variable (or member function) that is private in a base class is not 
-accessible by name in the definition of a member function for any other class, 
-not even in a member function definition of a derived class. 
-The member variable net_pay is a private member variable in the class Employee, 
-and although a derived class like HourlyEmployee inherits the variable net_pay, 
-it cannot access it directly.
+                               redefining
+ *******************************************************************************
+ The definition of an inherited member function can be changed in the definition 
+ of a derived class so that it has a meaning in the derived class that is different 
+ from what it is in the base class. This is called redefining the inherited member 
+ function. For example, the member function print_check( ) is redefined in the 
+ definition of the derived class HourlyEmployee. 
+ ****************************************************************************** 
+            Use of Private Member Variables from the Base Class
+ ******************************************************************************
+ A member variable (or member function) that is private in a base class is not 
+ accessible by name in the definition of a member function for any other class, 
+ not even in a member function definition of a derived class. Thus, although the
+ class HourlyEmployee does have a member variable named name (inherited from the 
+ base class Employee), it is illegal to directly access the member variable name 
+ in the definition of any member function in the class definition of HourlyEmployee.
+
+ You might be tempted to rewrite the start of the member function definition as 
+ follows:
+             void HourlyEmployee::print_check( )
+             {
+                 net_pay = hours * wage_rate; //Illegal use of net_pay
+                 
+ As the comment indicates, this will not work. The member variable net_pay is a 
+ private member variable in the class Employee, and although a derived class like 
+ HourlyEmployee inherits the variable net_pay, it cannot access it directly. It 
+ must use some public member function to access the member variable net_pay.
+
+ the laws on the use of private member variables and member functions must be as
+ we described, or else their privacy would be compromised.If private member 
+ variables of a class were accessible in member function definitions of a derived 
+ class, then anytime you wanted to access a private member variable, you could 
+ simply create a derived class and access it in a member function of that class, 
+ which would mean that all private member variables would be accessible to anybody 
+ who wanted to put in a little extra effort. If private member variables of a 
+ class were accessible in member function definitions of a derived class, then 
+ the member variables might be changed by mistake or in inappropriate ways.
 *******************************************************************************/
 void HourlyEmployee::print_check( )
 {
@@ -126,11 +152,8 @@ If you do not include a call to a base class constructor (in the initialization
 section of the definition of a derived class constructor), then the default 
 (zero-argument) constructor of the base class is called automatically. (If there 
 is no default constructor for the base class, that is an error condition.)
-*******************************************************************************/
-
-
-/*******************************************************************************
-        access to a redefined base function
+******************************************************************************
+                      access to a redefined base function
 ********************************************************************************
 Consider the base class Employee and the derived class HourlyEmployee. The function 
 print_check( ) is defined in both classes. Now suppose you have an object of each 

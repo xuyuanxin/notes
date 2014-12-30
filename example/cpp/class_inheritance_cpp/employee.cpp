@@ -8,10 +8,12 @@
 using namespace std;
 namespace employeessavitch
 {
+
 Employee::Employee( ) : name("No name yet"), ssn("No number yet"), net_pay(0)
 {
     //deliberately empty
 }
+
 Employee::Employee(string the_name, string the_number): name(the_name), ssn(the_number), net_pay(0)
 {
     //deliberately empty

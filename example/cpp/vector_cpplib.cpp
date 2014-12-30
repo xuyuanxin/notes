@@ -1,41 +1,10 @@
 // vector::begin/end
 #include <iostream>
 #include <vector>
-
-/* 
- test begin/end 
- output:
- myvector contains: 1 2 3 4 5
- */
-int cpp_vector_test01 ()
-{
-    std::vector<int> myvector;
-	
-    for (int i=1; i<=5; i++) 
-		myvector.push_back(i);
-
-    std::cout << "myvector contains:";
-
-	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
-        std::cout << ' ' << *it;
-	
-    std::cout << '\n';
-
-    return 0;
-}
-
-int main()
-{
-    cpp_vector_test01();
-}
-
-#include <iostream>
-#include <vector>
 using namespace std;
 
-
 /*******************************************************************************
-                                    Vectors
+                          Vectors base
  *******************************************************************************
  Vectors are used very much like arrays are used, but a vector does not have a 
  fixed size. If it needs more capacity to store another element, its capacity is 
@@ -49,6 +18,15 @@ using namespace std;
                vector<int> v; //default constructor producing an empty vector.
                vector<AClass> record(20); //vector constructor
                                           //for AClass to initialize 20 elements.
+ you cannot initialize the ith element using v[i] ; you can only change an element 
+ that has already been given some value. To add an element to an index position of 
+ a vector for the first time, you would normally use the member function push_back.
+
+ If you try to set v[i]  for i greater than or equal to v.size( ),then you may or 
+ may not get an error message, but your program will undoubtedly misbehave at some 
+ point. 
+
+
  Elements are added to a vector using the member function push_back, as illustrated 
  below:
                v.push_back(42);
@@ -61,21 +39,17 @@ using namespace std;
  vector is the number of elements for which it currently has memory allocated. 
  For a vector v, the size and capacity can be recovered with the member functions 
  v.size( ) and v.capacity( ) .
- 可以使用系统默认的capacity，也可以自己设置
-
 
  public member function
  std::vector::pop_back  void pop_back();
  Delete last element Removes the last element in the vector, effectively reducing 
  the container size by one.
-
- 
  ******************************************************************************/
-int main( )
+int vector_base( )
 {
     vector<int> v;
 	
-    v.push_back(6);/*push_back添加数据*/
+    v.push_back(6);/*push_back��������*/
     v.push_back(9);
     v.push_back(1);
 
@@ -117,6 +91,93 @@ int main( )
  ******************************************************************************/
 	v.resize(24);/*change the size of a vector*/
     cout << "v.capacity = " << v.capacity( )  << endl;	
+
+    std::cout << "\r\n\r\n";
 	
     return 0;
 }
+
+
+/*
+ Output:
+ The contents of fifth are: 16 2 77 29
+ */
+int vector_constructor()
+{
+    std::vector<int> first; // empty vector of ints
+    std::vector<int> second(4,100); // four ints with value 100
+    std::vector<int> third(second.begin(),second.end()); // iterating through second
+    std::vector<int> fourth(third);                       // a copy of third
+
+    // the iterator constructor can also be used to construct from arrays:
+    int myints[] = {16,2,77,29};
+    std::vector<int> fifth(myints, myints + sizeof(myints) / sizeof(int) );
+
+    std::cout << "The contents of fifth are:";
+    for (std::vector<int>::iterator it = fifth.begin(); it != fifth.end(); ++it)
+        std::cout << ' ' << *it;
+	
+    std::cout << "\r\n\r\n";
+
+    return 0;
+}
+
+/* 
+ test begin/end 
+ output:
+ myvector contains: 1 2 3 4 5
+ */
+int vector_begin_end ()
+{
+    std::vector<int> myvector;
+	
+    for (int i=1; i<=5; i++) 
+		myvector.push_back(i);
+
+    std::cout << "myvector contains:";
+
+	for (std::vector<int>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+        std::cout << ' ' << *it;
+	
+    std::cout << "\r\n\r\n";
+
+    return 0;
+}
+
+int vector_string ()
+{
+    std::vector<string> myvector;
+	
+	myvector.push_back("abc");
+	myvector.push_back("efg");
+
+    std::cout << "myvector contains:";
+
+	for (std::vector<string>::iterator it = myvector.begin() ; it != myvector.end(); ++it)
+        std::cout << ' ' << *it;
+
+    std::cout << endl;
+    
+    std::cout << "myvector contains2:" << endl;
+	
+	for (int i = 0; i < myvector.size(); ++i)
+        std::cout << myvector[i] << endl ;
+	
+    std::cout << "\r\n\r\n";
+
+    return 0;
+}
+
+
+int main()
+{
+    vector_base();
+	vector_constructor();
+	vector_begin_end();
+	vector_string();
+	
+    return 0;
+}
+
+
+

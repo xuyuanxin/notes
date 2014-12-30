@@ -43,5 +43,39 @@ template <class InputIterator1, class InputIterator2, class Compare>
 bool includes ( InputIterator1 first1, InputIterator1 last1,
 				  InputIterator2 first2, InputIterator2 last2, Compare comp );
 
+/*******************************************************************************
+                 std::find (function template)   <algorithm>
+ *******************************************************************************       
+ @first @last
+    Input iterators to the initial and final positions in a sequence. The range 
+    searched is [first,last), which contains all the elements between first and 
+    last, including the element pointed by first but not the element pointed by 
+    last.
+ @val
+    Value to search for in the range.T shall be a type supporting comparisons 
+    with the elements pointed by InputIterator using operator== (with the elements 
+    as left-hand side operands, and val as right-hand side).
+ @fun  Find value in range
+    returns an iterator to the first element in the range [first,last) that compares 
+    equal to val. If no such element is found, the function returns last.
+ @ret
+    An iterator to the first element in the range that compares equal to @val.
+    If no elements match, the function returns @last.
+ ******************************************************************************/
+using std::find ;
+template <class InputIterator, class T>
+InputIterator find (InputIterator first, InputIterator last, const T& val);
+
+template<class InputIterator, class T>
+
+/* The behavior of this function template is equivalent to: */
+InputIterator find (InputIterator first, InputIterator last, const T& val)
+{
+  while (first!=last) {
+    if (*first==val) return first;
+    ++first;
+  }
+  return last;
+}
 
 

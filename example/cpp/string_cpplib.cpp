@@ -1,78 +1,60 @@
 //Demonstrates the standard class string.
-/*******************************************************************************
-            Member Functions of the Standard Class string
- *******************************************************************************
- Constructors
- string str; Default constructor creates empty string object str.
- string str("sample"); Creates a string object with data "sample".
- string str(a_string); Creates a string object str that is a copy of a_string;
- a_string is an object of the class string.
- 
- Accessors
- str[i] Returns read/write reference to character in str at index i.
- Does not check for illegal index.
- str.at(i) Returns read/write reference to character in str at index i.
- Same as str[i] , but this version checks for illegal index.
- str.substr(position, length) Returns the substring of the calling object starting at position
- and having length characters.
- str.length( ) Returns the length of str.
- Assignment/modifiers
- str1 = str2; Initializes str1 to str2¡¯s data.
- str1 += str2; Character data of str2 is concatenated to the end of str1.
- str.empty( ) Returns true if str is an empty string; false otherwise.
- str1 + str2 Returns a string that has str2¡¯s data concatenated to the
- end of str1¡¯s data.
- str.insert(pos, str2); Inserts str2 into str beginning at position pos.
- str.erase(pos, length); Removes substring of size length, starting at position pos.
- Comparison
- str1 == str2 str1 != str2 Compare for equality or inequality; returns a Boolean
- value.
- str1 < str2 str1 > str2
- str1 <= str2 str1 >= str2
- Four comparisons. All are lexicographical comparisons.
- Finds
- str.find(str1) Returns index of the first occurrence of str1 in str. If str1
- is not found then the special value string::npos is
- returned.
- str.find(str1, pos) Returns index of the first occurrence of string str1 in str;
- the search starts at position pos.
- str.find_first_of(str1, pos) Returns the index of the first instance in str of any character
- in str1, starting the search at position pos.
- str.find_first_not_of
-  (str1, pos)
- Returns the index of the first instance in str of any character
- not in str1, starting the search at position pos.
-
- ******************************************************************************/
-
-
-
 #include <iostream>
-
 #include <string>    /* in order to use the class string, your code must */
 using namespace std; /* contain string and using namespace std*/
 
-int string2();
-int string4();
 
-int main( )
+/*
+ Output:
+s1:
+s2: Initial string
+s3: str
+s4: A char
+s5: Another character sequence
+s6: xxxxxxxxxx
+s7a: **********
+s7b: Initial
+s7c: I
+s7d:
+ */
+int string_constructor()
+{
+  std::string s0 ("Initial string");
+
+  std::string s1;
+  std::string s2(s0);
+  std::string s3(s0, 8, 3);
+  std::string s4("A character sequence", 6);
+  std::string s5("Another character sequence");
+  std::string s6(10, 'x');
+  std::string s7a(10, 42); // 42 is the ASCII code for '*'
+  std::string s7b(s0.begin(),s0.begin()+7);  
+  std::string s7c(s0.begin(),s0.begin()+1);
+  std::string s7d(s0.begin(),s0.begin());
+
+  std::cout << "s1: " << s1 << "\ns2: " << s2 << "\ns3: " << s3;
+  std::cout << "\ns4: " << s4 << "\ns5: " << s5 << "\ns6: " << s6;
+  std::cout << "\ns7a: " << s7a << "\ns7b: " << s7b;  
+  std::cout << "\ns7c: " << s7c << "\ns7d: " << s7d << '\n';  
+  return 0;
+}
+
+
+int string_add()
 {
 /*declares the string variable phrase and initializes it to the empty string.*/
-    string phrase;
+	string phrase;
 
 /* declares noun to be of type string and initializes it to a string value 
    equivalent to the C string "ants"*/
-    string adjective("fried"), noun("ants");
+	string adjective("fried"), noun("ants");
 
-    string wish = "Bon appetit!";
+	string wish = "Bon appetit!";
 	
-    phrase = "I love " + adjective + " " + noun + "!";
-    cout << phrase << endl << wish << endl;
-
-	string2();
-	string4();
+	phrase = "I love " + adjective + " " + noun + "!";
+	cout << phrase << endl << wish << endl;
 	
-    return 0;
+	return 0;
 }
 
 void new_line( )
@@ -112,7 +94,7 @@ void new_line( )
 			 
  If you want to read one character at a time, you can use cin.get
  ******************************************************************************/
-int string2( )
+int string_output( )
 {
     string first_name, last_name, record_name;
     string motto = "Your records are our records.";
@@ -127,6 +109,21 @@ int string2( )
     getline(cin, motto);
     cout << "Our new motto will be:\n";
     cout << motto << endl;
+    return 0;
+}
+
+/* 
+ Output:
+ Test string
+ */
+int string_begin_end()
+{
+    std::string str ("Test string");
+	
+    for ( std::string::iterator it=str.begin(); it!=str.end(); ++it)
+        std::cout << *it;
+    std::cout << '\n';
+
     return 0;
 }
 
@@ -248,3 +245,10 @@ int string_mf_substr()
  generalities live in details.*/
 }
 
+
+int main()
+{
+    string_constructor();
+
+	return 0;
+}

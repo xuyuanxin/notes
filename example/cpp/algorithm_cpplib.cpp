@@ -1,3 +1,8 @@
+#include <iostream>     // std::cout
+#include <algorithm>    // std::unique, std::distance
+#include <vector>       // std::vector
+using namespace std;
+
 bool IsOdd (int i) {
   return ((i%2)==1);
 }
@@ -53,18 +58,14 @@ int cpp_algorithm_transform ()
 
     return 0;
 }
-
-// unique algorithm example
-#include <iostream>     // std::cout
-#include <algorithm>    // std::unique, std::distance
-#include <vector>       // std::vector
+/************************ unique algorithm example *************************/
 
 bool myfunction (int i, int j) 
 {
     return (i==j);
 }
 
-int main () 
+int algorithm_unique () 
 {
     int myints[] = {10,20,20,20,30,30,20,20,10};
     std::vector<int> myvector (myints,myints+9);
@@ -92,3 +93,41 @@ int main ()
     return 0;
 }
 
+/*
+ find example
+ Output:
+ Element found in myints: 30
+ Element found in myvector: 30
+ */
+int algorithm_find () 
+{
+    // using std::find with array and pointer:
+    int myints[] = { 10, 20, 30, 40 };
+    int * p;
+
+    p = std::find(myints, myints+4, 30);
+	
+    if (p != myints+4)
+        std::cout << "Element found in myints: " << *p << '\n';
+    else
+        std::cout << "Element not found in myints\n";
+
+    // using std::find with vector and iterator:
+    std::vector<int> myvector (myints,myints+4);
+    std::vector<int>::iterator it;
+
+    it = find (myvector.begin(), myvector.end(), 30);
+    if (it != myvector.end())
+        std::cout << "Element found in myvector: " << *it << '\n';
+    else
+        std::cout << "Element not found in myints\n";
+
+    return 0;
+}
+
+int main()
+{
+    algorithm_find();
+
+	return 0;
+}

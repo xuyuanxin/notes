@@ -29,32 +29,30 @@ definition).If you do not include a call to a constructor of the base class, the
 default (zero-argument) constructor of the base class will automatically be called 
 when the derived class constructor is called.
 ********************************************************************************
+			          order of constructor calls
+********************************************************************************
+The call to the base class constructor is the first action taken by a derived
+class constructor. Thus, if class B is derived from class A and class C is derived
+from class B, then when an object of the class C is created, first a constructor
+for the class A is called, then a constructor for B is called, and finally the
+remaining actions of the C constructor are taken.
+********************************************************************************
                             Protected Members
 ********************************************************************************
-If you use the qualifier protected, rather than private or public, before a
-member variable of a class, then for any class or function other than a
-derived class (or a derived class of a derived class, etc.), the situation is the
-same as if the member variable were labeled private. However, in the
-definition of a member function of a derived class, the variable can be
-accessed by name. Similarly, if you use the qualifier protected before a
-member function of a class, then for any class or function other than a
-derived class (or a derived class of a derived class, etc.), that is the same as if
-the member function were labeled private. However, in the definition of a
-member function of a derived class the protected function can be used.
-Inherited protected members are inherited in the derived class as if
-they were marked protected in the derived class. In other words, if a
-member is marked as protected in a base class, then it can be accessed by
-name in the definitions of all descendant classes, not just in those classes
-directly derived from the base class
-********************************************************************************
-                 redefining versus overloading
-********************************************************************************
-A function's signature is the function's name with the sequence of types in the 
-parameter list, not including the const keyword and not including the ampersand (&) . 
-When you overload a function name, the two definitions of the function name must 
-have different signatures using this definition of signature. If a function has 
-the same name in a derived class as in the base class but has a different signature, 
-that is overloading, not redefinition.
+If you use the qualifier protected, rather than private or public, before a member 
+variable of a class, then for any class or function other than a derived class 
+(or a derived class of a derived class, etc.), the situation is the same as if 
+the member variable were labeled private. However, in the definition of a member 
+function of a derived class, the variable can be accessed by name. Similarly, if 
+you use the qualifier protected before a member function of a class, then for any 
+class or function other than a derived class (or a derived class of a derived 
+class, etc.), that is the same as if the member function were labeled private. 
+However,in the definition of a member function of a derived class the protected 
+function can be used.Inherited protected members are inherited in the derived 
+class as if they were marked protected in the derived class. In other words, if 
+a member is marked as protected in a base class, then it can be accessed by name 
+in the definitions of all descendant classes, not just in those classes directly 
+derived from the base class.
 ********************************************************************************
                     functions that are not inherited
 ********************************************************************************
