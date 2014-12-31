@@ -1,1 +1,13 @@
 
+        modified:   algocoding/leetcode/wildcard_matching.cpp 1----
+        modified:   others/mlog.txt
+
+http://bbs.c114.net/thread-808778-1-1.html 
+
+        algocoding/leetcode/length_of_last_word.cpp 1
+        algocoding/leetcode/longest_common_prefix.cpp 1
+        algocoding/leetcode/longest_valid_parenthesses.cpp 1 
+        algocoding/leetcode/valid_parentheses.cpp 1----
+        arch/mips/insset/co/
+        example/cpp/deque_cpplib.cpp 1
+        example/cpp/deque_cpplib.h 
