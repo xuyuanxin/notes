@@ -1,10 +1,11 @@
-users:
-linux操作系统基本概念
-编程接口
-系统配置
+linux_admin
+  系统管理
 
-kernel:
-内核源码
+linux_user
+  用户态编程
 
-cmd
-命令总结
+linux_kernel
+  内核源码
+
+linux_cmd
+  命令
