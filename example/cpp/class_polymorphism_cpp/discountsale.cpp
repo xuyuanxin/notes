@@ -17,6 +17,7 @@ DiscountSale::DiscountSale(double the_price, double the_discount)
 double DiscountSale::bill() const
 {
     double fraction = discount/100;
+	cout << "bill: I am discountsale version" << endl;
     return (1 - fraction)*price;
 }
 

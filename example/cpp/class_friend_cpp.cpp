@@ -3,16 +3,15 @@
 #include <cctype>
 using namespace std;
 
-/*******************************************************************************
+/************************************************************************************
                           Friend Functions
- *******************************************************************************
- A friend function of a class is an ordinary function except that it has access
- to the private members of objects of that class. To make a function a friend
- of a class, you must list the function declaration for the friend function in
- the class definition. The function declaration is preceded by the keyword friend. 
- The function declaration may be placed in either the private section or the public 
- section, but it will be a public function in either case, so it is clearer to list 
- it in the public section.
+ ************************************************************************************
+ A friend function of a class is an ordinary function except that it has access to 
+ the private members of objects of that class.To make a function a friend of a class, 
+ you must list the function declaration for the friend function in the class definition.
+ The function declaration is preceded by the keyword friend. The function declaration 
+ may be placed in either the private section or the public section, but it will be a 
+ public function in either case, so it is clearer to list it in the public section.
  
  Syntax (of a class definition with friend functions)
 			class Class_Name
@@ -27,28 +26,29 @@ using namespace std;
 			private:
 			    Private_Member_Declarations
 			};
- A friend function is not a member function. A friend function is defined and 
- called the same way as an ordinary function. You do not use the dot operator 
- in a call to a friend function and you do not use a type qualifier in the 
- definition of a friend function.
- ******************************************************************************
-                        const Parameter Modifier
- ******************************************************************************
- If you place the modifier const before the type for a call-by-reference parameter, 
- the parameter is called a constant parameter. (The heading of the function 
- definition should also have a const, so that it matches the function declaration.) 
- When you add the const, you are telling the compiler that this parameter should 
- not be changed. If you make a mistake in your definition of the function so that 
- it does change the constant parameter,then the computer will give an error message. 
- Parameters of a class type that are not changed by the function ordinarily should 
- be constant call-by-reference parameters, rather than call-by-value parameters.
- If a member function does not change the value of its calling object,then you 
- can mark the function by adding the const modifier to the function declaration. 
- If you make a mistake in your definition of the function so that it does change 
- the calling object and the function is marked with const, then the computer will 
- give an error message. The const is placed at the end of the function declaration, 
- just before the final semicolon. The heading of the function definition should also 
- have a const, so that it matches the function declaration.
+			
+ A friend function is not a member function.A friend function is defined and called 
+ the same way as an ordinary function. You do not use the dot operator in a call to 
+ a friend function and you do not use a type qualifier in the definition of a friend 
+ function.
+ ************************************************************************************
+                            const Parameter Modifier
+ ************************************************************************************
+ If you place the modifier @const before the type for a call-by-reference parameter, 
+ the parameter is called a constant parameter.(The heading of the function definition 
+ should also have a const, so that it matches the function declaration.) When you add 
+ the @const, you are telling the compiler that this parameter should not be changed. 
+ If you make a mistake in your definition of the function so that it does change the 
+ constant parameter,then the computer will give an error message.
+
+ If a member function does not change the value of its calling object,then you can 
+ mark the function by adding the const modifier to the function declaration.If you 
+ make a mistake in your definition of the function so that it does change the calling 
+ object and the function is marked with const, then the computer will give an error 
+ message.The @const is placed at the end of the function declaration,just before the 
+ final semicolon. The heading of the function definition should also have a const,so 
+ that it matches the function declaration.
+ 
  EXAMPLE
 			class Sample
 			{
@@ -70,52 +70,49 @@ using namespace std;
              {
                  
              }
-			
- Use of the const modifier is an all-or-nothing proposition. You should use the 
- const modifier whenever it is appropriate for a class parameter and whenever it 
- is appropriate for a member function of the class. If you do not use const every 
- time that it is appropriate for a class, then you should never use it for that class.
- ******************************************************************************
+ ************************************************************************************
                       Inconsistent Use of const
- ******************************************************************************
- Use of the const modifier is an all-or-nothing proposition. If you use const
- for one parameter of a particular type, then you should use it for every other
- parameter that has that type and that is not changed by the function call;
- moreover, if the type is a class type, then you should also use the const
- modifier for every member function that does not change the value of its
- calling object. The reason has to do with function calls within function calls.
+ ************************************************************************************
+ Use of the const modifier is an all-or-nothing proposition. If you use const for one 
+ parameter of a particular type,then you should use it for every other parameter that 
+ has that type and that is not changed by the function call;moreover, if the type is 
+ a class type, then you should also use the const modifier for every member function 
+ that does not change the value of its calling object.The reason has to do with function
+ calls within function calls.
+
  For example, consider the following definition of the function guarantee:
- void guarantee(const Money& price)
- {
-  cout << "If not satisfied, we will pay you\n"
-  << "double your money back.\n"
-  << "That's a refund of $"
-  << (2*price.get_value( )) << endl;
- }
- If you do not add the const modifier to the function declaration for the
- member function get_value, then the function guarantee will give an error
- message on most compilers. The member function get_value does not change
- the calling object price. However, when the compiler processes the function
- definition for guarantee, it will think that get_value does (or at least might)
- change the value of price. This is because when it is translating the function
- definition for guarantee, all that the compiler knows about the member
- function get_value is the function declaration for get_value; if the function
- declaration does not contain a const, which tells the compiler that the calling
- object will not be changed, then the compiler assumes that the calling object
- will be changed. Thus, if you use the modifier const with parameters of type
- Money, then you should also use const with all Money member functions that
- do not change the value of their calling object. In particular, the function
- declaration for the member function get_value should include a const.
+ 
+			void guarantee(const Money& price)
+			{
+			    cout << "If not satisfied, we will pay you\n"
+			    << "double your money back.\n"
+			    << "That's a refund of $"
+			    << (2*price.get_value( )) << endl;
+			}
+			
+ If you do not add the const modifier to the function declaration for the member function
+ @get_value, then the function guarantee will give an error message on most compilers. 
+ The member function @get_value does not change the calling object price.However,when 
+ the compiler processes the function definition for guarantee, it will think that 
+ @get_value does (or at least might) change the value of price. This is because when 
+ it is translating the function definition for guarantee, all that the compiler knows 
+ about the member function @get_value is the function declaration for @get_value; if 
+ the function declaration does not contain a const, which tells the compiler that the 
+ calling object will not be changed, then the compiler assumes that the calling object
+ will be changed. Thus, if you use the modifier const with parameters of type Money, 
+ then you should also use const with all Money member functions that do not change the 
+ value of their calling object. In particular, the function declaration for the member 
+ function @get_value should include a const.
  In Display 11.4 we have rewritten the definition of the class Money given in
  Display 11.3, but this time we have used the const modifier where appropriate. The
  definitions of the member and friend functions would be the same as they are in
  Display 11.3, except that the modifier const must be used in function headings so
  that the headings match the function declarations shown in Display 11.4.
 
- 1 if you use the modifier const with parameters of type Money, then you should 
- also use const with all Money member functions that do not change the value of 
- their calling object. 
- ******************************************************************************/
+ 1 if you use the modifier const with parameters of type Money, then you should also 
+   use const with all Money member functions that do not change the value of their calling 
+   object. 
+ ************************************************************************************/
 
 class Money
 {
@@ -261,3 +258,5 @@ My amount is $10.09
 One of us is richer.
 $123.45 + $10.09 equals $133.54
 */
+
+

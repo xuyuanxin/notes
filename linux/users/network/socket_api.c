@@ -1,3 +1,13 @@
+
+#include <sys/select.h>
+
+#define FD_SETSIZE /* a constant in <sys/select.h> that specifies the maximum number 
+of descriptors (often 1,024) */
+
+
+
+
+
 #include <arpa/inet.h>
 
 /*
@@ -73,6 +83,27 @@ access to the datalink */
 #define IPPROTO_UDP   /* UDP transport protocol */
 #define IPPROTO_SCTP  /* SCTP transport protocol */
 
+/**************************** @connect error type ****************************/
+#define ETIMEDOUT
+#define ECONNREFUSED
+#define EHOSTUNREACH
+#define ENETUNREACH 
+
+/********************************* @shutdown @howto *********************************/
+#define SHUT_RD /* The read half of the connection is closed— No more data can be 
+received on the socket and any data currently in the socket receive buffer is discarded. 
+The process can no longer issue any of the read functions on the socket.Any data received 
+after this call for a TCP socket is acknowledged and then silently discarded.*/
+#define SHUT_WR /* The write half of the connection is closed— In the case of TCP,
+this is called a half-close.Any data currently in the socket send buffer will be sent, 
+followed by TCP's normal connection termination sequence.As we mentioned earlier,this 
+closing of the write half is done regardless of whether or not the socket descriptor's 
+reference count is currently greater than 0. The process can no longer issue any of the 
+write functions on the socket.*/
+#define SHUT_RDWR /* The read half and the write half of the connection are both closed
+This is equivalent to calling shutdown twice: first with SHUT_RD and then with SHUT_WR.*/
+
+
 /*******************************************************************************
                 | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
  ---------------|----------|----------|----------|----------|--------|
@@ -125,13 +156,10 @@ access to the datalink */
     To conform to existing coding practice, we use only the AF_ constants in this 
     text, although you may encounter the PF_ value, mainly in calls to socket.
  ******************************************************************************/
+#include <sys/socket.h>	 
 int socket(int domain, int type,int protocol);
 
-/**************************** @connect error type ****************************/
-#define ETIMEDOUT
-#define ECONNREFUSED
-#define EHOSTUNREACH
-#define ENETUNREACH 
+
 
 /*******************************************************************************
  @sockfd: 
@@ -184,7 +212,6 @@ There are several different error returns possible.
   is not reachable by any route in the local system's forwarding table, or that 
   the connect call returns without waiting at all.
 *******************************************************************************/
-#include <sys/socket.h>	 
 int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
 	 
 	
@@ -195,45 +222,72 @@ int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
  function:The @bind function assigns a local protocol address to a socket.
  returns: 0 if OK,-1 on error
 
-1 With TCP, calling @bind lets us specify a port number, an IP address, both, or neither.
-  A process can bind a specific IP address to its socket. The IP address must belong to an interface on the host.
-2 If a TCP client or server does not do this, the kernel chooses an ephemeral port for the socket when either @connect or @listen is called. 
-  It is normal for a TCP client to let the kernel choose an ephemeral port, unless the application requires a reserved port , but it is rare 
-  for a TCP server to let the kernel choose an ephemeral port, since servers are known by their well-known port.
-3 For a TCP client, this assigns the source IP address that will be used for IP datagrams sent on the socket. 
-  For a TCP server, this restricts the socket to receive incoming client connections destined only to that IP address.
-4 Normally, a TCP client does not bind an IP address to its socket. The kernel chooses the source IP address when the socket is connected,
-  based on the outgoing interface that is used, which in turn is based on the route required to reach the server .
-  If a TCP server does not bind an IP address to its socket, the kernel uses the destination IP address of the client's SYN as the server's source IP address .
-5 If we specify a port number of 0, the kernel chooses an ephemeral port when bind is called. But if we specify a wildcard IP address, 
-  the kernel does not choose the local IP address until either the socket is connected (TCP) or a datagram is sent on the socket (UDP).
-6 With IPv4, the wildcard address is specified by the constant INADDR_ANY, whose value is normally 0. 
-  The system allocates and initializes the in6addr_any variable to the constant IN6ADDR_ANY_INIT. 
-*/	 
-#include <sys/socket.h>
+1 With TCP, calling @bind lets us specify a port number, an IP address, both, or 
+  neither.A process can bind a specific IP address to its socket.The IP address 
+  must belong to an interface on the host.
+2 If a TCP client or server does not do this,the kernel chooses an ephemeral port 
+  for the socket when either @connect or @listen is called.It is normal for a TCP 
+  client to let the kernel choose an ephemeral port,unless the application requires 
+  a reserved port , but it is rare for a TCP server to let the kernel choose an 
+  ephemeral port, since servers are known by their well-known port.
+3 For a TCP client, this assigns the source IP address that will be used for IP 
+  datagrams sent on the socket.For a TCP server, this restricts the socket to 
+  receive incoming client connections destined only to that IP address.
+4 Normally, a TCP client does not bind an IP address to its socket. The kernel 
+  chooses the source IP address when the socket is connected,based on the outgoing 
+  interface that is used, which in turn is based on the route required to reach 
+  the server.If a TCP server does not bind an IP address to its socket, the kernel 
+  uses the destination IP address of the client's SYN as the server's source IP 
+  address .
+5 If we specify a port number of 0, the kernel chooses an ephemeral port when bind 
+  is called. But if we specify a wildcard IP address,the kernel does not choose the 
+  local IP address until either the socket is connected (TCP) or a datagram is sent 
+  on the socket (UDP).
+6 With IPv4, the wildcard address is specified by the constant INADDR_ANY, whose 
+  value is normally 0.The system allocates and initializes the in6addr_any variable 
+  to the constant IN6ADDR_ANY_INIT. 
+*******************************************************************************/
 int bind (int sockfd, const struct sockaddr *myaddr, socklen_t addrlen);
 	  
 	 
-/*
-@sockfd:
-@backlog:maximum number of connections the kernel should queue for this socket
-function:TCP服务器调用
-Returns: 0 if OK, -1 on error
+/*******************************************************************************
+ @sockfd:
+ @backlog:maximum number of connections the kernel should queue for this socket
+ function:TCP服务器调用
+ returns: 0 if OK, -1 on error
+ 
+ This function is normally called after both the @socket and @bind functions and 
+ must be called before calling the @accept function.
 
-When a socket is created by the socket function, it is assumed to be an active socket, that is, a client socket that will issue 
-a connect. The listen function converts an unconnected socket into a passive socket, indicating that the kernel should accept 
-incoming connection requests directed to this socket. In terms of the TCP state transition diagram , the call to listen moves 
-the socket from the CLOSED state to the LISTEN state.
+ When a socket is created by the @socket function, it is assumed to be an active 
+ socket, that is, a client socket that will issue a connect.The @listen function 
+ converts an unconnected socket into a passive socket, indicating that the kernel 
+ should accept incoming connection requests directed to this socket. In terms of 
+ the TCP state transition diagram ,the call to @listen moves the socket from the 
+ CLOSED state to the LISTEN state.
 
-for a given listening socket, the kernel maintains two queues:
-a) An incomplete connection queue, which contains an entry for each SYN that has arrived from a client for which the server is 
-   awaiting completion of the TCP three-way handshake. These sockets are in the SYN_RCVD state .
-b) A completed connection queue, which contains an entry for each client with whom the TCP three-way handshake has completed. 
-   These sockets are in the ESTABLISHED state .
-   当服务器收到SYN后，在未完成队列建立条目，并方发送SYN+ACK，当收到ACK后，该条目转移到完成队列，accept能够返回。
+ for a given listening socket, the kernel maintains two queues:
+ 1 An incomplete connection queue, which contains an entry for each SYN that has 
+   arrived from a client for which the server is awaiting completion of the TCP 
+   three-way handshake. These sockets are in the SYN_RCVD state .
+ 2 A completed connection queue, which contains an entry for each client with whom 
+   the TCP three-way handshake has completed.These sockets are in the ESTABLISHED 
+   state.When a SYN arrives from a client,TCP creates a new entry on the incomplete 
+   queue and then responds with the second segment of the three-way handshake:the 
+   server's SYN with an ACK of the client's SYN . This entry will remain on the 
+   incomplete queue until the third segment of the three-way handshake arrives 
+   (the client's ACK of the server's SYN), or until the entry times out. If the 
+   three-way handshake completes normally, the entry moves from the incomplete 
+   queue to the end of the completed queue. When the process calls @accept, the 
+   first entry on the completed queue is returned to the process,or if the queue 
+   is empty, the process is put to sleep until an entry is placed onto the 
+   completed queue.
 
-*/	  
-#include <sys/socket.h>
+ If the queues are full when a client SYN arrives, TCP ignores the arriving SYN; 
+ it does not send an RST. This is because the condition is considered temporary, 
+ and the client TCP will retransmit its SYN, hopefully finding room on the queue 
+ in the near future.
+*******************************************************************************/	  
 int listen (int sockfd, int backlog);
 	      
 /*******************************************************************************
@@ -252,12 +306,12 @@ int listen (int sockfd, int backlog);
  returns: 
    non-negative descriptor if OK, -1 on error
 
- 1 If accept is successful, its return value is a brand-new descriptor automatically 
-   created by the kernel.This new descriptor refers to the TCP connection with 
+ 1 If accept is successful,its return value is a brand-new descriptor automatically 
+   created by the kernel. This new descriptor refers to the TCP connection with 
    the client.
- 2 When discussing @accept, we call the first argument to @accept the listening 
+ 2 When discussing @accept, we call the first argument to accept the listening 
    socket (the descriptor created by socket and then used as the first argument 
-   to both @bind and @listen), and we call the return value from accept the 
+   to both @bind and @listen ) , and we call the return value from accept the 
    connected socket.
  3 A given server normally creates only one listening socket, which then exists 
    for the lifetime of the server.The kernel creates one connected socket for 
@@ -268,35 +322,69 @@ int listen (int sockfd, int backlog);
  5 signal was caught by the parent(例如子进程终止) while the parent was blocked 
    in a slow system call (accept), the kernel causes the accept to return an error 
    of EINTR (interrupted system call). 
-*******************************************************************************/
-#include <sys/socket.h>
+ ******************************************************************************/
 int accept (int sockfd, struct sockaddr *cliaddr, socklen_t *addrlen);
  
+/******************************************************************************
+ Both return: 0 if OK, -1 on error
+  
+ These two functions return either the local protocol address associated with a 
+ socket (getsockname) or the foreign protocol address associated with a socket 
+ (getpeername).the final argument for both functions is a value-result argument. 
+ That is, both functions fill in the socket address structure pointed to by 
+ localaddr or peeraddr.
 
-/*
-function:The normal Unix close function is also used to close a socket and terminate a TCP connection.
-Returns: 0 if OK, -1 on error
+ These two functions are required for the following reasons:
+ 1 After connect successfully returns in a TCP client that does not call bind, 
+   @getsockname returns the local IP address and local port number assigned to 
+   the connection by the kernel.
+ 2 After calling @bind with a port number of 0 (telling the kernel to choose the 
+   local port number), @getsockname returns the local port number that was assigned.
+ 3 @getsockname can be called to obtain the address family of a socket 
+ 4 In a TCP server that binds the wildcard IP address , once a connection is 
+   established with a client (accept returns successfully), the server can call 
+   @getsockname to obtain the local IP address assigned to the connection. The 
+   socket descriptor argument in this call must be that of the connected socket, 
+   and not the listening socket.
+ ******************************************************************************/
+int getsockname(int sockfd, struct sockaddr *localaddr, socklen_t *addrlen);
+int getpeername(int sockfd, struct sockaddr *peeraddr, socklen_t *addrlen);
+   
+  
+/************************************************************************************
+ @howto:SHUT_RD
+Returns: 0 if OK, –1 on error
 
-The default action of close with a TCP socket is to mark the socket as closed and return to the process immediately. 
-The socket descriptor is no longer usable by the process: It cannot be used as an argument to read or write. 
-But, TCP will try to send any data that is already queued to be sent to the other end, and after this occurs, 
-the normal TCP connection termination sequence takes place .*/
+ The normal way to terminate a network connection is to call the @close function.But,
+ there are two limitations with @close that can be avoided with @shutdown:
+ 1 close decrements the descriptor's reference count and closes the socket only if the 
+   count reaches 0. With shutdown, we can initiate TCP's normal connection termination 
+   sequence(the four segments beginning with a FIN ),regardless of the reference count.
+ 2 close terminates both directions of data transfer, reading and writing. Since a TCP 
+   connection is full-duplex, there are times when we want to tell the other end that 
+   we have finished sending,even though that end might have more data to send us.
+   
+The three SHUT_xxx names are defined by the POSIX specification. Typical values for the @howto argument that you will encounter 
+will be 0 (close the read half), 1 (close the write half), and 2 (close the read half and the write half).
+************************************************************************************/
+int shutdown(int sockfd, int howto);
+
+/*******************************************************************************
+ function:
+    The normal Unix close function is also used to close a socket and terminate a 
+    TCP connection.
+ returns: 0 if OK, -1 on error
+
+ The default action of close with a TCP socket is to mark the socket as closed and 
+ return to the process immediately. The socket descriptor is no longer usable by 
+ the process: It cannot be used as an argument to read or write.But, TCP will try 
+ to send any data that is already queued to be sent to the other end, and after 
+ this occurs, the normal TCP connection termination sequence takes place .
+ ******************************************************************************/
 #include <unistd.h>  
 int close (int sockfd);
   
-/*Both return: 0 if OK, -1 on error
-1 These two functions return either the local protocol address associated with a socket (getsockname) or 
-  the foreign protocol address associated with a socket (getpeername).
-2 the final argument for both functions is a value-result argument. That is, both functions fill in the 
-  socket address structure pointed to by localaddr or peeraddr.
-*/
-#include <sys/socket.h>
-int getsockname(int sockfd, struct sockaddr *localaddr, socklen_t *addrlen);
-int getpeername(int sockfd, struct sockaddr *peeraddr, socklen_t *addrlen);
-  
- 
-  
-  
+
 
 
 
@@ -352,21 +440,7 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, const str
 
 #include <sys/socket.h>
 
-#define SHUT_RD
-#define SHUT_WR
-#define SHUT_RDWR
-/*
-@howto:SHUT_RD   关闭读半部,套接字缓冲区中的数都被丢弃,来自对端的数据都被确认,然后悄然丢弃。
-       SHUT_WR   关闭写半部(即使引用计数不为0),套接字缓冲区的数据将被发送,后跟tcp连接终止序列,
-       SHUT_RDWR The read half and the write half of the connection are both closed— 
-                 This is equivalent to calling shutdown twice: first with SHUT_RD and then with SHUT_WR. 
-Returns: 0 if OK, –1 on error
 
-
-The three SHUT_xxx names are defined by the POSIX specification. Typical values for the @howto argument that you will encounter 
-will be 0 (close the read half), 1 (close the write half), and 2 (close the read half and the write half).
-*/
-int shutdown(int sockfd, int howto);
  
 
  

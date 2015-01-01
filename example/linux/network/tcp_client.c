@@ -6,8 +6,6 @@
 #include<string.h>
 #include"net_pub.h"
 
-
-
 void str_cli_v3(FILE *fp, int sockfd)
 {
     int     maxfdp1, stdineof;
@@ -31,7 +29,16 @@ void str_cli_v3(FILE *fp, int sockfd)
 		}
 
         if (FD_ISSET(sockfd, &rset)) /* socket is readable */
-		{  
+		{
+
+/************************************************************************************
+ When we read the EOF on the socket, if we have already encountered an EOF on standard 
+ input, this is normal termination and the function returns. But if we have not yet 
+ encountered an EOF on standard input, the server process has prematurely terminated. 
+ We now call read and write to operate on buffers instead of lines and allow select to 
+ work for us as expected.
+************************************************************************************/
+		
             if ( (n = read(sockfd, buf, MAXLINE)) == 0) 
 			{
                 if (stdineof == 1)
@@ -51,9 +58,8 @@ void str_cli_v3(FILE *fp, int sockfd)
         if (FD_ISSET(fileno(fp), &rset))  /* input is readable */
 		{ 
             if ( (n = read(fileno(fp), buf, MAXLINE)) == 0) 
-			{
-			    /*读到EOF不立即退出,是因为此时在套接字里可能还有数据没有读取*/
-                stdineof = 1;
+			{			    
+                stdineof = 1;/*读到EOF不立即退出,是因为此时在套接字里可能还有数据没有读取*/
                 if(shutdown(sockfd, SHUT_WR) < 0)
 					printf("\r\ntcp client error shutdown");  /* send FIN */
 				
@@ -73,16 +79,18 @@ void str_cli_v3(FILE *fp, int sockfd)
 
 
 
-/*
-在标准输入或套接字上select可读条件
-标准输入:数据或EOF
-套接字  :RST 数据 FIN
-Three conditions are handled with the socket:
-1 If the peer TCP sends data, the socket becomes readable and read returns greater than 0 (i.e., the number of bytes of data).
-2 If the peer TCP sends a FIN (the peer process terminates), the socket becomes readable and read returns 0 (EOF).
-3 If the peer TCP sends an RST (the peer host has crashed and rebooted), the socket becomes readable, read returns –1, 
-  and errno contains the specific error code.
-*/
+/*******************************************************************************
+ 在标准输入或套接字上select可读条件
+ 标准输入:数据或EOF
+ 套接字  :RST 数据 FIN
+ Three conditions are handled with the socket:
+ 1 If the peer TCP sends data, the socket becomes readable and read returns greater 
+   than 0 (i.e., the number of bytes of data).
+ 2 If the peer TCP sends a FIN (the peer process terminates), the socket becomes 
+   readable and read returns 0 (EOF).
+ 3 If the peer TCP sends an RST (the peer host has crashed and rebooted), the socket 
+   becomes readable, read returns –1, and errno contains the specific error code.
+ ******************************************************************************/
 void str_cli_v2(FILE *fp, int sockfd)
 {
      int     maxfdp1;
@@ -91,13 +99,31 @@ void str_cli_v2(FILE *fp, int sockfd)
      char    sendline[MAXLINE], recvline[MAXLINE];
 
      FD_ZERO(&rset);
+
+/************************************************************************************
+ In general,buffering for performance adds complexity to a network application.Consider 
+ the case when several lines of input are available from the standard input. select 
+ will cause the code to read the input using fgets and that, in turn, will read the 
+ available lines into a buffer used by stdio. But, fgets only returns a single line 
+ and leaves any remaining data sitting in the stdio buffer. The code writes that single 
+ line to the server and then select is called again to wait for more work,even if there 
+ are additional lines to consume in the stdio buffer.The reason for this is that select 
+ knows nothing of the buffers used by stdio—it will only show readability from the 
+ viewpoint of the read system call,not calls like fgets.For this reason,mixing stdio 
+ and select is considered very error-prone and should only be done with great care.
+
+ The same problem exists with the call to readline. Instead of data being hidden from 
+ select in a stdio buffer, it is hidden in readline's buffer.
+************************************************************************************/    
+	 	 
      for ( ; ; )  
 	 {
          FD_SET(fileno(fp), &rset);
          FD_SET(sockfd, &rset);
+		 
          maxfdp1 = max(fileno(fp), sockfd)  +  1;
 		 
-         ready_nums = select(maxfdp1,  &rset,  NULL,  NULL,  NULL);
+         ready_nums = select(maxfdp1,&rset,NULL,NULL,NULL);
 
 		 if(ready_nums < 0)
 		 {
@@ -114,9 +140,22 @@ void str_cli_v2(FILE *fp, int sockfd)
 		         printf("\r\ntcp client error: str_cli -> fputs");
          }
 
+         /***************************************************************************
+		 we cannot close the connection after writing the last request because there 
+		 are still other requests and replies in the pipe.The cause of the problem is 
+		 our handling of an EOF on input: The function returns to the main function, 
+		 which then terminates. But in a batch mode, an EOF on input does not imply 
+		 that we have finished reading from the socket;there might still be requests 
+		 on the way to the server, or replies on the way back from the server.
+		 
+		 What we need is a way to close one-half of the TCP connection. That is, we 
+		 want to send a FIN to the server, telling it we have finished sending data, 
+		 but leave the socket descriptor open for reading.This is done with the shutdown 
+		 function, which is described in the next section.	 
+		 ***************************************************************************/
+
          if (FD_ISSET(fileno(fp), &rset)) /*  input is readable */ 
 		 { 
-		     /*这个地方有个问题:当读到EOF时,立即退出了,但此时可能套接字里还有数据没有读.*/
              if (fgets(sendline, MAXLINE, fp) == NULL)
                  return;          /* all done */
 			 

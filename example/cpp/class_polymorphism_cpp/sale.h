@@ -11,7 +11,7 @@ namespace salesavitch
 {
 
 /*******************************************************************************
-When you label a function virtual, you are telling the C++ environment ¡°Wait until 
+When you label a function virtual,you are telling the C++ environment¡°Wait until 
 this function is used in a program, and then get the implementation corresponding 
 to the calling object.¡±
 
@@ -22,6 +22,7 @@ virtual to the function declaration in the derived class. If a function is virtu
 in the base class, then it is automatically virtual in the derived class. (However, 
 it is a good idea to label the function declaration in the derived class virtual, 
 even though it is not required.)
+
 The reserved word virtual is added to the function declaration and not to the 
 function definition.
 
@@ -30,6 +31,17 @@ Almost the only reason for not always using virtual functions is efficiency. The
 compiler and the run-time environment need to do much more work for virtual 
 functions, and so if you label more member functions virtual than you need to, 
 your programs will be less efficient.
+*******************************************************************************
+                                 Overriding
+*******************************************************************************
+When a virtual function definition is changed in a derived class,programmers often 
+say the function definition is overridden. In the C++ literature,a distinction is 
+sometimes made between the terms redefined and overridden. Both terms refer to 
+changing the definition of the function in a derived class. If the function is a 
+virtual function,it's called overriding.If the function is not a virtual function, 
+it's called redefining.This may seem like a silly distinction to you,the programmer, 
+since you do the same thing in both cases, but the two cases are treated differently 
+by the compiler.
 *******************************************************************************/
 class Sale
 {

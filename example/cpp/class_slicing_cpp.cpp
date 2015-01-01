@@ -18,6 +18,26 @@ public:
     string breed;
 };
 
+
+/*******************************************************************************
+                          The Slicing Problem
+********************************************************************************
+Although it is legal to assign a derived class object into a base class variable,
+assigning a derived class object to a base class object slices off data. Any data
+members in the derived class object that are not also in the base class will be
+lost in the assignment, and any member functions that are not defined in the base 
+class are similarly unavailable to the resulting base class object.If we make the 
+following declarations and assignments:
+            Dog vdog;
+            Pet vpet;
+            vdog.name = "Tiny";
+            vdog.breed = "Great Dane";
+            vpet = vdog;
+then vpet cannot be a calling object for a member function introduced in Dog,and 
+the data member, Dog::breed, is lost
+*******************************************************************************/
+
+
 int main()
 {
     Dog vdog;
@@ -39,20 +59,20 @@ int main()
 /*******************************************************************************
 print() was declared virtual by the base class, Pet. So, when the compiler sees 
 the call
-        ppet->print();
+            ppet->print();
 it checks the virtual table for classes Pet and Dog and sees that ppet points to
 an object of type Dog. It therefore uses the code generated for
-        Dog::print(),
+            Dog::print(),
 rather than the code for
-        Pet::print()
+            Pet::print()
 
-1. If the domain type of the pointer p_ancestor is a base class for the domain type 
-of the pointer p_descendant, then the following assignment of pointers is allowed:
-        p_ancestor = p_descendant;
-Moreover, none of the data members or member functions of the dynamic variable 
-being pointed to by p_descendant will be lost.
-2. Although all the extra fields of the dynamic variable are there, you will need 
-virtual member functions to access them.        
+1 If the domain type of the pointer p_ancestor is a base class for the domain type 
+  of the pointer p_descendant, then the following assignment of pointers is allowed:
+            p_ancestor = p_descendant;
+  Moreover, none of the data members or member functions of the dynamic variable 
+  being pointed to by p_descendant will be lost.
+2 Although all the extra fields of the dynamic variable are there, you will need 
+  virtual member functions to access them.        
 ********************************************************************************/
 	
     ppet->print();  // These two print the same output:

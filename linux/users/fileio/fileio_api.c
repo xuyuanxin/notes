@@ -464,15 +464,17 @@ struct timeval
  @readset: 异常描述符集，可以为NULL
  @timeout: 等待时间
  function: 
- 告诉内核
- 1 关心的描述符
- 2 关心描述符的哪些状态，比如是否可读、是否可写、描述符的异常状态
- 3 等待时间
- 从select返回内核告诉我们
- 1 已经准备好的描述符数量
- 2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
-   使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
- Returns: positive count of ready descriptors, 0 on timeout, –1 on error
+    告诉内核
+    1 关心的描述符
+    2 关心描述符的哪些状态，比如是否可读、是否可写、描述符的异常状态
+    3 等待时间
+    从select返回内核告诉我们
+    1 已经准备好的描述符数量
+    2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
+      使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
+ Returns: 
+    positive count of ready descriptors, 0 on timeout, –1 on error
+    
  There are three possible return values from @select.
  1 return -1 means that an error occurred. This can happen, for example, if a 
    signal is caught before any of the specified descriptors are ready.In this 
@@ -505,28 +507,42 @@ struct timeval
  4 File descriptors for regular files always return ready for reading, writing, 
    and exception conditions.
  *******************************************************************************/
-int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeval *timeout);
+int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, 
+const struct timeval *timeout);
 
  
 #include <sys/select.h>
-int FD_ISSET(int fd,fd_set *fdset);
+/*******************************************************************************
+ @select uses descriptor sets, typically an array of integers, with each bit in 
+ each integer corresponding to a descriptor. For example, using 32-bit integers, 
+ the first element of the array corresponds to descriptors 0 through 31, the 
+ second element of the array corresponds to descriptors 32 through 63, and so on. 
+ All the implementation details are irrelevant to the application and are hidden 
+ in the fd_set datatype and the following four macros:
+ ******************************************************************************/
+int  FD_ISSET(int fd,fd_set *fdset);
 void FD_CLR(int fd,fd_set *fdset);
 void FD_SET(int fd,fd_set *fdset);
 void FD_ZERO(fd_set *fdset); 
-/*
-After declaring a descriptor set, we must zerothe set usingFD_ZERO.Wethen set
-bits in the set for each descriptor that we’reinterested in, as in
-fd_set  rset;
-int  fd;
-FD_ZERO(&rset);
-FD_SET(fd, &rset);
-FD_SET(STDIN_FILENO, &rset);
-On return from @select, we can test whether a given bit in the set is still on using @FD_ISSET:
-if (FD_ISSET(fd, &rset)) {
-.
-}
 
-*/
+/*******************************************************************************
+ After declaring a descriptor set, we must zero the set using FD_ZERO.Wethen set
+ bits in the set for each descriptor that we’reinterested in, as in
+ ******************************************************************************/
+void fd_set_example()
+{
+	fd_set	rset;
+	int  fd;
+	
+	FD_ZERO(&rset); 		 /* initialize the set: all bits off */
+	FD_SET(1, &rset);		 /* turn on bit for fd 1 */
+	FD_SET(4, &rset);		 /* turn on bit for fd 4 */
+	FD_SET(5, &rset);		 /* turn on bit for fd 5 */
+	FD_SET(STDIN_FILENO, &rset);
+
+	if (FD_ISSET(fd, &rset)) {
+	}
+}
 
 #include <sys/select.h>
 #include <signal.h>

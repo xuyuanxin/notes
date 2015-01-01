@@ -16,7 +16,8 @@ Sale::Sale(double the_price) : price(the_price)
 }
 
 double Sale::bill() const
-{
+{    
+	cout << "bill: I am sale(base) version" << endl;
     return price;
 }
 

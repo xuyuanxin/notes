@@ -4,30 +4,28 @@
 using namespace std;
 
 
-/*******************************************************************************
+/************************************************************************************
                          Operator Overloading
- *******************************************************************************
- A (binary) operator, such as +, ? , /, %, and so forth, is simply a function that
- is called using a different syntax for listing its arguments. With an operator, 
- the arguments are listed before and after the operator; with a function, the 
- arguments are listed in parentheses after the function name.An operator definition 
- is written similarly to a function definition, except that the operator definition 
- includes the reserved word operator before the operator name. The predefined 
- operators, such as + and so forth, can be overloaded by giving them a new definition 
- for a class type.
- *******************************************************************************
-                  Rules on Overloading Operators
- *******************************************************************************
-¡ö When overloading an operator, at least one argument of the resulting overloaded 
+ ************************************************************************************
+ A (binary) operator, such as +, ? , /, %, and so forth, is simply a function that is 
+ called using a different syntax for listing its arguments.With an operator,the arguments 
+ are listed before and after the operator; with a function, the arguments are listed 
+ in parentheses after the function name. An operator definition is written similarly 
+ to a function definition, except that the operator definition includes the reserved 
+ word operator before the operator name. The predefined operators, such as + and so 
+ forth, can be overloaded by giving them a new definition for a class type.
+ ************************************************************************************
+                       Rules on Overloading Operators
+ ************************************************************************************
+ 1 When overloading an operator, at least one argument of the resulting overloaded 
    operator must be of a class type.
-¡ö An overloaded operator can be, but does not have to be, a friend of a class; the
+ 2 An overloaded operator can be, but does not have to be, a friend of a class; the
    operator function may be a member of the class or an ordinary (nonfriend) function. 
-   (Overloading an operator as a class member is discussed in Appendix 8.)
-¡ö You cannot create a new operator. All you can do is overload existing operators, 
-   such as +, -, *, /, %, and so forth.
-¡ö You cannot change the number of arguments that an operator takes. For example, 
-   you cannot change % from a binary to a unary operator when you overload %;
-   you cannot change ++ from a unary to a binary operator when you overload it.
+ 3 You cannot create a new operator.All you can do is overload existing operators,such 
+   as +, -, *, /, %, and so forth.
+ 4 You cannot change the number of arguments that an operator takes. For example, you 
+   cannot change % from a binary to a unary operator when you overload %;you cannot 
+   change ++ from a unary to a binary operator when you overload it.
 ¡ö You cannot change the precedence of an operator. An overloaded operator
    has the same precedence as the ordinary version of the operator. For example,
    x*y + z always means (x*y) + z, even if x, y, and z are objects and the 
@@ -41,22 +39,23 @@ using namespace std;
    the Assignment Operator¡± later in this chapter. Some other operators, including 
    [] and ->, also must be overloaded in a way that is different from what is described
    in this chapter. The operators []  and -> are discussed later in this book.
- *******************************************************************************
+ ************************************************************************************
                Constructors for Automatic Type Conversion
- *******************************************************************************
+ ************************************************************************************
             Money base_amount(100, 60), full_amount;
             full_amount = base_amount + 25;
- The constant 25 is an integer and is not of type Money.the system first checks 
- to see if the operator + has been overloaded for the combination of a value of 
- type Money and an integer. Since there is no such overloading, the system next 
- looks to see if there is a constructor that takes a single argument that is an 
- integer. The constructor with one argument of type long tells the system how to 
- convert an integer, such as 25, to a value of type Money. 
- Note that this type conversion will not work unless there is a suitable constructor.
+
+ The constant 25 is an integer and is not of type Money.the system first checks to see 
+ if the operator + has been overloaded for the combination of a value of type Money 
+ and an integer. Since there is no such overloading, the system next looks to see if 
+ there is a constructor that takes a single argument that is an integer.The constructor 
+ with one argument of type long tells the system how to convert an integer, such as 
+ 25,to a value of type Money.Note that this type conversion will not work unless there 
+ is a suitable constructor.
            full_amount = base_amount + 25.67; //error
- To make this use of + legal, you could change the definition of the class Money
- by adding another constructor. The function declaration for the constructor you 
- need to add is the following:
+ To make this use of + legal, you could change the definition of the class Money by 
+ adding another constructor. The function declaration for the constructor you need to 
+ add is the following:
            class Money
            {
            public:

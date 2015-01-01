@@ -9,7 +9,107 @@
 
 void sig_chld(int signo);
 
-int main(int argc, char **argv)
+
+int tcp_serv_select(int argc, char **argv)
+{
+	int					i, maxi, maxfd, listenfd, connfd, sockfd,ret;
+	int					nready, client[FD_SETSIZE];
+	ssize_t				n;
+	fd_set				rset, allset;
+	char				buf[MAXLINE];
+	socklen_t			clilen;
+	struct sockaddr_in	cliaddr, servaddr;
+
+	listenfd = socket(AF_INET, SOCK_STREAM,0);
+	
+	if(listenfd < 0){
+	    printf("tcp server(select) error! socket fail %d",listenfd);
+		return 1;
+	}
+
+	//bzero(&servaddr, sizeof(servaddr));
+	memset(&servaddr,0,sizeof(servaddr));
+	servaddr.sin_family      = AF_INET;
+	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	servaddr.sin_port        = htons(SERV_PORT);
+
+	ret = bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
+	
+	if(ret < 0){
+	    printf("tcp server(select) error! bind fail %d",ret);
+		return 1;
+	}
+
+	ret = listen(listenfd, 1024);
+
+	if(ret < 0){
+	    printf("tcp server(select) error! listen fail %d",ret);
+		return 1;
+	}
+
+	maxfd = listenfd;			/* initialize */
+	maxi = -1;					/* index into client[] array */
+	
+	for (i = 0; i < FD_SETSIZE; i++) {
+		client[i] = -1;			/* -1 indicates available entry */
+	}
+	
+	FD_ZERO(&allset);
+	FD_SET(listenfd,&allset);
+
+    for ( ; ; ) {
+		rset = allset;		/* structure assignment */
+		nready = select(maxfd+1, &rset, NULL, NULL, NULL);
+
+		if (FD_ISSET(listenfd, &rset)) {	/* new client connection */
+			clilen = sizeof(cliaddr);
+			connfd = accept(listenfd,(struct sockaddr *)&cliaddr, &clilen);
+
+			for (i = 0; i < FD_SETSIZE; i++) {
+				if (client[i] < 0) {
+					client[i] = connfd;	/* save descriptor */
+					break;
+				}
+			}	
+				
+			if (i == FD_SETSIZE){
+				printf("too many clients\r\n");
+				return -1;
+			}	
+
+			FD_SET(connfd, &allset);	/* add new descriptor to set */
+			
+			if (connfd > maxfd)
+				maxfd = connfd;			/* for select */
+			
+			if (i > maxi)
+				maxi = i;				/* max index in client[] array */
+
+			if (--nready <= 0)
+				continue;				/* no more readable descriptors */
+		}
+
+		for (i = 0; i <= maxi; i++) {	/* check all clients for data */
+			if ( (sockfd = client[i]) < 0)
+				continue;
+			
+			if (FD_ISSET(sockfd, &rset)) {
+				if ( (n = read(sockfd, buf, MAXLINE)) == 0) {
+					close(sockfd);/*4connection closed by client */
+					FD_CLR(sockfd, &allset);
+					client[i] = -1;
+				} else {
+					writen(sockfd, buf, n);
+				}	
+
+				if (--nready <= 0)
+					break;				/* no more readable descriptors */
+			}
+		}
+	}
+}
+
+int tcp_serv_fork(int argc, char **argv)
 {
 	int					listenfd, connfd;
 	int                 temp;
@@ -101,8 +201,26 @@ int main(int argc, char **argv)
 		{
 		    
 		}
-		
+
+        /*****************************************************************************
+         when the parent process in our concurrent server closes the connected socket, 
+         this just decrements the reference count for the descriptor.Since the reference 
+         count was still greater than 0, this call to close did not initiate TCP's 
+         four-packet connection termination sequence.This is the behavior we want with 
+         our concurrent server with the connected socket that is shared between the 
+         parent and child.If we really want to send a FIN on a TCP connection, the 
+         @shutdown function can be used instead of close.
+         ******************************************************************************/		
 		close(connfd);			/* parent closes connected socket */
 	}
 }
 
+
+int main(int argc, char **argv)
+{
+    int ret ;
+
+	ret = tcp_serv_select(argc,argv);
+
+	return ret;
+}
