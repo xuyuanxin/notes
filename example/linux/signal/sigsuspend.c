@@ -5,7 +5,36 @@
 
 static void sig_int(int);
 
-int main(void)
+
+int sigsuspend_eg_error()
+{
+	sigset_t newmask, oldmask;
+	sigemptyset(&newmask);
+	sigaddset(&newmask, SIGINT);
+	
+	/* block SIGINT and save current signal mask */
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0){
+	    printf("SIG_BLOCK error");
+	}
+	
+	/* 这里的代码不会受到SIGINT的影响，如果发生了SIGINT信号，则阻塞*/
+	
+	/* restore signal mask, which unblocks SIGINT */
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0){
+	    printf("SIG_SETMASK error");
+	}
+	
+/* 如果在这里发生SIGINT信号，pause可能就等不到SIGINT(这个时候还没有调用pasue)。To correct 
+ this problem, we need a way to both restore the signal mask and put the process to sleep 
+ in a single atomic operation. This feature is provided by the @sigsuspend function.*/
+
+    pause(); /* wait for signal to occur */
+	
+	/* continue processing */
+
+}
+
+int sigsuspend_eg(void)
 {
 	sigset_t  newmask, oldmask, waitmask;
 	
@@ -65,5 +94,50 @@ program exit:
 
 */
 
+volatile sig_atomic_t quitflag; /* set nonzero by signal handler */
 
+static void sig_int(int signo) /* one signal handler for SIGINT and SIGQUIT */
+{
+    if (signo == SIGINT)
+        printf("\ninterrupt\n");
+    else if (signo == SIGQUIT)
+        quitflag = 1; /* set flag for main loop */
+}
+
+
+/************************************************************************************
+ wait for a signal handler to set a global variable.we catch both the interrupt signal 
+ and the quit signal,but want to wake up the main routine only when the quit signal is 
+ caught.
+************************************************************************************/
+int sigsuspend_eg02(void)
+{
+	sigset_t newmask, oldmask, zeromask;
+	
+	if (signal(SIGINT, sig_int) == SIG_ERR)
+	    printf("signal(SIGINT) error");
+	
+	if (signal(SIGQUIT, sig_int) == SIG_ERR)
+        printf("signal(SIGQUIT) error");
+	
+	sigemptyset(&zeromask);
+	sigemptyset(&newmask);
+	sigaddset(&newmask, SIGQUIT);
+	
+	/* Block SIGQUIT and save current signal mask. */
+	if (sigprocmask(SIG_BLOCK, &newmask, &oldmask) < 0)
+	    printf("SIG_BLOCK error");
+	
+	while (quitflag == 0)
+	    sigsuspend(&zeromask);
+	
+	/* SIGQUIT has been caught and is now blocked; do whatever. */
+	quitflag = 0;
+	
+	/* Reset signal mask which unblocks SIGQUIT. */
+	if (sigprocmask(SIG_SETMASK, &oldmask, NULL) < 0)
+	    printf("SIG_SETMASK error");
+	
+	exit(0);
+}
 

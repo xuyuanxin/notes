@@ -1,99 +1,103 @@
  
-/*******************************************************************************
----->定义
-信号是软件中断。信号提供了一种处理异步事件的方法，例如，终端用户键入终端键，则会
-通过信号机制停止一个程序。每个信号都有一个名字(以SIG开头),信号都被定义为正整数，
-不存在编号为0的信号。
+/************************************************************************************
+信号的概念
+  信号是软件中断。信号提供了一种处理异步事件的方法，例如，终端用户键入终端键，则会通
+  过信号机制停止一个程序。每个信号都有一个名字(以SIG开头),信号都被定义为正整数，不存
+  在编号为0的信号。每个信号都有一个与之关联的处理(disposition),也称为行为(action).
 
-信号可以:
-a:由一个进程发给另外一个进程(或自身)
-b:由内核发给某个进程
-每个信号都有一个与之关联的处理(disposition),也称为行为(action).信号的处置有三种选择
-1 捕获
-2 忽略 SIG_IGN  
-  The two signals SIGKILL and SIGSTOP cannot be ignored.
-3 默认处理  default
-  The default is normally to terminate a process on receipt of a signal, with 
-  certain signals also generating a core image of the process in its current 
-  working directory. There are a few signals whose default disposition is to 
-  be ignored: SIGCHLD and SIGURG (sent on the arrival of out-of-band data).
+信号的产生:
+  a:由一个进程发给另外一个进程(或自身)
+  b:由内核发给某个进程
+           
+信号的处置
+  1 捕获
+  2 SIG_IGN 忽略   
+    The two signals SIGKILL and SIGSTOP cannot be ignored.
+  3 default 默认处理  
+    The default is normally to terminate a process on receipt of a signal,with certain 
+    signals also generating a core image of the process in its current working directory. 
+    There are a few signals whose default disposition is to be ignored:SIGCHLD and SIGURG 
+    (sent on the arrival of out-of-band data).
 
-产生信号的条件:
-1 某些特定按键，引发终端产生信号。例如Ctrl+C通常产生中断信号(SIGINT)
-2 硬件异常产生信号:These conditions are usually detected by the hardware, and the
-  kernel is notified. The kernel then generates the appropriate signal for the
-  process that was running at the time the condition occurred. For example,SIGSEGV 
-  is generated for a process that executes an invalid memory reference.
-3 kill命令
-4 软件条件:Software conditions can generate signals when a process should be 
-  notified of various events. These aren't hardware-generated conditions (as is 
-  the divideby-0 condition), but software conditions. Examples are SIGURG 
-  (generated when out-of-band data arrives over a network connection), SIGPIPE 
-  (generated when a process writes to a pipe that has no reader), and SIGALRM 
-  (generated when an alarm clock set by the process expires).
+信号产生的条件:
+  1 某些特定按键，引发终端产生信号。例如Ctrl+C通常产生中断信号(SIGINT)
+  2 硬件异常产生信号
+    These conditions are usually detected by the hardware,and the kernel is notified. 
+    The kernel then generates the appropriate signal for the process that was running 
+    at the time the condition occurred.For example,SIGSEGV is generated for a process 
+    that executes an invalid memory reference.
+  3 kill命令
+  4 软件条件
+    Software conditions can generate signals when a process should be notified of various 
+    events. These aren't hardware-generated conditions (as is the divideby-0 condition), 
+    but software conditions. Examples are SIGURG (generated when out-of-band data arrives 
+    over a network connection), SIGPIPE (generated when a process writes to a pipe that 
+    has no reader), and SIGALRM (generated when an alarm clock set by the process expires).
 
 Program Start-Up
-When a program is executed, the status of all signals is either default or ignore.
-Normally,all signals are set to their default action, unless the process that 
-calls exec is ignoring the signal. Specifically,the exec functions change the 
-disposition of any signals being caught to their default action and leave the 
-status of all other signals alone. (Naturally,asignal that is being caught by 
-a process that calls exec cannot be caught by the same function in the new program, 
-since the address of the signal catching function in the caller probably has no 
-meaning in the new program file that is executed.)
+    When a program is executed, the status of all signals is either default or ignore.
+    Normally,all signals are set to their default action, unless the process that calls 
+    exec is ignoring the signal. Specifically,the exec functions change the disposition 
+    of any signals being caught to their default action and leave the status of all 
+    other signals alone.(Naturally,asignal that is being caught by a process that calls 
+    exec cannot be caught by the same function in the new program, since the address of 
+    the signal catching function in the caller probably has no meaning in the new 
+    program file that is executed.)
 
 Process Creation
-When a process calls fork,the child inherits the parent's signal dispositions. 
-Here,since the child starts off with a copy of the parent’s memory image, the 
-address of a signal-catching function has meaning in the child.
+    When a process calls fork,the child inherits the parent's signal dispositions.Here,
+    since the child starts off with a copy of the parent's memory image, the address of 
+    a signal-catching function has meaning in the child.
 
----->一些概念
+一些概念
   generated    产生
   delivered    递交
   pending      悬挂
   blocking     阻塞
   signal mask  信号掩码
 
-  generated: a signal is generated for a process (or sent to a process) when the 
-event that causes the signal occurs. The event could be a hardware exception 
-(e.g., divide by 0), a software condition (e.g., analarm timer expiring), a 
-terminal-generated signal, or a call to the kill function.When the signal is 
-generated, the kernel usually sets a flag of some form in the process table.
+  generated: 
+  a signal is generated for a process (or sent to a process) when the event that causes 
+  the signal occurs. The event could be a hardware exception (e.g., divide by 0), a 
+  software condition (e.g., analarm timer expiring), a terminal-generated signal, or 
+  a call to the kill function.When the signal is generated, the kernel usually sets a 
+  flag of some form in the process table.
 
-  delivered: We say thata signal is delivered to a process when the action for 
-a signal is taken.
+  delivered: 
+  We say thata signal is delivered to a process when the action for a signal is taken.
 
-  pending: During the time between the generation of a signal and its delivery,
-the signal is said to be pending.
+  pending: 
+  During the time between the generation of a signal and its delivery,the signal is said 
+  to be pending.
 
-  blocking:阻止是阻止信号的递交(delivery)。也就是使产生的信号处于pending状态。
-If a signal that is blocked is generated for a process, and if the action for 
-that signal is either the default action or to catch the signal, then the signal 
-remains pending for the process until the process either (a) unblocks the signal 
-or (b) changes the action to ignorethe signal. 
-The system determines what to do with a blocked signal when the signal is delivered, 
-not when it's generated. This allows the process to change the action for the signal 
-before it's delivered. 
+  blocking:
+  If a signal that is blocked is generated for a process, and if the action for that 
+  signal is either the default action or to catch the signal, then the signal remains 
+  pending for the process until the process either(a)unblocks the signal or(b)changes 
+  the action to ignorethe signal.The system determines what to do with a blocked signal 
+  when the signal is delivered, not when it's generated. This allows the process to 
+  change the action for the signal before it's delivered. 
+  阻止是阻止信号的递交(delivery)。也就是使产生的信号处于pending状态。
 
-  signal mask: Each process has a signal mask that defines the set of signals 
-currently blocked from delivery to that process. We can think of this mask as 
-having one bit for each possible signal. If the bit is on for a given signal, 
-that signal is currently blocked. A process can examine and	 change its current 
-signal mask by calling @sigprocmask
-  Since it is possible for the number of signals to exceed the number of bits in 
-an integer,POSIX.1 defines a data type,called sigset_t,that holds a signal set.
-The signal mask, for example,is	stored in one of these	signal sets. 
+  signal mask: 
+  Each process has a signal mask that defines the set of signals currently blocked from 
+  delivery to that process. We can think of this mask as having one bit for each possible 
+  signal.If the bit is on for a given signal,that signal is currently blocked.A process 
+  can examine and change its current signal mask by calling @sigprocmask. Since it is 
+  possible for the number of signals to exceed the number of bits in an integer,POSIX.1 
+  defines a data type,called sigset_t,that holds a signal set.The signal mask,for example,
+  is	stored in one of these	signal sets. 
 
-  阻塞期间不止产生一次该信号，如何处理:POSIX.1 allows the system to deliver the 
-signal either once or more than  once. If the system delivers the signal more 
-than once, we say that the signals are queued. Most UNIX systems, however,do not 
-queue signals unless they support the real-time extensions to POSIX.1. Instead, 
-the UNIX kernel simply delivers the signal once.
+阻塞期间不止产生一次该信号，如何处理:
+  POSIX.1 allows the system to deliver the signal either once or more than once.If the 
+  system delivers the signal more than once, we say that the signals are queued. Most 
+  UNIX systems,however,do not queue signals unless they support the real-time extensions 
+  to POSIX.1. Instead, the UNIX kernel simply delivers the signal once.
 
-  同时产生多个信号，如何处理:POSIX.1 does not specify the order in which the signals  
-are delivered to the process.The Rationale for POSIX.1 does suggest, however,that 
-signals related to the current state of the process be delivered before other 
-signals. (SIGSEGV is one such signal.)
+同时产生多个信号，如何处理:
+  POSIX.1 does not specify the order in which the signals are delivered to the process.
+  The Rationale for POSIX.1 does suggest, however,that signals related to the current 
+  state of the process be delivered before other signals. (SIGSEGV is one such signal.)
 
 
 
@@ -116,6 +120,8 @@ signals. (SIGSEGV is one such signal.)
  continued, even if the signal is blocked or ignored.
  ******************************************************************************/
 
+#define SIGABRT /*This signal is generated by calling the abort function. The process 
+terminates abnormally./
 
 #define SIGCHLD /*Child process has stopped or terminated.sent by the kernel 
 whenever a process terminates, to the parent of the terminating process.*/

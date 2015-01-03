@@ -1,19 +1,29 @@
 #include <signal.h>
 
-/*******************************************************************************
- @signo:信号编号
- @func: 信号处理函数。
-         SIG_IGN 忽略此信号(SIGKILL和SIGSTOP不能忽略)
-         SIG_DFL 使用默认处理函数
- function: 给信号@signo注册处理函数@func.
- Returns : previous disposition of signal if OK,SIG_ERR on error
+/************************************************************************************
+ @signo:
+    the name of the signal,SIGABRT etc.
+ @func:
+    The value of @func is 
+    (a) the constant SIG_IGN, 
+    (b) the constant SIG_DFL, or 
+    (c) the address of a function to be called when the signal occurs. 
+    If we specify SIG_IGN, we are telling the system to ignore the signal.(Remember 
+    that we cannot ignore the two signals SIGKILL and SIGSTOP.) When we specify SIG_DFL, 
+    we are setting the action associated with the signal to its default value. When we 
+    specify the address of a function to be called when the signal occurs, we are 
+    arranging to "catch" the signal. We call the function either the signal handler 
+    or the signal-catching function.
+  @function: 给信号@signo注册处理函数@func.
+  @returns : previous disposition of signal if OK,SIG_ERR on error
 
  1 不改变信号的处理方式就不能确定当前处理方式
  2 信号处理函数原型 void (*func)(int)
- 3 @signal是一个函数，@signal函数有两个入参，第一个是int，第二个是函数指针
-   @signal返回值是一个函数指针(所指向的函数有一个int型入参，这个函数的返回值为void)。
- ******************************************************************************/
-void signal();/* 为了source insight 能跳转过来*/
+ 3 @signal是一个函数，@signal函数有两个入参，第一个是int型，第二个是函数指针(所指向的
+   函数有一个int型入参，这个函数的返回值为void)。@signal返回值是一个函数指针(所指向的
+   函数有一个int型入参，这个函数的返回值为void)。
+ ***********************************************************************************/
+void signal();/* for source insight jump */
 void (*signal(int signo,void (*func)(int)))(int);
 
 
@@ -274,16 +284,24 @@ int sigaction(int signo,const struct sigaction *restrict act,struct sigaction *r
 
 
 #include <signal.h>
-/*******************************************************************************
+/************************************************************************************
  @sigmask:将进程的信号屏蔽字设置为由@sigmask指向的值。
  Returns:-1 with errno set to EINTR
+
+ The signal mask of the process is set to the value pointed to by @sigmask. Then the 
+ process is suspended until a signal is caught or until a signal occurs that terminates 
+ the process. If a signal is caught and if the signal handler returns, then sigsuspend
+ returns, and the signal mask of the process is set to its value before the call to 
+ sigsuspend.Note that there is no successful return from this function. If it returns 
+ to the caller, it always returns -1 with errno set to EINTR (indicating an interrupted 
+ system call).
  
  sigsuspend的整个原子操作过程为：
 (1) 设置新的mask阻塞当前进程，之后进程挂起；
 (2) 收到信号，恢复原先mask；
 (3) 调用该进程设置的信号处理函数；
 (4) 待信号处理函数返回后，sigsuspend返回。
-*******************************************************************************/
+************************************************************************************/
 int sigsuspend(const sigset_t *sigmask);
 
 

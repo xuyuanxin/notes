@@ -6,6 +6,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include"net_pub.h"
+#include<limits.h>		/* for OPEN_MAX */
 
 void sig_chld(int signo);
 
@@ -215,6 +216,167 @@ int tcp_serv_fork(int argc, char **argv)
 	}
 }
 
+
+/* allocate an array of pollfd structures to maintain the client information */
+int tcp_serv_poll(int argc, char **argv)
+{
+	int					i, maxi, listenfd, connfd, sockfd,temp;
+	int					nready;
+	ssize_t				n;
+	char				buf[MAXLINE];
+	socklen_t			clilen;
+	struct pollfd		client[OPEN_MAX];
+	struct sockaddr_in	cliaddr, servaddr;
+	char strip[16] = {0};
+
+	listenfd = socket(AF_INET, SOCK_STREAM, 0);
+	if(listenfd < 0)
+	{
+	    printf("tcp server error socket fail %d",sockfd);
+		return 1;
+	}
+
+	//bzero(&servaddr, sizeof(servaddr));
+	memset(&servaddr,0,sizeof(servaddr));
+	servaddr.sin_family      = AF_INET;
+	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	servaddr.sin_port        = htons(SERV_PORT);
+
+	temp = bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
+	if(temp < 0)
+	{
+	    printf("tcp server error bind fail %d",temp);
+		return 1;
+	}	
+
+	temp = listen(listenfd,1024);
+
+	if(temp < 0)
+	{
+	    printf("tcp server error listen fail %d",temp);
+		return 1;
+	}	
+
+/************************************************************************************
+ We use the first entry in the @client array for the listening socket and set the 
+ descriptor for the remaining entries to –1. We also set the POLLRDNORM event for this 
+ descriptor, to be notified by @poll when a new connection is ready to be accepted . 
+ The variable @maxi contains the largest index of the client array currently in use.
+************************************************************************************/
+
+	client[0].fd = listenfd;       /*这个作为监听套接字,监听所有连接*/
+	client[0].events = POLLRDNORM;
+	
+	for (i = 1; i < OPEN_MAX; i++)
+		client[i].fd = -1;		/* -1 indicates available entry */
+	
+	maxi = 0;					/* max index into client[] array */
+
+	for ( ; ; ) 
+	{
+		nready = poll(client, maxi+1, -1/*INFTIM*/);
+
+		if(nready < 0)
+		{
+		    printf("\r\ntcp server error poll");
+			return;
+		}
+
+		if (client[0].revents & POLLRDNORM) /* new client connection */
+		{	
+			clilen = sizeof(cliaddr);
+			
+			connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
+
+			if(connfd < 0)
+			{			    
+				printf("tcp server error accept fail %d",connfd);
+				continue;
+			}
+
+			inet_ntop(AF_INET,&cliaddr.sin_addr, strip,16);
+			printf("new client: %s:%d\n",strip,cliaddr.sin_port);
+
+/************************************************************************************
+ We call @poll to wait for either a new connection or data on existing connection.When 
+ a new connection is accepted, we find the first available entry in the client array 
+ by looking for the first one with a negative descriptor.Notice that we start the search 
+ with the index of 1, since client[0] is used for the listening socket. When an available 
+ entry is found, we save the descriptor and set the POLLRDNORM event.
+************************************************************************************/
+
+			for (i = 1; i < OPEN_MAX; i++)
+			{
+				if (client[i].fd < 0) 
+				{
+					client[i].fd = connfd;	/* save descriptor */
+					break;
+				}
+			}
+				
+			if (i == OPEN_MAX)
+				printf("too many clients");
+
+			client[i].events = POLLRDNORM;
+			
+			if (i > maxi)
+				maxi = i;				/* max index in client[] array */
+
+			if (--nready <= 0)
+				continue;				/* no more readable descriptors */
+		}
+
+/************************************************************************************
+ The two return events that we check for are POLLRDNORM and POLLERR.The second of these 
+ we did not set in the @events member because it is always returned when the condition 
+ is true. The reason we check for POLLERR is because some implementations return this 
+ event when an RST is received for a connection, while others just return POLLRDNORM. 
+ In either case, we call read and if an error has occurred, it will return an error. 
+ When an existing connection is terminated by the client, we just set the fd member to 
+ –1.
+************************************************************************************/
+
+
+		for (i = 1; i <= maxi; i++) /* check all clients for data */
+		{	
+			if ( (sockfd = client[i].fd) < 0)
+				continue;
+			
+			if (client[i].revents & (POLLRDNORM | POLLERR)) 
+			{
+				if ( (n = read(sockfd, buf, MAXLINE)) < 0) 
+				{
+					if (errno == ECONNRESET) 
+					{
+					    /*4connection reset by client */
+						printf("client[%d] aborted connection\n", i);
+						close(sockfd);
+						client[i].fd = -1;
+					} 
+					else
+					{
+						printf("read error");
+					}
+				} 
+				else if (n == 0) 
+				{
+						/*4connection closed by client */
+					printf("client[%d] closed connection\n", i);
+					close(sockfd);
+					client[i].fd = -1;
+				} 
+				else
+				{
+					if(n != x_writen(sockfd, buf, n))
+			            printf("\r\nstr_echo:x_writen error");
+				}
+
+				if (--nready <= 0)
+					break;				/* no more readable descriptors */
+			}
+		}
+	}
+}
 
 int main(int argc, char **argv)
 {

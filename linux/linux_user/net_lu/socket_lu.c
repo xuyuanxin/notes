@@ -369,6 +369,60 @@ will be 0 (close the read half), 1 (close the write half), and 2 (close the read
 ************************************************************************************/
 int shutdown(int sockfd, int howto);
 
+/************************************************************************************
+ @sockfd:
+ @buff  :接收的数据存放在这个缓冲区里
+ @nbytes:希望接收的字节数
+ @flag:
+ @from:
+   数据是谁发来的,可以为NULL,表示不关心来源,此时addrlen也是NULL.
+   the protocol address of who sent the datagram. The number of bytes stored in this 
+   socket address structure is also returned to the caller in the integer pointed to 
+   by @addrlen. 
+ @addrlen:
+    If the from argument to @recvfrom is a null pointer, then the corresponding length 
+    argument (addrlen) must also be a null pointer, and this indicates that we are not 
+    interested in knowing the protocol address of who sent us data. 
+ @return: number of bytes read if OK, –1 on error
+
+ Both @recvfrom and @sendto can be used with TCP, although there is normally no reason 
+ to do so.
+
+ 1 可以返回0,并不表示对端关闭。
+************************************************************************************/
+ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags, 
+struct sockaddr *from, socklen_t *addrlen);
+
+ 
+/************************************************************************************
+ @sockfd:
+ @buff  :发送的数据都在这个缓冲区里
+ @nbytes:发送的字节数，可以为0,此时发送的只有报文头没有数据区.
+ @flag:
+ @to:
+    The @to argument for @sendto is a socket address structure containing the protocol 
+    address (e.g., IP address and port number) of where the data is to be sent. The 
+    size of this socket address structure is specified by @addrlen.
+ @addrlen:
+ @return: number of bytes written if OK, –1 on error
+
+ Writing a datagram of length 0 is acceptable. In the case of UDP, this results in an 
+ IP datagram containing an IP header(normally 20 bytes for IPv4 and 40 bytes for IPv6), 
+ an 8-byte UDP header, and no data. This also means that a return value of 0 from 
+ @recvfrom is acceptable for a datagram protocol: It does not mean that the peer has 
+ closed the connection, as does a return value of 0 from read on a TCP socket. Since 
+ UDP is connectionless, there is no such thing as closing a UDP connection.
+ 
+ 1 一般用于UDP,也可以用于TCP(一般不用)
+ 2 The client must specify the server's IP address and port number for the call to @sendto.
+************************************************************************************/
+ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, 
+const struct sockaddr *to, socklen_t addrlen);
+ 
+
+ 
+
+
 /*******************************************************************************
  function:
     The normal Unix close function is also used to close a socket and terminate a 
@@ -407,52 +461,12 @@ unsigned short int ntohs(unsigned short int netshort);
 
 #include <sys/socket.h>
 
-/*
-@sockfd:
-@buff  :接收的数据存放在这个缓冲区里
-@nbytes:希望接收的字节数
-@flag:
-@from:数据是谁发来的,可以为NULL,表示不关心来源,此时addrlen也是NULL.
-@addrlen:目的地地址长度
 
-return: number of bytes read if OK, –1 on error
 
-1 可以返回0,并不表示对端关闭。*/
-ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags, struct sockaddr *from, socklen_t *addrlen);
-
- 
-/*
-@sockfd:
-@buff  :发送的数据都在这个缓冲区里
-@nbytes:发送的字节数，可以为0,此时发送的只有报文头没有数据区.
-@flag:
-@to:目的地
-@addrlen:目的地地址长度
-return: number of bytes written if OK, –1 on error
-
-1 一般用于UDP,也可以用于TCP(一般不用)
-2 The client must specify the server's IP address and port number for the call to @sendto.*/
-ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, const struct sockaddr *to, socklen_t addrlen);
- 
-
- 
 
 
 #include <sys/socket.h>
 
-
- 
-
- 
-#include <poll.h>
-struct pollfd {
-  int     fd;       /* descriptor to check */
-  short   events;   /* events of interest on fd */
-  short   revents;  /* events that occurred on fd */
-};
-
-int poll (struct pollfd *fdarray, unsigned long nfds, int timeout);
-  
 
 #include <sys/socket.h>
 #define SOL_SOCKET /*基本套接口*/

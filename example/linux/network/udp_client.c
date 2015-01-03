@@ -25,6 +25,24 @@ void dg_cli_v2(FILE *fp, int sockfd, const SA *pservaddr, socklen_t servlen)
 	}
 }
 
+/************************************************************************************
+ the first time the process calls sendto, if the socket has not yet had a local port 
+ bound to it, that is when an ephemeral port is chosen by the kernel for the socket. 
+ As with TCP, the client can call bind explicitly, but this is rarely done.
+
+ Notice that the call to @recvfrom specifies a null pointer as the fifth and sixth 
+ arguments. This tells the kernel that we are not interested in knowing who sent the 
+ reply. There is a risk that any process, on either the same host or some other host, 
+ can send a datagram to the client's IP address and port, and that datagram will be 
+ read by the client, who will think it is the server's reply. 
+
+ If a client datagram is lost (say it is discarded by some router between the client 
+ and server), the client will block forever in its call to recvfrom in the function 
+ @g_cli, waiting for a server reply that will never arrive. Similarly, if the client 
+ datagram arrives at the server but the server's reply is lost, the client will again 
+ block forever in its call to recvfrom. A typical way to prevent this is to place a 
+ timeout on the client's call to recvfrom. 
+************************************************************************************/
 void dg_cli(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
 {
 	int	n;

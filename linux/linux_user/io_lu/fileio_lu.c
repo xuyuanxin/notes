@@ -510,7 +510,6 @@ struct timeval
 int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, 
 const struct timeval *timeout);
 
- 
 #include <sys/select.h>
 /*******************************************************************************
  @select uses descriptor sets, typically an array of integers, with each bit in 
@@ -562,21 +561,25 @@ struct timespec {
  Returns: count of ready descriptors, 0 on timeout,-1 on error
  ******************************************************************************/
 int pselect(int maxfdp1,fd_set *restrict readfds,fd_set *restrict writefds,fd_set *restrict exceptfds,
-             const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
+const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 
 
 
 #include <poll.h>
-#define POLLIN       /*普通或优先级带数据可读  Figure 14.17.*/
+
+/********** Input events and returned revents for poll ***********/
+#define POLLIN       /*普通或优先级带数据可读 */
 #define POLLRDNORM   /*普通数据可读*/
 #define POLLRDBAND   /*优先级带数据可读*/
 #define POLLPRI      /*高优先级数据可读*/
+
 #define POLLOUT      /*普通数据可写*/
 #define POLLWRNORM   /*普通数据可写*/
 #define POLLWRBAND   /*优先级带数据可写*/
-#define POLLERR      /*发生错误*/
-#define POLLHUP      /*发生挂起*/
-#define POLLNVAL     /*描述字不是一个打开的文件*/
+
+#define POLLERR      /*发生错误，不可作为@events*/
+#define POLLHUP      /*发生挂起，不可作为@events*/
+#define POLLNVAL     /*描述字不是一个打开的文件，不可作为@events*/
 
 #define INFTIM       /*是一个负值 @poll的第三个参数,表示永远等待*/
 
@@ -593,12 +596,35 @@ struct pollfd
     short  revents;  /* events that occurred on fd */
 };
 
-/*******************************************************************************
- @fdarray: 每个数组元素指定一个描述符编号以及对其所关心的状态。
- @nfds   : 数组元素的个数
+/************************************************************************************
+ @fdarray: 
+    a pointer to the first element of an array of structures.Each element of the array 
+    is a pollfd structure that specifies the conditions to be tested for a given 
+    descriptor, fd.
+ @nfds   : 
+    The number of elements in the array of structures is specified by the nfds argument.
+ 
  @timeout: INFTIM永远等待 0不等待 大于0等待指定的时间
- Returns: count of ready descriptors, 0 on timeout,-1 on error
- ******************************************************************************/
+ @returns: 
+    The return value from @poll is –1 if an error occurred, 0 if no descriptors are 
+    ready before the timer expires,otherwise it is the number of descriptors that have 
+    a nonzero @revents member.
+
+ With regard to TCP and UDP sockets, the following conditions cause @poll to return 
+ the specified revent. Unfortunately, POSIX leaves many holes (i.e., optional ways 
+ to return the same condition) in its definition of poll.
+ 1 All regular TCP data and all UDP data is considered normal.
+ 2 TCP's out-of-band data is considered priority band.
+ 3 When the read half of a TCP connection is closed (e.g., a FIN is received), this 
+   is also considered normal data and a subsequent read operation will return 0.
+ 4 The presence of an error for a TCP connection can be considered either normal data 
+   or an error (POLLERR). In either case, a subsequent read will return –1 with errno 
+   set to the appropriate value. This handles conditions such as the receipt of an RST 
+   or a timeout.
+ 5 The availability of a new connection on a listening socket can be considered either 
+   normal data or priority data. Most implementations consider this normal data.
+ 6 The completion of a nonblocking connect is considered to make a socket writable.
+************************************************************************************/
 int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 
 
