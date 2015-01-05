@@ -11,3 +11,13 @@ http://bbs.c114.net/thread-808778-1-1.html
         arch/mips/insset/co/
         example/cpp/deque_cpplib.cpp 1
         example/cpp/deque_cpplib.h 
+        
+        
+        
+               algocoding/leetcode/insertion_sort_list.cpp   1----
+       algocoding/leetcode/merge_k_sorted_lists.cpp 1
+       algocoding/leetcode/merge_sorted_array.cpp 1
+       algocoding/leetcode/n_queens.cpp 1----
+       algocoding/leetcode/sort_list.cpp 1----
+       algocoding/leetcode/unique_paths.cpp 1----
+       algocoding/leetcode/unique_paths_II.cpp 1
