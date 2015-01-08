@@ -21,3 +21,20 @@ http://bbs.c114.net/thread-808778-1-1.html
        algocoding/leetcode/sort_list.cpp 1----
        algocoding/leetcode/unique_paths.cpp 1----
        algocoding/leetcode/unique_paths_II.cpp 1
+
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+        modified:   algocoding/leetcode/unique_paths.cpp 1----
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        algocoding/leetcode/generate_parentheses.cpp 1----
+        algocoding/leetcode/n_queens_II.cpp 1
+        algocoding/leetcode/permutations.cpp 1
+        algocoding/leetcode/permutations_II.cpp 1----
+        algocoding/leetcode/pow.cpp 1
+        algocoding/leetcode/sqrt.cpp 1
