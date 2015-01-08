@@ -322,20 +322,21 @@ and SIGURG signals. A positive arg specifies a process ID. A negative arg implie
 a process group ID equal to the absolute value of arg.*/
 
 /*********************************************************************************
-function:The @fcntl function can change the properties of a file that is already open.
-The @fcntl function is used for five different purposes.
-1 Duplicate an existing descriptor (cmd=F_DUPFD or F_DUPFD_CLOEXEC)
-2 Get/set file descriptor flags (cmd=F_GETFD or F_SETFD)
-3 Get/set file status flags (cmd=F_GETFL or F_SETFL)
-4 Get/set asynchronous I/O ownership (cmd=F_GETOWNorF_SETOWN)
-5 Get/setrecordlocks (cmd=F_GETLK,F_SETLK,orF_SETLKW)
-Returns: depends on cmd if OK (see following),-1 on error
-
-The return value from @fcntl depends on the command. All commands return -1 on 
-an error or some other value if OK. The following four commands have special
-return values: F_DUPFD, F_GETFD, F_GETFL, and F_GETOWN. The first command returns 
-the new file descriptor, the next two return the corresponding flags, and the 
-final command returns a positive process ID or a negative process group ID.
+ @fun:
+   The @fcntl function can change the properties of a file that is already open.
+   The @fcntl function is used for five different purposes.
+   1 Duplicate an existing descriptor (cmd=F_DUPFD or F_DUPFD_CLOEXEC)
+   2 Get/set file descriptor flags (cmd=F_GETFD or F_SETFD)
+   3 Get/set file status flags (cmd=F_GETFL or F_SETFL)
+   4 Get/set asynchronous I/O ownership (cmd=F_GETOWNorF_SETOWN)
+   5 Get/setrecordlocks (cmd=F_GETLK,F_SETLK,orF_SETLKW)
+@ret: 
+   depends on @cmd if OK (see following),-1 on error
+   The return value from @fcntl depends on the command. All commands return -1 on 
+   an error or some other value if OK. The following four commands have special
+   return values: F_DUPFD, F_GETFD, F_GETFL, and F_GETOWN. The first command returns 
+   the new file descriptor, the next two return the corresponding flags, and the 
+   final command returns a positive process ID or a negative process group ID.
 **********************************************************************************/
 #include <fcntl.h>
 int fcntl(int fd,int cmd,... /* int arg */ );
@@ -408,11 +409,6 @@ command name means wait.) If the requested read lock or write lock cannot be
 granted because another process currently has some part of the requested region  
 locked, the calling process is put to sleep.The process wakes up either when the 
 lock becomes available or when interrupted by a signal.*/
-
-/*******************************************************************************
- @cmd: F_GETLK, F_SETLK,or F_SETLKW.
- ******************************************************************************/
-int fcntl(int fd,int cmd,struct flock *flockptr);
 
 /*******************************************************************************
 锁的继承与释放
@@ -692,22 +688,33 @@ region.  Modifications to  memory  in  aMAP_PRIVATEregion  arediscarded  when  t
 region is unmapped.*/
 int munmap(void *addr,size_t len);
 
-
-
-include <sys/socket.h>
-	/*return: number of bytes read or written if OK, –1 on error */
- 
-ssize_t recv(int sockfd, void *buff, size_t nbytes, int flags);
- 
-/*return: number of bytes read or written if OK, –1 on error */
-ssize_t send(int sockfd, const void *buff, size_t nbytes, int flags);
  
 
 #include <sys/uio.h>
-struct iovec {
-  void   *iov_base;   /* starting address of buffer */
-  size_t  iov_len;    /* size of buffer */
-};
+
+/************************************************************************************
+ read()和write()系统调用每次在文件和进程的地址空间之间传送一块连续的数据。但是，应用有
+ 时也需要将分散在内存多处地方的数据连续写到文件中，或者反之。在这种情况下，如果要从文
+ 件中读一片连续的数据至进程的不同区域，使用read()则要么一次将它们读至一个较大的缓冲区
+ 中，然后将它们分成若干部分复制到不同的区域，要么调用read()若干次分批将它们读至不同区
+ 域。同样，如果想将程序中不同区域的数据块连续地写至文件，也必须进行类似的处理。
+
+ UNIX提供了另外两个函数—readv()和writev()，它们只需一次系统调用就可以实现在文件和进程
+ 的多个缓冲区之间传送数据，免除了多次系统调用或复制数据的开销。readv()称为散布读，即将
+ 文件中若干连续的数据块读入内存分散的缓冲区中。writev()称为聚集写，即收集内存中分散的
+ 若干缓冲区中的数据写至文件的连续区域中。
+
+ 参数@fildes是文件描述字。@iov是一个结构数组，它的每个元素指明存储器中的一个缓冲区。
+ 参数@iovcnt指出数组@iov的元素个数，元素个数至多不超过IOV_MAX。Linux中定义IOV_MAX的值
+ 为1024。
+
+ readv()则将fildes指定文件中的数据按iov[0]、iov[1]、...、iov[iovcnt–1]规定的顺序和长
+ 度，分散地读到它们指定的存储地址中。readv()的返回值是读入的总字节数。如果没有数据可
+ 读和遇到了文件尾，其返回值为0。
+
+ 有了这两个函数，当想要集中写出某张链表时，只需让iov数组的各个元素包含链表中各个表项
+ 的地址和其长度，然后将iov和它的元素个数作为参数传递给writev()，这些数据便可一次写出。
+************************************************************************************/
 
 /* return: number of bytes read or written, –1 on error */ 
 ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
@@ -715,24 +722,6 @@ ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 /*@iov:结构体数组指针
   return: number of bytes read or written, –1 on error */
 ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
- 
- 
-#include <sys/socket.h>
-struct msghdr {
-void		 *msg_name; 	   /* protocol address */
-socklen_t	  msg_namelen;	   /* size of protocol address */
-struct iovec *msg_iov;		   /* scatter/gather array */
-int 		  msg_iovlen;	   /* # elements in msg_iov */
-void		 *msg_control;	   /* ancillary data (cmsghdr struct) */
-socklen_t	  msg_controllen;  /* length of ancillary data */
-int 		  msg_flags;	   /* flags returned by recvmsg() */
-};
-
-  /*Both return: number of bytes read or written if OK, –1 on error */
- ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags);
-
-/*return: number of bytes read or written if OK, –1 on error */  
-ssize_t sendmsg(int sockfd, struct msghdr *msg, int flags);
  
 
 /*

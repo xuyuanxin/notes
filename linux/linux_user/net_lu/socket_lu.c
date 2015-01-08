@@ -415,12 +415,39 @@ struct sockaddr *from, socklen_t *addrlen);
  
  1 一般用于UDP,也可以用于TCP(一般不用)
  2 The client must specify the server's IP address and port number for the call to @sendto.
+ 3 a successful return from a UDP output operation only means there was room for the 
+   resulting IP datagram on the interface output queue. 
 ************************************************************************************/
 ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, 
 const struct sockaddr *to, socklen_t addrlen);
  
 
- 
+/*
+
+    flags              说明           recv      send
+ MSG_DONTROUTE     绕过路由表查找      n         y
+ MSG_DONTWAIT	     仅本操作非阻塞      y         y
+ MSG_OOB           发送或接收带外数据  y         y
+ MSG_PEEK          窥看外来消息        y         n
+ MSG_WAITALL       等待所有数据        y	        n 
+
+*/
+
+
+/*return: number of bytes read or written if OK, –1 on error */
+ssize_t recv(int sockfd, void *buff, size_t nbytes, int flags);
+
+/*return: number of bytes read or written if OK, –1 on error */
+ssize_t send(int sockfd, const void *buff, size_t nbytes, int flags);
+
+
+/*Both return: number of bytes read or written if OK, –1 on error */
+ssize_t recvmsg(int sockfd, struct msghdr *msg, int flags);
+
+/*return: number of bytes read or written if OK, –1 on error */  
+ssize_t sendmsg(int sockfd, struct msghdr *msg, int flags);
+
+
 
 
 /*******************************************************************************
@@ -469,30 +496,133 @@ unsigned short int ntohs(unsigned short int netshort);
 
 
 #include <sys/socket.h>
-#define SOL_SOCKET /*基本套接口*/
-  #define SO_REUSEADDR /*允许重用本地地址*/
-  #define SO_RCVTIMEO  /*接收超时 struct timeval */
+
+
+
+
+
+/************************************************************************************
+ @sockfd 
+    must refer to an open socket descriptor. 
+ @level  SOL_SOCKET
+    specifies the code in the system that interprets the option: the general socket 
+    code or some protocol-specific code (e.g., IPv4, IPv6, TCP, or SCTP).
+ @optname  SO_LINGER
+    当操作套接字选项时，必须给出选项位于的层(@level)和选项的名称(@optname)。为了操作
+    套接字层的选项，应该将层的值指定为SOL_SOCKET。为了操作其它层的选项，控制选项的合
+    适协议号必须给出。例如，为了表示一个选项由TCP协议解析，层应该设定为协议 号TCP。
+ @optval 
+    is a pointer to a variable from which the new value of the option is fetched by 
+    @setsockopt,or into which the current value of the option is stored by @getsockopt. 
+ @optlen    
+    The size of this variable is specified by the final argument, as a value for 
+    @setsockopt and as a value-result for getsockopt.
+
+ There are two basic types of options: binary options that enable or disable a certain 
+ feature (flags), and options that fetch and return specific values that we can either 
+ set or examine (values). The column labeled "Flag" specifies if the option is a flag 
+ option. When calling getsockopt for these flag options, *optval is an integer. The 
+ value returned in *optval is zero if the option is disabled, or nonzero if the option 
+ is enabled. Similarly,setsockopt requires a nonzero *optval to turn the option on,and 
+ a zero value to turn the option off. If the "Flag" column does not contain a "?," then 
+ the option is used to pass a value of the specified datatype between the user process 
+ and the system.
+
+选项名称　　　　　　　　说明　　　　　　　　　　　　　　　　　　数据类型 
+======================================================================== 
+　　　　　　　　　　　　SOL_SOCKET 
+------------------------------------------------------------------------ 
+SO_BROADCAST　　　　　　允许发送广播数据　　　　　　　　　　　　int 
+SO_DEBUG　　　　　　　　允许调试　　　　　　　　　　　　　　　　int 
+SO_DONTROUTE　　　　　　不查找路由　　　　　　　　　　　　　　　int 
+SO_ERROR　　　　　　　　获得套接字错误　　　　　　　　　　　　　int 
+SO_KEEPALIVE　　　　　　保持连接　　　　　　　　　　　　　　　　int 
+SO_LINGER　　　　　　　 延迟关闭连接　　　　　　　　　　　　　　struct linger 
+SO_OOBINLINE　　　　　　带外数据放入正常数据流　　　　　　　　　int 
+SO_RCVBUF　　　　　　　 接收缓冲区大小　　　　　　　　　　　　　int 
+SO_SNDBUF　　　　　　　 发送缓冲区大小　　　　　　　　　　　　　int 
+SO_RCVLOWAT　　　　　　 接收缓冲区下限　　　　　　　　　　　　　int 
+SO_SNDLOWAT　　　　　　 发送缓冲区下限　　　　　　　　　　　　　int 
+SO_RCVTIMEO　　　　　　 接收超时　　　　　　　　　　　　　　　　struct timeval 
+SO_SNDTIMEO　　　　　　 发送超时　　　　　　　　　　　　　　　　struct timeval 
+SO_REUSERADDR　　　　　 允许重用本地地址和端口　　　　　　　　　int 
+SO_TYPE　　　　　　　　 获得套接字类型　　　　　　　　　　　　　int 
+SO_BSDCOMPAT　　　　　　与BSD系统兼容　　　　　　　　　　　　　 int 
+========================================================================
+　　　　　　　　　　　　IPPROTO_IP 
+------------------------------------------------------------------------
+IP_HDRINCL　　　　　　　在数据包中包含IP首部　　　　　　　　　　int 
+IP_OPTINOS　　　　　　　IP首部选项　　　　　　　　　　　　　　　int 
+IP_TOS　　　　　　　　　服务类型 
+IP_TTL　　　　　　　　　生存时间　　　　　　　　　　　　　　　　int 
+========================================================================
+　　　　　　　　　　　　IPPRO_TCP 
+------------------------------------------------------------------------
+TCP_MAXSEG　　　　　　　TCP最大数据段的大小　　　　　　　　　　 int 
+TCP_NODELAY　　　　　　 不使用Nagle算法　　　　　　　　　　　　 int 
+========================================================================
+************************************************************************************/
   
-/*@sockfd:打开的套接字描述符
-  @level : 指定选项代码的类型
-           SOL_SOCKET: 基本套接口
-           IPPROTO_IP: IPv4套接口
-           IPPROTO_IPV6: IPv6套接口
-           IPPROTO_TCP: TCP套接口
-  @iptname:
-  @optval:返回套接字当前的选项值
-  @iptlen:
-  return: 0 if OK,–1 on error*/ 
+/* return: 0 if OK,–1 on error */ 
 int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
  
-/*@sockfd:打开的套接字描述符
-  @level
-  @iptname:
-  @optval:存放套接字待设置的新值
-  @iptlen:
-return: 0 if OK,–1 on error*/ 
+/* return: 0 if OK,–1 on error
+   example: dg_cli_timeout3 */ 
 int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
  
+/*
+具体使用如下： 
+1.closesocket（一般不会立即关闭而经历TIME_WAIT的过程）后想继续重用该socket： 
+BOOL bReuseaddr=TRUE; 
+setsockopt(s,SOL_SOCKET ,SO_REUSEADDR,(const char*)&bReuseaddr,sizeof(BOOL));
 
+2. 如果要已经处于连接状态的soket在调用closesocket后强制关闭，不经历 TIME_WAIT的过程： 
+BOOL bDontLinger = FALSE; 
+setsockopt(s,SOL_SOCKET,SO_DONTLINGER,(const char*)&bDontLinger,sizeof(BOOL));
+
+3.在send(),recv()过程中有时由于网络状况等原因，发收不能预期进行,而设置收发时限： 
+int nNetTimeout=1000;//1秒 
+//发送时限 
+setsockopt(socket，SOL_S0CKET,SO_SNDTIMEO，(char *)&nNetTimeout,sizeof(int)); 
+//接收时限 setsockopt(socket，SOL_S0CKET,SO_RCVTIMEO，(char *)&nNetTimeout,sizeof(int)); 
+
+ 
+4.在send()的时候，返回的是实际发送出去的字节(同步)或发送到socket缓冲区的字节 (异步);系统默认的状态发送和接收一次为8688字节(约为8.5K)； 
+在实际的过程中发送数据和接收数据量比较大，可以设置socket缓冲区，而避免了send(),recv()不断的循环收发： 
+// 接收缓冲区 
+int nRecvBuf=32*1024; 
+//设置为32K 
+setsockopt(s,SOL_SOCKET,SO_RCVBUF,(const char*)&nRecvBuf,sizeof(int)); 
+//发送缓冲区 int nSendBuf=32*1024;//设置为32K 
+setsockopt(s,SOL_SOCKET,SO_SNDBUF,(const char*)&nSendBuf,sizeof(int));
+ 
+5. 如果在发送数据的时，希望不经历由系统缓冲区到socket缓冲区的拷贝而影响程序的性能： 
+int nZero=0; 
+setsockopt(socket，SOL_S0CKET,SO_SNDBUF，(char *)&nZero,sizeof(nZero));
+ 
+6.同上在recv()完成上述功能(默认情况是将socket缓冲区的内容拷贝到系统缓冲区)： 
+int nZero=0; 
+setsockopt(socket，SOL_S0CKET,SO_RCVBUF，(char *)&nZero,sizeof(int));
+ 
+7.一般在发送UDP数据报的时候，希望该socket发送的数据具有广播特性： 
+BOOL bBroadcast=TRUE; 
+setsockopt(s,SOL_SOCKET,SO_BROADCAST,(const char*)&bBroadcast,sizeof(BOOL));
+ 
+8.在client连接服务器过程中，如果处于非阻塞模式下的socket在connect()的过程中可以设置connect()延时,直到accpet()被呼叫(本函数设置只有在非阻塞的过程中有显著的作用，在阻塞的函数调用中作用不大) 
+BOOL bConditionalAccept=TRUE; 
+setsockopt(s,SOL_SOCKET,SO_CONDITIONAL_ACCEPT,(const char*)&bConditionalAccept,sizeof(BOOL));
+ 
+9.如果在发送数据的过程中(send()没有完成，还有数据没发送)而调用了closesocket(),以前我们一般采取的措施是"从容关闭"shutdown(s,SD_BOTH),但是数据是肯定丢失了，如何设置让程序满足具体应用的要求(即让没发完的数据发送出去后在关闭socket)？ 
+struct linger 
+{ 
+u_short l_onoff; 
+u_short l_linger; 
+}; 
+linger m_sLinger; 
+m_sLinger.l_onoff=1;//(在closesocket()调用,但是还有数据没发送完毕的时候容许逗留) 如果m_sLinger.l_onoff=0;则功能和2.)作用相同; 
+m_sLinger.l_linger=5; //(容许逗留的时间为5秒) 
+setsockopt(s,SOL_SOCKET,SO_LINGER,(const char*)&m_sLinger,sizeof(linger));
+
+*/
  
 

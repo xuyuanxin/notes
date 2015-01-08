@@ -78,4 +78,31 @@ InputIterator find (InputIterator first, InputIterator last, const T& val)
   return last;
 }
 
+/*******************************************************************************
+                   std::fill (function template)   <algorithm>
+ *******************************************************************************       
+ @first @last
+	Forward iterators to the initial and final positions in a sequence of elements 
+	that support being assigned a value of type T. The range filled is [first,last), 
+	which contains all the elements between first and last, including the element 
+	pointed by first but not the element pointed by last.
+ @val
+    Value to assign to the elements in the filled range.
+ @fun    Fill range with value
+    Assigns val to all the elements in the range [first,last).
+ ******************************************************************************/
+template <class ForwardIterator, class T>
+void fill(ForwardIterator first, ForwardIterator last, const T& val);
+//The behavior of this function template is equivalent to:
+
+template <class ForwardIterator, class T>
+void fill (ForwardIterator first, ForwardIterator last, const T& val)
+{
+  while (first != last) {
+    *first = val;
+    ++first;
+  }
+}
+
+
 

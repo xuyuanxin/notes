@@ -8,6 +8,10 @@
 #include"net_pub.h"
 
 
+int tcp_udp_serv(int argc, char **argv)
+{
+}
+
 int main(int argc, char **argv)
 {
 	int					listenfd, connfd, udpfd, nready, maxfdp1,tmp;

@@ -48,8 +48,8 @@ bool isMatch(const char *s, const char *p)
 {
 	bool star = false;
 	const char *str, *ptr;
-	const char *pa; /* ç¢°åˆ°pä¸­çš„'*'æ—¶ï¼ŒpaæŒ‡å‘æ­¤æ—¶séå†åˆ°çš„ä½ç½® */
-	const char *pb; /* pbæŒ‡å‘æ­¤æ—¶pä¸­'*'çš„ä¸‹ä¸€ä¸ªå­—ç¬¦ */
+	const char *pa; /* Åöµ½pÖĞµÄ'*'Ê±£¬paÖ¸Ïò´ËÊ±s±éÀúµ½µÄÎ»ÖÃ */
+	const char *pb; /* pbÖ¸Ïò´ËÊ±pÖĞ'*'µÄÏÂÒ»¸ö×Ö·û */
 	
 	for (str = s, ptr = p; *str != '\0'; str++, ptr++) {
 		switch (*ptr) {
@@ -166,3 +166,4 @@ int main()
 
 	return 0;
 }
+

@@ -1,3 +1,13 @@
+struct iovec {
+  void   *iov_base;   /* starting address of buffer */
+  size_t  iov_len;    /* size of buffer */
+};
+
+#define IOV_MAX  /* 1024 */
+
+
+
+
 /*
 ---->不带缓冲I/O unbuffered I/O
 与标准I/O相对照,术语不带缓冲指每个read和write都调用内核中的一个系统调用.
