@@ -22,6 +22,30 @@ struct sockaddr_in {         /*ipv4套接字地址结构*/
   char            sin_zero[8];  /* unused */
 };
 
+/*
+ Unix domain socket address structure, which is defined by including the <sys/un.h> 
+ header.
+ 
+ POSIX renames the Unix domain protocols as "local IPC," to remove the dependence on 
+ the Unix OS. The historical constant AF_UNIX becomes AF_LOCAL.Nevertheless,we still 
+ use the term "Unix domain" as that has become its de facto name, regardless of the 
+ underlying OS. Also, even with POSIX  attempting to make these OS-independent, the 
+ socket address structure still retains the _un suffix!
+ 
+ @sun_path
+    The pathname stored in the sun_path array must be null-terminated.The unspecified 
+    address is indicated by a null string as the pathname, that is, a structure with 
+    sun_path[0] equal to 0. This is the Unix domain equivalent of the IPv4 INADDR_ANY 
+    constant and the IPv6 IN6ADDR_ANY_INIT constant.
+*/
+#include <sys/un.h>
+struct sockaddr_un {
+  sa_family_t sun_family;     /* AF_LOCAL */
+  char        sun_path[104];  /* null-terminated pathname */
+};
+
+#define SUN_LEN /* is provided and it takes a pointer to a sockaddr_un structure and 
+returns the length of the structure,including the number of non-null bytes in the pathname.*/ 
 
 /************************************************************************************
  @msg_name @msg_namelen
@@ -56,10 +80,46 @@ int 		  msg_flags;	   /* flags returned by recvmsg() */
 #define IPPROTO_IP
 #define IPPRO_TCP
 /*----------------------------------- @getsockopt @optname ------------------------*/
+
+#include <sys/socket.h>
+/*
+ @l_onoff @l_linger
+    If @l_onoff is 0, the option is turned off. The value of @l_linger is ignored and 
+    the previously discussed TCP default applies: @close returns immediately.
+    If @l_onoff is nonzero and @l_linger is zero, TCP aborts the connection when it is 
+    closed.That is,TCP discards any data still remaining in the socket send buffer and 
+    sends an RST to the peer,not the normal four-packet connection termination sequence.
+
+    If @l_onoff is nonzero and @l_linger is nonzero, then the kernel will linger when 
+    the socket is closed . That is, if there is any data still remaining in the socket 
+    send buffer,the process is put to sleep until either: (i) all the data is sent and 
+    acknowledged by the peer TCP,or (ii) the linger time expires.If the socket has been 
+    set to nonblocking, it will not wait for the close to complete, even if the linger 
+    time is nonzero. 
+    When using this feature of the SO_LINGER option,it is important for the application 
+    to check the return value from close, because if the linger time expires before the 
+    remaining data is sent and acknowledged,close returns EWOULDBLOCK and any remaining 
+    data in the send buffer is discarded.
+*/
+struct linger {      
+    int l_onoff;  //0=off, nonzero=on(开关)      
+    int l_linger; //linger time(延迟时间)
+};
+
+/*
+ SO_ERROR
+    When an error occurs on a socket, the protocol module in a Berkeley-derived kernel 
+    sets a variable named @so_error for that socket to one of the standard Unix Exxx 
+    values. This is called the pending error for the socket.The process can then obtain 
+    the value of so_error by fetching the SO_ERROR socket option. The integer value 
+    returned by getsockopt is the pending error for the socket. The value of so_error 
+    is then reset to 0 by the kernel
+ SO_LINGER    struct linger
+*/
 #define SO_RCVTIMEO  /* 接收超时 struct timeval */
 #define SO_REUSEADDR /* 允许重用本地地址 tcp_udp_serv*/
 #define SO_LINGER
-
+#define SO_ERROR  /* eg:connect_nonb */
 /*----------------------------------- @recv @flags ------------------------*/
 #define MSG_DONTROUTE
 #define MSG_DONTWAIT
@@ -89,4 +149,27 @@ ipv4套接字地址结构,也称为网际套接字地址结构 struct sockaddr_in
 1 特殊用途的探测应用
 2 基于数据包捕获的应用
 3 特殊用途的传输应用
+
+*************************************************************************************
+                            Unix Domain Protocols
+*************************************************************************************
+The Unix domain protocols are not an actual protocol suite, but a way of performing 
+client/server communication on a single host using the same API that is used for clients 
+and servers on different hosts. The Unix domain protocols are an alternative to the 
+interprocess communication (IPC) methods described in Volume 2 of this series, when 
+the client and server are on the same host. Details on the actual implementation of 
+Unix domain sockets in a Berkeley-derived kernel are provided in part 3 of TCPv3.
+
+Two types of sockets are provided in the Unix domain: stream sockets (similar to TCP) 
+and datagram sockets (similar to UDP). Even though a raw socket is also provided, its 
+semantics have never been documented, it is not used by any  program that the authors 
+are aware of, and it is not defined by POSIX.
+
+The protocol addresses used to identify clients and servers in the Unix domain are 
+pathnames within the normal filesystem. Recall that IPv4 uses a combination of 32-bit 
+addresses and 16-bit port numbers for its protocol addresses, and IPv6 uses a combination 
+of 128-bit addresses and 16-bit port numbers for its protocol addresses. These pathnames 
+are not normal Unix files: We cannot read from or write to these files except from a 
+program that has associated the pathname with a Unix domain socket.
+
 

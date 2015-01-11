@@ -2,3 +2,5 @@
 
 #define	SERV_PORT		 9877 /* 客户端要往这个端口建立连接 */
 #define	MAXLINE	4096			/* max line length */
+#define UNIXSTR_PATH  "/tmp/unix.str"
+

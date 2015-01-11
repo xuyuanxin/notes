@@ -1,4 +1,25 @@
-/*
+/************************************************************************************
+                               io error num
+*************************************************************************************                              
+ EAGAIN
+   这个错误经常出现在当应用程序进行一些非阻塞(non-blocking)操作(对文件或socket)的时候。
+   例如，以O_NONBLOCK的标志打开文件/socket/FIFO，如果你连续做read操作而没有数据可读。此
+   时程序不会阻塞起来等待数据准备就绪返回，read函数会返回一个错误EAGAIN，提示你的应用程
+   序现在没有数据可读请稍后再试。又例如，当一个系统调用(比如fork)因为没有足够的资源(比如
+   虚拟内存)而执行失败，返回EAGAIN提示其再调用一次(也许下次就能成功)。
+   
+ EWOULDBLOCK
+    4.3BSD returned EWOULDBLOCK if an operation on a nonblocking descriptor could not 
+    complete without blocking.Today, BSD-based systems provide the POSIX.1 O_NONBLOCK 
+    flag and define EWOULDBLOCK to be the same as EAGAIN
+
+
+*/
+#define EAGAIN
+#define EWOULDBLOCK
+
+
+/************************************************************************************
  By default, sockets are blocking. This means that when we issue a socket call that 
  cannot be completed immediately,our process is put to sleep,waiting for the condition 
  to be true. We can divide the socket calls that may block into four categories:
@@ -65,3 +86,26 @@
  be returned for this case. Fortunately, most current systems define these two error 
  codes to be the same (check your system's <sys/errno.h> header), so it doesn't matter 
  which one we use. In this text, we use EWOULDBLOCK.
+*************************************************************************************
+ There are two ways to specify nonblocking I/O for a given descriptor.
+ 1 If we call @open to get the descriptor, we can specify the O_NONBLOCK flag
+ 2 For a descriptor that is already open, we call @fcntl to turn on the O_NONBLOCK file 
+   status flag.
+
+
+*************************************************************************************
+                                Signal-Driven I/O   
+*************************************************************************************
+ Signal-driven I/O has the kernel notify us with the SIGIO signal when "something" 
+ happens on a socket.
+
+ With a connected TCP socket, numerous conditions can cause this notification, making 
+ this feature of little use.
+
+ With a listening TCP socket, this notification occurs when a new connection is ready 
+ to be accepted.
+
+ With UDP, this notification means either a datagram has arrived or an asynchronous 
+ error has arrived; in both cases, we call recvfrom.
+
+

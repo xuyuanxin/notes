@@ -98,6 +98,27 @@ again:
 		printf("str_echo: read error");
 }
 
+/**/
+void str_cli(FILE *fp, int sockfd)
+{
+	char	sendline[MAXLINE], recvline[MAXLINE];	
+	char	*read_string = NULL;
+    do{
+	    read_string = fgets(sendline, MAXLINE, fp);
+	    if( read_string == NULL && ferror(fp))
+		    printf("\r\ntcp client error:str_cli -> fgets");
+		if(NULL != read_string){
+			if(strlen(sendline) != x_writen(sockfd, sendline, strlen(sendline)))
+			    printf("\r\ntcp client error:str_cli -> x_writen");
+		    if (x_readline(sockfd, recvline, MAXLINE) == 0)
+			    printf("tcp client error:str_cli server terminated prematurely");
+			if (fputs(recvline, stdout) == EOF)
+				printf("\r\ntcp client error: str_cli -> fputs");
+		}
+    }while(NULL != read_string);
+}
+
+
 
 /*******************************************************************************
  如果多个客户端同时关闭，服务器会同时收到多个SIGCHLD信号，由于UNIX信号一般不排队

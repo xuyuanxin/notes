@@ -131,19 +131,24 @@ int ftruncate(int fd,off_t length);
 
 
 #include <unistd.h>
-/*******************************************************************************
- function:create a new directory entry, @newpath, that references the existing 
-          file @existingpath. (hard link)
- return: 0 if OK, -1 on error
+/************************************************************************************
+ @function:
+    create a new directory entry, @newpath, that references the existing file 
+    @existingpath. (hard link)
+ @return: 
+    0 if OK, -1 on error
+
+ a file can have multiple directory entries pointing to its i-node. We can use either 
+ the @link function or the @linkat function to create a link to an existing file.
 
  1 If the @newpath already exists, an error is returned
- 2 Only the last component of the @newpath is created. The rest of the path must 
-   already exist.
+ 2 Only the last component of the @newpath is created.The rest of the path must already 
+   exist.
  3 创建新目录项及增加链接计数应当是个原子操作
  4 大多数实现要求这两个路径名在同一个文件系统中
  5 如果支持创建指向目录的硬链接，也仅限于超级用户这样做，这样做可能在文件系统中
    形成循环，因此很多文件系统不允许对与目录的硬链接
-*******************************************************************************/
+************************************************************************************/
 int link(const char *existingpath, const char *newpath);
 
 /*******************************************************************************
@@ -152,24 +157,32 @@ int link(const char *existingpath, const char *newpath);
 int linkat(int efd, const char *existingpath, int nfd, const char *newpath,int flag);
 
 
-#include <unistd.h>
-/*******************************************************************************
- function: 删除一个现有的目录项
- return  : 0 if OK, -1 on error(出错则不对该文件做任何更改)
+/************************************************************************************
+ @function: 
+    remove the directory entry and decrement the link count of the file referenced by 
+    @pathname. If there are other links to the file, the data in the file is still 
+    accessible through the other links. The file is not changed if an error occurs.
+ @return  :
+    0 if OK, -1 on error
 
  1 @unlink删除目录项，并将由@pathname所引用文件的链接计数减1
- 2 为了解除对文件的链接，必须对包含该目录项的目录具有写和执行权限。
+ 2 为了解除对文件的链接，必须对包含该目录项的目录具有写和执行权限。if the sticky bit 
+   is set in this directory we must have write permission for the directory and meet 
+   one of the following criteria:
+   a) Own the file
+   b) Own the directory
+   c) Have superuser privileges
  3 如果@pathname是符号链接，@unlink删除该符号链接，而不会删除由该链接所引用的文件。
  4 The superuser can call @unlink with pathname specifying a directory if the file
    system supports it, but the function rmdir should be used instead to unlink a 
    directory
- 5 Only when the link count reaches 0 can the contents of the file be deleted. 
-   One other condition prevents the contents of a file from being deleted: as 
-   long as some process has the file open, its contents will not be deleted. 
-   When a file is closed, the kernel first checks the count of the number of 
-   processes that have the file open. If this count has reached 0, the kernel 
-   then checks the link count; if it is 0, the file’s contents are deleted.
- *******************************************************************************/
+ 5 Only when the link count reaches 0 can the contents of the file be deleted.One other 
+   condition prevents the contents of a file from being deleted:as long as some process 
+   has the file open, its contents will not be deleted.When a file is closed,the kernel 
+   first checks the count  of the number of processes  that have the file open. If this 
+   count has  reached 0, the kernel then  checks the link count; if it is 0, the file's 
+   contents are deleted.
+ ***********************************************************************************/
 int unlink(const char *pathname);
 
 /*return: 0 if OK, -1 on error*/

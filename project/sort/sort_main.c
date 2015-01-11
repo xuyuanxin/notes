@@ -127,12 +127,12 @@ void sort_check(char *name)
 	if(true == sort_success)
 	{
 	    show_array();
-		printf("\r\n%-10s Sort Success!",name);
+		printf("\r\n%-15s Sort Success!",name);
 	}
     else
     {	
 		show_array();
-		printf("\r\n%-10s Sort Fail!",name);
+		printf("\r\n%-15s Sort Fail!",name);
     }
 }
 
@@ -141,6 +141,10 @@ void sort_test_insertion()
 	array_init();
 	sort_insertion(g_array + 2,array_length);
 	sort_check("insertion");
+
+    array_init();
+    sort_insertion_v2(g_array + 2,array_length);
+    sort_check("insertion_v2");
 }
 
 void sort_test_shell()
@@ -148,6 +152,10 @@ void sort_test_shell()
 	array_init();
 	sort_shell(g_array + 2,array_length);
 	sort_check("shell");
+	
+	array_init();
+	sort_shell_v2(g_array + 2,array_length);
+	sort_check("shell_v2");	
 }
 
 
@@ -190,7 +198,7 @@ int main()
 {
     g_printflag = 0;
 	
-    //sort_test_insertion();
+    sort_test_insertion();
     sort_test_shell();
 	//sort_test_merge();
 	//sort_test_bubble();

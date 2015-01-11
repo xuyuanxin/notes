@@ -450,18 +450,20 @@ ssize_t sendmsg(int sockfd, struct msghdr *msg, int flags);
 
 
 
-/*******************************************************************************
- function:
-    The normal Unix close function is also used to close a socket and terminate a 
-    TCP connection.
- returns: 0 if OK, -1 on error
+/************************************************************************************
+ @function:
+    The normal Unix close function is also used to close a socket and terminate a TCP 
+    connection.
+ @returns: 
+    0 if OK, -1 on error
 
  The default action of close with a TCP socket is to mark the socket as closed and 
- return to the process immediately. The socket descriptor is no longer usable by 
- the process: It cannot be used as an argument to read or write.But, TCP will try 
- to send any data that is already queued to be sent to the other end, and after 
- this occurs, the normal TCP connection termination sequence takes place .
- ******************************************************************************/
+ return to the process immediately.The socket descriptor is no longer usable by the 
+ process:It cannot be used as an argument to read or write.But,TCP will try to send 
+ any data that is already queued to be sent to the other end, and after this occurs, 
+ the normal TCP connection termination sequence takes place . we will describe the 
+ SO_LINGER socket option, which lets us change this default action with a TCP socket.
+ ***********************************************************************************/
 #include <unistd.h>  
 int close (int sockfd);
   

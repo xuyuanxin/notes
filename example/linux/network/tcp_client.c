@@ -15,13 +15,13 @@ void str_cli_noblock(FILE *fp, int sockfd)
 	char		*toiptr, *tooptr, *friptr, *froptr;
 
 	val = fcntl(sockfd, F_GETFL, 0);
-	Fcntl(sockfd, F_SETFL, val | O_NONBLOCK);
+	fcntl(sockfd, F_SETFL, val | O_NONBLOCK);
 
-	val = Fcntl(STDIN_FILENO, F_GETFL, 0);
-	Fcntl(STDIN_FILENO, F_SETFL, val | O_NONBLOCK);
+	val = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, val | O_NONBLOCK);
 
-	val = Fcntl(STDOUT_FILENO, F_GETFL, 0);
-	Fcntl(STDOUT_FILENO, F_SETFL, val | O_NONBLOCK);
+	val = fcntl(STDOUT_FILENO, F_GETFL, 0);
+	fcntl(STDOUT_FILENO, F_SETFL, val | O_NONBLOCK);
 
 	toiptr = tooptr = to;	/* initialize buffer pointers */
 	friptr = froptr = fr;
@@ -40,9 +40,8 @@ void str_cli_noblock(FILE *fp, int sockfd)
 		if (froptr != friptr)
 			FD_SET(STDOUT_FILENO, &wset);	/* data to write to stdout */
 
-		Select(maxfdp1, &rset, &wset, NULL, NULL);
-/* end nonb1 */
-/* include nonb2 */
+		select(maxfdp1, &rset, &wset, NULL, NULL);
+
 		if (FD_ISSET(STDIN_FILENO, &rset)) {
 			if ( (n = read(STDIN_FILENO, toiptr, &to[MAXLINE] - toiptr)) < 0) {
 				if (errno != EWOULDBLOCK)
@@ -54,7 +53,7 @@ void str_cli_noblock(FILE *fp, int sockfd)
 #endif
 				stdineof = 1;			/* all done with stdin */
 				if (tooptr == toiptr)
-					Shutdown(sockfd, SHUT_WR);/* send FIN */
+					shutdown(sockfd, SHUT_WR);/* send FIN */
 
 			} else {
 #ifdef	VOL2
@@ -120,7 +119,7 @@ void str_cli_noblock(FILE *fp, int sockfd)
 				if (tooptr == toiptr) {
 					toiptr = tooptr = to;	/* back to beginning of buffer */
 					if (stdineof)
-						Shutdown(sockfd, SHUT_WR);	/* send FIN */
+						shutdown(sockfd, SHUT_WR);	/* send FIN */
 				}
 			}
 		}

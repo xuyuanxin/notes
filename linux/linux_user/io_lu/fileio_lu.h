@@ -5,6 +5,261 @@ struct iovec {
 
 #define IOV_MAX  /* 1024 */
 
+/*-------------------------------- @fcntl @cmd ------------------------------------**
+ F_GETOWN
+    Get the process ID or process group ID currently receiving the  SIGIO and  SIGURG 
+    signals.
+ F_SETOWN
+    Set the process ID or process group ID to receive the SIGIO and SIGURG signals. A 
+    positive arg specifies a  process ID. A  negative arg implies a process  group ID 
+    equal to the absolute value of arg.
+**---------------------------------------------------------------------------------*/
+#define F_DUPFD  /*Duplicate the file descriptor @fd.The new file descriptor is 
+returned as the value of the function. It is the lowest-numbered descriptor that 
+is not already open, and that is greater than or equal to the third argument. 
+The new descriptor shares the same file table entry as @fd. But the new descriptor 
+has its own set of file descriptor flags, and its FD_CLOEXEC file descriptor 
+flag is cleared. (This means that the descriptor is left open across an exec)*/
+#define F_DUPFD_CLOEXEC /*Duplicate the file descriptor and set the FD_CLOEXEC 
+file descriptor flag associated with the new descriptor.Returns the new file descriptor.*/
+#define F_GETFD  /*Return the file descriptor flags for @fd as the value of the 
+function. Currently,only one file descriptor flag is defined: the FD_CLOEXEC flag.*/
+#define F_SETFD  /*Set the file descriptor flags for @fd.The new flag value is 
+set from the third argument (taken as an integer).*/
+
+#define F_GETOWN 
+#define F_SETOWN
+#define F_SETFL /* Set the file status flags to the value of the third argument(taken 
+as an integer). The only flags that can be changed are O_APPEND, O_NONBLOCK,O_SYNC, 
+O_DSYNC, O_RSYNC, O_FSYNC, and O_ASYNC.*/
+#define F_GETFL /*Return the file status flags for fd as the value of the function. 
+			File status flag    Description
+			O_RDONLY            open for reading only
+			O_WRONLY            open for writing only
+			O_RDWR              open for reading and writing
+			O_EXEC              open for execute only
+			O_SEARCH            open directory for searching only
+			O_APPEND            append on each write
+			O_NONBLOCK          nonblocking mode
+			O_SYNC              wait for writes to complete (data and attributes)
+			O_DSYNC             wait for writes to complete (data only)
+			O_RSYNC             synchronize reads and writes
+			O_FSYNC             wait for writes to complete (FreeBSD and Mac OS X only)
+			O_ASYNC             asynchronous I/O (FreeBSD and Mac OS X only)
+Unfortunately,the five access-mode flags(O_RDONLY,O_WRONLY,O_RDWR,O_EXEC,and O_SEARCH) 
+are not separate bits that can be tested. ( the first three often have the values 0, 1,
+and 2,respectively,for historical reasons.Also,these five values are mutually exclusive; 
+a file can have only one of them enabled.) Therefore,we must first use the O_ACCMODE mask 
+to obtain the access-mode bits and then compare the result against any of the five values.*/
+
+#define	O_ACCMODE /*<0003>：读写文件操作时，用于取出flag的低2位*/
+
+
+
+
+
+/*If the file exists and if it is successfully opened for either write-only or
+read–write, truncate its length to 0.*/
+
+/************************************************************************************
+           File status flags used for open() and fcntl() are as follows:
+*************************************************************************************
+O_NONBLOCK
+    If path refers to a FIFO, a block special file, or a character special file,this 
+    option sets the nonblocking mode for both the opening of the file and subsequent 
+    I/O.
+************************************************************************************/
+#define O_APPEND /*Append to the end of file on each write.By default, 
+"current file offset" is initialized to 0 when a file is opened, unless the 
+O_APPEND option is specified.*/
+#define O_CLOEXEC /*Set the FD_CLOEXEC file descriptor flag.*/
+#define	O_CREAT  /*Create the file if it doesn’t exist. This option requires a
+third argument to the open function (a fourth argument to the openat function)—
+the mode,which specifies the access permission bits of the new file.*/
+#define O_EXEC	  /* Open for execute only.*/
+#define O_EXCL	/*Generate an error if O_CREAT is also specified and the file 
+already exists. This test for whether the file already exists and the creation 
+of the file if it doesn’t exist is an atomic operation. */
+#define	O_NONBLOCK 
+
+#define O_RDONLY  /*Open for reading only.*/
+#define O_WRONLY  /*Open for writing only.*/
+#define O_RDWR /*Open for reading and writing.Most implementations define 
+O_RDONLY as 0,O_WRONLY as 1, and O_RDWR as 2, for compatibility with older programs.*/
+#define O_SEARCH  /*Open for search only (applies to directories).*/
+#define	O_TRUNC /*If the file exists and if it is successfully opened for 
+either write-only or read–write, truncate its length to 0.*/
+
+/*
+The purpose of theO_SEARCHconstant is to evaluate search permissions at the time
+adirectory	is	opened. Further  operations  using	the  directory’s  file  descriptor  will
+not  reevaluate  permission  to  search  the  directory.None  of  the  versions  of  the
+operating systems covered in this book supportO_SEARCHyet.
+One  and  only	one  of  the  previous	five  constants  must  be  specified. The  following
+constants areoptional:
+	 
+O_DIRECTORYGenerate an error ifpathdoesn’t refer to a directory.
+	
+O_NOCTTY If pathrefers	to	a  terminal  device,  do  not  allocate  the  device  as  the
+controlling  terminal  for	this  process.	Wetalk	about  controlling
+terminals in Section 9.6.
+O_NOFOLLOW Generate an error ifpathrefers to a symbolic link. We  discuss symbolic
+links in Section 4.17.
+
+
+In earlier releases of System V,theO_NDELAY(no delay) flag was introduced.	This
+option	is	similar  to  theO_NONBLOCK(nonblocking)  option,  but  an  ambiguity  was
+introduced in the return value from a read operation. The no-delay option causes a
+read operation to return 0 if there is no data to be read from a pipe, FIFO, or device,
+but  this  conflicts  with	a  return  value  of  0,  indicating  an  end  of  file. SVR4-based
+systems  still	support  the  no-delay	option,  with  the	old  semantics,  but  new
+applications should use the nonblocking option instead.
+
+O_SYNC Have  eachwritewait	for  physical  I/O	to	complete,  including  I/O
+necessary  to  update  file  attributes  modified  as  a  result  of  thewrite.
+We	use this option in Section 3.14.
+
+
+O_TTY_INIT When  opening  a  terminal  device  that  is  not  already  open,  set  the
+nonstandardtermiosparameters to values that result in behavior that
+conforms  to  the  Single  UNIX  Specification. We	discuss  the termios
+structurewhen we discuss terminal I/O in Chapter 18.
+The following two flags arealso optional. They arepart of the synchronized input and
+output option of the Single UNIX Specification (and thus POSIX.1).
+O_DSYNC Have eachwritewait for physical I/O to complete, but don’t wait for
+file attributes to be updated if they don’t affect the ability to read the
+data just written.
+TheO_DSYNCandO_SYNCflags aresimilar,but subtly different.  TheO_DSYNCflag
+affects a file’s attributes only when they need to be updated to reflect a change in the
+file’s data (for example, update the file’s size to reflect moredata).  With theO_SYNC
+flag, data and attributes arealways updated synchronously.When overwriting an
+existing  part	of	a  file  opened  with  theO_DSYNCflag,	the  file  times  wouldn’t  be
+updated synchronously.Incontrast, if we had opened the file with theO_SYNCflag,
+everywriteto  the  file  would	update	the  file’s  times  beforethewritereturns,
+regardless of whether we werewriting over existing bytes or appending to the file.
+O_RSYNC Have eachreadoperation on the file descriptor wait until any pending
+writes for the same portion of the file arecomplete.
+Solaris 10 supports all three synchronization flags. Historically,FreeBSD (and thus
+Mac OS X) have used theO_FSYNCflag, which has the same behavior asO_SYNC.
+Because the two flags areequivalent, they define the flags to have the same value.
+FreeBSD  8.0  doesn’t	support  theO_DSYNCorO_RSYNCflags.	Mac OS	X  doesn’t
+support theO_RSYNCflag, but defines theO_DSYNCflag, treating it the same as the
+O_SYNCflag.  Linux 3.2.0  supports	theO_DSYNCflag,  but  treats  theO_RSYNCflag
+the same asO_SYNC
+*/
+
+/*---->文件描述符
+A file descriptor is a non-negative integer. To the kernel, all open files are 
+referred to by file descriptors. 
+file descriptor 0 STDIN_FILENO  with the standard input of a process, 
+file descriptor 1 STDOUT_FILENO with the standard output 
+file descriptor 2 STDERR_FILENO with the standard error.*/
+#define STDIN_FILENO
+#define STDOUT_FILENO
+#define STDERR_FILENO
+
+/********************************* @ioctl @requst ***********************************
+ ----> Socket operations
+ SIOCATMARK (int)
+    是否位于带外标记
+ SIOCSPGRP  (int)
+    设置套接口的进程ID 或进程组ID
+ SIOCGPGRP  (int)
+    获取套接口的进程ID 或进程组ID
+ ----> File operations
+ FIONBIO (int)
+    设置/ 清除非阻塞I/O 标志
+ FIOASYNC (int)
+    设置/ 清除信号驱动异步I/O 标志
+ FIONREAD (int)
+    获取接收缓存区中的字节数
+ FIOSETOWN (int)
+    设置文件的进程ID 或进程组ID
+ FIOGETOWN (int)
+    获取文件的进程ID 或进程组ID
+
+*/
+#define SIOCATMARK
+#define SIOCSPGRP
+#define SIOCGPGRP
+
+#define FIONBIO
+#define FIOASYNC
+#define FIONREAD
+#define FIOSETOWN
+#define FIOGETOWN
+
+/*
+接
+口
+SIOCGIFCONF
+SIOCSIFADDR
+SIOCGIFADDR
+SIOCSIFFLAGS
+SIOCGIFFLAGS
+SIOCSIFDSTADDR
+SIOCGIFDSTADDR
+SIOCGIFBRDADDR
+SIOCSIFBRDADDR
+SIOCGIFNETMASK
+SIOCSIFNETMASK
+SIOCGIFMETRIC
+SIOCSIFMETRIC
+SIOCGIFMTU
+SIOCxxx
+获取所有接口的清单
+设置接口地址
+获取接口地址
+设置接口标志
+获取接口标志
+设置点到点地址
+获取点到点地址
+获取广播地址
+设置广播地址
+获取子网掩码
+设置子网掩码
+获取接口的测度
+设置接口的测度
+获取接口MTU
+（还有很多取决于系统的实现）
+struct ifconf
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+struct ifreq
+ARP
+SIOCSARP
+SIOCGARP
+SIOCDARP
+创建/ 修改ARP 表项
+获取ARP 表项
+删除ARP 表项
+struct arpreq
+struct arpreq
+struct arpreq
+路
+由
+SIOCADDRT
+SIOCDELRT
+增加路径
+删除路径
+struct rtentry
+struct rtentry
+流
+I_xxx
+　　	　　
+
+*/
+
 
 
 
@@ -13,12 +268,7 @@ struct iovec {
 与标准I/O相对照,术语不带缓冲指每个read和write都调用内核中的一个系统调用.
 这些不带缓冲的I/O不是ISO C的组成部分,但它们是POSIX.1的组成部分.
 
----->文件描述符
-A file descriptor is a non-negative integer. To the kernel, all open files are 
-referred to by file descriptors. 
-file descriptor 0 STDIN_FILENO  with the standard input of a process, 
-file descriptor 1 STDOUT_FILENO with the standard output 
-file descriptor 2 STDERR_FILENO with the standard error.
+
 
 ---->当前文件偏移量 current file offset
 每个打开的文件都有一个与其相关联的当前文件偏移量,通常是一个非负整数,用以度量从

@@ -203,15 +203,14 @@ int tcp_serv_fork(int argc, char **argv)
 		    
 		}
 
-        /*****************************************************************************
-         when the parent process in our concurrent server closes the connected socket, 
-         this just decrements the reference count for the descriptor.Since the reference 
-         count was still greater than 0, this call to close did not initiate TCP's 
-         four-packet connection termination sequence.This is the behavior we want with 
-         our concurrent server with the connected socket that is shared between the 
-         parent and child.If we really want to send a FIN on a TCP connection, the 
-         @shutdown function can be used instead of close.
-         ******************************************************************************/		
+/************************************************************************************
+ when the parent process in our concurrent server closes the connected socket, this 
+ just decrements the reference count for the descriptor.Since the reference count was 
+ still greater than 0,this call to close did not initiate TCP's four-packet connection 
+ termination sequence.This is the behavior we want with our concurrent server with the 
+ connected socket that is shared between the parent and child.If we really want to send 
+ a FIN on a TCP connection, the @shutdown function can be used instead of close.
+************************************************************************************/		
 		close(connfd);			/* parent closes connected socket */
 	}
 }
