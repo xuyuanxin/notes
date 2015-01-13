@@ -200,12 +200,12 @@ int main()
 	
     sort_test_insertion();
     sort_test_shell();
-	//sort_test_merge();
-	//sort_test_bubble();
-    //sort_test_heap();
-	//sort_test_quick();
+	sort_test_merge();
+	sort_test_bubble();
+    sort_test_heap();
+	sort_test_quick();
 	//g_printflag =1;
-	//sort_test_counting();
+	sort_test_counting();
 
 	return 0;
 }

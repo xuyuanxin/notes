@@ -35,4 +35,13 @@ print '----> [[0 for i in range(n)] for i in range(m)] = '
 list3 = [[1 for i in range(3)] for i in range(3)]
 print list3
 
+a = 0
+for i in range(1, 1):
+    a = a+1
+print 'a=',a
+
+a = 0
+for i in range(1, 2):
+    a = a+1
+print 'a=',a
 
