@@ -375,4 +375,12 @@ int vfscanf(FILE *restrict fp, const char *restrict format,va_list arg);
 EOF if input error or end of file before any conversion*/
 int vsscanf(const char *restrict buf, const char *restrict format,va_list arg);
 
+#include <stdio.h>
+/************************************************************************************
+ The @perror function produces an error message on the standard error, based on the 
+ current value of @errno, and returns.
+ It outputs the string pointed to by @msg, followed by a colon and a space, followed 
+ by the error message corresponding to the value of @errno, followed by a newline.
+************************************************************************************/
+void perror(const char *msg);
 

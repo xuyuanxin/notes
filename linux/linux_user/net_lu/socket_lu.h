@@ -172,4 +172,6 @@ of 128-bit addresses and 16-bit port numbers for its protocol addresses. These p
 are not normal Unix files: We cannot read from or write to these files except from a 
 program that has associated the pathname with a Unix domain socket.
 
+*/
 
+#define INADDR_ANY

@@ -59,14 +59,27 @@ inet_ntop(AF_INET6, &addr6.sin6_addr, str, sizeof(str));*/
 #define INET_ADDRSTRLEN       16       /* for IPv4 dotted-decimal */
 #define INET6_ADDRSTRLEN      46       /* for IPv6 hex string */
 
-/****************************** protocol family *******************************/
+/************************************************************************************
+                             protocol family
+*************************************************************************************
+ AF_KEY
+    It provides support for cryptographic security. Similar to the way that a routing 
+    socket (AF_ROUTE) is an interface to the kernel's routing table,the key socket is 
+    an interface into the kernel's key table.
+
+
+ PF_INET
+    在Unix/Linux系统中，在不同的版本中这两者有微小差别.对于BSD,是AF,对于POSIX是PF.理论
+    上建立socket时是指定协议，应该用PF_xxxx，设置地址时应该用AF_xxxx。当然AF_INET和
+    PF_INET的值是相同的，混用也不会有太大的问题。
+
+************************************************************************************/
 #define AF_INET   /* ipv4 protocols */
+#define PF_INET   /* */
 #define AF_INET6  /* ipv6 protocols */
 #define AF_LOCAL  /* unix domain protocols */
 #define AF_ROUTE  /* routing sockets */
-#define AF_KEY	  /* It provides support for cryptographic security. Similar to 
-the way that a routing socket (AF_ROUTE) is an interface to the kernel's routing 
-table, the key socket is an interface into the kernel's key table. */
+#define AF_KEY	  /* */
 
 /******************************** socket type *********************************/
 #define SOCK_STREAM /*stream socket TCP 协议,这样会提供按顺序的,可靠,双向,面向连
