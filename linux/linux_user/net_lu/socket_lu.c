@@ -435,8 +435,7 @@ ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags,
 const struct sockaddr *to, socklen_t addrlen);
  
 
-/*
-
+/************************************************************************************
     flags              说明           recv      send
  MSG_DONTROUTE     绕过路由表查找      n         y
  MSG_DONTWAIT	     仅本操作非阻塞      y         y
@@ -444,13 +443,12 @@ const struct sockaddr *to, socklen_t addrlen);
  MSG_PEEK          窥看外来消息        y         n
  MSG_WAITALL       等待所有数据        y	        n 
 
-*/
-
-
-/*return: number of bytes read or written if OK, –1 on error */
+ @flags
+    如果flags为0,则和read,write一样的操作.
+ return: 
+    number of bytes read or written if OK, –1 on error 
+************************************************************************************/
 ssize_t recv(int sockfd, void *buff, size_t nbytes, int flags);
-
-/*return: number of bytes read or written if OK, –1 on error */
 ssize_t send(int sockfd, const void *buff, size_t nbytes, int flags);
 
 

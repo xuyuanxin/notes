@@ -52,21 +52,7 @@ int faccessat(int fd, const char *pathname, int mode, int flag);
 mode_t umask(mode_t cmask);
 
 #include <sys/stat.h>
-#define S_ISUID /*set-user-ID on execution*/
-#define S_ISGID /*set-group-ID on execution*/
-#define S_ISVTX /*saved-text (sticky bit)*/
-#define S_IRWXU /*read, write, and execute by user (owner)*/
-#define S_IRUSR /*read by user (owner)*/
-#define S_IWUSR /*write by user (owner)*/
-#define S_IXUSR /*execute by user (owner)*/
-#define S_IRWXG /*read, write, and execute by group*/
-#define S_IRGRP /*read by group*/
-#define S_IWGRP /*write by group*/
-#define S_IXGRP /*execute by group*/
-#define S_IRWXO /*read, write, and execute by other (world)*/
-#define S_IROTH /*read by other (world)*/
-#define S_IWOTH /*write by other (world)*/
-#define S_IXOTH /*execute by other (world)*/
+
 
 /*******************************************************************************
  function: 改变文件@pathname的属性

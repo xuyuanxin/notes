@@ -154,9 +154,9 @@ referred to by file descriptors.
 file descriptor 0 STDIN_FILENO  with the standard input of a process, 
 file descriptor 1 STDOUT_FILENO with the standard output 
 file descriptor 2 STDERR_FILENO with the standard error.*/
-#define STDIN_FILENO
-#define STDOUT_FILENO
-#define STDERR_FILENO
+#define STDIN_FILENO   0
+#define STDOUT_FILENO  1
+#define STDERR_FILENO  2
 
 /********************************* @ioctl @requst ***********************************
  ----> Socket operations

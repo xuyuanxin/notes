@@ -6,3 +6,14 @@
 *******************************************************************************/
 int atoi(const char *nptr); 
 
+
+/************************************************************************************
+ @ret:
+    0 if OK, nonzero on error
+ @func
+    The @putenv function takes a string of the form name=value and places it in the
+    environment list. If name already exists, its old definition is first removed.
+************************************************************************************/
+int putenv(char *str);
+
+

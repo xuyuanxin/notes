@@ -7,6 +7,18 @@
 */
 char *strncpy(char *dst, const char *src, size_t n);
 
+
+/*
+ @str1
+    C string to be compared.
+ @str2
+    C string to be compared.
+*/
+int strcmp ( const char * str1, const char * str2 );
+
+
+
+
 /*
  @destination
     Pointer to the destination array, which should contain a C string, and be large 

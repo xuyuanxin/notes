@@ -45,6 +45,18 @@ void serve_file(int, const char *);
 int startup(u_short *);
 void unimplemented(int);
 
+int httpd_dbgp_flag = 0;
+
+#define httpd_dbgp(fmt, args...)  \
+    do \
+	{\
+	    if(1 == httpd_dbgp_flag)\
+		{\
+		    printf(fmt,##args);\
+		}\
+	}while(0)
+
+
 /**********************************************************************/
 /* A request has caused a call to accept() on the server port to
  * return.  Process the request appropriately.
@@ -56,12 +68,12 @@ void *accept_request(void * tclient)
     char buf[1024];
     int numchars;
     char method[255];
-    char url[255];
-    char path[512];
+    char url[255];  /* GET /color.cgi?color=red ---> /color.cgi */
+    char path[512]; /* htdocs/color.cgi/index.html */
     size_t i, j;
     struct stat st;
     int cgi = 0;
-    char *query_string = NULL;
+    char *query_string = NULL; /* GET /color.cgi?color=red ---> color=red */
 
     numchars = get_line(client, buf, sizeof(buf));
     i = 0; j = 0;
@@ -111,15 +123,18 @@ void *accept_request(void * tclient)
         }	
         not_found(client);
     }else{
-        if ((st.st_mode & S_IFMT) == S_IFDIR){ /* if file is direction ,add "/index.html" */
+        if ((st.st_mode & S_IFMT) == S_IFDIR){ /* if file is directory ,add "/index.html" */
             strcat(path, "/index.html");
         }
         if ((st.st_mode & S_IXUSR) || (st.st_mode & S_IXGRP) || (st.st_mode & S_IXOTH) ){
             cgi = 1;
-        }	
+        }
         if (!cgi){ /* static request */
+			httpd_dbgp("static client %d path %s ",client,path);
             serve_file(client, path);
-        }else{ /* dynamic request */
+        }else{ /* dynamic request */            
+			httpd_dbgp("dynamic client %d path %s method %s query %s",
+				       client,path,method,query_string);
             execute_cgi(client, path, method, query_string);
         }
     }
@@ -218,7 +233,7 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
         while ((numchars > 0) && strcmp("\n", buf)){  /* read & discard headers */
             numchars = get_line(client, buf, sizeof(buf));
         }
-    }else {   /* POST */
+    } else {   /* POST */
         numchars = get_line(client, buf, sizeof(buf));
         while ((numchars > 0) && strcmp("\n", buf)){
             buf[15] = '\0';
@@ -254,8 +269,8 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
         char query_env[255];
         char length_env[255];
 
-        dup2(cgi_output[1], 1);
-        dup2(cgi_input[0], 0);
+        dup2(cgi_output[1], 1); /* stdout */
+        dup2(cgi_input[0], 0);  /* stdin */
         close(cgi_output[0]);
         close(cgi_input[1]);
         sprintf(meth_env, "REQUEST_METHOD=%s", method);
@@ -288,33 +303,31 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
     }
 }
 
-/**********************************************************************/
-/* Get a line from a socket, whether the line ends in a newline,
- * carriage return, or a CRLF combination.  Terminates the string read
- * with a null character.  If no newline indicator is found before the
- * end of the buffer, the string is terminated with a null.  If any of
- * the above three line terminators is read, the last character of the
- * string will be a linefeed and the string will be terminated with a
- * null character.
- * Parameters: the socket descriptor
- *             the buffer to save the data in
- *             the size of the buffer
- * Returns: the number of bytes stored (excluding null) */
-/**********************************************************************/
+/************************************************************************************
+ @sock
+    the socket descriptor 
+ @buf
+    the buffer to save the data in the @size of the buffer
+ @returns: 
+    the number of bytes stored (excluding null) 
+ @func
+    Get a line from a socket, whether the line ends in a newline, carriage return, or 
+    a CRLF combination.Terminates the string read with a null character.If no newline 
+    indicator is found  before the end of the buffer, the string is terminated with a 
+    null.If any of the above three line terminators is read,the last character of the 
+    string will be a linefeed and the string will be terminated with a null character.
+************************************************************************************/
 int get_line(int sock, char *buf, int size)
 {
     int i = 0;
     char c = '\0';
     int n;
 
-    while ((i < size - 1) && (c != '\n'))
-    {
+    while ((i < size - 1) && (c != '\n')) {
         n = recv(sock, &c, 1, 0);
-        /* DEBUG printf("%02X\n", c); */
         if (n > 0){
             if (c == '\r'){
-                n = recv(sock, &c, 1, MSG_PEEK);/*  */
-                /* DEBUG printf("%02X\n", c); */
+                n = recv(sock, &c, 1, MSG_PEEK);
                 if ((n > 0) && (c == '\n')){
                     recv(sock, &c, 1, 0);
                 } else{

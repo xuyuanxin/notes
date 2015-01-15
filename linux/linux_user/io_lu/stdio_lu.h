@@ -48,9 +48,9 @@ These three standard I/O streams are referenced through the predefined file
 pointers stdin, stdout,and stderr. The file pointers are defined in the<stdio.h> 
 header.
 */
-#define stdin  /*Standard input  标准输入*/
-#define stdout /*Standard output 标准输出*/
-#define stderr /*Standard error  标准错误*/
+#define stdin  0 /*Standard input  标准输入*/
+#define stdout 1 /*Standard output 标准输出*/
+#define stderr 2 /*Standard error  标准错误*/
 
 /*
 ---->缓冲

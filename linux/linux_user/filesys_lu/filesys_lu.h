@@ -1,6 +1,52 @@
+/************************************************************************************
+                          struct stat @st_mode
+ ************************************************************************************
+ the set-user-ID bit and the set-group-ID bit are contained in the file's st_mode value. 
+ These two bits can be tested against the constants S_ISUID and S_ISGID, respectively.
+************************************************************************************/
+#define S_IFMT	0170000	/*文件类型位域掩码*/
+#define S_IFSOCK	0140000	/*套接口*/
+#define S_IFLNK	0120000	/*符号链接*/
+#define S_IFREG	0100000	/*普通文件*/
+#define S_IFBLK	0060000	/*块设备*/
+#define S_IFDIR	0040000	/*目录*/
+#define S_IFCHR	0020000	/*字符设备*/
+#define S_IFIFO	0010000	/*FIFO*/
+#define S_ISUID /*set-user-ID on execution*/
+#define S_ISGID /*set-group-ID on execution*/
+#define S_ISVTX /*saved-text (sticky bit)*/
+#define S_IRWXU /*read, write, and execute by user (owner)*/
+#define S_IRWXO /*read, write, and execute by other (world)*/
+#define S_IRWXG /*read, write, and execute by group*/
+
+/*st_mode也包含了文件的范文权限位,下面是9个方位权限位*/
+#define S_IRUSR /*read by user (owner)*/
+#define S_IWUSR /*write by user (owner)*/
+#define S_IXUSR /*execute by user (owner)*/
+#define S_IRGRP /*read by group*/
+#define S_IWGRP /*write by group*/
+#define S_IXGRP /*execute by group*/
+#define S_IROTH /*read by other (world)*/
+#define S_IWOTH /*write by other (world)*/
+#define S_IXOTH /*execute by other (world)*/
+
+/*以下宏的参数是stat结构中的st_mode*/
+#define S_ISREG()  /*regular file*/
+#define S_ISDIR()  /*directory file*/
+#define S_ISCHR()  /*character special file*/
+#define S_ISBLK()  /*block special file*/
+#define S_ISFIFO() /*pipe or FIFO*/
+#define S_ISLNK()  /*symbolic link*/
+#define S_ISSOCK() /*socket*/
+
+/*以下宏的参数是stat结构中指针*/
+#define S_TYPEISMQ()  /*message queue*/
+#define S_TYPEISSEM() /*semaphore*/
+#define S_TYPEISSHM() /*shared memory object*/
+
 struct stat 
 {
-    mode_t  st_mode; /* file type & mode (permissions) 普通文件 目录文件等 */
+    mode_t  st_mode; /* file type & mode (permissions) */
     ino_t  st_ino; /* i-node number (serial number) */
     dev_t  st_dev; /* device number (file system) */
     dev_t  st_rdev; /* device number for special files */
@@ -42,36 +88,11 @@ struct __dirstream
 };
 
 
-/*st_mode也包含了文件的范文权限位,下面是9个方位权限位*/
-#define S_IRUSR /*user-read*/
-#define S_IWUSR /*user-write*/
-#define S_IXUSR /*user-execute*/
-#define S_IRGRP /*group-read*/
-#define S_IWGRP /*group-write*/
-#define S_IXGRP /*group-execute*/
-#define S_IROTH /*other-read*/
-#define S_IWOTH /*other-write*/
-#define S_IXOTH /*other-execute*/
 
-/*以下宏的参数是stat结构中的st_mode*/
-#define S_ISREG()  /*regular file*/
-#define S_ISDIR()  /*directory file*/
-#define S_ISCHR()  /*character special file*/
-#define S_ISBLK()  /*block special file*/
-#define S_ISFIFO() /*pipe or FIFO*/
-#define S_ISLNK()  /*symbolic link*/
-#define S_ISSOCK() /*socket*/
 
-/*以下宏的参数是stat结构中指针*/
-#define S_TYPEISMQ()  /*message queue*/
-#define S_TYPEISSEM() /*semaphore*/
-#define S_TYPEISSHM() /*shared memory object*/
 
-/*the set-user-ID bit and the set-group-ID bit are contained in the file's 
-st_mode value. These two bits can be tested against the constants S_ISUID and
-S_ISGID, respectively.*/
-#define S_ISUID
-#define S_ISGID
+
+
 
 
 /*
