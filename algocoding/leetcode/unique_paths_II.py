@@ -1,100 +1,57 @@
-/*******************************************************************************
-                         Path Sum II (Medium)
- *******************************************************************************
- Given a binary tree and a sum, find all root-to-leaf paths where each path's sum 
- equals the given sum.
+# class Solution:
+#     # @param obstacleGrid, a list of lists of integers
+#     # @return an integer
+#     def uniquePathsWithObstacles(self, obstacleGrid):
 
- For example:
- Given the below binary tree and sum = 22,
-              5
-             / \
-            4   8
-           /   / \
-          11  13  4
-         /  \    / \
-        7    2  5   1
- return
- [
-    [5,4,11,2],
-    [5,8,4,5]
- ]
- *******************************************************************************
-                             interface
- *******************************************************************************
- class Solution {
- public:
-     vector<vector<int> > pathSum(TreeNode *root, int sum) {
-        
-     }
- };
- *******************************************************************************
-                              algo
- *******************************************************************************
- 
- ******************************************************************************/
+class Solution:
+    # @param obstacleGrid, a list of lists of integers
+    # @return an integer
+    def uniquePathsWithObstacles(self, obstacleGrid):
+        m = len(obstacleGrid); n = len(obstacleGrid[0])
+        res = [[0 for i in range(n)] for j in range(m)]
+        for i in range(m):
+            if obstacleGrid[i][0] == 0:
+                res[i][0] = 1
+            else:
+                res[i][0] == 0
+                break
+        for i in range(n):
+            if obstacleGrid[0][i] == 0:
+                res[0][i] = 1
+            else:
+                res[0][i] = 0
+                break
+        for i in range(1, m):
+            for j in range(1, n):
+                if obstacleGrid[i][j] == 1: res[i][j] = 0
+                else:
+                    res[i][j] = res[i-1][j] + res[i][j-1]
+        return res[m-1][n-1]
 
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(NULL), right(NULL) {}
-};
-
-class Solution {
-public:
-vector<vector<int> > pathSum(TreeNode *root, int sum) {
-    vector<vector<int> > result;
-    vector<int> cur;
-    path_sum(root, sum, cur, result);
-    return result;
-}
-
-private:
-void path_sum(TreeNode *root, int gap, vector<int> &cur,vector<vector<int> > &result) {
-    if (root == nullptr){ 
-		return;
-    }	
-    cur.push_back(root->val);
-    if (root->left == nullptr && root->right == nullptr) {
-        if (gap == root->val)
-            result.push_back(cur);
-    }
-    pathSum(root->left, gap - root->val, cur, result);
-    pathSum(root->right, gap - root->val, cur, result);
-    cur.pop_back();
-}
-
-
-};
-
-class Solution2 {
-public:
-void dfs(TreeNode *node, int sum, int curSum, vector<int> a)
-{
-    if (node == NULL){
-        return;
-    }	
-    
-    if (node->left == NULL && node->right == NULL){
-        if (curSum + node->val == sum){
-            a.push_back(node->val);
-            ret.push_back(a);
-        }
-        return;
-    }
-    
-    a.push_back(node->val);
-    dfs(node->left, sum, curSum + node->val, a);
-    dfs(node->right, sum, curSum + node->val, a);
-}
-    
-vector<vector<int> > pathSum(TreeNode *root, int sum) {
-    ret.clear();
-    vector<int> a; 
-    dfs(root, sum, 0, a);
-    return ret;
-}
-
-private:
-    vector<vector<int> > ret;
-};
+class Solution2:
+    # @param obstacleGrid, a list of lists of integers
+    # @return an integer
+    def uniquePathsWithObstacles(self, obstacleGrid):
+        m = len(obstacleGrid); n = len(obstacleGrid[0])
+        res = [[1 for i in range(n)] for j in range(m)]
+        for i in range(m):
+            if obstacleGrid[i][0] == 1:
+                res[i][0] = 0
+        for i in range(n):
+            if obstacleGrid[0][i] == 1:
+                res[0][i] = 0
+        for i in range(1, m):
+            for j in range(1, n):
+                if obstacleGrid[i][j] == 1: 
+				    res[i][j] = 0
+                else:
+                    res[i][j] = res[i-1][j] + res[i][j-1]
+        return res[m-1][n-1]
+		
+		
+		
+# test
+obstacle = [[0 for i in range(3)] for i in range(3)]
+obstacle[1][1] = 1
+solu = Solution2()
+print solu.uniquePathsWithObstacles(obstacle)
