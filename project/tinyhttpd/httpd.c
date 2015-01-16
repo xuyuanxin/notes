@@ -34,11 +34,11 @@
 
 void *accept_request(void *);
 void bad_request(int);
-void cat(int, FILE *);
+void __cat(int, FILE *);
 void cannot_execute(int);
 void error_die(const char *);
 void execute_cgi(int, const char *, const char *, const char *);
-int get_line(int, char *, int);
+int get_line(int, char *, int,char *);
 void headers(int, const char *);
 void not_found(int);
 void serve_file(int, const char *);
@@ -62,7 +62,7 @@ int httpd_dbgp_flag = 0;
  * return.  Process the request appropriately.
  * Parameters: the socket connected to the client */
 /**********************************************************************/
-void *accept_request(void * tclient)
+void *accept_request(void *tclient)
 {
     int client = *(int *)tclient;
     char buf[1024];
@@ -75,7 +75,7 @@ void *accept_request(void * tclient)
     int cgi = 0;
     char *query_string = NULL; /* GET /color.cgi?color=red ---> color=red */
 
-    numchars = get_line(client, buf, sizeof(buf));
+    numchars = get_line(client, buf, sizeof(buf),"accept_requst01");
     i = 0; j = 0;
     while (!ISspace(buf[j]) && (i < sizeof(method) - 1)){/* method:get post */
         method[i] = buf[j];
@@ -100,7 +100,6 @@ void *accept_request(void * tclient)
         i++; j++;
     }
     url[i] = '\0';
-
     if (strcasecmp(method, "GET") == 0){
         query_string = url;
         while ((*query_string != '?') && (*query_string != '\0')){
@@ -112,16 +111,17 @@ void *accept_request(void * tclient)
             query_string++;
         }
     }
-
     sprintf(path, "htdocs%s", url);/* get file path */
     if (path[strlen(path) - 1] == '/'){
         strcat(path, "index.html");
-    }	
+    }
+	httpd_dbgp("(%15s) path:%s url:%s query_string:%s \r\n","accept_requst02",path,url,query_string);
     if (stat(path, &st) == -1) {
         while ((numchars > 0) && strcmp("\n", buf)){  /* read & discard headers */
-            numchars = get_line(client, buf, sizeof(buf));
+            numchars = get_line(client, buf, sizeof(buf),"accept_requst03");
         }	
         not_found(client);
+		httpd_dbgp("accept_request not found\r\n");
     }else{
         if ((st.st_mode & S_IFMT) == S_IFDIR){ /* if file is directory ,add "/index.html" */
             strcat(path, "/index.html");
@@ -130,11 +130,8 @@ void *accept_request(void * tclient)
             cgi = 1;
         }
         if (!cgi){ /* static request */
-			httpd_dbgp("static client %d path %s ",client,path);
             serve_file(client, path);
-        }else{ /* dynamic request */            
-			httpd_dbgp("dynamic client %d path %s method %s query %s",
-				       client,path,method,query_string);
+        }else{ /* dynamic request path:htdocs/color.cgi*/            
             execute_cgi(client, path, method, query_string);
         }
     }
@@ -170,13 +167,14 @@ void bad_request(int client)
  * Parameters: the client socket descriptor
  *             FILE pointer for the file to cat */
 /**********************************************************************/
-void cat(int client, FILE *resource)
+void __cat(int client, FILE *resource)
 {
     char buf[1024];
 
     fgets(buf, sizeof(buf), resource);
     while (!feof(resource)){
         send(client, buf, strlen(buf), 0);
+		httpd_dbgp("(%15s) send to client %d %s","__cat",client,buf);
         fgets(buf, sizeof(buf), resource);
     }
 }
@@ -226,31 +224,35 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
     int i;
     char c;
     int numchars = 1;
+    char meth_env[255];
+    char query_env[255];
+    char length_env[255];
     int content_length = -1;
+
+	httpd_dbgp("(%15s) cli: %d path: %s method: %s query %s",
+			   "execute-cgi",client,path,method,query_string);
 
     buf[0] = 'A'; buf[1] = '\0';
     if (strcasecmp(method, "GET") == 0){
         while ((numchars > 0) && strcmp("\n", buf)){  /* read & discard headers */
-            numchars = get_line(client, buf, sizeof(buf));
+            numchars = get_line(client, buf, sizeof(buf),"execute-cgi01");
         }
     } else {   /* POST */
-        numchars = get_line(client, buf, sizeof(buf));
+        numchars = get_line(client, buf, sizeof(buf),"execute-cgi02");
         while ((numchars > 0) && strcmp("\n", buf)){
             buf[15] = '\0';
             if (strcasecmp(buf, "Content-Length:") == 0){
                 content_length = atoi(&(buf[16]));
             }
-            numchars = get_line(client, buf, sizeof(buf));
+            numchars = get_line(client, buf, sizeof(buf),"execute-cgi03");
         }
         if (content_length == -1) {
             bad_request(client);
             return;
         }
     }
-
     sprintf(buf, "HTTP/1.0 200 OK\r\n");
     send(client, buf, strlen(buf), 0);
-
     if (pipe(cgi_output) < 0) {
        cannot_execute(client);
        return;
@@ -265,10 +267,6 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
         return;
     }
     if (pid == 0){  /* child: CGI script */  
-        char meth_env[255];
-        char query_env[255];
-        char length_env[255];
-
         dup2(cgi_output[1], 1); /* stdout */
         dup2(cgi_input[0], 0);  /* stdin */
         close(cgi_output[0]);
@@ -278,28 +276,30 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
         if (strcasecmp(method, "GET") == 0) {
             sprintf(query_env, "QUERY_STRING=%s", query_string);
             putenv(query_env);
-        }else {   /* POST */
+        } else {   /* POST */
             sprintf(length_env, "CONTENT_LENGTH=%d", content_length);
             putenv(length_env);
         }
-        execl(path, path, NULL);
+        if(execl(path, path, NULL)<0){
+			printf("execute-cgi error: %s",path);
+			perror("cgi script error\r\n");
+		}
         exit(0);
-     } else { 
-         close(cgi_output[1]);
-         close(cgi_input[0]);
-         if (strcasecmp(method, "POST") == 0){
-             for (i = 0; i < content_length; i++) {
-                 recv(client, &c, 1, 0);
-                 write(cgi_input[1], &c, 1);
-             }
-         } 
-         while (read(cgi_output[0], &c, 1) > 0){
-             send(client, &c, 1, 0);
-         }
-
-         close(cgi_output[0]);
-         close(cgi_input[1]);
-         waitpid(pid, &status, 0);
+    } else {
+        close(cgi_output[1]);
+		close(cgi_input[0]);
+        if (strcasecmp(method, "POST") == 0){
+            for (i = 0; i < content_length; i++) {
+                recv(client, &c, 1, 0);
+                write(cgi_input[1], &c, 1);
+            }
+        } 
+        while (read(cgi_output[0], &c, 1) > 0){
+            send(client, &c, 1, 0);
+        }
+        close(cgi_output[0]);
+        close(cgi_input[1]);
+        waitpid(pid, &status, 0);
     }
 }
 
@@ -310,6 +310,8 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
     the buffer to save the data in the @size of the buffer
  @returns: 
     the number of bytes stored (excluding null) 
+ @who:
+    for debug
  @func
     Get a line from a socket, whether the line ends in a newline, carriage return, or 
     a CRLF combination.Terminates the string read with a null character.If no newline 
@@ -317,12 +319,11 @@ void execute_cgi(int client, const char *path,const char *method, const char *qu
     null.If any of the above three line terminators is read,the last character of the 
     string will be a linefeed and the string will be terminated with a null character.
 ************************************************************************************/
-int get_line(int sock, char *buf, int size)
+int get_line(int sock, char *buf, int size,char *who)
 {
     int i = 0;
     char c = '\0';
     int n;
-
     while ((i < size - 1) && (c != '\n')) {
         n = recv(sock, &c, 1, 0);
         if (n > 0){
@@ -341,6 +342,7 @@ int get_line(int sock, char *buf, int size)
         } 
     }
     buf[i] = '\0';
+	httpd_dbgp("(%15s) serv recv: %s \r\n",who,buf);
  
     return (i);
 }
@@ -405,16 +407,19 @@ void serve_file(int client, const char *filename)
     int numchars = 1;
     char buf[1024];
 
-    buf[0] = 'A'; buf[1] = '\0';
-    while ((numchars > 0) && strcmp("\n", buf))  /* read & discard headers */
-    numchars = get_line(client, buf, sizeof(buf));
+	httpd_dbgp("(%15s) cli:%d path:%s \r\n","serve-file",client,filename);
 
-    resource = fopen(filename, "r");
+    buf[0] = 'A'; buf[1] = '\0';
+    while ((numchars > 0) && strcmp("\n", buf)){ /* read & discard headers */
+        numchars = get_line(client, buf, sizeof(buf),"serve-file01");
+    }	
+
+    resource = fopen(filename, "r"); /* filename: htdocs/index.html */
     if (resource == NULL){
         not_found(client);
     }else{
         headers(client, filename);
-        cat(client, resource);
+        __cat(client, resource);
     }
     fclose(resource);
 }
@@ -496,6 +501,7 @@ int main(void)
 
     server_sock = startup(&port);
     printf("httpd running on port %d\n", port);
+	httpd_dbgp_flag = 1;
 
     while (1){
         client_sock = accept(server_sock,(struct sockaddr *)&client_name,&client_name_len);
