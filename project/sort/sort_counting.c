@@ -16,7 +16,7 @@
 
 #include<stddef.h>
 #include<stdlib.h>
-#define CS_MAX 100 /*0 ~ 100*/
+#define CS_MAX 100 /*0 ~ 100 k = [0,CS_MAX)*/
 
 void sort_counting(int array[],int size)
 {

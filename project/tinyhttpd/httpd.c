@@ -501,7 +501,7 @@ int main(void)
 
     server_sock = startup(&port);
     printf("httpd running on port %d\n", port);
-	httpd_dbgp_flag = 1;
+	httpd_dbgp_flag = 0;
 
     while (1){
         client_sock = accept(server_sock,(struct sockaddr *)&client_name,&client_name_len);

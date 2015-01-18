@@ -64,28 +64,41 @@ read¨Cwrite, truncate its length to 0.*/
 /************************************************************************************
            File status flags used for open() and fcntl() are as follows:
 *************************************************************************************
-O_NONBLOCK
+ O_RDONLY
+    Open for reading only
+ O_WRONLY
+    Open for writing only
+ O_RDWR
+    Most implementations define O_RDONLY as 0, O_WRONLY as 1, and O_RDWR as 2, for 
+    compatibility with older programs.
+ O_EXEC
+ O_SEARCH
+    One and only one of the previous five constants must be specified. The following
+    constants are optional:
+ O_CREAT  
+    Create the file if it doesn't exist. This option requires a third argument to the 
+    open function (a fourth argument to the openat function)¡ª the mode,which specifies 
+    the access permission bits of the new file.
+ O_NONBLOCK
     If path refers to a FIFO, a block special file, or a character special file,this 
     option sets the nonblocking mode for both the opening of the file and subsequent 
     I/O.
 ************************************************************************************/
+#define O_RDONLY  0
+#define O_WRONLY  1 
+#define O_RDWR    2
+
 #define O_APPEND /*Append to the end of file on each write.By default, 
 "current file offset" is initialized to 0 when a file is opened, unless the 
 O_APPEND option is specified.*/
 #define O_CLOEXEC /*Set the FD_CLOEXEC file descriptor flag.*/
-#define	O_CREAT  /*Create the file if it doesn¡¯t exist. This option requires a
-third argument to the open function (a fourth argument to the openat function)¡ª
-the mode,which specifies the access permission bits of the new file.*/
+#define	O_CREAT  
 #define O_EXEC	  /* Open for execute only.*/
 #define O_EXCL	/*Generate an error if O_CREAT is also specified and the file 
 already exists. This test for whether the file already exists and the creation 
 of the file if it doesn¡¯t exist is an atomic operation. */
 #define	O_NONBLOCK 
 
-#define O_RDONLY  /*Open for reading only.*/
-#define O_WRONLY  /*Open for writing only.*/
-#define O_RDWR /*Open for reading and writing.Most implementations define 
-O_RDONLY as 0,O_WRONLY as 1, and O_RDWR as 2, for compatibility with older programs.*/
 #define O_SEARCH  /*Open for search only (applies to directories).*/
 #define	O_TRUNC /*If the file exists and if it is successfully opened for 
 either write-only or read¨Cwrite, truncate its length to 0.*/

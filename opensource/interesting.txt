@@ -4,3 +4,17 @@ https://github.com/fastos/fastsocket
 
 https://github.com/haoel/leetcode
 https://github.com/soulmachine/leetcode
+
+libev
+A full-featured and high-performance event loop that is loosely modelled after libevent, 
+but without its limitations and bugs.
+
+muduo
+Muduo is a multithreaded C++ network library based on the reactor pattern.
+
+goagent
+https://github.com/goagent/goagent
+
+nginx
+nginx [engine x] is an HTTP and reverse proxy server, as well as a mail proxy server, 
+written by Igor Sysoev. 

@@ -40,6 +40,27 @@ The freopen function  will clear a stream’s orientation; the fwide function can
 be used to set a stream's orientation.
 */
 
+/* C:\Program Files\Microsoft Visual Studio\VC98\CRT\SRC\STDIO.H */
+struct _iobuf {
+        char *_ptr;
+        int   _cnt;
+        char *_base;
+        int   _flag;
+        int   _file;
+        int   _charbuf;
+        int   _bufsiz;
+        char *_tmpfname;
+        };
+typedef struct _iobuf FILE;
+
+/* c:\Microsoft SDK\src\crt\_file.c */
+FILE _iob[_IOB_ENTRIES] = {
+        { _bufin, 0, _bufin, _IOREAD | _IOYOURBUF, 0, 0, _INTERNAL_BUFSIZ },/* stdin (_iob[0]) */   
+        { NULL, 0, NULL, _IOWRT, 1, 0, 0 }, /* stdout (_iob[1]) */       
+        { NULL, 0, NULL, _IOWRT, 2, 0, 0 }, /* stderr (_iob[3]) */
+};
+
+
 /*三个默认打开的流
 Three streams are predefined and automatically available to a process: standard 
 input, standard output, and standard error.These streams refer to the same files 
@@ -48,9 +69,10 @@ These three standard I/O streams are referenced through the predefined file
 pointers stdin, stdout,and stderr. The file pointers are defined in the<stdio.h> 
 header.
 */
-#define stdin  0 /*Standard input  标准输入*/
-#define stdout 1 /*Standard output 标准输出*/
-#define stderr 2 /*Standard error  标准错误*/
+#define stdin  (&_iob[0]) /* Standard input  标准输入 */
+#define stdout (&_iob[1]) /* Standard output 标准输出 */
+#define stderr (&_iob[2]) /* Standard error  标准错误 */
+
 
 /*
 ---->缓冲

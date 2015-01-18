@@ -1,0 +1,15 @@
+redhat 下 安装Libev
+2011-12-22 10:48 587人阅读 评论(0) 收藏 举报
+redhat
+以3.9版本举例，其他版本类似。
+
+
+1、tar xzf libev-3.9.tar.gz
+
+2、cd libev-3.9
+
+3、./configure --prefix=/usr //指定安装路径，若不指定，会默认安装到/usr/local
+
+4、make
+
+5、make install
