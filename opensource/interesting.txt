@@ -17,4 +17,8 @@ https://github.com/goagent/goagent
 
 nginx
 nginx [engine x] is an HTTP and reverse proxy server, as well as a mail proxy server, 
-written by Igor Sysoev. 
+written by Igor Sysoev.
+
+contiki
+lua
+Scientific Toolworks Understand (code reader)
