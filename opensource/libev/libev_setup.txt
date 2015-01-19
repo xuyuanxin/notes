@@ -1,15 +1,49 @@
-redhat 下 安装Libev
-2011-12-22 10:48 587人阅读 评论(0) 收藏 举报
-redhat
-以3.9版本举例，其他版本类似。
+1 tar xzf libev-3.9.tar.gz
+2 cd libev-3.9
+3 ./configure --prefix=/usr //specify path,default is /usr/local
+4 make
+5 make install
+
+http://www.360doc.com/content/14/0814/09/12144668_401718271.shtml
 
 
-1、tar xzf libev-3.9.tar.gz
 
-2、cd libev-3.9
-
-3、./configure --prefix=/usr //指定安装路径，若不指定，会默认安装到/usr/local
-
-4、make
-
-5、make install
+linux-iu5j:/home/xyx/software/libev/libev-4.19 # make install                                                                       
+make[1]: Entering directory `/home/xyx/software/libev/libev-4.19'                                                                   
+ /bin/mkdir -p '/usr/local/lib'                                                                                                     
+ /bin/sh ./libtool   --mode=install /usr/bin/install -c   libev.la '/usr/local/lib'                                                 
+libtool: install: /usr/bin/install -c .libs/libev.so.4.0.0 /usr/local/lib/libev.so.4.0.0                                            
+libtool: install: (cd /usr/local/lib && { ln -s -f libev.so.4.0.0 libev.so.4 || { rm -f libev.so.4 && ln -s libev.so.4.0.0 libev.so.
+4; }; })                                                                                                                            
+libtool: install: (cd /usr/local/lib && { ln -s -f libev.so.4.0.0 libev.so || { rm -f libev.so && ln -s libev.so.4.0.0 libev.so; }; 
+})                                                                                                                                  
+libtool: install: /usr/bin/install -c .libs/libev.lai /usr/local/lib/libev.la                                                       
+libtool: install: /usr/bin/install -c .libs/libev.a /usr/local/lib/libev.a                                                          
+libtool: install: chmod 644 /usr/local/lib/libev.a                                                                                  
+libtool: install: ranlib /usr/local/lib/libev.a                                                                                     
+libtool: finish: PATH="/home/xyx/bin:/usr/local/bin:/usr/bin:/sbin:/usr/sbin:/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/games:/usr/lib/mi
+t/bin:/usr/lib/mit/sbin:/sbin" ldconfig -n /usr/local/lib                                                                           
+----------------------------------------------------------------------                                                              
+Libraries have been installed in:                                                                                                   
+   /usr/local/lib                                                                                                                   
+                                                                                                                                    
+If you ever happen to want to link against installed libraries                                                                      
+in a given directory, LIBDIR, you must either use libtool, and                                                                      
+specify the full pathname of the library, or use the `-LLIBDIR'                                                                     
+flag during linking and do at least one of the following:                                                                           
+   - add LIBDIR to the `LD_LIBRARY_PATH' environment variable                                                                       
+     during execution                                                                                                               
+   - add LIBDIR to the `LD_RUN_PATH' environment variable                                                                           
+     during linking                                                                                                                 
+   - use the `-Wl,-rpath -Wl,LIBDIR' linker flag                                                                                    
+   - have your system administrator add LIBDIR to `/etc/ld.so.conf'                                                                 
+                                                                                                                                    
+See any operating system documentation about shared libraries for                                                                   
+more information, such as the ld(1) and ld.so(8) manual pages.                                                                      
+----------------------------------------------------------------------                                                              
+ /bin/mkdir -p '/usr/local/include'                                                                                                 
+ /usr/bin/install -c -m 644 ev.h ev++.h event.h '/usr/local/include'                                                                
+ /bin/mkdir -p '/usr/local/share/man/man3'                                                                                          
+ /usr/bin/install -c -m 644 ev.3 '/usr/local/share/man/man3'                                                                        
+make[1]: Leaving directory `/home/xyx/software/libev/libev-4.19'                                                                    
+linux-iu5j:/home/xyx/software/libev/libev-4.19 # 
