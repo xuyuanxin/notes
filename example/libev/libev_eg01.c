@@ -30,19 +30,19 @@ static void timeout_cb (EV_P_ ev_timer *w, int revents)
 }
 
 /*-----------------------------------------------------------------------------------
- è¿™æ˜¯libevå®˜ç½‘æ–‡æ¡£çš„ä¾‹å­
- 1 èŽ·å–ev_loopå®žä¾‹ã€‚ev_loopï¼Œä»Žåå­—ä¸Šå¯ä»¥çœ‹å‡ºï¼Œå®ƒä»£è¡¨äº†ä¸€ä¸ªäº‹ä»¶å¾ªçŽ¯ï¼Œä¹Ÿæ˜¯æˆ‘ä»¬åŽé¢ä»£ç 
-   çš„ä¸»è¦ç»„ç»‡è€…ã€‚
- 2 åˆ›å»ºå’Œåˆå§‹åŒ–watcherã€‚libevä¸­å®šä¹‰äº†ä¸€ç³»åˆ—çš„watcherï¼Œæ¯ç±»watcherè´Ÿè´£ä¸€ç±»ç‰¹å®šçš„äº‹ä»¶ã€‚
-   ä¸€èˆ¬å¯ä»¥é€šè¿‡ev_TYPE_initå‡½æ•°æ¥åˆ›å»ºä¸€ä¸ªwatcherå®žä¾‹ï¼ˆTYPEæ˜¯æŸä¸€ç§watcherç±»åž‹ï¼Œå¦‚ï¼šio, 
-   timerç­‰ï¼‰ã€‚ä¾‹å­ä¸­åˆ†åˆ«åˆ›å»ºäº†ioå’Œtimerä¸¤ä¸ªwatcherï¼Œå¹¶ç»‘å®šäº†ç›¸åº”çš„å›žè°ƒå‡½æ•°ã€‚å½“æ„Ÿå…´è¶£çš„
-   äº‹ä»¶å‘ç”ŸåŽï¼Œå¯¹åº”çš„å›žè°ƒå‡½æ•°å°†ä¼šè¢«è°ƒç”¨ã€‚
- 3 å°†watcheræ³¨å†Œåˆ°ev_loopä¸­ã€‚ä¸€èˆ¬å¯ä»¥é€šè¿‡ev_TYPE_startå‡½æ•°æ¥å®Œæˆã€‚æ³¨å†ŒæˆåŠŸåŽï¼Œwatcher
-   ä¾¿å’Œloopå…³è”èµ·æ¥äº†ï¼Œå½“loopä¸­æ£€æµ‹åˆ°æ„Ÿå…´è¶£çš„äº‹ä»¶å‘ç”Ÿï¼Œä¾¿ä¼šé€šçŸ¥ç›¸å…³çš„watcherã€‚
- 4 å¯åŠ¨äº‹ä»¶å¾ªçŽ¯ã€‚ å³åŽé¢çš„ev_runå‡½æ•°ã€‚äº‹ä»¶å¾ªçŽ¯å¯åŠ¨åŽï¼Œå½“å‰çº¿ç¨‹/è¿›ç¨‹å°†ä¼šè¢«é˜»å¡žï¼Œç›´åˆ°å¾ª
-   çŽ¯è¢«ç»ˆæ­¢ã€‚
- 5 åœ¨ä¸Šé¢çš„ä¾‹å­ä¸­ï¼Œåœ¨ä¸¤ä¸ªå›žè°ƒå‡½æ•°ä¸­çš„ev_breakå‡½æ•°å°±æ˜¯ç»ˆæ­¢å¾ªçŽ¯çš„åœ°æ–¹ã€‚å½“5.5ç§’è¶…æ—¶æˆ–æ˜¯æ ‡
-   å‡†è¾“å…¥æœ‰è¾“å…¥äº‹ä»¶ï¼Œåˆ™ä¼šè¿›å…¥åˆ°ç›¸åº”çš„å›žè°ƒå‡½æ•°ï¼Œç„¶åŽä¼šç»ˆæ­¢äº‹ä»¶å¾ªçŽ¯ï¼Œé€€å‡ºç¨‹åºã€‚
+ ÕâÊÇlibev¹ÙÍøÎÄµµµÄÀý×Ó
+ 1 »ñÈ¡ev_loopÊµÀý¡£ev_loop£¬´ÓÃû×ÖÉÏ¿ÉÒÔ¿´³ö£¬Ëü´ú±íÁËÒ»¸öÊÂ¼þÑ­»·£¬Ò²ÊÇÎÒÃÇºóÃæ´úÂë
+   µÄÖ÷Òª×éÖ¯Õß¡£
+ 2 ´´½¨ºÍ³õÊ¼»¯watcher¡£libevÖÐ¶¨ÒåÁËÒ»ÏµÁÐµÄwatcher£¬Ã¿Ààwatcher¸ºÔðÒ»ÀàÌØ¶¨µÄÊÂ¼þ¡£
+   Ò»°ã¿ÉÒÔÍ¨¹ýev_TYPE_initº¯ÊýÀ´´´½¨Ò»¸öwatcherÊµÀý£¨TYPEÊÇÄ³Ò»ÖÖwatcherÀàÐÍ£¬Èç£ºio, 
+   timerµÈ£©¡£Àý×ÓÖÐ·Ö±ð´´½¨ÁËioºÍtimerÁ½¸öwatcher£¬²¢°ó¶¨ÁËÏàÓ¦µÄ»Øµ÷º¯Êý¡£µ±¸ÐÐËÈ¤µÄ
+   ÊÂ¼þ·¢Éúºó£¬¶ÔÓ¦µÄ»Øµ÷º¯Êý½«»á±»µ÷ÓÃ¡£
+ 3 ½«watcher×¢²áµ½ev_loopÖÐ¡£Ò»°ã¿ÉÒÔÍ¨¹ýev_TYPE_startº¯ÊýÀ´Íê³É¡£×¢²á³É¹¦ºó£¬watcher
+   ±ãºÍloop¹ØÁªÆðÀ´ÁË£¬µ±loopÖÐ¼ì²âµ½¸ÐÐËÈ¤µÄÊÂ¼þ·¢Éú£¬±ã»áÍ¨ÖªÏà¹ØµÄwatcher¡£
+ 4 Æô¶¯ÊÂ¼þÑ­»·¡£ ¼´ºóÃæµÄev_runº¯Êý¡£ÊÂ¼þÑ­»·Æô¶¯ºó£¬µ±Ç°Ïß³Ì/½ø³Ì½«»á±»×èÈû£¬Ö±µ½Ñ­
+   »·±»ÖÕÖ¹¡£
+ 5 ÔÚÉÏÃæµÄÀý×ÓÖÐ£¬ÔÚÁ½¸ö»Øµ÷º¯ÊýÖÐµÄev_breakº¯Êý¾ÍÊÇÖÕÖ¹Ñ­»·µÄµØ·½¡£µ±5.5Ãë³¬Ê±»òÊÇ±ê
+   ×¼ÊäÈëÓÐÊäÈëÊÂ¼þ£¬Ôò»á½øÈëµ½ÏàÓ¦µÄ»Øµ÷º¯Êý£¬È»ºó»áÖÕÖ¹ÊÂ¼þÑ­»·£¬ÍË³ö³ÌÐò¡£
 -----------------------------------------------------------------------------------*/
 int main (void)
 {
@@ -86,3 +86,4 @@ all2: # for cygwin
 ---- reference
 http://www.360doc.com/content/14/0814/09/12144668_401718271.shtml
 */
+

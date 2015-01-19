@@ -527,6 +527,66 @@ struct pollfd
 int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 
 
+
+#include <sys/epoll.h> 
+/*-----------------------------------------------------------------------------------
+ epoll is a Linux kernel system call,a scalable I/O event notification mechanism,first 
+ introduced in Linux kernel 2.5.44. It is meant to replace the older POSIX select(2) 
+ and poll(2) system calls,to achieve better performance in more demanding applications, 
+ where the number of watched file descriptors is large (unlike the older system calls, 
+ which operate in O(n) time, epoll operates in O(1) time).epoll is similar to FreeBSD's 
+ kqueue, in that it operates on a configurable kernel object, exposed to user space as 
+ a file descriptor of its own.
+
+ EPOLL事件有两种模型 Level Triggered (LT) 和 Edge Triggered (ET)：
+
+ LT(level triggered，水平触发模式)
+    是缺省的工作方式，并且同时支持 block 和 non-block socket。在这种做法中，内核告诉你
+    一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，
+    内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。
+
+ ET(edge-triggered，边缘触发模式)
+    是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，
+    内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件
+    描述符发送更多的就绪通知，等到下次有新的数据进来的时候才会再次出发就绪事件。 
+-----------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------
+ 创建一个epoll的句柄，size用来告诉内核需要监听的数目一共有多大。当创建好epoll句柄后，
+ 它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在
+ 使用完epoll后，必须调用close() 关闭，否则可能导致fd被耗尽。
+ @size:
+    The size is not the maximum size of the backing store but just a hint to the ker-
+    nel about how to dimension internal structures. Since  Linux 2.6.8, the size arg-
+    ument is unused.
+ @flags: 0 or EPOLL_CLOEXEC
+    If flags is 0,then,other than the fact that the obsolete size argument is dropped, 
+    epoll_create1() is the same as epoll_create().The following value can be included 
+    in flags to obtain different behavior:EPOLL_CLOEXEC
+-----------------------------------------------------------------------------------*/
+int epoll_create(int size);
+int epoll_create1(int flags);
+
+
+/*-----------------------------------------------------------------------------------
+ @epfd: epoll_create() 的返回值。
+ @op    EPOLL_CTL_ADD
+ @fd    需要监听的fd
+ @event 告诉内核需要监听什么事
+-----------------------------------------------------------------------------------*/
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+
+/*-----------------------------------------------------------------------------------
+ 收集在epoll监控的事件中已经发送的事件。 参数events是分配好的epoll_event结构体数组，
+ epoll将会把发生的事件赋值到events数组中（events不可以是空指针，内核只负责把数据复制
+ 到这个events数组中，不会去帮助我们在用户态中分配内存）。maxevents告之内核这个events
+ 有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间
+ （毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。如果函数调用成功，返回对应
+ I/O上已准备好的文件描述符数目，如返回0表示已超时。
+-----------------------------------------------------------------------------------*/
+int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+
+
 #include <sys/mman.h>
 #define PROT_READ   /*Region can be read.*/
 #define PROT_WRITE  /*Region can be written.*/

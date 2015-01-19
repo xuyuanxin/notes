@@ -171,6 +171,60 @@ file descriptor 2 STDERR_FILENO with the standard error.*/
 #define STDOUT_FILENO  1
 #define STDERR_FILENO  2
 
+
+#include <sys/epoll.h> 
+/********************************* @epoll_create1 @flags ****************************
+EPOLL_CLOEXEC
+   Set the close-on-exec (FD_CLOEXEC) flag on the new file descrip-tor. See the desc-
+   ription of the O_CLOEXEC flag in  open(2)  for reasons why this may be useful.
+*/
+#define EPOLL_CLOEXEC
+
+/********************************* @epoll_ctl @op ***********************************/
+#define EPOLL_CTL_ADD    //注册新的fd到epfd中；
+#define EPOLL_CTL_MOD    //修改已经注册的fd的监听事件；
+#define EPOLL_CTL_DEL    //从epfd中删除一个fd；
+
+typedef union epoll_data
+{
+  void        *ptr;
+  int          fd;
+  __uint32_t   u32;
+  __uint64_t   u64;
+} epoll_data_t;
+
+/*---------------------- struct epoll_event @events ---------------------------
+ EPOLLIN 
+    表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；当对方关闭连接(FIN), 
+    EPOLLERR，都可以认为是一种EPOLLIN事件，在read的时候分别有0，-1两个返回值。
+ EPOLLOUT    
+    表示对应的文件描述符可以写；
+ EPOLLPRI    
+    表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
+ EPOLLERR    
+    表示对应的文件描述符发生错误；
+ EPOLLHUP    
+    表示对应的文件描述符被挂断；
+ EPOLLET     
+    将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
+ EPOLLONESHOT
+    只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次
+    把这个socket加入到EPOLL队列里。
+*/
+#define EPOLLIN
+#define EPOLLOUT 
+#define EPOLLPRI 
+#define EPOLLERR
+#define EPOLLHUP
+#define EPOLLET 
+#define EPOLLONESHOT
+
+struct epoll_event {
+__uint32_t events; /* Epoll events */
+epoll_data_t data; /* User data variable */
+};
+
+
 /********************************* @ioctl @requst ***********************************
  ----> Socket operations
  SIOCATMARK (int)

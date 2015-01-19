@@ -49,4 +49,6 @@ sptr = getservbyname("ftp", "udp");    /* this call will fail */
 struct servent *getservbyname (const char *servname, const char *protoname);
 	   
 	   
+int getaddrinfo( const char *hostname, const char *service, 
+	                const struct addrinfo *hints, struct addrinfo **result );
 
