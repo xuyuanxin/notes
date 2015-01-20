@@ -1,56 +1,52 @@
-/************************************************************************************
+/*-----------------------------------------------------------------------------------
 namespace
-    When a program uses different classes and functions written by different programmers 
-    there is a possibility that two programmers will use the same name for two different 
-    things. Namespaces are a way to deal with this problem. A namespace is a collection 
-    of name definitions, such as class definitions and variable declarations.
-
+    When a program uses different classes and functions written by different program-
+    mers there is a  possibility that two  programmers will use the same name for two 
+    different things. Namespaces are a way to deal with  this problem. A namespace is 
+    a collection of name definitions, such as class definitions and variable declara-
+    tions.
 std namespace
-    The std namespace contains all the names defined in the standard library files (such
-    as iostream and cstdlib) that you use.Your program does not know about names in 
-    the std namespace unless you specify that it is using the std namespace. So far, 
-    the only way we know how to specify the std namespace (or any namespace) is with 
-    the following sort of using directive:
+    The std namespace contains all the names defined in the standard library files  (
+    such as iostream and cstdlib ) that you use. Your program does not know about na-
+    mes in the std namespace unless you specify that it is using the  std  namespace. 
+    So far, the only way we know how to specify the std namespace (or any namespace ) 
+    is with the following sort of using directive:
                 using namespace std;
-
 global namespace
     Every bit of code you write is in some namespace. If you do not place the code in 
-    some specific namespace,then the code is in a namespace known as the global namespace. 
-    The global namespace does not have a using directive because you are always using 
-    the global namespace. You could say that there is always an implicit automatic using 
-    directive that says you are using the global namespace.
-
+    some specific namespace, then the code is in a namespace known as the global nam-
+    espace. The global namespace does not have a using directive because you are alw-
+    ays using the global namespace. You could say that there is always an implicit a-
+    utomatic using directive that says you are using the global namespace.
 scope
-    suppose ns1 and ns2 are two namespaces, and suppose my_function is a void function 
-    with no arguments that is defined in both namespaces but defined in different ways 
-    in the two namespaces. The following is then legal:
+    suppose ns1 and ns2 are two namespaces, and suppose my_function is a void functi-
+    on with no arguments that is defined in  both namespaces but defined in different 
+    ways in the two namespaces. The following is then legal:
 				{
-				 using namespace ns1;
-				 my_function( );
+				    using namespace ns1;
+				    my_function( );
 				}
 				{
-				 using namespace ns2;
-				 my_function( );
+				    using namespace ns2;
+				    my_function( );
 				}
-    The first invocation would use the definition of my_function given in the namespace 
-    ns1, and the second invocation would use the definition of my_function given in the 
-    namespace ns2.
+    The first invocation would use the definition of my_function given in the namesp-
+    ace ns1, and the second invocation would use the definition of my_function  given 
+    in the namespace ns2.
     
-    Recall that a block is a list of statements, declarations, and possibly other code, 
-    enclosed in braces {}. A using directive at the start of a block applies only to 
-    that block. So the first using directive applies only in the first block, and the 
-    second using directive applies only in the second block. 
+    Recall that a block is a list of statements, declarations, and possibly other co-
+    de, enclosed in braces {}. A using directive at the start of a block applies only 
+    to that block. So the first using directive applies only in  the first block, and 
+    the second using directive applies only in the second block. 
 
-    When you use a using directive in a block, it is typically the block consisting 
-    of the body of a function definition.If you place a using directive at the start 
-    of a file , then the using directive applies to the entire file. 
-
+    When you use a using directive in a  block, it is  typically the block consisting 
+    of the body of a function definition. If you place a using directive at the start 
+    of a file, then the using directive applies to the entire file. 
 Creating a Namespace
     namespace Name_Space_Name
     {
         Some_Code
     }
-
 using declaration
     Suppose you are faced with the following situation: You have two namespaces, ns1 and 
     ns2. You want to use the function fun1 defined in ns1 and the function fun2 defined 

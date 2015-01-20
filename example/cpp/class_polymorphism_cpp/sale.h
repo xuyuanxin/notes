@@ -11,9 +11,9 @@ namespace salesavitch
 {
 
 /*******************************************************************************
-When you label a function virtual,you are telling the C++ environment¡°Wait until 
+When you label a function virtual,you are telling the C++ environment "Wait until 
 this function is used in a program, and then get the implementation corresponding 
-to the calling object.¡±
+to the calling object."
 
 If a function will have a different definition in a derived class than in the base 
 class and you want it to be a virtual function, you add the keyword virtual to the 

@@ -16,23 +16,21 @@ char *strncpy(char *dst, const char *src, size_t n);
 */
 int strcmp ( const char * str1, const char * str2 );
 
-
-
-
-/*
+/*-----------------------------------------------------------------------------------
+ @strcat: string catenate
  @destination
-    Pointer to the destination array, which should contain a C string, and be large 
+    Pointer to  the  destination array, which should contain a C string, and be large 
     enough to contain the concatenated resulting string.
  @source
     C string to be appended. This should not overlap destination.
  @ret 
     @destination is returned.
  @func
-    Appends a copy of the @source string to the @destination string. The terminating 
-    null character in @destination is overwritten by the first character of source, and 
-    a null-character is included at the end of the new string formed by the concatenation 
-    of both in destination. @destination and @source shall not overlap.
-*/
+    Appends a copy of the @source string to the @destination  string. The terminating 
+    null character in @destination is overwritten by the  first character of @source, 
+    and a null-character is included at the end of the new string formed by the conc-
+    atenation of both in @destination. @destination and @source shall not overlap.   
+-----------------------------------------------------------------------------------*/
 char * strcat ( char * destination, const char * source );
 
 

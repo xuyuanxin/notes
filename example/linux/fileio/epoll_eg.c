@@ -11,10 +11,10 @@
 #if 0
 #define MAXEVENTS 64
 
-//å‡½æ•°:
-//åŠŸèƒ½:åˆ›å»ºå’Œç»‘å®šä¸€ä¸ªTCP socket
-//å‚æ•°:ç«¯å£
-//è¿”å›žå€¼:åˆ›å»ºçš„socket
+//º¯Êý:
+//¹¦ÄÜ:´´½¨ºÍ°ó¶¨Ò»¸öTCP socket
+//²ÎÊý:¶Ë¿Ú
+//·µ»ØÖµ:´´½¨µÄsocket
 static int
 create_and_bind (char *port)
 {
@@ -62,14 +62,14 @@ create_and_bind (char *port)
 }
 
 
-//å‡½æ•°
-//åŠŸèƒ½:è®¾ç½®socketä¸ºéžé˜»å¡žçš„
+//º¯Êý
+//¹¦ÄÜ:ÉèÖÃsocketÎª·Ç×èÈûµÄ
 static int
 make_socket_non_blocking (int sfd)
 {
   int flags, s;
 
-  //å¾—åˆ°æ–‡ä»¶çŠ¶æ€æ ‡å¿—
+  //µÃµ½ÎÄ¼þ×´Ì¬±êÖ¾
   flags = fcntl (sfd, F_GETFL, 0);
   if (flags == -1)
     {
@@ -77,7 +77,7 @@ make_socket_non_blocking (int sfd)
       return -1;
     }
 
-  //è®¾ç½®æ–‡ä»¶çŠ¶æ€æ ‡å¿—
+  //ÉèÖÃÎÄ¼þ×´Ì¬±êÖ¾
   flags |= O_NONBLOCK;
   s = fcntl (sfd, F_SETFL, flags);
   if (s == -1)
@@ -97,7 +97,7 @@ make_socket_non_blocking (int sfd)
 
 
 
-//ç«¯å£ç”±å‚æ•°argv[1]æŒ‡å®š
+//¶Ë¿ÚÓÉ²ÎÊýargv[1]Ö¸¶¨
 int
 main (int argc, char *argv[])
 {
@@ -127,7 +127,7 @@ main (int argc, char *argv[])
       abort ();
     }
 
-  //é™¤äº†å‚æ•°sizeè¢«å¿½ç•¥å¤–,æ­¤å‡½æ•°å’Œepoll_createå®Œå…¨ç›¸åŒ
+  //³ýÁË²ÎÊýsize±»ºöÂÔÍâ,´Ëº¯ÊýºÍepoll_createÍêÈ«ÏàÍ¬
   efd = epoll_create1 (0);
   if (efd == -1)
     {
@@ -136,7 +136,7 @@ main (int argc, char *argv[])
     }
 
   event.data.fd = sfd;
-  event.events = EPOLLIN | EPOLLET;//è¯»å…¥,è¾¹ç¼˜è§¦å‘æ–¹å¼
+  event.events = EPOLLIN | EPOLLET;//¶ÁÈë,±ßÔµ´¥·¢·½Ê½
   s = epoll_ctl (efd, EPOLL_CTL_ADD, sfd, &event);
   if (s == -1)
     {
@@ -195,12 +195,12 @@ main (int argc, char *argv[])
                         }
                     }
 
-                                  //å°†åœ°å€è½¬åŒ–ä¸ºä¸»æœºåæˆ–è€…æœåŠ¡å
+                                  //½«µØÖ·×ª»¯ÎªÖ÷»úÃû»òÕß·þÎñÃû
                   s = getnameinfo (&in_addr, in_len,
                                    hbuf, sizeof hbuf,
                                    sbuf, sizeof sbuf,
-                                   NI_NUMERICHOST | NI_NUMERICSERV);//flagå‚æ•°:ä»¥æ•°å­—åè¿”å›ž
-                                  //ä¸»æœºåœ°å€å’ŒæœåŠ¡åœ°å€
+                                   NI_NUMERICHOST | NI_NUMERICSERV);//flag²ÎÊý:ÒÔÊý×ÖÃû·µ»Ø
+                                  //Ö÷»úµØÖ·ºÍ·þÎñµØÖ·
 
                   if (s == 0)
                     {
@@ -365,27 +365,27 @@ static int create_and_bind (char *port)
 
 
 /*-----------------------------------------------------------------------------------
-main() é¦–å…ˆè°ƒç”¨ create_and_bind() å»ºç«‹å¥—æŽ¥å­—ï¼Œç„¶åŽå°†å…¶è®¾ç½®ä¸ºéžé˜»å¡žçš„ï¼Œå†è°ƒç”¨ listenã€‚
-ä¹‹åŽåˆ›å»ºä¸€ä¸ªepoll å®žä¾‹ efdï¼ˆæ–‡ä»¶æè¿°ç¬¦ï¼‰ï¼Œå¹¶å°†å…¶åŠ å…¥åˆ°sfdçš„ç›‘å¬å¥—æŽ¥å­—ä¸­ä»¥è¾¹æ²¿è§¦å‘æ–¹å¼
-ç­‰å¾…äº‹ä»¶è¾“å…¥ã€‚
+main() Ê×ÏÈµ÷ÓÃ create_and_bind() ½¨Á¢Ì×½Ó×Ö£¬È»ºó½«ÆäÉèÖÃÎª·Ç×èÈûµÄ£¬ÔÙµ÷ÓÃ listen¡£
+Ö®ºó´´½¨Ò»¸öepoll ÊµÀý efd£¨ÎÄ¼þÃèÊö·û£©£¬²¢½«Æä¼ÓÈëµ½sfdµÄ¼àÌýÌ×½Ó×ÖÖÐÒÔ±ßÑØ´¥·¢·½Ê½
+µÈ´ýÊÂ¼þÊäÈë¡£
 
-å¤–å±‚çš„ while å¾ªçŽ¯æ˜¯ä¸»äº‹ä»¶å¾ªçŽ¯ï¼Œå®ƒè°ƒç”¨äº† epoll_wait(2)ï¼Œæ­¤æ—¶çº¿ç¨‹ä»ç„¶è¢«é˜»å¡žç­‰å¾…äº‹ä»¶ï¼Œå½“
-äº‹ä»¶å¯ç”¨æ—¶ï¼Œepoll_wait(2) å°†ä¼šåœ¨eventså‚æ•°ä¸­è¿”å›žå¯ç”¨äº‹ä»¶ã€‚
+Íâ²ãµÄ while Ñ­»·ÊÇÖ÷ÊÂ¼þÑ­»·£¬Ëüµ÷ÓÃÁË epoll_wait(2)£¬´ËÊ±Ïß³ÌÈÔÈ»±»×èÈûµÈ´ýÊÂ¼þ£¬µ±
+ÊÂ¼þ¿ÉÓÃÊ±£¬epoll_wait(2) ½«»áÔÚevents²ÎÊýÖÐ·µ»Ø¿ÉÓÃÊÂ¼þ¡£
 
-epoll å®žä¾‹ efd åœ¨æ¯æ¬¡äº‹ä»¶åˆ°æ¥å¹¶éœ€è¦æ·»åŠ æ–°çš„ç›‘å¬æ—¶å°±ä¼šå¾—åˆ°æ›´æ–°ï¼Œå¹¶åˆ é™¤æ­»äº¡çš„é“¾æŽ¥ã€‚
+epoll ÊµÀý efd ÔÚÃ¿´ÎÊÂ¼þµ½À´²¢ÐèÒªÌí¼ÓÐÂµÄ¼àÌýÊ±¾Í»áµÃµ½¸üÐÂ£¬²¢É¾³ýËÀÍöµÄÁ´½Ó¡£
 
-å½“äº‹ä»¶å¯ç”¨æ—¶ï¼Œå¯èƒ½æœ‰ä¸€ä¸‹ä¸‰ç§ç±»åž‹ï¼š
+µ±ÊÂ¼þ¿ÉÓÃÊ±£¬¿ÉÄÜÓÐÒ»ÏÂÈýÖÖÀàÐÍ£º
 
-Errors: å½“é”™è¯¯æƒ…å†µå‡ºçŽ°æ—¶ï¼Œæˆ–è€…ä¸æ˜¯ä¸Žè¯»å–æ•°æ®ç›¸å…³çš„äº‹ä»¶é€šå‘Šï¼Œæˆ‘ä»¬åªæ˜¯å…³é—­ç›¸å…³çš„æè¿°ç¬¦ï¼Œ
-å…³é—­è¯¥æè¿°ç¬¦ä¼šè‡ªåŠ¨çš„å°†å…¶ä»Žè¢«epoll å®žä¾‹ efd ç›‘å¬çš„çš„é›†åˆä¸­åˆ é™¤ã€‚
-New connections: å½“ç›‘å¬çš„æ–‡ä»¶æè¿°ç¬¦ sfd å¯è¯»æ—¶ï¼Œæ­¤æ—¶ä¼šæœ‰ä¸€ä¸ªæˆ–å¤šä¸ªæ–°çš„è¿žæŽ¥åˆ°æ¥ï¼Œå½“æ–°è¿ž
-æŽ¥åˆ°æ¥æ—¶ï¼Œaccept(2) è¯¥è¿žæŽ¥ï¼Œå¹¶æ‰“å°ä¸€æ¡ä¿¡æ¯ï¼Œå°†å…¶è®¾ç½®ä¸ºéžé˜»å¡žçš„å¹¶æŠŠå®ƒåŠ å…¥åˆ°è¢« epoll å®žä¾‹
-ç›‘å¬çš„é›†åˆä¸­ã€‚
-Client data: å½“æ•°æ®åœ¨å®¢æˆ·ç«¯æè¿°ç¬¦å¯ç”¨æ—¶ï¼Œæˆ‘ä»¬ä½¿ç”¨ read(2) åœ¨ä¸€ä¸ªå†…éƒ¨å¾ªçŽ¯ä¸­æ¯æ¬¡è¯»å–512 
-å­—èŠ‚æ•°æ®ã€‚ç”±äºŽæˆ‘ä»¬å¿…é¡»è¯»å–æ‰€æœ‰çš„å¯ç”¨æ•°æ®ï¼Œæ­¤æ—¶æˆ‘ä»¬å¹¶ä¸èƒ½èŽ·å–æ›´å¤šçš„äº‹ä»¶ï¼Œå› ä¸ºæè¿°ç¬¦æ˜¯ä»¥
-è¾¹æ²¿è§¦å‘ç›‘å¬çš„ï¼Œè¯»å–çš„æ•°æ®è¢«å†™åˆ° stdout (fd=1) (write(2))ã€‚å¦‚æžœ read(2) è¿”å›ž 0ï¼Œæ„å‘³ç€
-åˆ°äº†æ–‡ä»¶æœ«å°¾EOFï¼Œæˆ‘ä»¬å¯ä»¥å…³é—­å®¢æˆ·ç«¯è¿žæŽ¥ï¼Œå¦‚æžœè¿”å›ž  -1ï¼Œ errno ä¼šè¢«è®¾ç½®æˆ EAGAIN, è¿™æ„
-å‘³ç€æ‰€æœ‰çš„æ•°æ®å·²ç»è¢«è¯»å–ï¼Œå¯ä»¥è¿”å›žä¸»å¾ªçŽ¯äº†ã€‚
+Errors: µ±´íÎóÇé¿ö³öÏÖÊ±£¬»òÕß²»ÊÇÓë¶ÁÈ¡Êý¾ÝÏà¹ØµÄÊÂ¼þÍ¨¸æ£¬ÎÒÃÇÖ»ÊÇ¹Ø±ÕÏà¹ØµÄÃèÊö·û£¬
+¹Ø±Õ¸ÃÃèÊö·û»á×Ô¶¯µÄ½«Æä´Ó±»epoll ÊµÀý efd ¼àÌýµÄµÄ¼¯ºÏÖÐÉ¾³ý¡£
+New connections: µ±¼àÌýµÄÎÄ¼þÃèÊö·û sfd ¿É¶ÁÊ±£¬´ËÊ±»áÓÐÒ»¸ö»ò¶à¸öÐÂµÄÁ¬½Óµ½À´£¬µ±ÐÂÁ¬
+½Óµ½À´Ê±£¬accept(2) ¸ÃÁ¬½Ó£¬²¢´òÓ¡Ò»ÌõÐÅÏ¢£¬½«ÆäÉèÖÃÎª·Ç×èÈûµÄ²¢°ÑËü¼ÓÈëµ½±» epoll ÊµÀý
+¼àÌýµÄ¼¯ºÏÖÐ¡£
+Client data: µ±Êý¾ÝÔÚ¿Í»§¶ËÃèÊö·û¿ÉÓÃÊ±£¬ÎÒÃÇÊ¹ÓÃ read(2) ÔÚÒ»¸öÄÚ²¿Ñ­»·ÖÐÃ¿´Î¶ÁÈ¡512 
+×Ö½ÚÊý¾Ý¡£ÓÉÓÚÎÒÃÇ±ØÐë¶ÁÈ¡ËùÓÐµÄ¿ÉÓÃÊý¾Ý£¬´ËÊ±ÎÒÃÇ²¢²»ÄÜ»ñÈ¡¸ü¶àµÄÊÂ¼þ£¬ÒòÎªÃèÊö·ûÊÇÒÔ
+±ßÑØ´¥·¢¼àÌýµÄ£¬¶ÁÈ¡µÄÊý¾Ý±»Ð´µ½ stdout (fd=1) (write(2))¡£Èç¹û read(2) ·µ»Ø 0£¬ÒâÎ¶×Å
+µ½ÁËÎÄ¼þÄ©Î²EOF£¬ÎÒÃÇ¿ÉÒÔ¹Ø±Õ¿Í»§¶ËÁ¬½Ó£¬Èç¹û·µ»Ø  -1£¬ errno »á±»ÉèÖÃ³É EAGAIN, ÕâÒâ
+Î¶×ÅËùÓÐµÄÊý¾ÝÒÑ¾­±»¶ÁÈ¡£¬¿ÉÒÔ·µ»ØÖ÷Ñ­»·ÁË¡£
 */
 int main (int argc, char *argv[])
 {
@@ -531,3 +531,4 @@ int main (int argc, char *argv[])
 
     return EXIT_SUCCESS;
 }
+

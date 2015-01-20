@@ -1,13 +1,13 @@
 #include <netdb.h>
 
 struct hostent {
-   char  *h_name;       /* official (canonical) name of host .è¡¨ç¤ºçš„æ˜¯ä¸»æœºçš„è§„èŒƒåã€‚ä¾‹å¦‚www.google.comçš„è§„èŒƒåå…¶å®æ˜¯www.l.google.comã€‚*/
+   char  *h_name;       /* official (canonical) name of host .±íÊ¾µÄÊÇÖ÷»úµÄ¹æ·¶Ãû¡£ÀıÈçwww.google.comµÄ¹æ·¶ÃûÆäÊµÊÇwww.l.google.com¡£*/
    char **h_aliases;    /* pointer to array of pointers to alias names.
-                              è¡¨ç¤ºçš„æ˜¯ä¸»æœºçš„åˆ«å.www.google.comå°±æ˜¯googleä»–è‡ªå·±çš„åˆ«åã€‚æœ‰çš„æ—¶å€™ï¼Œæœ‰çš„ä¸»æœºå¯èƒ½æœ‰å¥½å‡ ä¸ªåˆ«åï¼Œ
-                              è¿™äº›ï¼Œå…¶å®éƒ½æ˜¯ä¸ºäº†æ˜“äºç”¨æˆ·è®°å¿†è€Œä¸ºè‡ªå·±çš„ç½‘ç«™å¤šå–çš„åå­—ã€‚*/
-   int    h_addrtype;   /* host address type: AF_INET .è¡¨ç¤ºçš„æ˜¯ä¸»æœºipåœ°å€çš„ç±»å‹ï¼Œåˆ°åº•æ˜¯ipv4(AF_INET)ï¼Œè¿˜æ˜¯pv6(AF_INET6)*/
-   int    h_length;     /* length of address: 4. è¡¨ç¤ºçš„æ˜¯ä¸»æœºipåœ°å€çš„é•¿åº¦*/
-   char **h_addr_list;  /* ptr to array of ptrs with IPv4 addrs . è¡¨ç¤ºçš„æ˜¯ä¸»æœºçš„ipåœ°å€ï¼Œæ³¨æ„ï¼Œè¿™ä¸ªæ˜¯ä»¥ç½‘ç»œå­—èŠ‚åºå­˜å‚¨çš„ã€‚*/
+                              ±íÊ¾µÄÊÇÖ÷»úµÄ±ğÃû.www.google.com¾ÍÊÇgoogleËû×Ô¼ºµÄ±ğÃû¡£ÓĞµÄÊ±ºò£¬ÓĞµÄÖ÷»ú¿ÉÄÜÓĞºÃ¼¸¸ö±ğÃû£¬
+                              ÕâĞ©£¬ÆäÊµ¶¼ÊÇÎªÁËÒ×ÓÚÓÃ»§¼ÇÒä¶øÎª×Ô¼ºµÄÍøÕ¾¶àÈ¡µÄÃû×Ö¡£*/
+   int    h_addrtype;   /* host address type: AF_INET .±íÊ¾µÄÊÇÖ÷»úipµØÖ·µÄÀàĞÍ£¬µ½µ×ÊÇipv4(AF_INET)£¬»¹ÊÇpv6(AF_INET6)*/
+   int    h_length;     /* length of address: 4. ±íÊ¾µÄÊÇÖ÷»úipµØÖ·µÄ³¤¶È*/
+   char **h_addr_list;  /* ptr to array of ptrs with IPv4 addrs . ±íÊ¾µÄÊÇÖ÷»úµÄipµØÖ·£¬×¢Òâ£¬Õâ¸öÊÇÒÔÍøÂç×Ö½ÚĞò´æ´¢µÄ¡£*/
 };
 
 #define HOST_NOT_FOUND
@@ -23,9 +23,9 @@ struct hostent *gethostbyname (const char *hostname);
 	 
 	 
 #include <netdb.h>
-/*@addrï¼šæŒ‡å‘ç½‘ç»œå­—èŠ‚é¡ºåºåœ°å€çš„æŒ‡é’ˆã€‚
-  @lenï¼š åœ°å€çš„é•¿åº¦ï¼Œåœ¨AF_INETç±»å‹åœ°å€ä¸­ä¸º4ã€‚
-  @typeï¼šåœ°å€ç±»å‹ï¼Œåº”ä¸ºAF_INETã€‚
+/*@addr£ºÖ¸ÏòÍøÂç×Ö½ÚË³ĞòµØÖ·µÄÖ¸Õë¡£
+  @len£º µØÖ·µÄ³¤¶È£¬ÔÚAF_INETÀàĞÍµØÖ·ÖĞÎª4¡£
+  @type£ºµØÖ·ÀàĞÍ£¬Ó¦ÎªAF_INET¡£
   @Returns: non-null pointer if OK, NULL on error with h_errno set */	  
 struct hostent *gethostbyaddr (const char *addr, socklen_t len, int family);
 	  
@@ -87,12 +87,12 @@ struct servent *getservbyname (const char *servname, const char *protoname);
     any restrictions imposed by hints, and returns a pointer to the start of the list 
     in @res.  The items in the linked list are linked by the @ai_next field.
 
- 1 é€šå¸¸æœåŠ¡å™¨ç«¯åœ¨è°ƒç”¨@getaddrinfoä¹‹å‰ï¼Œai_flagsè®¾ç½®AI_PASSIVEï¼Œç”¨äºbindï¼›ä¸»æœºånodename
-   é€šå¸¸ä¼šè®¾ç½®ä¸ºNULLï¼Œè¿”å›é€šé…åœ°å€[::]ã€‚
- 2 å®¢æˆ·ç«¯è°ƒç”¨getaddrinfoæ—¶ï¼Œai_flagsä¸€èˆ¬ä¸è®¾ç½®AI_PASSIVEï¼Œä½†æ˜¯ä¸»æœºånodenameå’ŒæœåŠ¡åservname
-  ï¼ˆæ›´æ„¿æ„ç§°ä¹‹ä¸ºç«¯å£ï¼‰åˆ™åº”è¯¥ä¸ä¸ºç©ºã€‚
- 3 å½“ç„¶ï¼Œå³ä½¿ä¸è®¾ç½®AI_PASSIVEï¼Œå–å‡ºçš„åœ°å€ä¹Ÿå¹¶éä¸å¯ä»¥è¢«bindï¼Œå¾ˆå¤šç¨‹åºä¸­ai_flagsç›´æ¥è®¾ç½®ä¸º0ï¼Œ
-   å³3ä¸ªæ ‡å¿—ä½éƒ½ä¸è®¾ç½®ï¼Œè¿™ç§æƒ…å†µä¸‹åªè¦hostnameå’Œservnameè®¾ç½®çš„æ²¡æœ‰é—®é¢˜å°±å¯ä»¥æ­£ç¡®bindã€‚   
+ 1 Í¨³£·şÎñÆ÷¶ËÔÚµ÷ÓÃ@getaddrinfoÖ®Ç°£¬ai_flagsÉèÖÃAI_PASSIVE£¬ÓÃÓÚbind£»Ö÷»úÃûnodename
+   Í¨³£»áÉèÖÃÎªNULL£¬·µ»ØÍ¨ÅäµØÖ·[::]¡£
+ 2 ¿Í»§¶Ëµ÷ÓÃgetaddrinfoÊ±£¬ai_flagsÒ»°ã²»ÉèÖÃAI_PASSIVE£¬µ«ÊÇÖ÷»úÃûnodenameºÍ·şÎñÃûservname
+  £¨¸üÔ¸Òâ³ÆÖ®Îª¶Ë¿Ú£©ÔòÓ¦¸Ã²»Îª¿Õ¡£
+ 3 µ±È»£¬¼´Ê¹²»ÉèÖÃAI_PASSIVE£¬È¡³öµÄµØÖ·Ò²²¢·Ç²»¿ÉÒÔ±»bind£¬ºÜ¶à³ÌĞòÖĞai_flagsÖ±½ÓÉèÖÃÎª0£¬
+   ¼´3¸ö±êÖ¾Î»¶¼²»ÉèÖÃ£¬ÕâÖÖÇé¿öÏÂÖ»ÒªhostnameºÍservnameÉèÖÃµÄÃ»ÓĞÎÊÌâ¾Í¿ÉÒÔÕıÈ·bind¡£   
 -----------------------------------------------------------------------------------*/	   
 int getaddrinfo(const char *node, const char *service,const struct addrinfo *hints,
                    struct addrinfo **res);	   
@@ -105,14 +105,14 @@ const char *gai_strerror(int errcode);
 
 /*---------------- struct addrinfo @ai_flags 
 AI_PASSIVE
-   å½“æ­¤æ ‡å¿—ç½®ä½æ—¶ï¼Œè¡¨ç¤ºè°ƒç”¨è€…å°†åœ¨bind()å‡½æ•°è°ƒç”¨ä¸­ä½¿ç”¨è¿”å›çš„åœ°å€ç»“æ„ã€‚å½“æ­¤æ ‡å¿—ä¸ç½®ä½æ—¶
-   ï¼Œè¡¨ç¤ºå°†åœ¨connect()å‡½æ•°è°ƒç”¨ä¸­ä½¿ç”¨ã€‚å½“@nodeä¸ºNULLï¼Œä¸”æ­¤æ ‡å¿—ç½®ä½ï¼Œåˆ™è¿”å›çš„åœ°å€å°†æ˜¯é€š
-   é…åœ°å€ã€‚å¦‚æœ@nodeä¸ºNULLï¼Œä¸”æ­¤æ ‡å¿—ä¸ç½®ä½ï¼Œåˆ™è¿”å›çš„åœ°å€å°†æ˜¯å›ç¯åœ°å€ã€‚
+   µ±´Ë±êÖ¾ÖÃÎ»Ê±£¬±íÊ¾µ÷ÓÃÕß½«ÔÚbind()º¯Êıµ÷ÓÃÖĞÊ¹ÓÃ·µ»ØµÄµØÖ·½á¹¹¡£µ±´Ë±êÖ¾²»ÖÃÎ»Ê±
+   £¬±íÊ¾½«ÔÚconnect()º¯Êıµ÷ÓÃÖĞÊ¹ÓÃ¡£µ±@nodeÎªNULL£¬ÇÒ´Ë±êÖ¾ÖÃÎ»£¬Ôò·µ»ØµÄµØÖ·½«ÊÇÍ¨
+   ÅäµØÖ·¡£Èç¹û@nodeÎªNULL£¬ÇÒ´Ë±êÖ¾²»ÖÃÎ»£¬Ôò·µ»ØµÄµØÖ·½«ÊÇ»Ø»·µØÖ·¡£
 AI_CANONNAME   
-   å½“æ­¤æ ‡å¿—ç½®ä½æ—¶ï¼Œåœ¨å‡½æ•°æ‰€è¿”å›çš„ç¬¬ä¸€ä¸ªaddrinfoç»“æ„ä¸­çš„@ai_cannonameæˆå‘˜ä¸­ï¼Œåº”è¯¥åŒ…å«ä¸€
-   ä¸ªä»¥ç©ºå­—ç¬¦ç»“å°¾çš„å­—ç¬¦ä¸²ï¼Œå­—ç¬¦ä¸²çš„å†…å®¹æ˜¯èŠ‚ç‚¹åçš„æ­£è§„åã€‚
+   µ±´Ë±êÖ¾ÖÃÎ»Ê±£¬ÔÚº¯ÊıËù·µ»ØµÄµÚÒ»¸öaddrinfo½á¹¹ÖĞµÄ@ai_cannoname³ÉÔ±ÖĞ£¬Ó¦¸Ã°üº¬Ò»
+   ¸öÒÔ¿Õ×Ö·û½áÎ²µÄ×Ö·û´®£¬×Ö·û´®µÄÄÚÈİÊÇ½ÚµãÃûµÄÕı¹æÃû¡£
 AI_NUMERICHOST   
-   å½“æ­¤æ ‡å¿—ç½®ä½æ—¶ï¼Œæ­¤æ ‡å¿—è¡¨ç¤ºè°ƒç”¨ä¸­çš„èŠ‚ç‚¹åå¿…é¡»æ˜¯ä¸€ä¸ªæ•°å­—åœ°å€å­—ç¬¦ä¸²ã€‚
+   µ±´Ë±êÖ¾ÖÃÎ»Ê±£¬´Ë±êÖ¾±íÊ¾µ÷ÓÃÖĞµÄ½ÚµãÃû±ØĞëÊÇÒ»¸öÊı×ÖµØÖ·×Ö·û´®¡£
 */
 #define AI_PASSIVE 
 #define AI_CANONNAME 
@@ -149,4 +149,5 @@ struct addrinfo {
     struct sockaddr* ai_addr; //must be zero or a null pointer
     struct addrinfo* ai_next; //must be zero or a null pointer
 };
+
 
