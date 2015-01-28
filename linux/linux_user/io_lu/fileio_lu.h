@@ -72,6 +72,11 @@ read¨Cwrite, truncate its length to 0.*/
     Most implementations define O_RDONLY as 0, O_WRONLY as 1, and O_RDWR as 2, for 
     compatibility with older programs.
  O_EXEC
+    Open for execute only.
+ O_EXCL  
+    Generate an error if O_CREAT is also specified and the file already exists. This 
+    test for whether the file already exists and the creation of the file if it doe-
+    sn't exist is an atomic operation. 
  O_SEARCH
     One and only one of the previous five constants must be specified. The following
     constants are optional:
@@ -94,9 +99,7 @@ O_APPEND option is specified.*/
 #define O_CLOEXEC /*Set the FD_CLOEXEC file descriptor flag.*/
 #define	O_CREAT  
 #define O_EXEC	  /* Open for execute only.*/
-#define O_EXCL	/*Generate an error if O_CREAT is also specified and the file 
-already exists. This test for whether the file already exists and the creation 
-of the file if it doesn¡¯t exist is an atomic operation. */
+#define O_EXCL
 #define	O_NONBLOCK 
 
 #define O_SEARCH  /*Open for search only (applies to directories).*/

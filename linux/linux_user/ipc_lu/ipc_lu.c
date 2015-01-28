@@ -62,7 +62,19 @@ int pclose(FILE *fp);
 
 
 #include <sys/stat.h>
-/*return: 0 if OK,-1 on error*/
+/*-----------------------------------------------------------------------------------
+ @func
+    该函数的第一个参数是一个普通的路径名，也就是创建后FIFO的名字。第二个参数与打开普
+    通文件的open()函数中的mode 参数相同。 如果mkfifo的第一个参数是一个已经存在的路径
+    名时，会返回EEXIST错误，所以一般典型的调用代码首先会检查是否返回该错误，如果确实
+    返回该错误，那么只要调用打开FIFO的函数就可以了。一般文件的I/O函数都可以用于FIFO，
+    如close、read、write等等。
+ @return: 
+    0 if OK,-1 on error
+
+ mkfifo函数已经隐含指定O_CREAT | O_EXCL,也就是说,要么创建一个新的FIFO，要么返回EEXIST
+ 错误(文件已经存在)
+-----------------------------------------------------------------------------------*/
 int mkfifo(const char *path,mode_t mode);
 
 /*return: 0 if OK,-1 on error*/
