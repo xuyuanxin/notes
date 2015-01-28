@@ -4,31 +4,36 @@
  the set-user-ID bit and the set-group-ID bit are contained in the file's st_mode value. 
  These two bits can be tested against the constants S_ISUID and S_ISGID, respectively.
 ************************************************************************************/
-#define S_IFMT	0170000	/*文件类型位域掩码*/
-#define S_IFSOCK	0140000	/*套接口*/
-#define S_IFLNK	0120000	/*符号链接*/
-#define S_IFREG	0100000	/*普通文件*/
-#define S_IFBLK	0060000	/*块设备*/
-#define S_IFDIR	0040000	/*目录*/
-#define S_IFCHR	0020000	/*字符设备*/
-#define S_IFIFO	0010000	/*FIFO*/
-#define S_ISUID /*set-user-ID on execution*/
-#define S_ISGID /*set-group-ID on execution*/
-#define S_ISVTX /*saved-text (sticky bit)*/
-#define S_IRWXU /*read, write, and execute by user (owner)*/
-#define S_IRWXO /*read, write, and execute by other (world)*/
-#define S_IRWXG /*read, write, and execute by group*/
-
-/*st_mode也包含了文件的范文权限位,下面是9个方位权限位*/
-#define S_IRUSR /*read by user (owner)*/
-#define S_IWUSR /*write by user (owner)*/
-#define S_IXUSR /*execute by user (owner)*/
-#define S_IRGRP /*read by group*/
-#define S_IWGRP /*write by group*/
-#define S_IXGRP /*execute by group*/
-#define S_IROTH /*read by other (world)*/
-#define S_IWOTH /*write by other (world)*/
-#define S_IXOTH /*execute by other (world)*/
+/* 文件类型(八进制)*/
+#define S_IFMT	  0170000   /* 文件类型位域掩码 */
+#define S_IFSOCK  0140000   /* 套接口 */
+#define S_IFLNK   0120000   /* 符号链接 */
+#define S_IFREG	  0100000   /* 普通文件 */
+#define S_IFBLK   0060000   /* 块设备 */
+#define S_IFDIR   0040000   /* 目录 */
+#define S_IFCHR   0020000   /* 字符设备 */
+#define S_IFIFO   0010000   /* FIFO */
+/**/
+#define S_ISUID   0004000   /* set-user-ID on execution */
+#define S_ISGID   0002000   /* set-group-ID on execution */
+#define S_ISVTX   0001000   /* saved-text (sticky bit) */
+/*st_mode也包含了文件的访问权限位,下面是9个访问权限位*/
+#define S_IRUSR   0000400   /* (S_IREAD)  read by user (owner) */
+#define S_IREAD
+#define S_IWUSR   0000200   /* (S_IWRITE) write by user (owner) */
+#define S_IWRITE
+#define S_IXUSR   0000100   /* (S_IEXEC)  execute by user (owner) */
+#define S_IEXEC
+#define S_IRGRP   0000040   /* read by group */
+#define S_IWGRP   0000020   /* write by group */
+#define S_IXGRP   0000010   /* execute by group */
+#define S_IROTH   0000004   /* read by other (world) */
+#define S_IWOTH   0000002   /* write by other (world) */
+#define S_IXOTH   0000001   /* execute by other (world) */
+/* Linux系统中还定义了几个权限组合：*/
+#define S_IRWXU  (S_IRUSR|S_IWUSR|S_IXUSR) /* read, write, and execute by user (owner) */
+#define S_IRWXO  (S_IWGRP|S_IWGRP|S_IXGRP) /* read, write, and execute by other (world) */
+#define S_IRWXG  (S_IROTH|S_IWOTH|S_IXOTH) /* read, write, and execute by group */
 
 /*以下宏的参数是stat结构中的st_mode*/
 #define S_ISREG()  /*regular file*/
@@ -44,6 +49,12 @@
 #define S_TYPEISSEM() /*semaphore*/
 #define S_TYPEISSHM() /*shared memory object*/
 
+
+
+/*
+  若一目录具有sticky位(S_ISVTX)，则表示在此目录下的文件只能被该文件所有者、此目录所有
+  者或root来删除或改名，在linux中，最典型的就是这个/tmp目录啦。
+*/
 struct stat 
 {
     mode_t  st_mode; /* file type & mode (permissions) */

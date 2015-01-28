@@ -4,17 +4,8 @@
  @path: 
     要打开或创建文件的名字
  @oflag: O_RDWR
- @mode: 
+ @mode:  S_IEXEC
     创建时才会用到，用于指定文件的访问权限位（access permission bits）
-    S_IFMT      0xF000   文件类型掩码                     
-    S_IFDIR     0x4000   目录                             
-    S_IFIFO     0x1000   FIFO 专用                        
-    S_IFCHR     0x2000   字符专用                         
-    S_IFBLK     0x3000   块专用                           
-    S_IFREG     0x8000   只为0x0000                       
-    S_IREAD     0x0100   可读                             
-    S_IWRITE    0x0080   可写                             
-    S_IEXEC     0x0040   可执行
  @function:
     打开一个文件(也可用于创建文件)
  @return: 
