@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+#coding=utf-8
 # Filename: list_pylib.py
-
+#####################################################################################
+#你可以增加或删除项目，我们说列表是 可变的 数据类型，即这种类型是可以被改变的。
 # This is my shopping list
 shoplist=['apple','mango','carrot','banana']
 
@@ -36,12 +38,13 @@ list3 = [[1 for i in range(3)] for i in range(3)]
 print list3
 
 a = 0
-for i in range(1, 1):
+for i in range(1, 1):  #[1,1)
     a = a+1
 print 'a=',a
 
 a = 0
-for i in range(1, 2):
+for i in range(1, 2): #[1,2)
     a = a+1
+	
 print 'a=',a
 
