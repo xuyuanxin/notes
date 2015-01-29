@@ -1,0 +1,14 @@
+inux下一个同名命令mkfifo 也用于创建FIFO，例如：
+
+执行命令
+
+$ mkfifo /tmp/fifo
+$ cat /tmp/fifo
+
+程序阻塞。
+
+再打开一个shell，执行
+
+$ echo hello > /tmp/fifo
+
+前一个程序返回，显示hello

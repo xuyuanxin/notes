@@ -60,20 +60,34 @@ int pclose(FILE *fp);
 
 
 
-
+#include <sys/types.h>
 #include <sys/stat.h>
 /*-----------------------------------------------------------------------------------
+ @path
+    The pathname is a normal Unix pathname, and this is the name of the FIFO
+ @mode
+    The mode argument specifies the file permissionbits, similar to the second argum-
+    ent to @open. 
  @func
-    该函数的第一个参数是一个普通的路径名，也就是创建后FIFO的名字。第二个参数与打开普
-    通文件的open()函数中的mode 参数相同。 如果mkfifo的第一个参数是一个已经存在的路径
-    名时，会返回EEXIST错误，所以一般典型的调用代码首先会检查是否返回该错误，如果确实
-    返回该错误，那么只要调用打开FIFO的函数就可以了。一般文件的I/O函数都可以用于FIFO，
-    如close、read、write等等。
  @return: 
     0 if OK,-1 on error
 
- mkfifo函数已经隐含指定O_CREAT | O_EXCL,也就是说,要么创建一个新的FIFO，要么返回EEXIST
- 错误(文件已经存在)
+ The @mkfifo function implies 0_CREAT|0_EXCL. That is, it creates a new FIFO or retu-
+ rns an error of EEXIST if the named FIFO already exists.
+
+ To open an existing FIFO or create a new FIFO if it does not already exist, call @m-
+ kfifo, check for an error of EEXIST, and if this occurs, call @open instead.
+
+ Once a FIFO is created, it must  be opened  for reading or writing, using either the 
+ @open function, or one of the standard I/O open functions such as @fopen.A FIFO must
+ be opened either read-only or write-only. It must not be opened for read-write, bec-
+ ause a FIFO is half-duplex.
+ 
+ A write to a pipe or FIFO always appends the data, and a read always returns what'is 
+ at the beginning of the pipe or FIFO. If @lseek is called for a pipe or FIFO, the e-
+ rror ESPIPE is returned.
+
+ example: fifo_writer.c 
 -----------------------------------------------------------------------------------*/
 int mkfifo(const char *path,mode_t mode);
 

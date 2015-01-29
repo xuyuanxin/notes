@@ -8,6 +8,10 @@
 
 #define FIFO_SERVER "/tmp/fifoserver"
 
+/*-----------------------------------------------------------------------------------
+ 普通文件的读写时不会出现阻塞问题，而在管道的读写中却有阻塞的可能，这里的非阻塞标志可
+ 以在open()函数中设定为O_NONBLOCK
+-----------------------------------------------------------------------------------*/
 int main(int argc,char** argv)
 {
 	char r_buf[4096*2];
@@ -16,7 +20,7 @@ int main(int argc,char** argv)
 	int  ret_size;
 	
 	if (argc != 2){
-		printf("usage: reader <len>");
+		printf("usage: ./fifor <len>");
 		return 1;
 	}
 	r_size = atoi(argv[1]);
