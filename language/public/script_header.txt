@@ -1,0 +1,108 @@
+#####################################################################################  
+#!/bin/bash是指此脚本使用/bin/bash来解释执行。
+其中，#!是一个特殊的表示符，其后，跟着解释此脚本的shell路径。
+bash只是shell的一种，还有很多其它shell，如：sh,csh,ksh,tcsh,...
+
+我们可以通过以下一个示例来进行实验，了解#!/bin/bash的使用。
+1）#!/bin/bash只能放在第一行，如果后面还有#!，那么只能看成是注释。
+这里有三个脚本（脚本都要使用”chmod +x  scriptname“命令来获得可执行权限）：
+tbash1.sh:
+#!/bin/sh
+source abc
+echo "hello abc"
+
+tbash2.sh:
+#!/bin/bash
+source abc
+echo "hello abc"
+
+tbash3.sh:
+source abc
+echo "hello abc"
+
+三个脚本执行的结果：
+[nsvc@localhost other]$ ./tbash1.sh 
+./tbash1.sh: line 2: abc: No such file or directory
+注：当source命令执行有问题时，sh不再往下面执行。
+[nsvc@localhost other]$ ./tbash2.sh 
+./tbash2.sh: line 2: abc: No such file or directory
+hello abc
+注：当source命令执行有问题时，bash继续执行下面命令。
+[nsvc@localhost other]$ ./tbash3.sh 
+./tbash3.sh: line 1: abc: No such file or directory
+hello abc
+注：自身登录系统所在的shell是bash。所以，当source命令执行有问题时，bash继续执行下面命
+令。
+
+如果将tbash1.sh改成：
+echo "abc"
+#!/bin/sh
+source abc
+echo "hello abc"
+那么，执行结果是：
+[nsvc@localhost other]$ ./tbash1.sh 
+abc
+./tbash1.sh: line 3: abc: No such file or directory
+hello abc
+也就是说，脚本忽略了第二行“#!/bin/sh"，直接使用当前所在的shell（也就是bash）来解释脚本。
+
+当把tbash1.sh改成：
+#!/bin/sh
+#!/bin/bash
+source abc
+echo "hello abc"
+执行结果为：
+[nsvc@localhost other]$ ./tbash1.sh 
+./tbash1.sh: line 3: abc: No such file or directory
+当执行完source命令时，并没有往下执行。说明，#!/bin/sh这一行起到作用了，但#!/bin/bash并
+没有起作用。在脚本中，不在第一行的#!/bin/bash，只是一个注释。
+
+2）#!后面的路径一定要正确，不正确会报错。
+假如，我们把tbash1.sh中第一行的#!后面加了一个不存在的路径”/home/sh“：
+#!/home/sh
+source abc
+echo "hello abc"
+执行结果为：
+[nsvc@localhost other]$ ./tbash1.sh 
+-bash: ./tbash1.sh: /home/sh: bad interpreter: No such file or directory
+系统会提示/home/sh的路径不存在。
+
+3）如果一个脚本在第一行没有加上#!+shell路径这一行，那么，脚本会默认当前用户登录的shell，
+为脚本解释器。
+在1）中，脚本tbash3.sh的执行结果，就是用当前自己登录的shell（bash）解释后的结果。我们
+通常所用的shell都是bash，如果哪天登录到sh，再使用以上类型的脚本，就会有问题。以下是自
+己登录到sh下，执行tbash3.sh的结果：
+-sh-3.2$ ./tbash3.sh 
+./tbash3.sh: line 1: abc: 没有那个文件或目录
+与1）中的执行结果是不一样的。
+因此，大家应该养成脚本首行加上#!+shell路径的习惯。
+
+4）/bin/sh相当于/bin/bash --posix
+我们将脚本tbash1.sh改为：
+#!/bin/bash --posix
+source abc
+echo "hello abc"
+执行结果：
+[nsvc@localhost other]$ ./tbash1.sh 
+./tbash1.sh: line 2: abc: No such file or directory
+与tbash1.sh原脚本执行的结果一样。
+
+我们还可以以tbash3.sh为示例。
+用以下命令来执行该脚本：
+[nsvc@localhost other]$ bash tbash3.sh
+tbash3.sh: line 1: abc: No such file or directory
+hello abc
+[nsvc@localhost other]$ sh tbash3.sh 
+tbash3.sh: line 1: abc: No such file or directory
+[nsvc@localhost other]$ bash --posix tbash3.sh 
+tbash3.sh: line 1: abc: No such file or directory
+ "bash tbash3.sh"表示使用bash来作为脚本解释器来执行tbash3.sh。同样，也可以使用如”sh 脚
+ 本名“这样的命令，来用sh作为脚本解释器。
+从结果可以看出，/bin/bash --posix与/bin/sh的执行结果相同。总结起来，sh跟bash的区别，实
+际上是bash有没开启posix模式的区别。遵守posix规范，可能包括，”当某行代码出错时，不继续
+往下执行。“
+
+最后加上一点说明，每个脚本开头都使用"#!"，#!实际上是一个2字节魔法数字，这是指定一个文
+件类型的特殊标记，在这种情况下，指的就是一个可执行的脚本。在#!之后，接一个路径名，这个
+路径名指定了一个解释脚本命令的程序，这个程序可以是shell，程序语言或者任意一个通用程序。
+
