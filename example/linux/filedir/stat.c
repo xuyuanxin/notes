@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[])
+int stat_eg01(int argc, char *argv[])
 {
 	int i;
 	struct stat buf;
@@ -10,33 +10,39 @@ int main(int argc, char *argv[])
 	
 	for (i = 1; i < argc; i++) 
 	{
-	    printf("%s: ", argv[i]);
+		printf("%s: ", argv[i]);
 		
-	    if (lstat(argv[i], &buf) < 0) 
+		if (lstat(argv[i], &buf) < 0) 
 		{
-	        printf("lstat error");
-	        continue;
-	    }
+			printf("lstat error");
+			continue;
+		}
 		
 		if (S_ISREG(buf.st_mode))
-		    ptr = "regular";
+			ptr = "regular";
 		else if (S_ISDIR(buf.st_mode))
-		    ptr = "directory";
+			ptr = "directory";
 		else if (S_ISCHR(buf.st_mode))
-		    ptr = "character special";
+			ptr = "character special";
 		else if (S_ISBLK(buf.st_mode))
-		    ptr = "block special";
+			ptr = "block special";
 		else if (S_ISFIFO(buf.st_mode))
-		    ptr = "fifo";
+			ptr = "fifo";
 		else if (S_ISLNK(buf.st_mode))
-		    ptr = "symbolic link";
+			ptr = "symbolic link";
 		else if (S_ISSOCK(buf.st_mode))
-		    ptr = "socket";
+			ptr = "socket";
 		else
-		    ptr = "** unknown mode **";
+			ptr = "** unknown mode **";
 		
 		printf("%s\n", ptr);
 	}
+	exit(0);
+}
+
+int main(int argc, char *argv[])
+{
+	stat_eg01(argc,argv);
 	exit(0);
 }
 

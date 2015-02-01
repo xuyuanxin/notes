@@ -1,31 +1,85 @@
 #include <sys/stat.h>
 
-/*******************************************************************************
- @pathname:文件名
- @buf     ;返回文件的相关信息
- return   : 0 if OK,-1 on error
-*******************************************************************************/
+/*-----------------------------------------------------------------------------------
+ @pathname:
+ @buf     ;
+    The @buf argument is a pointer to a structure that we must supply. The functions 
+    fill in the structure. The definition of the structure can differ among implemen-
+    tations, (struct stat) 
+ @func
+    Given a @pathname, the @stat function returns a structure of information about t-
+    he named file. 
+ @return   : 
+    0 if OK,-1 on error
+
+ example: stat_eg01()
+-----------------------------------------------------------------------------------*/
 int stat(const char *restrict pathname,struct stat *restrict buf);
 
-/*******************************************************************************  
- @buf    ;返回文件的相关信息
- function:根据描述符@fd获取文件信息
- return  :0 if OK,-1 on error
-*******************************************************************************/
+/*----------------------------------------------------------------------------------- 
+ @fd
+ @buf
+    the same as stat
+ @func
+    The @fstat function obtains information about the file that is already open on t-
+    he descriptor @fd.
+ @return
+    0 if OK,-1 on error
+-----------------------------------------------------------------------------------*/
 int fstat(int fd,struct stat *buf);
 
-/*******************************************************************************
- @pathname:文件名
- @buf     ;返回文件的相关信息
- function :when the named file is asymbolic link, @lstat returns information about 
-           the symbolic link, not the file referenced by the symbolic link.  
- return   :0 if OK,-1 on error
-*******************************************************************************/
+/*-----------------------------------------------------------------------------------
+ @pathname:
+ @buf
+    the same as stat
+ @func :
+    when the named file is asymbolic link, @lstat returns information about the symb-
+    olic link, not the file referenced by the symbolic link.  
+ @return   :
+    0 if OK,-1 on error
+-----------------------------------------------------------------------------------*/
 int lstat(const char *restrict pathname,struct stat *restrict buf);
 
 /*return: 0 if OK,-1 on error*/
 int fstatat(intfd,const char *restrict pathname, struct stat *restrict buf,int flag);
 
+/*return: 0 if OK, -1 on error*/
+int faccessat(int fd, const char *pathname, int mode, int flag);
+
+
+/*-----------------------------------------------------------------------------------
+ @cmask : S_IRUSR ~ S_IXOTH
+    Any bits that are on in the file mode creation mask are turned off in the file's 
+    mode.
+ @func
+    sets the file mode creation mask for the process and returns the previous value. 
+ @returns: 
+    previous file mode creation mask
+
+ example: umask_eg01()
+-----------------------------------------------------------------------------------*/
+mode_t umask(mode_t cmask);
+
+#include <sys/stat.h>
+
+
+/*-----------------------------------------------------------------------------------
+ @mode:
+    bitwise OR of the constants:S_ISUID S_ISGID S_ISVTX, S_IRUSR ~ S_IXOTH
+ @return  : 
+    0 if OK, -1 on error
+
+ The @chmod, @fchmod, and @fchmodat functions allow us to change the file access per-
+ missions for an existing file. The @chmod function operates on the specified file, 
+ whereas the @fchmod function operates on a file that has already been opened. To ch-
+ ange the permission bits of a file, the effective user ID of the process must be eq-
+ ual to the owner ID of the file, or the process must have superuser permissions.
+
+ example: chmod_eg01()
+-----------------------------------------------------------------------------------*/
+int chmod(const char *pathname, mode_t mode);
+int fchmod(int fd, mode_t mode);
+int fchmodat(int fd, const char *pathname, mode_t mode, int flag);
 
 
 #include <unistd.h>
@@ -33,48 +87,25 @@ int fstatat(intfd,const char *restrict pathname, struct stat *restrict buf,int f
 #define W_OK /*test for write permission*/
 #define X_OK /*test for execute permission*/
 
-/*******************************************************************************
- @mode : 要判断哪些权限 R_OK 等
+/*-----------------------------------------------------------------------------------
+ @mode : 
+    The @mode is either the value F_OK to test if a file exists, or the bitwise OR of 
+    any of the flags:R_OK W_OK X_OK
  return: 0 if OK, -1 on error
  功能  : 根据文件@pathname的实际用户ID，判断文件的权限
-*******************************************************************************/
+
+ when we open a file, the kernel performs its access tests based on the effective us-
+ er and group IDs. Sometimes, however, a process wants to test accessibility based on 
+ the real user and group IDs. This is useful when a process is running as someone el-
+ se, using either the set-user-ID or the set-group-ID feature. Even though a process 
+ might be set-user-ID to root, it might still want to verify that the real user can 
+ access a given file. The @access and @faccessat functions base their tests on the r-
+ eal user and group IDs. 
+
+ example: access_eg01()
+-----------------------------------------------------------------------------------*/
 int access(const char *pathname, int mode);
 
-/*return: 0 if OK, -1 on error*/
-int faccessat(int fd, const char *pathname, int mode, int flag);
-
-#include <sys/stat.h>
-
-/*******************************************************************************
- @cmask : S_IWGRP等，屏蔽字中为1的位，在文件mode中的相应位则一定被关闭
- returns: previous file mode creation mask
-*******************************************************************************/
-mode_t umask(mode_t cmask);
-
-#include <sys/stat.h>
-
-
-/*******************************************************************************
- function: 改变文件@pathname的属性
- return  : 0 if OK, -1 on error
-
- 想改变文件的权限位，进程的有效用户ID必须等于文件的所有者ID，或者进程必须具有超
- 级用户权限
-*******************************************************************************/
-int chmod(const char *pathname, mode_t mode);
-
-/*******************************************************************************
- function: 改变文件@fd的属性
- return  : 0 if OK, -1 on error
-*******************************************************************************/
-int fchmod(int fd, mode_t mode);
-
-/*return: 0 if OK, -1 on error*/
-int fchmodat(int fd, const char *pathname, mode_t mode, int flag);
-/*return: 0 if OK, -1 on error*/
-
-
-#include <unistd.h>
 /*******************************************************************************
  @owner  : -1表示不变
  @group  : -1表示不变

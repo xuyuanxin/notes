@@ -44,10 +44,10 @@
 #define S_ISLNK()  /*symbolic link*/
 #define S_ISSOCK() /*socket*/
 
-/*以下宏的参数是stat结构中指针*/
-#define S_TYPEISMQ()  /*message queue*/
-#define S_TYPEISSEM() /*semaphore*/
-#define S_TYPEISSHM() /*shared memory object*/
+/*以下宏的参数是stat结构指针 */
+#define S_TYPEISMQ()  /* message queue */
+#define S_TYPEISSEM() /* semaphore */
+#define S_TYPEISSHM() /* shared memory object */
 
 
 
@@ -183,22 +183,32 @@ x表示可执行，可运行这个程序
       -rw-r-Sr--的值为： 0 1 0 1 1 0 1 0 0 1 0 0
 
 ---->用户ID 用户ID是个整型数
-实际用户ID(RUID):用于在系统中标识一个用户是谁，当用户使用用户名和密码成功登录
-                 后一个UNIX系统后就唯一确定了他的RUID.
-有效用户ID(RUID):用于系统决定用户对系统资源的访问权限，通常情况下等于RUID。
+实际用户ID(RUID):
+    用于在系统中标识一个用户是谁，当用户使用用户名和密码成功登录后一个UNIX系统后就唯
+    一确定了他的RUID.
+有效用户ID(RUID):
+    用于系统决定用户对系统资源的访问权限，通常情况下等于RUID。
 设置用户ID(SUID):
-  When we execute a program file, the effective user ID of the process is usually 
-the real user ID, and the effective group ID is usually the real group ID. 
-However, we can also set a special flag in the file’s mode word (st_mode) that 
-says:"When this file is executed, set the effective user ID of the process to 
-be the owner of the file (st_uid)." Similarly, we can set another bit in the 
-file's mode word that causes the effective group ID to be the group owner of 
-the file (st_gid). These two bits in the file’s mode word are called the 
-set-user-ID bit and the set-group-ID bit.
-  For example, if the owner of the file is the superuser and if the file's 
-set-user-ID bit is set, then while that program file is running as a process, 
-it has superuser privileges. This happens regardless of the real user ID of 
-the process that executes the file. 
+    When we execute a program file, the effective user ID of the process is usually 
+    the real user ID, and the effective group ID is usually the real group ID. Howev-
+    er, we can also set a special flag in the file's mode word (st_mode) that says: "
+    When this file is executed, set the effective user ID of the process to be the o-
+    wner of the file (st_uid). " Similarly, we can set another bit in the file's mode 
+    word that causes the effective group ID to be the group owner of the file (st_gid
+    ). These two bits in the file's mode word are called the set-user-ID bit and the 
+    set-group-ID bit.
+    
+   For example, if the owner of the file is the superuser and if the file's set-user-
+   ID bit is set, then while that program file is running as a process, it has super-
+   user privileges. This happens regardless of the real user ID of the process that 
+   executes the file. 
+
+   As an example, the UNIX System program that allows anyone to change his or her pa-
+   ssword, passwd(1), is a set-user-ID program. This is required so that the program 
+   can write the new password to the password file, typically either /etc/passwd or 
+   /etc/shadow, files that should be writable only by the superuser. Because a proce-
+   ss that is running set-user-ID to some other user usually assumes extra permissio-
+   ns, it must be written carefully. 
 
 
 实际组ID
@@ -213,73 +223,99 @@ the process that executes the file.
 当一个程序设置了为SUID位时，内核就知道了运行这个程序的时候，应该认为是文件的所有
 者在运行这个程序。即该程序运行的时候，有效用户ID是该程序的所有者。
 
+---->
+Every file has an owner and a group owner. The owner is specified by the st_uid memb-
+er of the stat structure; the group owner, by the st_gid member.
+
 
 ---->文件访问权限
 u:表示用户(所有者)
 g:表示组
 o:表示其它
 
-********************************************************************************__
-1 用文件名打开任意类型的文件时，名字中包含的每一个目录都应该具有执行权限。这就是
-  为什么对于目录其执行权限位常被称为搜索位的原因。对于目录，读权限允许读目录，获
-  得在该目录中所有文件名的列表。目录的执行权限使我们可以通过该目录(也就是搜索该
-  目录，寻找一个特定的文件名)。
-  例如为了打开文件/usr/include/stdio.h，需要对目录/、/usr和/usr/iinclude具有执行
-  权限。然后需要就有对该文件本身的适当权限，这取决于以何种模式打开它(读写等)。
-2 The read permission for a file determines whether we can open an existing file 
-  for reading: the O_RDONLY and O_RDWR flags for the open function.
-3 The write permission for a file determines whether we can open an existing file 
-  for writing: the O_WRONLY and O_RDWR flags for the open function.
-4 We must have write permission for a file to specify the O_TRUNC flag in the 
-  open function.
-5 We cannot create a new file in a directory unless we have write permission and
-  execute permission in the directory.
-6 To delete an existing file, we need write permission and execute permission in 
-  the directory containing the file. We do not need read permission or write 
-  permission for the file itself.
-7 Execute permission for a file must be on if we want to execute the file using 
-  any of the seven exec functions. The file also has to be a regular file.
+*************************************************************************************
+1 The first rule is that whenever we want to open any type of file by name, we   must 
+  have execute permission in each directory mentioned in the name, including the cur-
+  rent directory, if it is implied. This is why the execute permission bit for a dir-
+  ectory is often called the search bit.
 
-  进程每次打开、创建或删除一个文件时，内核就进行文件访问权限测试，这种测试可能涉
-及文件的所有者(st_uid和st_gid)、进程的有效ID(有效用户ID和有效组ID)以及进程的附加
-组ID(若支持的话)。两个所有者ID是文件的性质，而两个有效ID和附加组ID则是进程的性质
-内核进行的测试是:
-1 If the effective user ID of the process is 0 (the superuser), access is allowed. 
-  This gives the superuser free rein throughout the entire file system.
-2 If the effective user ID of the process equals the owner ID of the file (i.e., 
-  the process owns the file), access is allowed if the appropriate user access
-  permission bit is set. Otherwise, permission is denied. By appropriate access
-  permission bit, we mean that if the process is opening the file for reading, 
-  the user-read bit must be on. If the process is opening the file for writing, 
-  the user-write bit must be on. If the process is executing the file, the 
-  user-execute bit must be on.
-3 If the effective group ID of the process or one of the supplementary group IDs 
-  of the process equals the group ID of the file, access is allowed if the 
-  appropriate group access permission bit is set. Otherwise, permission is denied.
-4 If the appropriate other access permission bit is set, access is allowed.
-  Otherwise, permission is denied.
+  For example, to open the file /usr/include/stdio.h, we need execute permission in 
+  the directory /, execute permission in the directory /usr, and execute permission 
+  in the directory /usr/include. We then need appropriate permission for the file it-
+  self, depending on how we're trying to open it: read-only, read–write, and so on.
   
-  These four steps are tried in sequence. Note that if the process owns the file
-(step 2), access is granted or denied based only on the user access permissions; 
-the group permissions are never looked at. Similarly, if the process does not 
-own the file but belongs to an appropriate group, access is granted or denied 
-based only on the group access permissions; the other permissions are not looked at.
+ If the current directory is /usr/include, then we need execute permission in the cu-
+ rrent directory to open the file stdio.h. This is an example of the current directo-
+ ry being implied, not specifically mentioned. It is identical to our opening the fi-
+ le ./stdio.h.
+
+ Note that read permission for a directory and execute permission for a directory me-
+ an different things. Read permission lets us read the directory, obtaining a list of
+ all the filenames in the directory. Execute permission lets us pass through the dir-
+ ectory when it is a component of a pathname that we are trying to access.(We need to 
+ search the directory to look for a specific filename.)
+
+ Another example of an implicit directory reference is if the PATH environment varia-
+ ble, specifies a directory that does not have execute permission enabled. In this c-
+ ase, the shell will never find executable files in that directory.
+ 
+2 The read permission for a file determines whether we can open an existing  file for 
+  reading: the O_RDONLY and O_RDWR flags for the open function.
+3 The write permission for a file determines whether we can open an existing file for 
+  writing: the O_WRONLY and O_RDWR flags for the open function.
+4 We must have write permission for a file to specify the O_TRUNC flag in the open f-
+  unction.
+5 We cannot create a new file in a directory unless we have write permission and exe-
+  cute permission in the directory.
+6 To delete an existing file, we need write permission and execute permission  in the 
+  directory containing the file. We do not need read permission  or  write permission 
+  for the file itself.
+7 Execute permission for a file must be on  if we want to execute the file  using any 
+  of the seven @exec functions. The file also has to be a regular file.
+
+ The file access tests that the kernel performs each time a process opens, creates,or
+ deletes a file depend on the owners of the file ( st_uid and st_gid ), the effective 
+ IDs of the process (effective user ID and effective group ID), and the supplementary 
+ group IDs of the process, if supported. The two owner IDs are properties of the file, 
+ whereas the two effective IDs and the supplementary group IDs are properties of  the 
+ process. The tests performed by the kernel are as follows:
+ 1 If the effective user ID of the process is 0 ( the superuser ), access is allowed. 
+   This gives the superuser free rein throughout the entire file system.
+ 2 If the effective user ID of the process equals the owner ID of the file (i.e., th-
+   e process owns the file), access is allowed if the appropriate user access permis-
+   sion bit is set. Otherwise, permission is denied. By appropriate access permission 
+   bit, we mean that if the process is opening the file for reading,the user-read bit 
+   must be on. If the process is opening the file for writing,the user-write bit must 
+   be on. If the process is executing the file, the user-execute bit must be on.
+ 3 If the effective group ID of the process or one of the supplementary group IDs  of 
+   the process equals the group ID of the file, access is allowed if  the appropriate 
+   group access permission bit is set. Otherwise, permission is denied.
+ 4 If the appropriate other access permission bit is set, access is allowed. Otherwi-
+   se, permission is denied.
+  
+ These four steps are tried in sequence. Note that if the process owns the file (step 
+ 2), access is granted or denied based only on the user access permissions; the group 
+ permissions are never looked at. Similarly, if the process does not own the file but 
+ belongs to an appropriate group, access is granted or denied based only on the group 
+ access permissions; the other permissions are not looked at.
 
 ********************************************************************************
-新文件的权限
-  The user ID of a new file is set to the effective user ID of the process. 
-POSIX.1 allows an implementation to choose one of the following options to 
-determine the group ID of a new file:
-1 The group ID of a new file can be the effective group ID of the process.
-2 The group ID of a new file can be the group ID of the directory in which 
-  the file is being created.
-  
-  Using the second option—inheriting the directory's group ID—assures us that
-all files and directories created in that directory will have the same group ID 
-as the directory. This group ownership of files and directories will then 
-propagate down the hierarchy from that point. This is used in the Linux directory
-/var/mail, for example.
+Ownership of New Files and Directories
+    The rules for the ownership of a new directory are identical to the rules in this 
+    section for the ownership of a new file.
 
+    The user ID of a new file is set to the effective user ID of the process. POSIX.1 
+    allows an implementation to choose one of the following options to determine  the 
+    group ID of a new file:
+    1 The group ID of a new file can be the effective group ID of the process.
+    2 The group ID of a new file can be the group ID of the directory in which the f-
+      ile is being created.
+  
+    Using the second option—inheriting the directory's group ID—assures us that all 
+    files and directories created in that directory will have the same group ID as t-
+    he directory.This group ownership of files and directories will then propagate d-
+    own the hierarchy from that point. This is used in the Linux directory /var/mail, 
+    for example.
 ********************************************************************************
 ---->i节点
 每一个新创建的文件分配一个Inode(索引结点),每个文件都有一个惟一的inode号
@@ -296,7 +332,37 @@ st_atim   last-access time of file data         read          -u
 st_mtim   last-modification time of file data   write         default
 st_ctim   last-change time of i-node status     chmod,chown   -c
 
+S_ISVTX bit
+    The S_ISVTX bit has an interesting history. On versions of the UNIX System   that 
+    predated demand paging, this bit was known as the sticky bit. If it was set   for 
+    an executable program file, then the first time the program was executed, a  copy 
+    of the program's text was saved in the swap area when the process terminated.(The 
+    text portion of a program is the machine instructions.) The program would then l-
+    oad into memory more quickly the next time it was executed, because the swap area 
+    was handled as a contiguous file, as compared to the possibly random location  of 
+    data blocks in a normal UNIX file system. The sticky bit was often set for common
+    application programs, such as the text editor and the passes of the C compiler. N
+    aturally, there was a limit to the number of sticky files that could be contained 
+    in the swap area before running out of swap space, but it was a useful technique. 
+    The name sticky came about because the text  portion  of the file stuck around in 
+    the swap area until the system was rebooted. Later versions of the UNIX System r-
+    eferred to this as the saved-text bit; hence the constant S_ISVTX. With today's n
+    ewer UNIX systems, most of which have a virtual memory system and a faster file s
+    ystem, the need for this technique has disappeared.
+    
+    On contemporary systems, the use of the sticky bit has been extended. The  Single
+    UNIX Specification allows the sticky bit to be set for a directory. If the bit is 
+    set for a directory, a file in the directory can be removed or renamed only if t-
+    he user has write permission for the directory and meets one of the following cr-
+    iteria:
+        Owns the file 
+        Owns the directory
+        Is the superuser
 
+    The directories /tmp and /var/tmp are typical candidates for the sticky bit—they 
+    are directories in which any user can typically create files. The permissions for 
+    these two directories are often read, write, and execute for everyone (user,group, 
+    and other).But users should not be able to delete or rename files owned by others.
 *************************************************************************************
 硬链接的定义
     Linux 文件系统最重要的特点之一是它的文件链接。链接是对文件的引用，这样您可以让文件

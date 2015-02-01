@@ -7,23 +7,6 @@
 #include <sys/stat.h>
 #include "ipc_pub.h"
 
-int main1(int argc, char **argv)
-{
-    int        readfd, writefd;
-
-    writefd = open(FIFO1, O_WRONLY, 0);
-    readfd = open(FIFO2, O_RDONLY, 0);
-
-    client(readfd, writefd);
-
-    close(readfd);
-    close(writefd);
-
-    unlink(FIFO1);
-    unlink(FIFO2);
-    exit(0);
-}
-
 /*-----------------------------------------------------------------------------------
  Create FlFO 
     The client's FIFO is created with the process ID as the final part of the pathname. 
@@ -71,6 +54,24 @@ int main(int argc, char **argv)
     }
     close(readfifo);
     unlink(fifoname);
+    exit(0);
+}
+
+
+int main1(int argc, char **argv)
+{
+    int        readfd, writefd;
+
+    writefd = open(FIFO1, O_WRONLY, 0);
+    readfd = open(FIFO2, O_RDONLY, 0);
+
+    client(readfd, writefd);
+
+    close(readfd);
+    close(writefd);
+
+    unlink(FIFO1);
+    unlink(FIFO2);
     exit(0);
 }
 
