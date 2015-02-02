@@ -25,17 +25,36 @@ int pthread_equal(pthread_t tid1,pthread_t tid2);
 /*Returns: the thread ID of the calling thread*/
 pthread_t pthread_self(void);
 
-/*
-@tidp:返回线程ID
-@attr:线程属性,为NULL时使用默认属性
-@start_rtn:新创建的线程从@start_rtn函数的地址开始运行
-@arg:@start_rtn函数的参数
-returns: 0 if OK, error number on failure
+/*-----------------------------------------------------------------------------------
+ @tidp
+    The memory location pointed to by @tidp is set to the thread ID of the newly cre-
+    ated thread when @pthread_create returns successfully. 
+ @attr:
+    The @attr argument is used to customize various thread attributes. set this to NULL 
+    to create a thread with the default attributes.
+ @start_rtn
+    The newly created thread starts running at the address of the start_rtn function.
+ @arg:
+    If you need to pass more  than one argument to the @start_rtn function, then  you 
+    need to store them in a structure and pass the address of the structure in @arg.
+ @returns:
+    0 if OK, error number on failure
 
-1 新创建的线程可以访问进程的地址空间
-2 继承调用线程的浮点环境和信号屏蔽字,但未决信号集被清除
-3 不保证新创建线程和调用线程的执行顺序*/
-int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, void *(*start_rtn)(void *), void *restrict arg);
+ When a thread is created, there is no guarantee which will run first: the newly cre-
+ ated thread or the calling thread. The newly created thread has access to the proce-
+ ss address space and inherits the calling thread's floating-point environment and s-
+ ignal mask; however, the set of pending signals for the thread is cleared.
+ 
+ Note that the pthread functions usually return an error code when they fail. They d-
+ on't set @errno like the other POSIX functions. The per-thread copy of @errno is pr-
+ ovided only for compatibility with existing functions that use it. With threads,  it 
+ is cleaner to return the error code from the function, thereby restricting the scope 
+ of the error to the function that caused it, instead of relying on some global state 
+ that is changed as a side effect of the function.
+
+*/
+int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, 
+void *(*start_rtn)(void *), void *restrict arg);
 
 /*If any thread within a process calls exit, _Exit,or _exit,then the entire process terminates. 
   Similarly,when the default action is to terminate the process, a signal sent to a thread will terminate the entire process 
@@ -145,4 +164,13 @@ int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
 When the lock can be acquired, these functions return 0. Otherwise, they return the error EBUSY.*/
 int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
 
+#include <pthread.h>
+
+
+/*
+ set/get the concurrency level
+ Compile and link with -pthread.
+*/	
+int pthread_setconcurrency(int new_level);
+int pthread_getconcurrency(void);
 
