@@ -1,4 +1,4 @@
-typedef unsigned long int pthread_t; /* linuxä¸­è¿™ä¹ˆå®šä¹‰ */
+typedef unsigned long int pthread_t; /* linuxÖÐÕâÃ´¶¨Òå */
 
 #include <pthread.h>
 /*Returns: nonzero if equal, 0 otherwise*/
@@ -59,22 +59,22 @@ void pthread_exit(void *rval_ptr);
 
 
 /*-----------------------------------------------------------------------------------
- åœ¨ä»»ä½•ä¸€ä¸ªæ—¶é—´ç‚¹ä¸Šï¼Œçº¿ç¨‹æ˜¯å¯ç»“åˆçš„ï¼ˆjoinableï¼‰æˆ–è€…æ˜¯åˆ†ç¦»çš„ï¼ˆdetachedï¼‰ã€‚ä¸€ä¸ªå¯ç»“åˆçš„
- çº¿ç¨‹èƒ½å¤Ÿè¢«å…¶ä»–çº¿ç¨‹æ”¶å›žå…¶èµ„æºå’Œæ€æ­»ã€‚åœ¨è¢«å…¶ä»–çº¿ç¨‹å›žæ”¶ä¹‹å‰ï¼Œå®ƒçš„å­˜å‚¨å™¨èµ„æºï¼ˆä¾‹å¦‚æ ˆï¼‰æ˜¯
- ä¸é‡Šæ”¾çš„ã€‚ç›¸åï¼Œä¸€ä¸ªåˆ†ç¦»çš„çº¿ç¨‹æ˜¯ä¸èƒ½è¢«å…¶ä»–çº¿ç¨‹å›žæ”¶æˆ–æ€æ­»çš„ï¼Œå®ƒçš„å­˜å‚¨å™¨èµ„æºåœ¨å®ƒç»ˆæ­¢æ—¶
- ç”±ç³»ç»Ÿè‡ªåŠ¨é‡Šæ”¾ã€‚
+ ÔÚÈÎºÎÒ»¸öÊ±¼äµãÉÏ£¬Ïß³ÌÊÇ¿É½áºÏµÄ£¨joinable£©»òÕßÊÇ·ÖÀëµÄ£¨detached£©¡£Ò»¸ö¿É½áºÏµÄ
+ Ïß³ÌÄÜ¹»±»ÆäËûÏß³ÌÊÕ»ØÆä×ÊÔ´ºÍÉ±ËÀ¡£ÔÚ±»ÆäËûÏß³Ì»ØÊÕÖ®Ç°£¬ËüµÄ´æ´¢Æ÷×ÊÔ´£¨ÀýÈçÕ»£©ÊÇ
+ ²»ÊÍ·ÅµÄ¡£Ïà·´£¬Ò»¸ö·ÖÀëµÄÏß³ÌÊÇ²»ÄÜ±»ÆäËûÏß³Ì»ØÊÕ»òÉ±ËÀµÄ£¬ËüµÄ´æ´¢Æ÷×ÊÔ´ÔÚËüÖÕÖ¹Ê±
+ ÓÉÏµÍ³×Ô¶¯ÊÍ·Å¡£
 
- åˆ›å»ºä¸€ä¸ªçº¿ç¨‹é»˜è®¤çš„çŠ¶æ€æ˜¯ joinable, å¦‚æžœä¸€ä¸ªçº¿ç¨‹ç»“æŸè¿è¡Œä½†æ²¡æœ‰è¢«join,åˆ™å®ƒçš„çŠ¶æ€ç±»ä¼¼äºŽ
- è¿›ç¨‹ä¸­çš„ Zombie Process , å³è¿˜æœ‰ä¸€éƒ¨åˆ†èµ„æºæ²¡æœ‰è¢«å›žæ”¶(é€€å‡ºçŠ¶æ€ç )ï¼Œæ‰€ä»¥åˆ›å»ºçº¿ç¨‹è€…åº”è¯¥
- è°ƒç”¨ @pthread_join æ¥ç­‰å¾…çº¿ç¨‹è¿è¡Œç»“æŸï¼Œå¹¶å¯å¾—åˆ°çº¿ç¨‹çš„é€€å‡ºä»£ç ï¼Œå›žæ”¶å…¶èµ„æº(ç±»ä¼¼äºŽwait,
- waitpid). ä½†æ˜¯è°ƒç”¨pthread_join(pthread_id)åŽï¼Œå¦‚æžœè¯¥çº¿ç¨‹æ²¡æœ‰è¿è¡Œç»“æŸï¼Œè°ƒç”¨è€…ä¼šè¢«é˜»å¡žï¼Œ
- åœ¨æœ‰äº›æƒ…å†µä¸‹æˆ‘ä»¬å¹¶ä¸å¸Œæœ›å¦‚æ­¤ï¼Œæ¯”å¦‚åœ¨WebæœåŠ¡å™¨ä¸­å½“ä¸»çº¿ç¨‹ä¸ºæ¯ä¸ªæ–°æ¥çš„é“¾æŽ¥åˆ›å»ºä¸€ä¸ªå­çº¿ç¨‹
- è¿›è¡Œå¤„ç†çš„æ—¶å€™ï¼Œä¸»çº¿ç¨‹å¹¶ä¸å¸Œæœ›å› ä¸ºè°ƒç”¨pthread_joinè€Œé˜»å¡ž(å› ä¸ºè¿˜è¦ç»§ç»­å¤„ç†ä¹‹åŽåˆ°æ¥çš„é“¾
- æŽ¥)ï¼Œè¿™æ—¶å¯ä»¥åœ¨å­çº¿ç¨‹ä¸­åŠ å…¥ä»£ç 
+ ´´½¨Ò»¸öÏß³ÌÄ¬ÈÏµÄ×´Ì¬ÊÇ joinable, Èç¹ûÒ»¸öÏß³Ì½áÊøÔËÐÐµ«Ã»ÓÐ±»join,ÔòËüµÄ×´Ì¬ÀàËÆÓÚ
+ ½ø³ÌÖÐµÄ Zombie Process , ¼´»¹ÓÐÒ»²¿·Ö×ÊÔ´Ã»ÓÐ±»»ØÊÕ(ÍË³ö×´Ì¬Âë)£¬ËùÒÔ´´½¨Ïß³ÌÕßÓ¦¸Ã
+ µ÷ÓÃ @pthread_join À´µÈ´ýÏß³ÌÔËÐÐ½áÊø£¬²¢¿ÉµÃµ½Ïß³ÌµÄÍË³ö´úÂë£¬»ØÊÕÆä×ÊÔ´(ÀàËÆÓÚwait,
+ waitpid). µ«ÊÇµ÷ÓÃpthread_join(pthread_id)ºó£¬Èç¹û¸ÃÏß³ÌÃ»ÓÐÔËÐÐ½áÊø£¬µ÷ÓÃÕß»á±»×èÈû£¬
+ ÔÚÓÐÐ©Çé¿öÏÂÎÒÃÇ²¢²»Ï£ÍûÈç´Ë£¬±ÈÈçÔÚWeb·þÎñÆ÷ÖÐµ±Ö÷Ïß³ÌÎªÃ¿¸öÐÂÀ´µÄÁ´½Ó´´½¨Ò»¸ö×ÓÏß³Ì
+ ½øÐÐ´¦ÀíµÄÊ±ºò£¬Ö÷Ïß³Ì²¢²»Ï£ÍûÒòÎªµ÷ÓÃpthread_join¶ø×èÈû(ÒòÎª»¹Òª¼ÌÐø´¦ÀíÖ®ºóµ½À´µÄÁ´
+ ½Ó)£¬ÕâÊ±¿ÉÒÔÔÚ×ÓÏß³ÌÖÐ¼ÓÈë´úÂë
             pthread_detach(pthread_self())
- æˆ–è€…çˆ¶çº¿ç¨‹è°ƒç”¨
-            pthread_detach(thread_id) //(éžé˜»å¡žï¼Œå¯ç«‹å³è¿”å›ž)
- è¿™å°†è¯¥å­çº¿ç¨‹çš„çŠ¶æ€è®¾ç½®ä¸ºdetached,åˆ™è¯¥çº¿ç¨‹è¿è¡Œç»“æŸåŽä¼šè‡ªåŠ¨é‡Šæ”¾æ‰€æœ‰èµ„æºã€‚
+ »òÕß¸¸Ïß³Ìµ÷ÓÃ
+            pthread_detach(thread_id) //(·Ç×èÈû£¬¿ÉÁ¢¼´·µ»Ø)
+ Õâ½«¸Ã×ÓÏß³ÌµÄ×´Ì¬ÉèÖÃÎªdetached,Ôò¸ÃÏß³ÌÔËÐÐ½áÊøºó»á×Ô¶¯ÊÍ·ÅËùÓÐ×ÊÔ´¡£
 -----------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------
  @returns 
@@ -270,26 +270,26 @@ int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
 int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
 
 /*----------------------------------------------------------------------------------- 
- äº’æ–¥é”æ˜¯ä¸ºäº†ä¸Šé”è€Œè®¾è®¡çš„ï¼Œæ¡ä»¶å˜é‡æ˜¯ä¸ºäº†ç­‰å¾…è€Œè®¾è®¡çš„ 
- ä¸Žäº’æ–¥é”ä¸åŒï¼Œæ¡ä»¶å˜é‡æ˜¯ç”¨æ¥ç­‰å¾…è€Œä¸æ˜¯ç”¨æ¥ä¸Šé”çš„ã€‚æ¡ä»¶å˜é‡ç”¨æ¥è‡ªåŠ¨é˜»å¡žä¸€ä¸ªçº¿ç¨‹ï¼Œç›´åˆ°
- æŸç‰¹æ®Šæƒ…å†µå‘ç”Ÿä¸ºæ­¢ã€‚é€šå¸¸æ¡ä»¶å˜é‡å’Œäº’æ–¥é”åŒæ—¶ä½¿ç”¨ã€‚
+ »¥³âËøÊÇÎªÁËÉÏËø¶øÉè¼ÆµÄ£¬Ìõ¼þ±äÁ¿ÊÇÎªÁËµÈ´ý¶øÉè¼ÆµÄ 
+ Óë»¥³âËø²»Í¬£¬Ìõ¼þ±äÁ¿ÊÇÓÃÀ´µÈ´ý¶ø²»ÊÇÓÃÀ´ÉÏËøµÄ¡£Ìõ¼þ±äÁ¿ÓÃÀ´×Ô¶¯×èÈûÒ»¸öÏß³Ì£¬Ö±µ½
+ Ä³ÌØÊâÇé¿ö·¢ÉúÎªÖ¹¡£Í¨³£Ìõ¼þ±äÁ¿ºÍ»¥³âËøÍ¬Ê±Ê¹ÓÃ¡£
 
- æ¡ä»¶å˜é‡ä½¿æˆ‘ä»¬å¯ä»¥ç¡çœ ç­‰å¾…æŸç§æ¡ä»¶å‡ºçŽ°ã€‚æ¡ä»¶å˜é‡æ˜¯åˆ©ç”¨çº¿ç¨‹é—´å…±äº«çš„å…¨å±€å˜é‡è¿›è¡ŒåŒæ­¥çš„
- ä¸€ç§æœºåˆ¶ï¼Œ ä¸»è¦åŒ…æ‹¬ä¸¤ä¸ªåŠ¨ä½œï¼šä¸€ä¸ªçº¿ç¨‹ç­‰å¾…"æ¡ä»¶å˜é‡çš„æ¡ä»¶æˆç«‹"è€ŒæŒ‚èµ·ï¼›å¦ä¸€ä¸ªçº¿ç¨‹ä½¿"æ¡
- ä»¶æˆç«‹"ï¼ˆç»™å‡ºæ¡ä»¶æˆç«‹ä¿¡å·ï¼‰ã€‚
+ Ìõ¼þ±äÁ¿Ê¹ÎÒÃÇ¿ÉÒÔË¯ÃßµÈ´ýÄ³ÖÖÌõ¼þ³öÏÖ¡£Ìõ¼þ±äÁ¿ÊÇÀûÓÃÏß³Ì¼ä¹²ÏíµÄÈ«¾Ö±äÁ¿½øÐÐÍ¬²½µÄ
+ Ò»ÖÖ»úÖÆ£¬ Ö÷Òª°üÀ¨Á½¸ö¶¯×÷£ºÒ»¸öÏß³ÌµÈ´ý"Ìõ¼þ±äÁ¿µÄÌõ¼þ³ÉÁ¢"¶ø¹ÒÆð£»ÁíÒ»¸öÏß³ÌÊ¹"Ìõ
+ ¼þ³ÉÁ¢"£¨¸ø³öÌõ¼þ³ÉÁ¢ÐÅºÅ£©¡£
 
- æ¡ä»¶çš„æ£€æµ‹æ˜¯åœ¨äº’æ–¥é”çš„ä¿æŠ¤ä¸‹è¿›è¡Œçš„ã€‚å¦‚æžœä¸€ä¸ªæ¡ä»¶ä¸ºå‡ï¼Œä¸€ä¸ªçº¿ç¨‹è‡ªåŠ¨é˜»å¡žï¼Œå¹¶é‡Šæ”¾ç­‰å¾…çŠ¶
- æ€æ”¹å˜çš„äº’æ–¥é”ã€‚å¦‚æžœå¦ä¸€ä¸ªçº¿ç¨‹æ”¹å˜äº†æ¡ä»¶ï¼Œå®ƒå‘ä¿¡å·ç»™å…³è”çš„æ¡ä»¶å˜é‡ï¼Œå”¤é†’ä¸€ä¸ªæˆ–å¤šä¸ªç­‰
- å¾…å®ƒçš„çº¿ç¨‹ï¼Œé‡æ–°èŽ·å¾—äº’æ–¥é”ï¼Œé‡æ–°è¯„ä»·æ¡ä»¶ã€‚å¦‚æžœä¸¤è¿›ç¨‹å…±äº«å¯è¯»å†™çš„å†…å­˜ï¼Œæ¡ä»¶å˜é‡å¯ä»¥è¢«
- ç”¨æ¥å®žçŽ°è¿™ä¸¤è¿›ç¨‹é—´çš„çº¿ç¨‹åŒæ­¥ã€‚
+ Ìõ¼þµÄ¼ì²âÊÇÔÚ»¥³âËøµÄ±£»¤ÏÂ½øÐÐµÄ¡£Èç¹ûÒ»¸öÌõ¼þÎª¼Ù£¬Ò»¸öÏß³Ì×Ô¶¯×èÈû£¬²¢ÊÍ·ÅµÈ´ý×´
+ Ì¬¸Ä±äµÄ»¥³âËø¡£Èç¹ûÁíÒ»¸öÏß³Ì¸Ä±äÁËÌõ¼þ£¬Ëü·¢ÐÅºÅ¸ø¹ØÁªµÄÌõ¼þ±äÁ¿£¬»½ÐÑÒ»¸ö»ò¶à¸öµÈ
+ ´ýËüµÄÏß³Ì£¬ÖØÐÂ»ñµÃ»¥³âËø£¬ÖØÐÂÆÀ¼ÛÌõ¼þ¡£Èç¹ûÁ½½ø³Ì¹²Ïí¿É¶ÁÐ´µÄÄÚ´æ£¬Ìõ¼þ±äÁ¿¿ÉÒÔ±»
+ ÓÃÀ´ÊµÏÖÕâÁ½½ø³Ì¼äµÄÏß³ÌÍ¬²½¡£
 
- äº’æ–¥é”ç”¨äºŽä¿æŠ¤ä»£ç ä¸´ç•ŒåŒºï¼Œä»Žè€Œä¿è¯ä»»ä½•æ—¶åˆ»åªæœ‰ä¸€ä¸ªçº¿ç¨‹æˆ–è€…è¿›ç¨‹åœ¨ä¸´ç•ŒåŒºæ‰§è¡Œã€‚æœ‰æ—¶å€™ä¸€
- ä¸ªçº¿ç¨‹èŽ·å¾—æŸä¸ªäº’æ–¥é”åŽï¼Œå‘çŽ°è‡ªå·±éœ€è¦ç­‰å¾…æŸä¸ªæ¡ä»¶å˜ä¸ºçœŸï¼Œè¿™æ ·çº¿ç¨‹å°±å¯ä»¥ç­‰å¾…åœ¨æŸä¸ªæ¡ä»¶
- ä¸Šã€‚æ¡ä»¶å˜é‡æ€»æ˜¯æœ‰ä¸€ä¸ªäº’æ–¥é”ä¸Žä¹‹å…³è”ã€‚
+ »¥³âËøÓÃÓÚ±£»¤´úÂëÁÙ½çÇø£¬´Ó¶ø±£Ö¤ÈÎºÎÊ±¿ÌÖ»ÓÐÒ»¸öÏß³Ì»òÕß½ø³ÌÔÚÁÙ½çÇøÖ´ÐÐ¡£ÓÐÊ±ºòÒ»
+ ¸öÏß³Ì»ñµÃÄ³¸ö»¥³âËøºó£¬·¢ÏÖ×Ô¼ºÐèÒªµÈ´ýÄ³¸öÌõ¼þ±äÎªÕæ£¬ÕâÑùÏß³Ì¾Í¿ÉÒÔµÈ´ýÔÚÄ³¸öÌõ¼þ
+ ÉÏ¡£Ìõ¼þ±äÁ¿×ÜÊÇÓÐÒ»¸ö»¥³âËøÓëÖ®¹ØÁª¡£
 
- äº’æ–¥é”å’Œæ¡ä»¶å˜é‡å¯ä»¥é™æ€åˆ†é…å¹¶é™æ€åˆå§‹åŒ–ã€‚å®ƒä»¬ä¹Ÿå¯ä»¥åŠ¨æ€åˆ†é…å¹¶è¦æ±‚åŠ¨æ€åœ°åˆå§‹åŒ–å®ƒä»¬ã€‚
- åŠ¨æ€åˆå§‹åŒ–å…è®¸æˆ‘ä»¬æŒ‡å®šè¿›ç¨‹é—´å…±äº«å±žæ€§ï¼Œä»Žè€Œå…è®¸åœ¨ä¸åŒè¿›ç¨‹é—´å…±äº«æŸä¸ªäº’æ–¥é”æˆ–æ¡ä»¶å˜é‡ï¼Œ
- å…¶å‰ææ˜¯è¯¥äº’æ–¥é”æˆ–æ¡ä»¶å˜é‡å¿…é¡»å­˜åœ¨åœ¨ç”±è¿™äº›è¿›ç¨‹å…±äº«çš„å†…å­˜åŒºã€‚
+ »¥³âËøºÍÌõ¼þ±äÁ¿¿ÉÒÔ¾²Ì¬·ÖÅä²¢¾²Ì¬³õÊ¼»¯¡£ËüÃÇÒ²¿ÉÒÔ¶¯Ì¬·ÖÅä²¢ÒªÇó¶¯Ì¬µØ³õÊ¼»¯ËüÃÇ¡£
+ ¶¯Ì¬³õÊ¼»¯ÔÊÐíÎÒÃÇÖ¸¶¨½ø³Ì¼ä¹²ÏíÊôÐÔ£¬´Ó¶øÔÊÐíÔÚ²»Í¬½ø³Ì¼ä¹²ÏíÄ³¸ö»¥³âËø»òÌõ¼þ±äÁ¿£¬
+ ÆäÇ°ÌáÊÇ¸Ã»¥³âËø»òÌõ¼þ±äÁ¿±ØÐë´æÔÚÔÚÓÉÕâÐ©½ø³Ì¹²ÏíµÄÄÚ´æÇø¡£
 -----------------------------------------------------------------------------------*/
 
 /*
@@ -336,8 +336,11 @@ int pthread_cond_timedwait(pthread_cond_t *restrict cond,pthread_mutex_t *restri
 
  There are two functions to notify threads that a condition has been satisfied. The
  @pthread_cond_signal function will wake up at least one thread waiting on a conditi-
- on (å¦‚æžœæ²¡æœ‰ç­‰å¾…çš„çº¿ç¨‹ï¼Œåˆ™ä»€ä¹ˆä¹Ÿä¸åš ), whereas the @pthread_cond_broadcast function 
+ on (Èç¹ûÃ»ÓÐµÈ´ýµÄÏß³Ì£¬ÔòÊ²Ã´Ò²²»×ö ), whereas the @pthread_cond_broadcast function 
  will wake up all threads waiting on a condition. 
+
+ if a thread calls  @pthread_cond_signal and no thread is currently blocked in a call 
+ to @pthread_cond_wait, the signal is lost.
   
  The POSIX specification allows for implementations of pthread_cond_signal to wake up 
  more than one thread, to make the implementation simpler.
@@ -451,3 +454,4 @@ int pthread_barrier_wait(pthread_barrier_t *barrier);
 -----------------------------------------------------------------------------------*/	
 int pthread_setconcurrency(int new_level);
 int pthread_getconcurrency(void);
+
