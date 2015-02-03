@@ -1,21 +1,4 @@
-typedef unsigned long int pthread_t; /*linuxÖĞÕâÃ´¶¨Òå*/
-/*
-ÔÚÈÎºÎÒ»¸öÊ±¼äµãÉÏ£¬Ïß³ÌÊÇ¿É½áºÏµÄ£¨joinable£©»òÕßÊÇ·ÖÀëµÄ£¨detached£©¡£
-Ò»¸ö¿É½áºÏµÄÏß³ÌÄÜ¹»±»ÆäËûÏß³ÌÊÕ»ØÆä×ÊÔ´ºÍÉ±ËÀ¡£ÔÚ±»ÆäËûÏß³Ì»ØÊÕÖ®Ç°£¬ËüµÄ´æ´¢Æ÷×ÊÔ´£¨ÀıÈçÕ»£©ÊÇ²»ÊÍ·ÅµÄ¡£
-Ïà·´£¬Ò»¸ö·ÖÀëµÄÏß³ÌÊÇ²»ÄÜ±»ÆäËûÏß³Ì»ØÊÕ»òÉ±ËÀµÄ£¬ËüµÄ´æ´¢Æ÷×ÊÔ´ÔÚËüÖÕÖ¹Ê±ÓÉÏµÍ³×Ô¶¯ÊÍ·Å¡£
-
-´´½¨Ò»¸öÏß³ÌÄ¬ÈÏµÄ×´Ì¬ÊÇjoinable, Èç¹ûÒ»¸öÏß³Ì½áÊøÔËĞĞµ«Ã»ÓĞ±»join,ÔòËüµÄ×´Ì¬ÀàËÆÓÚ½ø³ÌÖĞµÄZombie Process,
-¼´»¹ÓĞÒ»²¿·Ö×ÊÔ´Ã»ÓĞ±»»ØÊÕ£¨ÍË³ö×´Ì¬Âë£©£¬ËùÒÔ´´½¨Ïß³ÌÕßÓ¦¸Ãµ÷ÓÃpthread_joinÀ´µÈ´ıÏß³ÌÔËĞĞ½áÊø£¬
-²¢¿ÉµÃµ½Ïß³ÌµÄÍË³ö´úÂë£¬»ØÊÕÆä×ÊÔ´£¨ÀàËÆÓÚwait,waitpid).µ«ÊÇµ÷ÓÃpthread_join(pthread_id)ºó£¬
-Èç¹û¸ÃÏß³ÌÃ»ÓĞÔËĞĞ½áÊø£¬µ÷ÓÃÕß»á±»×èÈû£¬ÔÚÓĞĞ©Çé¿öÏÂÎÒÃÇ²¢²»Ï£ÍûÈç´Ë£¬
-±ÈÈçÔÚWeb·şÎñÆ÷ÖĞµ±Ö÷Ïß³ÌÎªÃ¿¸öĞÂÀ´µÄÁ´½Ó´´½¨Ò»¸ö×ÓÏß³Ì½øĞĞ´¦ÀíµÄÊ±ºò£¬
-Ö÷Ïß³Ì²¢²»Ï£ÍûÒòÎªµ÷ÓÃpthread_join¶ø×èÈû£¨ÒòÎª»¹Òª¼ÌĞø´¦ÀíÖ®ºóµ½À´µÄÁ´½Ó£©£¬
-ÕâÊ±¿ÉÒÔÔÚ×ÓÏß³ÌÖĞ¼ÓÈë´úÂë
-pthread_detach(pthread_self())
-»òÕß¸¸Ïß³Ìµ÷ÓÃ
-pthread_detach(thread_id)£¨·Ç×èÈû£¬¿ÉÁ¢¼´·µ»Ø£©
-Õâ½«¸Ã×ÓÏß³ÌµÄ×´Ì¬ÉèÖÃÎªdetached,Ôò¸ÃÏß³ÌÔËĞĞ½áÊøºó»á×Ô¶¯ÊÍ·ÅËùÓĞ×ÊÔ´¡£
-*/
+typedef unsigned long int pthread_t; /* linuxä¸­è¿™ä¹ˆå®šä¹‰ */
 
 #include <pthread.h>
 /*Returns: nonzero if equal, 0 otherwise*/
@@ -51,126 +34,420 @@ pthread_t pthread_self(void);
  is cleaner to return the error code from the function, thereby restricting the scope 
  of the error to the function that caused it, instead of relying on some global state 
  that is changed as a side effect of the function.
-
-*/
+-----------------------------------------------------------------------------------*/
 int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, 
-void *(*start_rtn)(void *), void *restrict arg);
+                       void *(*start_rtn)(void *), void *restrict arg);
 
-/*If any thread within a process calls exit, _Exit,or _exit,then the entire process terminates. 
-  Similarly,when the default action is to terminate the process, a signal sent to a thread will terminate the entire process 
-  A single thread can exit in three ways, there by stopping its flow of control, without terminating the entireprocess.
-  1 The thread can simply return from the start routine. The return value is the thread's exit code.
-  2 The thread can be canceled by another thread in the same process.
-  3 The thread can call @pthread_exit.*/
+
+/*-----------------------------------------------------------------------------------
+ @rval_ptr
+    The rval_ptr argument is a typeless pointer,similar to the single argument passed 
+    to the start routine.This pointer is available to other threads in the process by 
+    calling the @pthread_join function.
+
+ If any thread within a process calls exit, _Exit,or _exit,then the entire process t-
+ erminates. Similarly, when the default action  is to terminate the process, a signal 
+ sent to a thread will terminate the entire process 
+ A single thread can exit in three ways, there by stopping its flow of control, with-
+ out terminating the entireprocess.
+ 1 The thread can simply return from the start routine. The return value is the thre-
+   ad's exit code.
+ 2 The thread can be canceled by another thread in the same process.
+ 3 The thread can call @pthread_exit.
+-----------------------------------------------------------------------------------*/
 void pthread_exit(void *rval_ptr);
 
-/*
-function: »ñÈ¡Ïß³Ì@threadµÄ·µ»Ø×´Ì¬(@rval_ptrÖ¸Ïò·µ»Ø×´Ì¬)
-returns : 0 if OK, error number on failure 
 
-1 µ÷ÓÃÏß³ÌÒ»Ö±×èÈû,Ö±µ½Ö¸¶¨Ïß³Ìµ÷ÓÃ@pthread_exit¡¢´ÓÆô¶¯Àı³ÌÖĞ·µ»Ø»òÕß±»È¡Ïû
-2 Èç¹û´ÓÆô¶¯Àı³ÌÖĞ·µ»Ø,@rval_ptr½«°üº¬·µ»ØÂë
-3 Èç¹ûÏß³Ì±»È¡Ïû,ÓĞ@rval_ptrÖ¸¶¨µÄÄÚ´æµ¥Ôª¾ÍÖÃÎª PTHREAD_CANCELED
-4 Èç¹û¶Ô·µ»Ø×´Ì¬²»¸ĞĞËÈ¤,¿ÉÒÔ°Ñ@rval_ptrÖÃNULL
-5 µ±º¯Êı@pthread_join·µ»ØÊ±£¬±»µÈ´ıÏß³Ì@threadµÄ×ÊÔ´±»ÊÕ»Ø¡£*/
+/*-----------------------------------------------------------------------------------
+ åœ¨ä»»ä½•ä¸€ä¸ªæ—¶é—´ç‚¹ä¸Šï¼Œçº¿ç¨‹æ˜¯å¯ç»“åˆçš„ï¼ˆjoinableï¼‰æˆ–è€…æ˜¯åˆ†ç¦»çš„ï¼ˆdetachedï¼‰ã€‚ä¸€ä¸ªå¯ç»“åˆçš„
+ çº¿ç¨‹èƒ½å¤Ÿè¢«å…¶ä»–çº¿ç¨‹æ”¶å›å…¶èµ„æºå’Œæ€æ­»ã€‚åœ¨è¢«å…¶ä»–çº¿ç¨‹å›æ”¶ä¹‹å‰ï¼Œå®ƒçš„å­˜å‚¨å™¨èµ„æºï¼ˆä¾‹å¦‚æ ˆï¼‰æ˜¯
+ ä¸é‡Šæ”¾çš„ã€‚ç›¸åï¼Œä¸€ä¸ªåˆ†ç¦»çš„çº¿ç¨‹æ˜¯ä¸èƒ½è¢«å…¶ä»–çº¿ç¨‹å›æ”¶æˆ–æ€æ­»çš„ï¼Œå®ƒçš„å­˜å‚¨å™¨èµ„æºåœ¨å®ƒç»ˆæ­¢æ—¶
+ ç”±ç³»ç»Ÿè‡ªåŠ¨é‡Šæ”¾ã€‚
+
+ åˆ›å»ºä¸€ä¸ªçº¿ç¨‹é»˜è®¤çš„çŠ¶æ€æ˜¯ joinable, å¦‚æœä¸€ä¸ªçº¿ç¨‹ç»“æŸè¿è¡Œä½†æ²¡æœ‰è¢«join,åˆ™å®ƒçš„çŠ¶æ€ç±»ä¼¼äº
+ è¿›ç¨‹ä¸­çš„ Zombie Process , å³è¿˜æœ‰ä¸€éƒ¨åˆ†èµ„æºæ²¡æœ‰è¢«å›æ”¶(é€€å‡ºçŠ¶æ€ç )ï¼Œæ‰€ä»¥åˆ›å»ºçº¿ç¨‹è€…åº”è¯¥
+ è°ƒç”¨ @pthread_join æ¥ç­‰å¾…çº¿ç¨‹è¿è¡Œç»“æŸï¼Œå¹¶å¯å¾—åˆ°çº¿ç¨‹çš„é€€å‡ºä»£ç ï¼Œå›æ”¶å…¶èµ„æº(ç±»ä¼¼äºwait,
+ waitpid). ä½†æ˜¯è°ƒç”¨pthread_join(pthread_id)åï¼Œå¦‚æœè¯¥çº¿ç¨‹æ²¡æœ‰è¿è¡Œç»“æŸï¼Œè°ƒç”¨è€…ä¼šè¢«é˜»å¡ï¼Œ
+ åœ¨æœ‰äº›æƒ…å†µä¸‹æˆ‘ä»¬å¹¶ä¸å¸Œæœ›å¦‚æ­¤ï¼Œæ¯”å¦‚åœ¨WebæœåŠ¡å™¨ä¸­å½“ä¸»çº¿ç¨‹ä¸ºæ¯ä¸ªæ–°æ¥çš„é“¾æ¥åˆ›å»ºä¸€ä¸ªå­çº¿ç¨‹
+ è¿›è¡Œå¤„ç†çš„æ—¶å€™ï¼Œä¸»çº¿ç¨‹å¹¶ä¸å¸Œæœ›å› ä¸ºè°ƒç”¨pthread_joinè€Œé˜»å¡(å› ä¸ºè¿˜è¦ç»§ç»­å¤„ç†ä¹‹ååˆ°æ¥çš„é“¾
+ æ¥)ï¼Œè¿™æ—¶å¯ä»¥åœ¨å­çº¿ç¨‹ä¸­åŠ å…¥ä»£ç 
+            pthread_detach(pthread_self())
+ æˆ–è€…çˆ¶çº¿ç¨‹è°ƒç”¨
+            pthread_detach(thread_id) //(éé˜»å¡ï¼Œå¯ç«‹å³è¿”å›)
+ è¿™å°†è¯¥å­çº¿ç¨‹çš„çŠ¶æ€è®¾ç½®ä¸ºdetached,åˆ™è¯¥çº¿ç¨‹è¿è¡Œç»“æŸåä¼šè‡ªåŠ¨é‡Šæ”¾æ‰€æœ‰èµ„æºã€‚
+-----------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------
+ @returns 
+    0 if OK, error number on failure 
+
+ The calling thread will block until the specified @thread calls @pthread_exit, retu-
+ rns from its start routine, or is canceled. If  the thread simply  returned from its 
+ start routine, @rval_ptr will contain the return code. If the  @thread was canceled, 
+ the memory location specified by @rval_ptr is set to PTHREAD_CANCELED.
+ 
+ By calling @pthread_join, we automatically place the thread with which we're joining 
+ in the detached state (discussed shortly) so that its resources can be recovered. If 
+ the thread was already in the detached state, @pthread_join can fail, returning EINVAL,
+ although this behavior is implementation-specific.
+ 
+ If we're not interested in a thread's return value, we can set @rval_ptr to NULL. In 
+ this case, calling @pthread_join allows us to wait for the specified thread, but do-
+ es not retrieve the thread's termination status.
+
+ example: pthread_join_eg01()
+-----------------------------------------------------------------------------------*/
 int pthread_join(pthread_t thread,void **rval_ptr);
 
-/*
-function: È¡ÏûÍ¬Ò»½ø³ÌÖĞµÄÏß³Ì@tid
-Returns : 0 if OK, error number on failure
-1 @pthread_cancel²»µÈ´ıÏß³ÌÖÕÖ¹,½ö½öÊÇÌá³öÇëÇó.Ïß³Ì¿ÉÒÔºöÂÔÕâ¸öÇëÇó
-2 Èç¹ûÏß³ÌÊÕµ½ÇëÇóÍË³ö,Ïàµ±ÓÚµ÷ÓÃÁËpthread_exit(PTHREAD_CANCELED)*/
+/*-----------------------------------------------------------------------------------
+ @function: 
+    One thread can request that another in the same process be canceled by calling t-
+    he @pthread_cancel function.
+ @Returns : 
+    0 if OK, error number on failure
+
+ In the default circumstances, @pthread_cancel will cause the thread specified by @tid 
+ to behave as if it had called @pthread_exit with an argument of PTHREAD_CANCELED. H-
+ owever, a thread can elect  to ignore or otherwise  control how it is canceled. Note 
+ that @pthread_cancel doesn't  wait for the thread to terminate ; it merely makes the 
+ request.
+-----------------------------------------------------------------------------------*/
 int pthread_cancel(pthread_t tid);
 
 
-/*
-function:×¢²á"Ïß³ÌÇåÀí´¦Àí³ÌĞò",Ïß³ÌÍË³öÊ±µ÷ÓÃ,Ö´ĞĞµÄË³ĞòÓë×¢²áË³ĞòÏà·´.
-ÒÔÏÂÈıÖÖÇé¿öµ÷ÓÃÇåÀíº¯Êı
-1 µ÷ÓÃpthread_exitÊ±
-2 ÏìÓ¦È¡ÏûÇëÇóÊ±
-3 ÓÃ·ÇÁã²ÎÊıµ÷ÓÃpthread_cleanup_popÊ±,pthread_cleanup_pop(0)½ö½öµ¯³öº¯Êı²»µ÷ÓÃ.
-ÎŞÂÛÄÄÖÖÇé¿ö¶¼½«É¾³ıÇåÀíº¯Êı*/
+/*-----------------------------------------------------------------------------------
+ A thread can arrange for functions to be called when it exits, similar to the way t-
+ hat the @atexit function can be used by a process to arrange that functions are to be 
+ called when the process exits. The functions are known as "thread cleanup handlers".
+ More than one cleanup handler can be established for a thread. The handlers are rec-
+ orded in a stack, which means that they are executed  in the reverse order from that
+ with which they were registered.
+
+ The @pthread_cleanup_push function schedules the cleanup function, @rtn, to be call-
+ ed with the single argument, @arg, when the thread performs one of the following ac-
+ tions:
+    1 Makes a call to @pthread_exit
+    2 Responds to a cancellation request
+    3 Makes a call to pthread_cleanup_pop with a nonzero execute argument
+ If the execute argument is set to zero, the cleanup function is not called. In eith-
+ er case, @pthread_cleanup_pop removes the cleanup handler established by the last c-
+ all to @pthread_cleanup_push.
+ 
+ A restriction with these functions is that, because they can be implemented as macr-
+ os, they must be used in matched pairs within  the same scope in a thread. The macro 
+ deefinition of @pthread_cleanup_push can include a { character, in which case the m-
+ atching } character is in the @pthread_cleanup_pop definition.
+
+ example: pthread_cleanup_push_eg01()
+-----------------------------------------------------------------------------------*/
 void pthread_cleanup_push(void (*rtn)(void *), void *arg);
 void pthread_cleanup_pop(int execute);
 
-/*
-By default, a thread's termination status is retained until we call @pthread_join for that thread. 
-A thread's underlying storage can be reclaimed immediately on termination if the thread has been detached.
-After a thread is detached, we can't use the @pthread_join function to wait for its termination status, 
-because calling @pthread_join for a detached thread results in undefined behavior.
-We can detach a thread by calling @pthread_detach.
 
-Returns: 0 if OK, error number on failure*/
+/*-----------------------------------------------------------------------------------
+ @Returns: 
+    0 if OK, error number on failure
+    
+ By default, a thread's termination status is retained until we call @pthread_join f-
+ or that thread. A thread's underlying storage can be reclaimed immediately on termi-
+ nation if the thread has been detached. After a thread is detached, we can't use the
+ @pthread_join function to wait for its termination status, because calling @pthread_join 
+ for a detached thread results in undefined behavior. We can detach a thread by call-
+ ing @pthread_detach.
+ 
+ we can create a thread that is already in the detached state by modifying the thread 
+ attributes we pass to @pthread_create.
+-----------------------------------------------------------------------------------*/
 int pthread_detach(pthread_t tid);
 
-/*
-@mutex:
-@attr:ÊôĞÔ,@attr==NULLÊ±ÓÃÄ¬ÈÏµÄÊôĞÔ³õÊ¼»¯»¥³âÁ¿,
-return: 0 if OK, error number on failure
 
-1 »¥³â±äÁ¿ÓÃ pthread_mutex_t Êı¾İÀàĞÍÀ´±íÊ¾,Ê¹ÓÃÇ°±ØĞë³õÊ¼»¯,³õÊ¼ÖµÊÇPTHREAD_MUTEX_INITIALIZER*/
+/*-----------------------------------------------------------------------------------
+ @mutex:
+ @attr:
+    To initialize a mutex with the default attributes, we set @attr to NULL.
+ @return: 
+    0 if OK, error number on failure
+
+ A mutex variable is represented by the pthread_mutex_t data type.Before we can use a 
+ mutex variable, we must first initialize it by either setting it to the constant
+ PTHREAD_MUTEX_INITIALIZER (for statically allocated mutexes only) or calling
+ pthread_mutex_init. If we allocate the mutex dynamically (by calling malloc,for exa-
+ mple), then we need to call pthread_mutex_destroy before freeing the memory
+-----------------------------------------------------------------------------------*/
+#define PTHREAD_MUTEX_INITIALIZER 
 int pthread_mutex_init(pthread_mutex_t *restrict mutex,const pthread_mutexattr_t *restrict attr);
-
-/*return: 0 if OK, error number on failure
-Èç¹û¶¯Ì¬µØ·ÖÅä»¥³âÁ¿(ÀıÈçÍ¨¹ımalloc),ÄÇÃ´ÔÚÊÍ·ÅÄÚ´æÇ°ĞèÒªµ÷ÓÃ@pthread_mutex_destroy*/
 int pthread_mutex_destroy(pthread_mutex_t *mutex);
 
-/*return: 0 if OK, error number on failure
-@pthread_mutex_lock¶Ô»¥³âÁ¿¼ÓËø,Èç¹û»¥³âÁ¿ÒÑ¾­ÉÏËø,ÔòÏß³Ì½«×èÈûÖ±µ½»¥³âÁ¿±»½âËø*/
+/*-----------------------------------------------------------------------------------
+ @return: 0 if OK, error number on failure
+
+ To lock a mutex, we call @pthread_mutex_lock. If the mutex is already locked, the c-
+ alling thread will block until the mutex is unlocked. To unlock a mutex, we call
+ @pthread_mutex_unlock.
+
+ If a thread can't afford to block, it can use @pthread_mutex_trylock to lock the mu-
+ tex conditionally. If the mutex is unlocked at the time @pthread_mutex_trylock is c-
+ alled, then @pthread_mutex_trylock will lock the mutex without blocking and return 0. 
+ Otherwise, @pthread_mutex_trylock will fail, returning EBUSY without locking the mu-
+ tex.
+-----------------------------------------------------------------------------------*/
 int pthread_mutex_lock(pthread_mutex_t *mutex);
-
-/*return: 0 if OK, error number on failure
-If a thread can't afford to block, it can use @pthread_mutex_trylockto lock the
-mutex conditionally.If the mutex is unlocked at the time @pthread_mutex_trylock is called,  
-then @pthread_mutex_trylock will lock the mutex without blocking and return  0. 
-Otherwise, @pthread_mutex_trylock will fail, returning EBUSY without locking the mutex.*/
 int pthread_mutex_trylock(pthread_mutex_t *mutex);
-
-/*return: 0 if OK, error number on failure*/
 int pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 
-/*
-@attr:ÊôĞÔ,@attr==NULLÊ±ÓÃÄ¬ÈÏµÄÊôĞÔ³õÊ¼»¯¶ÁĞ´Ëø
-return: 0 if OK, error number on failure
+/*-----------------------------------------------------------------------------------
+ Reader-writer locks are well suited for situations in which data structures are read
+ more often than they are modified. When a reader-writer lock is held in write mode ,
+ the data structure it protects can be modified safely, since only one thread at a t-
+ ime can hold the lock in write mode. When the reader-writer lock is held in read mo-
+ de , the data structure it protects can be read by multiple threads , as long as the 
+ threads first acquirethe lock in read mode.
 
-1 ¶ÁĞ´ËøÔÚÊ¹ÓÃÖ®Ç°±ØĞë³õÊ¼»¯
-*/
+ Reader-writer locks are also called shared-exclusive locks.When a reader-writer lock 
+ is read locked, it is said to be locked in shared mode.When it is write locked,it is
+ said to be locked in exclusive mode.
+
+ As with mutexes, reader-writer locks must be initialized before use and destroyed b-
+ efore freeing their underlying memory.
+-----------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------
+ @attr:
+ @return: 
+    0 if OK, error number on failure
+
+ A reader-writer lock  is initialized by calling @pthread_rwlock_init . We can pass a 
+ null pointer for @attr if we want the reader-writer lock to have the default attrib-
+ utes. The Single UNIX Specification defines the  PTHREAD_RWLOCK_INITIALIZER constant 
+ in the XSI option. It can be used to initialize a statically allocated reader-writer
+ lock when the default attributes are sufficient. Before freeing the memory backing a 
+ reader-writer lock, we need to call @pthread_rwlock_destroy to clean it up. If 
+ @pthread_rwlock_init allocated any resources for the reader-writer lock, 
+ @pthread_rwlock_destroy frees those resources. If we free the memory backing a reader-writer 
+ lock without first calling @pthread_rwlock_destroy, any resources assigned to the l-
+ ock will be lost.
+-----------------------------------------------------------------------------------*/
+#define PTHREAD_RWLOCK_INITIALIZER
 int pthread_rwlock_init(pthread_rwlock_t *restrict rwlock,const pthread_rwlockattr_t *restrict attr);
-
-/*return: 0 if OK, error number on failure
-
-1 ÔÚÊÍ·Å¶ÁĞ´ËøÕ¼ÓÃµÄÄÚ´æÖ®Ç°,ĞèÒªµ÷ÓÃ@pthread_rwlock_destroy×öÇåÀí¹¤×÷
-2 Èç¹û@pthread_rwlock_initÎª¶ÁĞ´Ëø·ÖÅäÁË×ÊÔ´,@pthread_rwlock_destroy½«ÊÍ·ÅÕâĞ©×ÊÔ´
-3 Èç¹ûÔÚµ÷ÓÃ@pthread_rwlock_destroyÖ®Ç°¾ÍÊÍ·ÅÁË¶ÁĞ´ËøÕ¼ÓÃµÄÄÚ´æ¿Õ¼ä,ÄÇÃ´·ÖÅä¸øÕâ¸öËøµÄ×ÊÔ´¾Í¶ªÊ§ÁË*/
 int pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
 
 
-/*return: 0 if OK, error number on failure*/
+/*-----------------------------------------------------------------------------------
+ @return: 
+    0 if OK, error number on failure
+    
+ To lock a reader-writer lock in read mode , we call @pthread_rwlock_rdlock. To write 
+ lock a reader-writer lock, we call @pthread_rwlock_wrlock. Regardless of how we lock 
+ a reader-writer lock, we can unlock it by calling @pthread_rwlock_unlock.
+
+ Implementations might place  a limit on the number of times a reader-writer lock can 
+ be locked in shared mode, so we need to check the return value of @pthread_rwlock_rdlock.
+ Even though @pthread_rwlock_wrlock and @pthread_rwlock_unlock have error returns, a-
+ nd technically we should always check for errors when we call functions that can po-
+ tentially fail , we don't need to check them if we design our locking properly . The 
+ only error returns defined are when we use them improperly, such as with an uniniti-
+ alized lock, or when we might deadlock by attempting to acquirea lock we already own. 
+ However,be aware that specific implementations might define additional error returns.
+-----------------------------------------------------------------------------------*/
 int pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
-
-/*return: 0 if OK, error number on failure*/
 int pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
-
-/*return: 0 if OK, error number on failure
-¶ÁËøºÍĞ´Ëø¶¼ÓÃÕâ¸öº¯Êı½âËø*/
 int pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
 
-/*return: 0 if OK, error number on failure
-When the lock can be acquired, these functions return 0. Otherwise, they return the error EBUSY.*/
-int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
 
-/*return: 0 if OK, error number on failure
-When the lock can be acquired, these functions return 0. Otherwise, they return the error EBUSY.*/
+
+/*-----------------------------------------------------------------------------------
+ @return: 
+    0 if OK, error number on failure
+    
+ The Single UNIX Specification also defines conditional versions of the reader-writer
+ locking primitives.
+
+ When the lock can be acquired, these functions return 0. Otherwise , they return the
+ error EBUSY. These functions can be used to avoid deadlocks in situations where con-
+ forming to a lock hierarchy is difficult, as we discussed previously.
+-----------------------------------------------------------------------------------*/
+int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
 int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
 
-#include <pthread.h>
+/*----------------------------------------------------------------------------------- 
+ äº’æ–¥é”æ˜¯ä¸ºäº†ä¸Šé”è€Œè®¾è®¡çš„ï¼Œæ¡ä»¶å˜é‡æ˜¯ä¸ºäº†ç­‰å¾…è€Œè®¾è®¡çš„ 
+ ä¸äº’æ–¥é”ä¸åŒï¼Œæ¡ä»¶å˜é‡æ˜¯ç”¨æ¥ç­‰å¾…è€Œä¸æ˜¯ç”¨æ¥ä¸Šé”çš„ã€‚æ¡ä»¶å˜é‡ç”¨æ¥è‡ªåŠ¨é˜»å¡ä¸€ä¸ªçº¿ç¨‹ï¼Œç›´åˆ°
+ æŸç‰¹æ®Šæƒ…å†µå‘ç”Ÿä¸ºæ­¢ã€‚é€šå¸¸æ¡ä»¶å˜é‡å’Œäº’æ–¥é”åŒæ—¶ä½¿ç”¨ã€‚
 
+ æ¡ä»¶å˜é‡ä½¿æˆ‘ä»¬å¯ä»¥ç¡çœ ç­‰å¾…æŸç§æ¡ä»¶å‡ºç°ã€‚æ¡ä»¶å˜é‡æ˜¯åˆ©ç”¨çº¿ç¨‹é—´å…±äº«çš„å…¨å±€å˜é‡è¿›è¡ŒåŒæ­¥çš„
+ ä¸€ç§æœºåˆ¶ï¼Œ ä¸»è¦åŒ…æ‹¬ä¸¤ä¸ªåŠ¨ä½œï¼šä¸€ä¸ªçº¿ç¨‹ç­‰å¾…"æ¡ä»¶å˜é‡çš„æ¡ä»¶æˆç«‹"è€ŒæŒ‚èµ·ï¼›å¦ä¸€ä¸ªçº¿ç¨‹ä½¿"æ¡
+ ä»¶æˆç«‹"ï¼ˆç»™å‡ºæ¡ä»¶æˆç«‹ä¿¡å·ï¼‰ã€‚
+
+ æ¡ä»¶çš„æ£€æµ‹æ˜¯åœ¨äº’æ–¥é”çš„ä¿æŠ¤ä¸‹è¿›è¡Œçš„ã€‚å¦‚æœä¸€ä¸ªæ¡ä»¶ä¸ºå‡ï¼Œä¸€ä¸ªçº¿ç¨‹è‡ªåŠ¨é˜»å¡ï¼Œå¹¶é‡Šæ”¾ç­‰å¾…çŠ¶
+ æ€æ”¹å˜çš„äº’æ–¥é”ã€‚å¦‚æœå¦ä¸€ä¸ªçº¿ç¨‹æ”¹å˜äº†æ¡ä»¶ï¼Œå®ƒå‘ä¿¡å·ç»™å…³è”çš„æ¡ä»¶å˜é‡ï¼Œå”¤é†’ä¸€ä¸ªæˆ–å¤šä¸ªç­‰
+ å¾…å®ƒçš„çº¿ç¨‹ï¼Œé‡æ–°è·å¾—äº’æ–¥é”ï¼Œé‡æ–°è¯„ä»·æ¡ä»¶ã€‚å¦‚æœä¸¤è¿›ç¨‹å…±äº«å¯è¯»å†™çš„å†…å­˜ï¼Œæ¡ä»¶å˜é‡å¯ä»¥è¢«
+ ç”¨æ¥å®ç°è¿™ä¸¤è¿›ç¨‹é—´çš„çº¿ç¨‹åŒæ­¥ã€‚
+
+ äº’æ–¥é”ç”¨äºä¿æŠ¤ä»£ç ä¸´ç•ŒåŒºï¼Œä»è€Œä¿è¯ä»»ä½•æ—¶åˆ»åªæœ‰ä¸€ä¸ªçº¿ç¨‹æˆ–è€…è¿›ç¨‹åœ¨ä¸´ç•ŒåŒºæ‰§è¡Œã€‚æœ‰æ—¶å€™ä¸€
+ ä¸ªçº¿ç¨‹è·å¾—æŸä¸ªäº’æ–¥é”åï¼Œå‘ç°è‡ªå·±éœ€è¦ç­‰å¾…æŸä¸ªæ¡ä»¶å˜ä¸ºçœŸï¼Œè¿™æ ·çº¿ç¨‹å°±å¯ä»¥ç­‰å¾…åœ¨æŸä¸ªæ¡ä»¶
+ ä¸Šã€‚æ¡ä»¶å˜é‡æ€»æ˜¯æœ‰ä¸€ä¸ªäº’æ–¥é”ä¸ä¹‹å…³è”ã€‚
+
+ äº’æ–¥é”å’Œæ¡ä»¶å˜é‡å¯ä»¥é™æ€åˆ†é…å¹¶é™æ€åˆå§‹åŒ–ã€‚å®ƒä»¬ä¹Ÿå¯ä»¥åŠ¨æ€åˆ†é…å¹¶è¦æ±‚åŠ¨æ€åœ°åˆå§‹åŒ–å®ƒä»¬ã€‚
+ åŠ¨æ€åˆå§‹åŒ–å…è®¸æˆ‘ä»¬æŒ‡å®šè¿›ç¨‹é—´å…±äº«å±æ€§ï¼Œä»è€Œå…è®¸åœ¨ä¸åŒè¿›ç¨‹é—´å…±äº«æŸä¸ªäº’æ–¥é”æˆ–æ¡ä»¶å˜é‡ï¼Œ
+ å…¶å‰ææ˜¯è¯¥äº’æ–¥é”æˆ–æ¡ä»¶å˜é‡å¿…é¡»å­˜åœ¨åœ¨ç”±è¿™äº›è¿›ç¨‹å…±äº«çš„å†…å­˜åŒºã€‚
+-----------------------------------------------------------------------------------*/
 
 /*
- set/get the concurrency level
- Compile and link with -pthread.
-*/	
+ return: 0 if OK, error number on failure
+*/
+#define PTHREAD_COND_INITIALIZER 
+int pthread_cond_init(pthread_cond_t *restrict cond,const pthread_condattr_t *restrict attr);
+int pthread_cond_destroy(pthread_cond_t *cond);
+
+/*-----------------------------------------------------------------------------------
+ @tsptr
+    The timeout value specifies how long we are willing to wait expressed as a @timespec 
+    structure. we need to specify how long we are willing to wait as an absolute time 
+    instead of a relative time. For example,suppose we are willing to wait 3 minutes. 
+    Instead of translating 3 minutes into a @timespec structure, we need to translate 
+    now+3 minutes into a @timespec structure.
+ @return: 
+    0 if OK, error number on failure
+    
+ We @use pthread_cond_wait to wait for a condition to be true . A variant is provided 
+ to return an error code if the condition hasn't been satisfied in the specified amo-
+ unt of time.
+
+ The mutex passed to @pthread_cond_wait protects the condition . The caller passes it 
+ locked to the function , which then atomically places the calling thread on the list 
+ of threads waiting  for the condition and unlocks the mutex . This closes the window
+ between the time that the condition is checked and the time that  the thread goes to 
+ sleep waiting for the condition to change, so that the thread doesn't  miss a change 
+ in the condition. When @pthread_cond_wait returns, the mutex is again locked.
+
+ If the timeout expires without the condition occurring, @pthread_cond_timedwait will 
+ reacquire the mutex and return the error ETIMEDOUT. When it returns from a successf-
+ ul call to @pthread_cond_wait or @pthread_cond_timedwait, a thread needs to reevalu-
+ ate the condition, since another thread might have run and already changed the cond-
+ ition.
+-----------------------------------------------------------------------------------*/
+int pthread_cond_wait(pthread_cond_t *restrict cond,pthread_mutex_t *restrict mutex);
+int pthread_cond_timedwait(pthread_cond_t *restrict cond,pthread_mutex_t *restrict mutex,
+                                  const struct timespec *restrict tsptr);
+
+/*-----------------------------------------------------------------------------------
+ @return: 
+    0 if OK, error number on failure
+
+ There are two functions to notify threads that a condition has been satisfied. The
+ @pthread_cond_signal function will wake up at least one thread waiting on a conditi-
+ on (å¦‚æœæ²¡æœ‰ç­‰å¾…çš„çº¿ç¨‹ï¼Œåˆ™ä»€ä¹ˆä¹Ÿä¸åš ), whereas the @pthread_cond_broadcast function 
+ will wake up all threads waiting on a condition. 
+  
+ The POSIX specification allows for implementations of pthread_cond_signal to wake up 
+ more than one thread, to make the implementation simpler.
+
+ When we call @pthread_cond_signal or @pthread_cond_broadcast, we are said to be sig-
+ naling the thread or condition. We have to be careful to signal the threads only af-
+ ter changing the state of the condition.
+
+ example: pthread_cond_eg01()
+-----------------------------------------------------------------------------------*/
+int pthread_cond_signal(pthread_cond_t *cond);
+int pthread_cond_broadcast(pthread_cond_t *cond);
+
+/*
+ PTHREAD_PROCESS_SHARED
+    the spin lock can be acquired by threads that have access to the lock's underlyi-
+    ng memory, even if those threads are from different processes. 
+ PTHREAD_PROCESS_PRIVATE
+    the spin lock can be accessed only from threads within the process that initiali-
+    zed it.
+*/
+#define PTHREAD_PROCESS_SHARED
+#define PTHREAD_PROCESS_PRIVATE
+/*-----------------------------------------------------------------------------------
+ @pshared
+    The @pshared argument represents the process-shared attribute,which indicates how 
+    the spin lock will be acquired. PTHREAD_PROCESS_SHARED PTHREAD_PROCESS_PRIVATE
+ @return: 
+    0 if OK, error number on failure
+
+ A spin lock is like a mutex, except that instead of blocking a process by sleeping ,  
+ the process is blocked by busy-waiting ( spinning ) until the lock can be acquired . 
+ A spin lock could be used in situations where locks are held for short periods of t-
+ imes and threads don't want to incur the cost of being descheduled.
+-----------------------------------------------------------------------------------*/
+int pthread_spin_init(pthread_spinlock_t *lock,int pshared);
+int pthread_spin_destroy(pthread_spinlock_t *lock);
+
+
+/*-----------------------------------------------------------------------------------
+ @return: 
+    0 if OK, error number on failure
+-----------------------------------------------------------------------------------*/
+int pthread_spin_lock(pthread_spinlock_t *lock);
+int pthread_spin_trylock(pthread_spinlock_t *lock);
+int pthread_spin_unlock(pthread_spinlock_t *lock);
+
+
+
+
+/*-----------------------------------------------------------------------------------
+ @count
+    specify the number of threads that must reach the barrier beforeall of the threa-
+    ds will be allowed to continue.
+ @attr
+    specify the attributes of the barrier object. we can set @attr to NULL to initia-
+    lize a barrier with the default attributes. 
+ @return: 
+    0 if OK, error number on failure
+
+ Barriers are asynchronization mechanism that can be used to coordinate multiple thr-
+ eads working in parallel. A barrier allows each thread to wait until all cooperating
+ threads have reached the same point , and then continue executing from there . We've 
+ already seen one form of barrier--the pthread_join function acts as a barrier to al-
+ low one thread to wait until another thread exits.
+ 
+ Barrier objects are more general than this, however . They allow an arbitrary number 
+ of threads to wait until all of the threads have completed processing, but the thre-
+ ads don't have to exit. They can continue working after all threads have reached th-
+ e barrier.
+ 
+ We can use the @pthread_barrier_init function to initialize a barrier, and we can u-
+ se the @pthread_barrier_destroy function to deinitialize a barrier. 
+
+ If the @pthread_barrier_init function allocated  any resources for the barrier , the 
+ resources will be freed when we deinitialize the barrier by calling the 
+ @pthread_barrier_destroy function.    
+-----------------------------------------------------------------------------------*/
+int pthread_barrier_init(pthread_barrier_t *restrict barrier,
+const pthread_barrierattr_t *restrict attr,unsigned int count);
+int pthread_barrier_destroy(pthread_barrier_t *barrier);
+
+#define PTHREAD_BARRIER_SERIAL_THREAD
+/*-----------------------------------------------------------------------------------
+ @Returns: 
+    0 or PTHREAD_BARRIER_SERIAL_THREAD if OK, error number on failure
+
+ We use the @pthread_barrier_wait function to indicate that a thread is done with its 
+ work and is ready to wait for all the other threads to catch up.
+
+ The @thread calling pthread_barrier_wait is put to sleep if the barrier count(set in
+ the call to @pthread_barrier_init ) is not yet satisfied . If the thread is the last 
+ one to call @pthread_barrier_wait , thereby satisfying the barrier count, all of the 
+ threads are awakened.
+ 
+ To one arbitrary thread, it will appear as if the @pthread_barrier_wait function re-
+ turned a value of PTHREAD_BARRIER_SERIAL_THREAD . The remaining threads see a return 
+ value of 0.This allows one thread to continue as the master to act on the results of 
+ the work done by all of the other threads.
+ 
+ Once the barrier count is reached and the threads are unblocked , the barrier can be
+ used again. However, the barrier count can't be changed unless we call the
+ @pthread_barrier_destroy function followed by the @pthread_barrier_init function wi-
+ th a different count.
+-----------------------------------------------------------------------------------*/
+int pthread_barrier_wait(pthread_barrier_t *barrier);
+
+
+/*-----------------------------------------------------------------------------------
+ set/get the concurrency level. Compile and link with -pthread.
+-----------------------------------------------------------------------------------*/	
 int pthread_setconcurrency(int new_level);
 int pthread_getconcurrency(void);
-
