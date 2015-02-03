@@ -1,2 +1,4 @@
 control : ctrl
-e.g.      for example 
+
+e.g. 拉丁语缩写。exempli gratia的缩写，意思是"for example"（举例），
+i.e. 拉丁语缩写。id est的缩写，意思是"that is"（即）。
