@@ -1,73 +1,73 @@
 #include <unistd.h>
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
+int  globvar = 6;
+char  buf[]  = "a write to stdout\n";
 
-int  globvar=6;/*external variable in initialized data */
-char  buf[] = "a write to stdout\n";
+/*-----------------------------------------------------------------------------------
+ write:虏禄麓酶禄潞鲁氓
+ printf:卤锚脳录I/O驴芒麓酶禄潞鲁氓拢卢脠莽鹿没卤锚脳录脢盲鲁枚脕卢陆脫碌陆脰脮露脣脡猫卤赂拢卢脭貌脣眉脢脟脨脨禄潞鲁氓碌脛拢卢路帽脭貌脣眉脢脟脠芦禄潞鲁氓碌脛隆拢
 
-int main(void)
-{
-    int  var; /* automatic variable on the stack */
-    pid_t  pid;
-    var = 88;
-	
-    if (write(STDOUT_FILENO, buf, sizeof(buf)-1) != sizeof(buf)-1)
-        printf("write error");
-	
-    printf("before fork "); 
+ printf("before fork\n");
+ 1 脢盲鲁枚碌陆脰脮露脣脢卤(麓脣脢卤printf脢脟脨脨禄潞鲁氓碌脛)
+   碌梅脫脙脟掳脪脩戮颅脣垄脨脗禄潞鲁氓脟酶拢卢脣霉脪脭脳脫陆酶鲁脤虏禄禄谩脢盲鲁枚"before fork"
+ 2 脢盲鲁枚碌陆脦脛录镁(麓脣脢卤printf脢脟脠芦禄潞鲁氓碌脛)
+   脣盲脠禄脫脨\n拢卢脫脡脫脷麓脣脢卤脢脟脠芦禄潞鲁氓碌脛拢卢脣霉脪脭脳脫陆酶鲁脤脪虏禄谩脢盲鲁枚隆拢
 
-    //printf("before fork \n");
-	
-    if ((pid = fork()) < 0) 
-	{
-        printf("fork error");
-    }
-	else if (pid == 0) 
-	{ /* child */
-        globvar++;  /* modify variables */
-        var++;
-    }
-	else 
-    {
-        sleep(2);  /* parent */
-    }
-	
-    printf("pid = %ld, glob = %d, var = %d\n", (long)getpid(), globvar,var);
-    exit(0);
-}
-
-/*******************************************************************************
-write:不带缓冲
-printf:标准I/O库带缓冲，如果标准输出连接到终端设备，则它是行缓冲的，否则它是全缓冲的。
-
-printf("before fork\n");
-1 输出到终端时(此时printf是行缓冲的)
-  调用前已经刷新缓冲区，所以子进程不会输出"before fork"
-2 输出到文件(此时printf是全缓冲的)
-  虽然有\n，由于此时是全缓冲的，所以子进程也会输出。
-
-
-
-
-*/
-
-/*
-printf("before fork\n");的输出情况
-
-$ ./a.exe
-a write to stdout
-before fork
-pid = 5928, glob = 7, var = 89
-pid = 6832, glob = 6, var = 88
+output:
+a write to stdout                                                                                                                   
+print with newline                                                                                                                  
+print no newline                                                                                                                    
+child: pid: 2148 glob: 7 var: 89                                                                                                    
+                                                                                                                                    
+print no newline                                                                                                                    
+parent: pid: 2147 glob: 6 var: 88
 
 
 $ ./a.exe >out.txt
 $ cat out.txt
-a write to stdout
-before fork
-pid = 2160, glob = 7, var = 89
-before fork
-pid = 840, glob = 6, var = 88
+a write to stdout                                                                                                                   
+print with newline                                                                                                                  
+print no newline                                                                                                                    
+child: pid: 2198 glob: 7 var: 89                                                                                                    
+                                                                                                                                    
+print with newline                                                                                                                  
+print no newline                                                                                                                    
+parent: pid: 2197 glob: 6 var: 88
 
-*/
+-----------------------------------------------------------------------------------*/
+int fork_eg01(void)
+{
+    int  var; 
+    pid_t  pid;
+    var = 88;
+	
+    if (write(STDOUT_FILENO, buf, sizeof(buf)-1) != sizeof(buf)-1) {
+        printf("write error\n");
+    }
+	
+    printf("print with newline\n");
+    printf("print no newline"); 
+	
+    if ((pid = fork()) < 0) {
+        printf("fork error \n");
+		return 0;
+    } else if (pid == 0) { /* child */
+        printf("\n");
+        globvar++;
+        var++;
+		printf("child: pid: %d glob: %d var: %d\n\n", (long)getpid(),globvar,var);
+    } else {  /* parent */
+        sleep(1);
+		printf("\n");
+        printf("parent: pid: %d glob: %d var: %d\n\n", (long)getpid(),globvar,var);
+    }	
+    exit(0);
+}
+
+int main()
+{
+    fork_eg01();
+	return 0;
+}
