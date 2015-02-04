@@ -1,1 +1,4 @@
 linux/linux_user/process_lu/thread_lu.c 1----
+        modified:   example/linux/process/fork.c
+        modified:   linux/linux_user/io_lu/fileio_lu.c
+        modified:   linux/linux_user/sync_lu/sync_lu.c
