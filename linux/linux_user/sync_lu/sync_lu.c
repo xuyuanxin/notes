@@ -1,18 +1,10 @@
-#include <pthread.h>
-/*
-All three return: 0 if OK, positive Exxx value on error
-*/
-int pthread_mutex_lock(pthread_mutex_t *mptr) ;
-int pthread_mutex_trylock(pthread_mutex_t *mptr) ;
-int pthread_mutex_unlock(pthread_mutet *mptr) ;
+/*----------------------- mutex lock ------------------------------*/
+//pthread_mutex_init
 
-
-
+/*----------------------- semaphore ------------------------------*/
 #include <semaphore.h>
+
 #define SEM_FAILED ((sem_t *)(-1))
-/*-----------------------------------------------------------------------------------
- 1 
------------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
  @oflag
@@ -32,7 +24,7 @@ int pthread_mutex_unlock(pthread_mutet *mptr) ;
  @return
 	pointer to semaphore if OK, SEM_FAILED on error
 -----------------------------------------------------------------------------------*/
-sem_t *sem_open(const char *name, int oflag, .../* mode-t mode, unsigned int value */ );
+sem_t *sem_open(const char *name, int oflag,...); 
 
 /*-----------------------------------------------------------------------------------
  @Returns: 
@@ -59,7 +51,7 @@ int sem_close (sem_t *sem);
  but the destruction of the semaphore (versus removing its name from the filesystem ) 
  does not take place until the last @sem_close occurs.
 -----------------------------------------------------------------------------------*/
-int sen_unlink(const char *name);
+int sem_unlink(const char *name);
 
 /*-----------------------------------------------------------------------------------
  The @sem_wait function tests the value  of the specified semaphore, and if the value 
@@ -93,3 +85,7 @@ int sem_trywait(sem_t * sem);
 
 int sem_post(sem_t *sem);
 int sem_getvalue(sem_t *sem,int *valp);
+
+
+/*----------------------- shared memory ------------------------------*/
+// mmap
