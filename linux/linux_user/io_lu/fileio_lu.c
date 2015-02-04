@@ -2,17 +2,17 @@
 #include <fcntl.h>
 /*******************************************************************************
  @path: 
-    要打开或创建文件的名字
+    脪陋麓貌驴陋禄貌麓麓陆篓脦脛录镁碌脛脙没脳脰
  @oflag: O_RDWR
  @mode:  S_IEXEC
-    创建时才会用到，用于指定文件的访问权限位（access permission bits）
+    麓麓陆篓脢卤虏脜禄谩脫脙碌陆拢卢脫脙脫脷脰赂露篓脦脛录镁碌脛路脙脦脢脠篓脧脼脦禄拢篓access permission bits拢漏
  @function:
-    打开一个文件(也可用于创建文件)
+    麓貌驴陋脪禄赂枚脦脛录镁(脪虏驴脡脫脙脫脷麓麓陆篓脦脛录镁)
  @return: 
     file descriptor if OK,-1 on error
 
- 1 open返回的文件描述符一定是最小的未用描述符数值。
- 2 @path文件名最大字符个数是 NAME_MAX
+ 1 open路碌禄脴碌脛脦脛录镁脙猫脢枚路没脪禄露篓脢脟脳卯脨隆碌脛脦麓脫脙脙猫脢枚路没脢媒脰碌隆拢
+ 2 @path脦脛录镁脙没脳卯麓贸脳脰路没赂枚脢媒脢脟 NAME_MAX
 *******************************************************************************/
 int open(const char *path,int oflag,... /* mode_t mode*/ );
 int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
@@ -46,40 +46,40 @@ int close(int fd);
 SEEK_SET(0),the file's offset is set to @offset bytes from the beginning of the file.
 SEEK_CUR(1),the file's offset is set to its current value plus the @offset. The @offset can be positive or negative.
 SEEK_END(2),the file's offset is set to the size of the file plus the @offset. The @offset can be positive or negative.
-function: 打开一个文件并设置其偏移量
+function: 麓貌驴陋脪禄赂枚脦脛录镁虏垄脡猫脰脙脝盲脝芦脪脝脕驴
 returns : new file offset if OK,-1 on error
-name    : lseek中的l表示长整型
+name    : lseek脰脨碌脛l卤铆脢戮鲁陇脮没脨脥
 
-@lseek only records the current file offset within the kernel—it does not cause
+@lseek only records the current file offset within the kernel隆陋it does not cause
 any I/O to take place. This offset is then used by the next read or write operation.
 *******************************************************************************/
 off_t lseek(int fd,off_t offset,int whence);
 
 #include <unistd.h>
 /******************************************************************************
-@fd :读哪个文件(已经打开了)
-@buf:把读的数据放入这个buf中
-@nbytes:希望读取数据的长度
+@fd :露脕脛脛赂枚脦脛录镁(脪脩戮颅麓貌驴陋脕脣)
+@buf:掳脩露脕碌脛脢媒戮脻路脜脠毛脮芒赂枚buf脰脨
+@nbytes:脧拢脥没露脕脠隆脢媒戮脻碌脛鲁陇露脠
 
 function:Data is read from an open file with the @read function.
 Returns: number of bytes read, 0 if end of file,-1 on error
 
-1 参数count是请求读取的字节数，读上来的数据保存在缓冲区buf中，同时文件的当前读
-  写位置向后移。
-2 读常规文件时，在读到count个字节之前已到达文件末尾。例如，距文件末尾还有30个字
-  节而请求读100个字节，则read返回30，下次read将返回0。
-3 面向文本的套接字读操作中,一次read不能保证读入完整的一行或整行,读完整的一行可
-  能需要对此调用read,并检查其中是否出现了换行符
-4 服务器收到FIN时,递送一个EOF给进程阻塞中的read,收到后read返回EOF
+1 虏脦脢媒count脢脟脟毛脟贸露脕脠隆碌脛脳脰陆脷脢媒拢卢露脕脡脧脌麓碌脛脢媒戮脻卤拢麓忙脭脷禄潞鲁氓脟酶buf脰脨拢卢脥卢脢卤脦脛录镁碌脛碌卤脟掳露脕
+  脨麓脦禄脰脙脧貌潞贸脪脝隆拢
+2 露脕鲁拢鹿忙脦脛录镁脢卤拢卢脭脷露脕碌陆count赂枚脳脰陆脷脰庐脟掳脪脩碌陆麓茂脦脛录镁脛漏脦虏隆拢脌媒脠莽拢卢戮脿脦脛录镁脛漏脦虏禄鹿脫脨30赂枚脳脰
+  陆脷露酶脟毛脟贸露脕100赂枚脳脰陆脷拢卢脭貌read路碌禄脴30拢卢脧脗麓脦read陆芦路碌禄脴0隆拢
+3 脙忙脧貌脦脛卤戮碌脛脤脳陆脫脳脰露脕虏脵脳梅脰脨,脪禄麓脦read虏禄脛脺卤拢脰陇露脕脠毛脥锚脮没碌脛脪禄脨脨禄貌脮没脨脨,露脕脥锚脮没碌脛脪禄脨脨驴脡
+  脛脺脨猫脪陋露脭麓脣碌梅脫脙read,虏垄录矛虏茅脝盲脰脨脢脟路帽鲁枚脧脰脕脣禄禄脨脨路没
+4 路镁脦帽脝梅脢脮碌陆FIN脢卤,碌脻脣脥脪禄赂枚EOF赂酶陆酶鲁脤脳猫脠没脰脨碌脛read,脢脮碌陆潞贸read路碌禄脴EOF
 5 POSIX.1 requires that read return -1 with errno set to EAGAIN if there is no 
   data to read from a nonblocking descriptor. 
 ******************************************************************************/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
 /******************************************************************************
- @fd    : 写哪个文件(已经打开了)
- @buf   : buf中是要写的数据
- @nbytes: 写入数据的长度
+ @fd    : 脨麓脛脛赂枚脦脛录镁(脪脩戮颅麓貌驴陋脕脣)
+ @buf   : buf脰脨脢脟脪陋脨麓碌脛脢媒戮脻
+ @nbytes: 脨麓脠毛脢媒戮脻碌脛鲁陇露脠
  funtion: Data is written to an open file with the @write function.
  Returns: number of bytes written if OK,-1 on error
 
@@ -106,28 +106,28 @@ ssize_t write(int fd,const void *buf,size_t nbytes);
 
 #include <unistd.h>
 /******************************************************************************
-@fd    ：要读取数据的文件描述符
-@buf   ：数据缓存区指针，存放读取出来的数据
-@count ：读取数据的字节数
-@offset：读取的起始地址的偏移量，读取地址=文件开始+offset。
-返回值：成功，返回成功读取数据的字节数；失败，返回-1；
+@fd    拢潞脪陋露脕脠隆脢媒戮脻碌脛脦脛录镁脙猫脢枚路没
+@buf   拢潞脢媒戮脻禄潞麓忙脟酶脰赂脮毛拢卢麓忙路脜露脕脠隆鲁枚脌麓碌脛脢媒戮脻
+@count 拢潞露脕脠隆脢媒戮脻碌脛脳脰陆脷脢媒
+@offset拢潞露脕脠隆碌脛脝冒脢录碌脴脰路碌脛脝芦脪脝脕驴拢卢露脕脠隆碌脴脰路=脦脛录镁驴陋脢录+offset隆拢
+路碌禄脴脰碌拢潞鲁脡鹿娄拢卢路碌禄脴鲁脡鹿娄露脕脠隆脢媒戮脻碌脛脳脰陆脷脢媒拢禄脢搂掳脺拢卢路碌禄脴-1拢禄
 
-1 执行后，文件偏移指针不变
-2 相当于顺序调用lseek和read,但其定位和读取操作是原子的。lseek和read之间如果被中断
-  可能造成问题。
+1 脰麓脨脨潞贸拢卢脦脛录镁脝芦脪脝脰赂脮毛虏禄卤盲
+2 脧脿碌卤脫脷脣鲁脨貌碌梅脫脙lseek潞脥read,碌芦脝盲露篓脦禄潞脥露脕脠隆虏脵脳梅脢脟脭颅脳脫碌脛隆拢lseek潞脥read脰庐录盲脠莽鹿没卤禄脰脨露脧
+  驴脡脛脺脭矛鲁脡脦脢脤芒隆拢
 ******************************************************************************/
 ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
 
 /*******************************************************************************
-@fd    ：要写入数据的文件描述符
-@buf   ：数据缓存区指针，存放要写入文件中的数据
-@count ：写入文件中的数据的字节数
-@offset：写入地址=文件开始+offset
-返回值 ：成功，返回写入到文件中的字节数；失败，返回-1；
+@fd    拢潞脪陋脨麓脠毛脢媒戮脻碌脛脦脛录镁脙猫脢枚路没
+@buf   拢潞脢媒戮脻禄潞麓忙脟酶脰赂脮毛拢卢麓忙路脜脪陋脨麓脠毛脦脛录镁脰脨碌脛脢媒戮脻
+@count 拢潞脨麓脠毛脦脛录镁脰脨碌脛脢媒戮脻碌脛脳脰陆脷脢媒
+@offset拢潞脨麓脠毛碌脴脰路=脦脛录镁驴陋脢录+offset
+路碌禄脴脰碌 拢潞鲁脡鹿娄拢卢路碌禄脴脨麓脠毛碌陆脦脛录镁脰脨碌脛脳脰陆脷脢媒拢禄脢搂掳脺拢卢路碌禄脴-1拢禄
 
-1 执行后，文件偏移指针不变
-2 相当于顺序调用lseek和write,但其定位和读取操作是原子的。lseek和read之间如果被
-  中断可能造成问题。
+1 脰麓脨脨潞贸拢卢脦脛录镁脝芦脪脝脰赂脮毛虏禄卤盲
+2 脧脿碌卤脫脷脣鲁脨貌碌梅脫脙lseek潞脥write,碌芦脝盲露篓脦禄潞脥露脕脠隆虏脵脳梅脢脟脭颅脳脫碌脛隆拢lseek潞脥read脰庐录盲脠莽鹿没卤禄
+  脰脨露脧驴脡脛脺脭矛鲁脡脦脢脤芒隆拢
 ******************************************************************************/
 ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
@@ -135,35 +135,35 @@ ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
 #include <unistd.h>
 /*
- dup和dup2也是两个非常有用的调用，它们的作用都是用来复制一个文件的描述符。它们经常用来
- 重定向进程的stdin、stdout和stderr。
+ dup潞脥dup2脪虏脢脟脕陆赂枚路脟鲁拢脫脨脫脙碌脛碌梅脫脙拢卢脣眉脙脟碌脛脳梅脫脙露录脢脟脫脙脌麓赂麓脰脝脪禄赂枚脦脛录镁碌脛脙猫脢枚路没隆拢脣眉脙脟戮颅鲁拢脫脙脌麓
+ 脰脴露篓脧貌陆酶鲁脤碌脛stdin隆垄stdout潞脥stderr隆拢
 
 */
 /************************************************************************************
- 返回值:
-    成功返回新的描述符,失败返回-1
- 功能:
-    复制文件描述符@fd。给该函数一个既有的描述符，它就会返回一个新的描述符，这个新的描
-    述符是传给它的描述符的拷贝。这意味着，这两个描述符共享同一个"文件表"。
+ 路碌禄脴脰碌:
+    鲁脡鹿娄路碌禄脴脨脗碌脛脙猫脢枚路没,脢搂掳脺路碌禄脴-1
+ 鹿娄脛脺:
+    赂麓脰脝脦脛录镁脙猫脢枚路没@fd隆拢赂酶赂脙潞炉脢媒脪禄赂枚录脠脫脨碌脛脙猫脢枚路没拢卢脣眉戮脥禄谩路碌禄脴脪禄赂枚脨脗碌脛脙猫脢枚路没拢卢脮芒赂枚脨脗碌脛脙猫
+    脢枚路没脢脟麓芦赂酶脣眉碌脛脙猫脢枚路没碌脛驴陆卤麓隆拢脮芒脪芒脦露脳脜拢卢脮芒脕陆赂枚脙猫脢枚路没鹿虏脧铆脥卢脪禄赂枚"脦脛录镁卤铆"隆拢
 
- 1 @dup返回的新描述符一定是当前可用文件描述符中的最小数值
- 2 新描述符与@fd共享一个文件表项(file table entry)
- 3 新描述符的执行时关闭(close-on-exec)标志总是由@dup函数清除
+ 1 @dup路碌禄脴碌脛脨脗脙猫脢枚路没脪禄露篓脢脟碌卤脟掳驴脡脫脙脦脛录镁脙猫脢枚路没脰脨碌脛脳卯脨隆脢媒脰碌
+ 2 脨脗脙猫脢枚路没脫毛@fd鹿虏脧铆脪禄赂枚脦脛录镁卤铆脧卯(file table entry)
+ 3 脨脗脙猫脢枚路没碌脛脰麓脨脨脢卤鹿脴卤脮(close-on-exec)卤锚脰戮脳脺脢脟脫脡@dup潞炉脢媒脟氓鲁媒
 ************************************************************************************/
 int dup(int fd);
 
 /************************************************************************************
- 返回值:
-    成功返回新的描述符,失败返回-1
- 功能:
-    复制文件描述符@fd,@fd2是指定的新描述符.dup2函数跟dup函数相似，但dup2函数允许调用
-    者规定一个有效描述符和目标描述符的id。dup2函数成功返回时，目标描述符（dup2函数的
-    第二个参数）将变成源描述符（dup2函数的第一个参数）的复制品，换句话说，两个文件描
-    述符现在都指向同一个文件，并且是函数第一个参数指向的文件。
+ 路碌禄脴脰碌:
+    鲁脡鹿娄路碌禄脴脨脗碌脛脙猫脢枚路没,脢搂掳脺路碌禄脴-1
+ 鹿娄脛脺:
+    赂麓脰脝脦脛录镁脙猫脢枚路没@fd,@fd2脢脟脰赂露篓碌脛脨脗脙猫脢枚路没.dup2潞炉脢媒赂煤dup潞炉脢媒脧脿脣脝拢卢碌芦dup2潞炉脢媒脭脢脨铆碌梅脫脙
+    脮脽鹿忙露篓脪禄赂枚脫脨脨搂脙猫脢枚路没潞脥脛驴卤锚脙猫脢枚路没碌脛id隆拢dup2潞炉脢媒鲁脡鹿娄路碌禄脴脢卤拢卢脛驴卤锚脙猫脢枚路没拢篓dup2潞炉脢媒碌脛
+    碌脷露镁赂枚虏脦脢媒拢漏陆芦卤盲鲁脡脭麓脙猫脢枚路没拢篓dup2潞炉脢媒碌脛碌脷脪禄赂枚虏脦脢媒拢漏碌脛赂麓脰脝脝路拢卢禄禄戮盲禄掳脣碌拢卢脕陆赂枚脦脛录镁脙猫
+    脢枚路没脧脰脭脷露录脰赂脧貌脥卢脪禄赂枚脦脛录镁拢卢虏垄脟脪脢脟潞炉脢媒碌脷脪禄赂枚虏脦脢媒脰赂脧貌碌脛脦脛录镁隆拢
 
- 1 如果@fd2已经打开，则先关闭。
- 2 如果@fd==@fd2，不关闭@fd2，直接返回@fd2
- 3 新描述符与@fd共享一个文件表项(file table entry)
+ 1 脠莽鹿没@fd2脪脩戮颅麓貌驴陋拢卢脭貌脧脠鹿脴卤脮隆拢
+ 2 脠莽鹿没@fd==@fd2拢卢虏禄鹿脴卤脮@fd2拢卢脰卤陆脫路碌禄脴@fd2
+ 3 脨脗脙猫脢枚路没脫毛@fd鹿虏脧铆脪禄赂枚脦脛录镁卤铆脧卯(file table entry)
 ************************************************************************************/
 int dup2(int fd,int fd2);
 /*
@@ -236,7 +236,7 @@ void sync(void);
 int fcntl(int fd,int cmd,... /* int arg */ );
 
 /******************************************************************************\
-                                 记录锁
+                                 录脟脗录脣酶
 \******************************************************************************/
 
 #define F_RDLCK /*a shared read lock*/
@@ -267,16 +267,16 @@ int fcntl(int fd,int cmd,... /* int arg */ );
  the beginning of the file, but most applications specify @l_start as 0 and
  @l_whence as SEEK_SET.)
 
- ---->使用规则
+ ---->脢鹿脫脙鹿忙脭貌
   We previously mentioned two types of locks: a shared read lock (l_type of
 F_RDLCK) and an exclusive write lock (F_WRLCK). The basic rule is that any number 
 of processes can have a shared read lock on a given byte, but only one process 
 can have an exclusive write lock on a given byte. Furthermore, if there are one 
 or more read locks on a byte, there can't be any write locks on that byte; if 
-there is an exclusive write lock on a byte, there can’t be any read locks on 
+there is an exclusive write lock on a byte, there can隆炉t be any read locks on 
 that byte. 
 
----->建议性锁和强制性锁 Advisory versus Mandatory Locking
+---->陆篓脪茅脨脭脣酶潞脥脟驴脰脝脨脭脣酶 Advisory versus Mandatory Locking
  ******************************************************************************/
 struct flock 
 {
@@ -305,7 +305,7 @@ locked, the calling process is put to sleep.The process wakes up either when the
 lock becomes available or when interrupted by a signal.*/
 
 /*******************************************************************************
-锁的继承与释放
+脣酶碌脛录脤鲁脨脫毛脢脥路脜
 1 when a process terminates, all its locks are released. whenever a descriptor is 
   closed, any locks on the file referenced by that descriptor for that process are 
   released. This means that if we make the calls
@@ -339,7 +339,7 @@ lock becomes available or when interrupted by a signal.*/
 #include <sys/select.h>
 #include <sys/time.h>
 
-#define FD_SETSIZE  /*@select的第一个参数，最大的描述符个数，通常是1024*/
+#define FD_SETSIZE  /*@select碌脛碌脷脪禄赂枚虏脦脢媒拢卢脳卯麓贸碌脛脙猫脢枚路没赂枚脢媒拢卢脥篓鲁拢脢脟1024*/
 
 struct timeval	
 {
@@ -348,22 +348,22 @@ struct timeval
 };
 
 /*******************************************************************************
- @maxfdp1: 描述符个数+1
- @readset: 读描述符集，可以为NULL
- @readset: 写描述符集，可以为NULL
- @readset: 异常描述符集，可以为NULL
- @timeout: 等待时间
+ @maxfdp1: 脙猫脢枚路没赂枚脢媒+1
+ @readset: 露脕脙猫脢枚路没录炉拢卢驴脡脪脭脦陋NULL
+ @readset: 脨麓脙猫脢枚路没录炉拢卢驴脡脪脭脦陋NULL
+ @readset: 脪矛鲁拢脙猫脢枚路没录炉拢卢驴脡脪脭脦陋NULL
+ @timeout: 碌脠麓媒脢卤录盲
  function: 
-    告诉内核
-    1 关心的描述符
-    2 关心描述符的哪些状态，比如是否可读、是否可写、描述符的异常状态
-    3 等待时间
-    从select返回内核告诉我们
-    1 已经准备好的描述符数量
-    2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
-      使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
+    赂忙脣脽脛脷潞脣
+    1 鹿脴脨脛碌脛脙猫脢枚路没
+    2 鹿脴脨脛脙猫脢枚路没碌脛脛脛脨漏脳麓脤卢拢卢卤脠脠莽脢脟路帽驴脡露脕隆垄脢脟路帽驴脡脨麓隆垄脙猫脢枚路没碌脛脪矛鲁拢脳麓脤卢
+    3 碌脠麓媒脢卤录盲
+    麓脫select路碌禄脴脛脷潞脣赂忙脣脽脦脪脙脟
+    1 脪脩戮颅脳录卤赂潞脙碌脛脙猫脢枚路没脢媒脕驴
+    2 露脭脫脷露脕隆垄脨麓禄貌脪矛鲁拢脮芒脠媒赂枚脳麓脤卢脰脨碌脛脙驴脪禄赂枚拢卢脛脛脨漏脙猫脢枚路没脪脩戮颅脳录卤赂潞脙隆拢
+      脢鹿脫脙脮芒脨漏路碌禄脴脨脜脧垄戮脥驴脡脪脭碌梅脫脙脧脿脫娄碌脛I/O潞炉脢媒拢卢虏垄脠路脟脨脰陋碌脌潞炉脢媒虏禄禄谩脳猫脠没
  Returns: 
-    positive count of ready descriptors, 0 on timeout, –1 on error
+    positive count of ready descriptors, 0 on timeout, 篓C1 on error
     
  There are three possible return values from @select.
  1 return -1 means that an error occurred. This can happen, for example, if a 
@@ -377,23 +377,23 @@ struct timeval
    same descriptor is ready to be read and written, it will be counted twice in 
    the return value. The only bits left on in the three descriptor sets are the 
    bits corresponding to the descriptors that are ready.
- ---->等待的时间
- 1 永远等待  timeout == NULL
- 2 等待指定的时间 具体的时间由timeout指定
- 3 不等待  timeout中的时间为0
+ ---->碌脠麓媒碌脛脢卤录盲
+ 1 脫脌脭露碌脠麓媒  timeout == NULL
+ 2 碌脠麓媒脰赂露篓碌脛脢卤录盲 戮脽脤氓碌脛脢卤录盲脫脡timeout脰赂露篓
+ 3 虏禄碌脠麓媒  timeout脰脨碌脛脢卤录盲脦陋0
  The wait in the first two scenarios is normally interrupted if the process 
  catches a signal and returns from the signal handler.
 
  If we encounter the end of file on a descriptor, that descriptor is considered 
- readable by @select. We then call read and it returns 0—the way to signify end 
+ readable by @select. We then call read and it returns 0隆陋the way to signify end 
  of file on UNIX systems. 
- ---->准备好
- 1 对于读描述符集中的一个描述符的read操作将不会阻塞，则此描述符是准备好的
- 2 对于写描述符集中的一个描述符的write操作将不会阻塞，则此描述符是准备好的
- 3 若异常描述符集中的一个描述符有一个未决异常状态，则此描述符是准备好的。
-   异常状态包括
-   a 在网络连接上到达的带外数据
-   b 处于数据包模式的伪终端上发生了某些状态。
+ ---->脳录卤赂潞脙
+ 1 露脭脫脷露脕脙猫脢枚路没录炉脰脨碌脛脪禄赂枚脙猫脢枚路没碌脛read虏脵脳梅陆芦虏禄禄谩脳猫脠没拢卢脭貌麓脣脙猫脢枚路没脢脟脳录卤赂潞脙碌脛
+ 2 露脭脫脷脨麓脙猫脢枚路没录炉脰脨碌脛脪禄赂枚脙猫脢枚路没碌脛write虏脵脳梅陆芦虏禄禄谩脳猫脠没拢卢脭貌麓脣脙猫脢枚路没脢脟脳录卤赂潞脙碌脛
+ 3 脠么脪矛鲁拢脙猫脢枚路没录炉脰脨碌脛脪禄赂枚脙猫脢枚路没脫脨脪禄赂枚脦麓戮枚脪矛鲁拢脳麓脤卢拢卢脭貌麓脣脙猫脢枚路没脢脟脳录卤赂潞脙碌脛隆拢
+   脪矛鲁拢脳麓脤卢掳眉脌篓
+   a 脭脷脥酶脗莽脕卢陆脫脡脧碌陆麓茂碌脛麓酶脥芒脢媒戮脻
+   b 麓娄脫脷脢媒戮脻掳眉脛拢脢陆碌脛脦卤脰脮露脣脡脧路垄脡煤脕脣脛鲁脨漏脳麓脤卢隆拢
  4 File descriptors for regular files always return ready for reading, writing, 
    and exception conditions.
  *******************************************************************************/
@@ -416,7 +416,7 @@ void FD_ZERO(fd_set *fdset);
 
 /*******************************************************************************
  After declaring a descriptor set, we must zero the set using FD_ZERO.Wethen set
- bits in the set for each descriptor that we’reinterested in, as in
+ bits in the set for each descriptor that we隆炉reinterested in, as in
  ******************************************************************************/
 void fd_set_example()
 {
@@ -439,7 +439,7 @@ void fd_set_example()
  
 struct timespec {
   time_t tv_sec;       /* seconds */
-  long   tv_nsec;      /* nanoseconds 纳秒 */
+  long   tv_nsec;      /* nanoseconds 脛脡脙毛 */
 };
 
 /*******************************************************************************
@@ -458,20 +458,20 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 #include <poll.h>
 
 /********** Input events and returned revents for poll ***********/
-#define POLLIN       /*普通或优先级带数据可读 */
-#define POLLRDNORM   /*普通数据可读*/
-#define POLLRDBAND   /*优先级带数据可读*/
-#define POLLPRI      /*高优先级数据可读*/
+#define POLLIN       /*脝脮脥篓禄貌脫脜脧脠录露麓酶脢媒戮脻驴脡露脕 */
+#define POLLRDNORM   /*脝脮脥篓脢媒戮脻驴脡露脕*/
+#define POLLRDBAND   /*脫脜脧脠录露麓酶脢媒戮脻驴脡露脕*/
+#define POLLPRI      /*赂脽脫脜脧脠录露脢媒戮脻驴脡露脕*/
 
-#define POLLOUT      /*普通数据可写*/
-#define POLLWRNORM   /*普通数据可写*/
-#define POLLWRBAND   /*优先级带数据可写*/
+#define POLLOUT      /*脝脮脥篓脢媒戮脻驴脡脨麓*/
+#define POLLWRNORM   /*脝脮脥篓脢媒戮脻驴脡脨麓*/
+#define POLLWRBAND   /*脫脜脧脠录露麓酶脢媒戮脻驴脡脨麓*/
 
-#define POLLERR      /*发生错误，不可作为@events*/
-#define POLLHUP      /*发生挂起，不可作为@events*/
-#define POLLNVAL     /*描述字不是一个打开的文件，不可作为@events*/
+#define POLLERR      /*路垄脡煤麓铆脦贸拢卢虏禄驴脡脳梅脦陋@events*/
+#define POLLHUP      /*路垄脡煤鹿脪脝冒拢卢虏禄驴脡脳梅脦陋@events*/
+#define POLLNVAL     /*脙猫脢枚脳脰虏禄脢脟脪禄赂枚麓貌驴陋碌脛脦脛录镁拢卢虏禄驴脡脳梅脦陋@events*/
 
-#define INFTIM       /*是一个负值 @poll的第三个参数,表示永远等待*/
+#define INFTIM       /*脢脟脪禄赂枚赂潞脰碌 @poll碌脛碌脷脠媒赂枚虏脦脢媒,卤铆脢戮脫脌脭露碌脠麓媒*/
 
 /*******************************************************************************
  To tell the kernel which events we're interested in for each descriptor, we have
@@ -482,7 +482,7 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 struct pollfd 
 {
     int  fd; /* file descriptor to check, or <0 to ignore */
-    short  events; /* events of interest on fd POLLIN等值*/
+    short  events; /* events of interest on fd POLLIN碌脠脰碌*/
     short  revents;  /* events that occurred on fd */
 };
 
@@ -494,9 +494,9 @@ struct pollfd
  @nfds   : 
     The number of elements in the array of structures is specified by the nfds argument.
  
- @timeout: INFTIM永远等待 0不等待 大于0等待指定的时间
+ @timeout: INFTIM脫脌脭露碌脠麓媒 0虏禄碌脠麓媒 麓贸脫脷0碌脠麓媒脰赂露篓碌脛脢卤录盲
  @returns: 
-    The return value from @poll is –1 if an error occurred, 0 if no descriptors are 
+    The return value from @poll is 篓C1 if an error occurred, 0 if no descriptors are 
     ready before the timer expires,otherwise it is the number of descriptors that have 
     a nonzero @revents member.
 
@@ -508,7 +508,7 @@ struct pollfd
  3 When the read half of a TCP connection is closed (e.g., a FIN is received), this 
    is also considered normal data and a subsequent read operation will return 0.
  4 The presence of an error for a TCP connection can be considered either normal data 
-   or an error (POLLERR). In either case, a subsequent read will return –1 with errno 
+   or an error (POLLERR). In either case, a subsequent read will return 篓C1 with errno 
    set to the appropriate value. This handles conditions such as the receipt of an RST 
    or a timeout.
  5 The availability of a new connection on a listening socket can be considered either 
@@ -529,23 +529,23 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
  kqueue, in that it operates on a configurable kernel object, exposed to user space as 
  a file descriptor of its own.
 
- EPOLL事件有两种模型 Level Triggered (LT) 和 Edge Triggered (ET)：
+ EPOLL脢脗录镁脫脨脕陆脰脰脛拢脨脥 Level Triggered (LT) 潞脥 Edge Triggered (ET)拢潞
 
- LT(level triggered，水平触发模式)
-    是缺省的工作方式，并且同时支持 block 和 non-block socket。在这种做法中，内核告诉你
-    一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，
-    内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。
+ LT(level triggered拢卢脣庐脝陆麓楼路垄脛拢脢陆)
+    脢脟脠卤脢隆碌脛鹿陇脳梅路陆脢陆拢卢虏垄脟脪脥卢脢卤脰搂鲁脰 block 潞脥 non-block socket隆拢脭脷脮芒脰脰脳枚路篓脰脨拢卢脛脷潞脣赂忙脣脽脛茫
+    脪禄赂枚脦脛录镁脙猫脢枚路没脢脟路帽戮脥脨梅脕脣拢卢脠禄潞贸脛茫驴脡脪脭露脭脮芒赂枚戮脥脨梅碌脛fd陆酶脨脨IO虏脵脳梅隆拢脠莽鹿没脛茫虏禄脳梅脠脦潞脦虏脵脳梅拢卢
+    脛脷潞脣禄鹿脢脟禄谩录脤脨酶脥篓脰陋脛茫碌脛拢卢脣霉脪脭拢卢脮芒脰脰脛拢脢陆卤脿鲁脤鲁枚麓铆脦贸驴脡脛脺脨脭脪陋脨隆脪禄碌茫隆拢
 
- ET(edge-triggered，边缘触发模式)
-    是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，
-    内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件
-    描述符发送更多的就绪通知，等到下次有新的数据进来的时候才会再次出发就绪事件。 
+ ET(edge-triggered拢卢卤脽脭碌麓楼路垄脛拢脢陆)
+    脢脟赂脽脣脵鹿陇脳梅路陆脢陆拢卢脰禄脰搂鲁脰no-block socket隆拢脭脷脮芒脰脰脛拢脢陆脧脗拢卢碌卤脙猫脢枚路没麓脫脦麓戮脥脨梅卤盲脦陋戮脥脨梅脢卤拢卢
+    脛脷潞脣脥篓鹿媒epoll赂忙脣脽脛茫隆拢脠禄潞贸脣眉禄谩录脵脡猫脛茫脰陋碌脌脦脛录镁脙猫脢枚路没脪脩戮颅戮脥脨梅拢卢虏垄脟脪虏禄禄谩脭脵脦陋脛脟赂枚脦脛录镁
+    脙猫脢枚路没路垄脣脥赂眉露脿碌脛戮脥脨梅脥篓脰陋拢卢碌脠碌陆脧脗麓脦脫脨脨脗碌脛脢媒戮脻陆酶脌麓碌脛脢卤潞貌虏脜禄谩脭脵麓脦鲁枚路垄戮脥脨梅脢脗录镁隆拢 
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
- 创建一个epoll的句柄，size用来告诉内核需要监听的数目一共有多大。当创建好epoll句柄后，
- 它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在
- 使用完epoll后，必须调用close() 关闭，否则可能导致fd被耗尽。
+ 麓麓陆篓脪禄赂枚epoll碌脛戮盲卤煤拢卢size脫脙脌麓赂忙脣脽脛脷潞脣脨猫脪陋录脿脤媒碌脛脢媒脛驴脪禄鹿虏脫脨露脿麓贸隆拢碌卤麓麓陆篓潞脙epoll戮盲卤煤潞贸拢卢
+ 脣眉戮脥脢脟禄谩脮录脫脙脪禄赂枚fd脰碌拢卢脭脷linux脧脗脠莽鹿没虏茅驴麓/proc/陆酶鲁脤id/fd/拢卢脢脟脛脺鹿禄驴麓碌陆脮芒赂枚fd碌脛拢卢脣霉脪脭脭脷
+ 脢鹿脫脙脥锚epoll潞贸拢卢卤脴脨毛碌梅脫脙close() 鹿脴卤脮拢卢路帽脭貌驴脡脛脺碌录脰脗fd卤禄潞脛戮隆隆拢
  @size:
     The size is not the maximum size of the backing store but just a hint to the ker-
     nel about how to dimension internal structures. Since  Linux 2.6.8, the size arg-
@@ -560,121 +560,182 @@ int epoll_create1(int flags);
 
 
 /*-----------------------------------------------------------------------------------
- @epfd: epoll_create() 的返回值。
+ @epfd: epoll_create() 碌脛路碌禄脴脰碌隆拢
  @op    EPOLL_CTL_ADD
- @fd    需要监听的fd
- @event 告诉内核需要监听什么事
+ @fd    脨猫脪陋录脿脤媒碌脛fd
+ @event 赂忙脣脽脛脷潞脣脨猫脪陋录脿脤媒脢虏脙麓脢脗
 -----------------------------------------------------------------------------------*/
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 
 /*-----------------------------------------------------------------------------------
- 收集在epoll监控的事件中已经发送的事件。 参数events是分配好的epoll_event结构体数组，
- epoll将会把发生的事件赋值到events数组中（events不可以是空指针，内核只负责把数据复制
- 到这个events数组中，不会去帮助我们在用户态中分配内存）。maxevents告之内核这个events
- 有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间
- （毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。如果函数调用成功，返回对应
- I/O上已准备好的文件描述符数目，如返回0表示已超时。
+ 脢脮录炉脭脷epoll录脿驴脴碌脛脢脗录镁脰脨脪脩戮颅路垄脣脥碌脛脢脗录镁隆拢 虏脦脢媒events脢脟路脰脜盲潞脙碌脛epoll_event陆谩鹿鹿脤氓脢媒脳茅拢卢
+ epoll陆芦禄谩掳脩路垄脡煤碌脛脢脗录镁赂鲁脰碌碌陆events脢媒脳茅脰脨拢篓events虏禄驴脡脪脭脢脟驴脮脰赂脮毛拢卢脛脷潞脣脰禄赂潞脭冒掳脩脢媒戮脻赂麓脰脝
+ 碌陆脮芒赂枚events脢媒脳茅脰脨拢卢虏禄禄谩脠楼掳茂脰煤脦脪脙脟脭脷脫脙禄搂脤卢脰脨路脰脜盲脛脷麓忙拢漏隆拢maxevents赂忙脰庐脛脷潞脣脮芒赂枚events
+ 脫脨露脿麓贸拢卢脮芒赂枚 maxevents碌脛脰碌虏禄脛脺麓贸脫脷麓麓陆篓epoll_create()脢卤碌脛size拢卢虏脦脢媒timeout脢脟鲁卢脢卤脢卤录盲
+ 拢篓潞脕脙毛拢卢0禄谩脕垄录麓路碌禄脴拢卢-1陆芦虏禄脠路露篓拢卢脪虏脫脨脣碌路篓脣碌脢脟脫脌戮脙脳猫脠没拢漏隆拢脠莽鹿没潞炉脢媒碌梅脫脙鲁脡鹿娄拢卢路碌禄脴露脭脫娄
+ I/O脡脧脪脩脳录卤赂潞脙碌脛脦脛录镁脙猫脢枚路没脢媒脛驴拢卢脠莽路碌禄脴0卤铆脢戮脪脩鲁卢脢卤隆拢
 -----------------------------------------------------------------------------------*/
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
 
 
 #include <sys/mman.h>
-#define PROT_READ   /*Region can be read.*/
-#define PROT_WRITE  /*Region can be written.*/
-#define PROT_EXEC   /*Region can be executed.*/
-#define PROT_NONE   /*Region cannot be accessed.*/
-#define MAP_FIXED   /*返回值必须等于@addr*/
-#define MAP_SHARED	/*存储操作相当于对该文件的write.MAP_SHARED和MAP_PRIVATE必须指定一个，但不能同时指定。*/
-#define MAP_PRIVATE /*对映射区的存储操作导致创建该映射文件的一个私有副本。*/
+/* @mmmap @prot */
+#define PROT_READ   /* Region can be read. */
+#define PROT_WRITE  /* Region can be written. */
+#define PROT_EXEC   /* Region can be executed. */
+#define PROT_NONE   /* Region cannot be accessed. */
+/* @mmmap @flag */
+#define MAP_FIXED   /* 路碌禄脴脰碌卤脴脨毛碌脠脫脷@addr MAP_SHARED潞脥MAP_PRIVATE卤脴脨毛脰赂露篓脪禄赂枚拢卢碌芦虏禄脛脺脥卢脢卤脰赂露篓隆拢*/
+#define MAP_SHARED	/* 麓忙麓垄虏脵脳梅脧脿碌卤脫脷露脭赂脙脦脛录镁碌脛write.*/
+#define MAP_PRIVATE /* 露脭脫鲁脡盲脟酶碌脛麓忙麓垄虏脵脳梅碌录脰脗麓麓陆篓赂脙脫鲁脡盲脦脛录镁碌脛脪禄赂枚脣陆脫脨赂卤卤戮隆拢*/
 
-/*
-@addr:映射存储区的起始地址,0表示让系统自动选择。页边界对齐
-@len: 映射的字节数
-@prot:映射区的保护要求(按位或)
-      PROT_READ Region can be read.
-      PROT_WRITE Region can be written.
-      PROT_EXEC Region can be executed.
-      PROT_NONE Region cannot be accessed.
-@flag:映射存储区的属性
-      MAP_FIXED   返回值必须等于@addr
-      MAP_SHARED  存储操作相当于对该文件的write.MAP_SHARED和MAP_PRIVATE必须指定一个，但不能同时指定。
-      MAP_PRIVATE 对映射区的存储操作导致创建该映射文件的一个私有副本。
-@fd:  被映射文件的描述符,映射文件前要打开该文件
-@off: 要映射字节在文件中的起始偏移量
-Returns: starting address of mapped region if OK,MAP_FAILED on error*/
+/*-----------------------------------------------------------------------------------
+ @addr:
+    脫鲁脡盲麓忙麓垄脟酶碌脛脝冒脢录碌脴脰路,0卤铆脢戮脠脙脧碌脥鲁脳脭露炉脩隆脭帽隆拢脪鲁卤脽陆莽露脭脝毛
+ @len: 
+    脫鲁脡盲碌脛脳脰陆脷脢媒
+ @prot:
+    脫鲁脡盲脟酶碌脛卤拢禄陇脪陋脟贸(掳麓脦禄禄貌)
+    PROT_READ Region can be read.
+    PROT_WRITE Region can be written.
+    PROT_EXEC Region can be executed.
+    PROT_NONE Region cannot be accessed.
+ @flag: MAP_FIXED
+    Either the MAP_SHARED or the MAP_PRIVATE flag must be specified , optionally ORed 
+    with  MAP_FIXED. If MAP_PRIVATE is specified, then modifications to the mapped d-
+    ata by the calling process are visible only to that process and do not change the 
+    underlying object (either a file object or a shared memory object). If MAP_SHARED 
+    is specified, modifications to the mapped data by the calling process are visible  
+    to all processes that are sharing the object, and these changes do modify the un-
+    derlying object. 
+ @fd:  
+    卤禄脫鲁脡盲脦脛录镁碌脛脙猫脢枚路没,脫鲁脡盲脦脛录镁脟掳脪陋麓貌驴陋赂脙脦脛录镁
+ @off: 
+    脪陋脫鲁脡盲脳脰陆脷脭脷脦脛录镁脰脨碌脛脝冒脢录脝芦脪脝脕驴
+ @Returns: 
+    starting address of mapped region if OK,MAP_FAILED on error
+
+ One way to share memory between a parent and child is	to call map with MAP_SHARED 
+ before calling fork. Posix.1 then guarantees that memory mappings in the parent are 
+ retained in the child. Furthermore, changes made by the parent are visible to the c-
+ hild and vice versa.
+
+ After map returns success, the @fd argument can be closed. This has no effect on the 
+ mapping that was established by @mmap. 
+
+ Trying to map a descriptor that refers to a terminal or a socket, for example, gene-
+ rates an error return from map. These types of  descriptors must be accessed using -
+ read and write (or variants thereof ). 
+ 
+ Another use of map is to provide shared memory between unrelated processes . In this 
+ case, the actual contents of the file become the initial contents of the memory that 
+ is shared, and any changes made by the processes to this shared memory are then cop-
+ ied back to the file (providing filesystem persistence).This assumes that MAP_SHARED 
+ is specified, which is required to share the memory between processes. 
+
+ low memory      return value of @mmap        
+ |                   |
+\|/                 \|/
+ +-----------------------------------------------+
+ |                   |                 |         |       address space of process
+ +-----------------------------------------------+
+                     |                 |
+                     |                 |
+                    \|/               \|/
+ +-------------------------------------------+
+ |   @offset         |      @len       |     |      file referenced by descriptor @fd
+ +-------------------------------------------+
+
+ example: mmap_eg_sharemem()
+-----------------------------------------------------------------------------------*/
 void *mmap(void *addr,size_t len,int prot,int flag,int fd,off_t off);
 
+/*-----------------------------------------------------------------------------------
+ @function:
+    To remove a mapping from the address space of the process, we call @munmap. 
+ @Returns: 
+    0 if OK,-1 on error
+
+ A memory-mapped region is automatically unmapped when the process terminates or we -
+ can unmap a region directly by calling the @munmap function. The @munmap function d-
+ oes not affect the object that was mapped, that is, the call to @munmap does not ca-
+ use the contents of the mapped region to be written to the disk file.The updating of 
+ the disk file for a  MAP_SHARED region happens automatically by the kernel's virtual 
+ memory algorithm sometime after we store into the memory-mapped region.Modifications 
+ to memory in a MAP_PRIVATE region are discarded when the region is unmapped.
+-----------------------------------------------------------------------------------*/
+int munmap(void *addr,size_t len);
+
+#define MS_ASYNC	   
+#define MS_SYNC 
+#define MS_INVALIDATE
+
+/*-----------------------------------------------------------------------------------
+ @addr @len
+    The @addr and @len arguments normally refer to the entire memory-mapped region of  
+    memory, although subsets of this region can also be specified. 
+ @flags: MS_ASYNC	MS_SYNC 	MS_INVALIDATE
+    One of the two constants MS_ASYNC and MS_SYNC must be specified, but not both.The 
+    difference in these two is that MS_ASYNC returns once the write operations are q-
+    ueued by the kernel , whereas MS_SYNC returns only after the write operations are 
+    complete. If MS_INVALIDATE is also specified, all in-memory copies of the file d-
+    ata that are inconsistent with the file data are invalidated. Subsequent referen-
+    ces will obtain data from the file. 
+ @Returns: 
+    0 if OK,-1 on error		
+
+ the kernel's virtual memory algorithm keeps the memory-mapped file (typically on di-
+ sk) synchronized with the memory-mapped region in memory, assuming a MAP_SHARED seg-
+ ment. That is, if we modify a location in memory that is memory-mapped to a file, t-
+ hen at some time later the kernel will update the file accordingly. But sometimes, -
+ we want to make certain  that the file on disk corresponds to what is in the memory-
+ mapped region, and we call @msync to perform this synchronization. 
+-----------------------------------------------------------------------------------*/
+int msync(void *addr,size_t len,int flags);
 
 
-
-
-#include <sys/mman.h>
-/*
+/*-----------------------------------------------------------------------------------
 function:We can change the permissions on an existing mapping by calling @mprotect
-Returns: 0 if OK,-1 on error*/
+Returns: 0 if OK,-1 on error
+-----------------------------------------------------------------------------------*/
 int mprotect(void *addr,size_t len,int prot);
 
 
 
-#include <sys/mman.h>
-/*
-flags: MS_ASYNC       MS_ASYNC和MS_SYNC必须指定一个
-       MS_SYNC        等待冲洗完成
-       MS_INVALIDATE
-function:修改冲洗到文件中。
-Returns: 0 if OK,-1 on error*/
-int msync(void *addr,size_t len,int flags);
-
-
-#include <sys/mman.h>
-/*
-function:解除映射
-Returns: 0 if OK,-1 on error
-
-Amemory-mapped region is automatically unmapped when the process terminates
-or  we  can  unmap  a  region  directly  by  calling  themunmapfunction.  Closing the  file
-descriptor used when we mapped the region does not unmap the region.
-Themunmapfunction  does  not  affect  the  object  that  was  mapped—that  is,  the  call  to
-munmapdoes not cause the contents of the mapped region to be written to the disk file.
-The updating of the disk file for aMAP_SHAREDregion happens automatically by the
-kernel’s virtual memory algorithm sometime after we storeinto the memory-mapped
-region.  Modifications to  memory  in  aMAP_PRIVATEregion  arediscarded  when  the
-region is unmapped.*/
-int munmap(void *addr,size_t len);
 
  
 
 #include <sys/uio.h>
 
 /************************************************************************************
- read()和write()系统调用每次在文件和进程的地址空间之间传送一块连续的数据。但是，应用有
- 时也需要将分散在内存多处地方的数据连续写到文件中，或者反之。在这种情况下，如果要从文
- 件中读一片连续的数据至进程的不同区域，使用read()则要么一次将它们读至一个较大的缓冲区
- 中，然后将它们分成若干部分复制到不同的区域，要么调用read()若干次分批将它们读至不同区
- 域。同样，如果想将程序中不同区域的数据块连续地写至文件，也必须进行类似的处理。
+ read()潞脥write()脧碌脥鲁碌梅脫脙脙驴麓脦脭脷脦脛录镁潞脥陆酶鲁脤碌脛碌脴脰路驴脮录盲脰庐录盲麓芦脣脥脪禄驴茅脕卢脨酶碌脛脢媒戮脻隆拢碌芦脢脟拢卢脫娄脫脙脫脨
+ 脢卤脪虏脨猫脪陋陆芦路脰脡垄脭脷脛脷麓忙露脿麓娄碌脴路陆碌脛脢媒戮脻脕卢脨酶脨麓碌陆脦脛录镁脰脨拢卢禄貌脮脽路麓脰庐隆拢脭脷脮芒脰脰脟茅驴枚脧脗拢卢脠莽鹿没脪陋麓脫脦脛
+ 录镁脰脨露脕脪禄脝卢脕卢脨酶碌脛脢媒戮脻脰脕陆酶鲁脤碌脛虏禄脥卢脟酶脫貌拢卢脢鹿脫脙read()脭貌脪陋脙麓脪禄麓脦陆芦脣眉脙脟露脕脰脕脪禄赂枚陆脧麓贸碌脛禄潞鲁氓脟酶
+ 脰脨拢卢脠禄潞贸陆芦脣眉脙脟路脰鲁脡脠么赂脡虏驴路脰赂麓脰脝碌陆虏禄脥卢碌脛脟酶脫貌拢卢脪陋脙麓碌梅脫脙read()脠么赂脡麓脦路脰脜煤陆芦脣眉脙脟露脕脰脕虏禄脥卢脟酶
+ 脫貌隆拢脥卢脩霉拢卢脠莽鹿没脧毛陆芦鲁脤脨貌脰脨虏禄脥卢脟酶脫貌碌脛脢媒戮脻驴茅脕卢脨酶碌脴脨麓脰脕脦脛录镁拢卢脪虏卤脴脨毛陆酶脨脨脌脿脣脝碌脛麓娄脌铆隆拢
 
- UNIX提供了另外两个函数—readv()和writev()，它们只需一次系统调用就可以实现在文件和进程
- 的多个缓冲区之间传送数据，免除了多次系统调用或复制数据的开销。readv()称为散布读，即将
- 文件中若干连续的数据块读入内存分散的缓冲区中。writev()称为聚集写，即收集内存中分散的
- 若干缓冲区中的数据写至文件的连续区域中。
+ UNIX脤谩鹿漏脕脣脕铆脥芒脕陆赂枚潞炉脢媒隆陋readv()潞脥writev()拢卢脣眉脙脟脰禄脨猫脪禄麓脦脧碌脥鲁碌梅脫脙戮脥驴脡脪脭脢碌脧脰脭脷脦脛录镁潞脥陆酶鲁脤
+ 碌脛露脿赂枚禄潞鲁氓脟酶脰庐录盲麓芦脣脥脢媒戮脻拢卢脙芒鲁媒脕脣露脿麓脦脧碌脥鲁碌梅脫脙禄貌赂麓脰脝脢媒戮脻碌脛驴陋脧煤隆拢readv()鲁脝脦陋脡垄虏录露脕拢卢录麓陆芦
+ 脦脛录镁脰脨脠么赂脡脕卢脨酶碌脛脢媒戮脻驴茅露脕脠毛脛脷麓忙路脰脡垄碌脛禄潞鲁氓脟酶脰脨隆拢writev()鲁脝脦陋戮脹录炉脨麓拢卢录麓脢脮录炉脛脷麓忙脰脨路脰脡垄碌脛
+ 脠么赂脡禄潞鲁氓脟酶脰脨碌脛脢媒戮脻脨麓脰脕脦脛录镁碌脛脕卢脨酶脟酶脫貌脰脨隆拢
 
- 参数@fildes是文件描述字。@iov是一个结构数组，它的每个元素指明存储器中的一个缓冲区。
- 参数@iovcnt指出数组@iov的元素个数，元素个数至多不超过IOV_MAX。Linux中定义IOV_MAX的值
- 为1024。
+ 虏脦脢媒@fildes脢脟脦脛录镁脙猫脢枚脳脰隆拢@iov脢脟脪禄赂枚陆谩鹿鹿脢媒脳茅拢卢脣眉碌脛脙驴赂枚脭陋脣脴脰赂脙梅麓忙麓垄脝梅脰脨碌脛脪禄赂枚禄潞鲁氓脟酶隆拢
+ 虏脦脢媒@iovcnt脰赂鲁枚脢媒脳茅@iov碌脛脭陋脣脴赂枚脢媒拢卢脭陋脣脴赂枚脢媒脰脕露脿虏禄鲁卢鹿媒IOV_MAX隆拢Linux脰脨露篓脪氓IOV_MAX碌脛脰碌
+ 脦陋1024隆拢
 
- readv()则将fildes指定文件中的数据按iov[0]、iov[1]、...、iov[iovcnt–1]规定的顺序和长
- 度，分散地读到它们指定的存储地址中。readv()的返回值是读入的总字节数。如果没有数据可
- 读和遇到了文件尾，其返回值为0。
+ readv()脭貌陆芦fildes脰赂露篓脦脛录镁脰脨碌脛脢媒戮脻掳麓iov[0]隆垄iov[1]隆垄...隆垄iov[iovcnt篓C1]鹿忙露篓碌脛脣鲁脨貌潞脥鲁陇
+ 露脠拢卢路脰脡垄碌脴露脕碌陆脣眉脙脟脰赂露篓碌脛麓忙麓垄碌脴脰路脰脨隆拢readv()碌脛路碌禄脴脰碌脢脟露脕脠毛碌脛脳脺脳脰陆脷脢媒隆拢脠莽鹿没脙禄脫脨脢媒戮脻驴脡
+ 露脕潞脥脫枚碌陆脕脣脦脛录镁脦虏拢卢脝盲路碌禄脴脰碌脦陋0隆拢
 
- 有了这两个函数，当想要集中写出某张链表时，只需让iov数组的各个元素包含链表中各个表项
- 的地址和其长度，然后将iov和它的元素个数作为参数传递给writev()，这些数据便可一次写出。
+ 脫脨脕脣脮芒脕陆赂枚潞炉脢媒拢卢碌卤脧毛脪陋录炉脰脨脨麓鲁枚脛鲁脮脜脕麓卤铆脢卤拢卢脰禄脨猫脠脙iov脢媒脳茅碌脛赂梅赂枚脭陋脣脴掳眉潞卢脕麓卤铆脰脨赂梅赂枚卤铆脧卯
+ 碌脛碌脴脰路潞脥脝盲鲁陇露脠拢卢脠禄潞贸陆芦iov潞脥脣眉碌脛脭陋脣脴赂枚脢媒脳梅脦陋虏脦脢媒麓芦碌脻赂酶writev()拢卢脮芒脨漏脢媒戮脻卤茫驴脡脪禄麓脦脨麓鲁枚隆拢
 ************************************************************************************/
 
-/* return: number of bytes read or written, –1 on error */ 
+/* return: number of bytes read or written, 篓C1 on error */ 
 ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 
-/*@iov:结构体数组指针
-  return: number of bytes read or written, –1 on error */
+/*@iov:陆谩鹿鹿脤氓脢媒脳茅脰赂脮毛
+  return: number of bytes read or written, 篓C1 on error */
 ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
  
 
@@ -693,5 +754,3 @@ ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
 #include <unistd.h> /* System V */
 #include <sys/ioctl.h> /* BSD and Linux */
 int ioctl(int fd, int request, ...);
-	
-
