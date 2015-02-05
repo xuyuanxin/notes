@@ -6,16 +6,13 @@ int  globvar = 6;
 char  buf[]  = "a write to stdout\n";
 
 /*-----------------------------------------------------------------------------------
- write:²»´ø»º³å
- printf:±ê×¼I/O¿â´ø»º³å£¬Èç¹û±ê×¼Êä³öÁ¬½Óµ½ÖÕ¶ËÉè±¸£¬ÔòËüÊÇÐÐ»º³åµÄ£¬·ñÔòËüÊÇÈ«»º³åµÄ¡£
-
- printf("before fork\n");
- 1 Êä³öµ½ÖÕ¶ËÊ±(´ËÊ±printfÊÇÐÐ»º³åµÄ)
-   µ÷ÓÃÇ°ÒÑ¾­Ë¢ÐÂ»º³åÇø£¬ËùÒÔ×Ó½ø³Ì²»»áÊä³ö"before fork"
- 2 Êä³öµ½ÎÄ¼þ(´ËÊ±printfÊÇÈ«»º³åµÄ)
-   ËäÈ»ÓÐ\n£¬ÓÉÓÚ´ËÊ±ÊÇÈ«»º³åµÄ£¬ËùÒÔ×Ó½ø³ÌÒ²»áÊä³ö¡£
+ @write function is not buffered. Because @write is called before the fork, its data 
+ is written once to standard output. The standard I/O library, however, is buffered. 
+ standard output is line buffered if it's connected to a terminal device; otherwise, 
+ it's fully buffered.
 
 output:
+$ ./a.exe                        <---- printf is line buffered
 a write to stdout                                                                                                                   
 print with newline                                                                                                                  
 print no newline                                                                                                                    
@@ -25,7 +22,7 @@ print no newline
 parent: pid: 2147 glob: 6 var: 88
 
 
-$ ./a.exe >out.txt
+$ ./a.exe >out.txt               <---- printf is fully buffered
 $ cat out.txt
 a write to stdout                                                                                                                   
 print with newline                                                                                                                  
@@ -34,8 +31,7 @@ child: pid: 2198 glob: 7 var: 89
                                                                                                                                     
 print with newline                                                                                                                  
 print no newline                                                                                                                    
-parent: pid: 2197 glob: 6 var: 88
-
+parent: pid: 2197 glob: 6 var: 88 
 -----------------------------------------------------------------------------------*/
 int fork_eg01(void)
 {
