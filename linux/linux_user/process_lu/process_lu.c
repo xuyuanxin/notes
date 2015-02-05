@@ -33,15 +33,48 @@ int atexit(void (*func)(void));
  is the same as
             return(0);
  from the main function.
+
+ a process can terminate normally in five ways
+ 1 Executing a return from the @main function. this is equivalent to calling exit.
+ 2 Calling the @exit function. This function is defined by ISO C and includes the ca-
+   lling of all exit handlers that have been registered by calling @atexit and closi-
+   ng all standard I/O streams. Because ISO C does not deal with file descriptors, m-
+   ultiple processes (parents and children ), and job control, the definition of this 
+   function is incomplete for a UNIX system.
+ 3 Calling the _exit or _Exit function. ISO C defines _Exit to provide a way for a p-
+   rocess to terminate without running exit handlers or signal handlers. Whether sta-
+   ndard I/O streams are flushed depends on the implementation. On UNIX systems,_Exit 
+   and _exit are synonymous and do not flush standard I/O streams. The _exit function 
+   is called by exit and handles the UNIX system-specific details; _exit is specified 
+   by POSIX.1.
+ 4 Executing a return from the start routine of the last thread in the process. The -
+   return value of the thread is not used as the return value of the process, however. 
+   When the last thread returns from its start routine, the process exits with a ter-
+   mination status of 0.  
+ 5 Calling the pthread_exit function from the last thread in the process. As with the 
+   previous case, the exit status of the process in this situation is always 0, rega-
+   rdless of the argument passed to pthread_exit. 
+   
+ The three forms of abnormal termination are as follows: 
+ 1 Calling abort. This is a special case of the next item,as it generates the SIGABRT 
+   signal.
+ 2 When the process receives certain signals.
+ 3 The last thread responds to a cancellation request. By default, cancellation occu-
+   rs in a deferred manner: one thread requests that another be canceled, and someti-
+   me later the target thread terminates. 
+   
+ Regardless of how a process terminates, the same code in the kernel is eventually e-
+ xecuted. This kernel code closes all the open descriptors for the process , releases 
+ the memory that it was using, and so on.   
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
- @status:ä¸ä¸º0éƒ½è¡¨ç¤ºå¼‚å¸¸é€€å‡º,0è¡¨ç¤ºæ­£å¸¸é€€å‡º
- function:ç”¨æ¥ç»ˆæ­¢è¿›ç¨‹(è¦å…ˆæ‰§è¡Œä¸€äº›æ¸…é™¤æ“ä½œï¼Œç„¶åå°†æ§åˆ¶æƒäº¤ç»™å†…æ ¸)
+ @status:²»Îª0¶¼±íÊ¾Òì³£ÍË³ö,0±íÊ¾Õı³£ÍË³ö
+ function:ÓÃÀ´ÖÕÖ¹½ø³Ì(ÒªÏÈÖ´ĞĞÒ»Ğ©Çå³ı²Ù×÷£¬È»ºó½«¿ØÖÆÈ¨½»¸øÄÚºË)
 
- 1 exit()å‡½æ•°åœ¨è°ƒç”¨exitç³»ç»Ÿä¹‹å‰è¦æ£€æŸ¥æ–‡ä»¶çš„æ‰“å¼€æƒ…å†µï¼ŒæŠŠæ–‡ä»¶ç¼“å†²åŒºçš„å†…å®¹å†™å›æ–‡ä»¶ã€‚
- 2 exitå‡½æ•°ä¼šè°ƒç”¨ç»ˆæ­¢å¤„ç†ç¨‹åº(é€šè¿‡atexitæ³¨å†Œ),ç„¶åå…³é—­æ‰€æœ‰æ ‡å‡†I/Oæµç­‰ã€‚
- 3 exitå‡½æ•°æ˜¯åœ¨_exitå‡½æ•°ä¹‹ä¸Šçš„ä¸€ä¸ªå°è£…ï¼Œå…¶ä¼šè°ƒç”¨_exitï¼Œå¹¶åœ¨è°ƒç”¨ä¹‹å‰å…ˆåˆ·æ–°æµã€‚
+ 1 exit()º¯ÊıÔÚµ÷ÓÃexitÏµÍ³Ö®Ç°Òª¼ì²éÎÄ¼şµÄ´ò¿ªÇé¿ö£¬°ÑÎÄ¼ş»º³åÇøµÄÄÚÈİĞ´»ØÎÄ¼ş¡£
+ 2 exitº¯Êı»áµ÷ÓÃÖÕÖ¹´¦Àí³ÌĞò(Í¨¹ıatexit×¢²á),È»ºó¹Ø±ÕËùÓĞ±ê×¼I/OÁ÷µÈ¡£
+ 3 exitº¯ÊıÊÇÔÚ_exitº¯ÊıÖ®ÉÏµÄÒ»¸ö·â×°£¬Æä»áµ÷ÓÃ_exit£¬²¢ÔÚµ÷ÓÃÖ®Ç°ÏÈË¢ĞÂÁ÷¡£
 
  Historically, the @exit function has always performed a clean shutdown of the stand-
  ard I/O library: the @fclose function is called for all open streams, this causes a-
@@ -49,17 +82,17 @@ int atexit(void (*func)(void));
 -----------------------------------------------------------------------------------*/
 void exit(int status);
 
-/*ä¸æ¸…æ´—æ ‡å‡†I/Oæµ*/
+/*²»ÇåÏ´±ê×¼I/OÁ÷*/
 void _Exit(int status);
 
  
 #include <unistd.h>    
 /*******************************************************************************
-1 _exit()æ‰§è¡Œåç«‹å³è¿”å›ç»™å†…æ ¸ï¼Œè€Œexit()è¦å…ˆæ‰§è¡Œä¸€äº›æ¸…é™¤æ“ä½œï¼Œç„¶åå°†æ§åˆ¶æƒäº¤ç»™å†…æ ¸ã€‚
-2 è°ƒç”¨_exitå‡½æ•°æ—¶ï¼Œå…¶ä¼šå…³é—­è¿›ç¨‹æ‰€æœ‰çš„æ–‡ä»¶æè¿°ç¬¦ï¼Œæ¸…ç†å†…å­˜ä»¥åŠå…¶ä»–ä¸€äº›å†…æ ¸æ¸…ç†å‡½æ•°ï¼Œ
-  ä½†ä¸ä¼šåˆ·æ–°æµ(stdin, stdout, stderr ...).    
-3 å¦‚æœ‰ä¸€äº›æ•°æ®ï¼Œè®¤ä¸ºå·²ç»å†™å…¥äº†æ–‡ä»¶ï¼Œå®é™…ä¸Šå› ä¸ºæ²¡æœ‰æ»¡è¶³ç‰¹å®šçš„æ¡ä»¶ï¼Œå®ƒä»¬è¿˜åªæ˜¯ä¿å­˜
-  åœ¨ç¼“å†²åŒºå†…ï¼Œè¿™æ—¶ç”¨_exit()å‡½æ•°ç›´æ¥å°†è¿›ç¨‹å…³é—­ï¼Œç¼“å†²åŒºçš„æ•°æ®å°±ä¼šä¸¢å¤±ã€‚
+1 _exit()Ö´ĞĞºóÁ¢¼´·µ»Ø¸øÄÚºË£¬¶øexit()ÒªÏÈÖ´ĞĞÒ»Ğ©Çå³ı²Ù×÷£¬È»ºó½«¿ØÖÆÈ¨½»¸øÄÚºË¡£
+2 µ÷ÓÃ_exitº¯ÊıÊ±£¬Æä»á¹Ø±Õ½ø³ÌËùÓĞµÄÎÄ¼şÃèÊö·û£¬ÇåÀíÄÚ´æÒÔ¼°ÆäËûÒ»Ğ©ÄÚºËÇåÀíº¯Êı£¬
+  µ«²»»áË¢ĞÂÁ÷(stdin, stdout, stderr ...).    
+3 ÈçÓĞÒ»Ğ©Êı¾İ£¬ÈÏÎªÒÑ¾­Ğ´ÈëÁËÎÄ¼ş£¬Êµ¼ÊÉÏÒòÎªÃ»ÓĞÂú×ãÌØ¶¨µÄÌõ¼ş£¬ËüÃÇ»¹Ö»ÊÇ±£´æ
+  ÔÚ»º³åÇøÄÚ£¬ÕâÊ±ÓÃ_exit()º¯ÊıÖ±½Ó½«½ø³Ì¹Ø±Õ£¬»º³åÇøµÄÊı¾İ¾Í»á¶ªÊ§¡£
 *******************************************************************************/
 void _exit(int status); /* POSIX */ 
 
@@ -273,82 +306,176 @@ gid_t getegid(void);/*Returns: effective group ID of calling process*/
 
 
 #include <sys/wait.h>
+/*----------------------------------------------------------------------------------- 
+ Macros to examine the termination status returned by @wait and @waitpid
+ ½ø³Ì¿ÉÄÜ:Õı³£ÖÕÖ¹ ÓÉÄ³¸öĞÅºÅÉ±ËÀ ÓÉ×÷Òµ¿ØÖÆÍ£Ö¹
 
-/*æ£€æŸ¥wait waitpidç»ˆæ­¢çŠ¶æ€çš„å® è¿›ç¨‹å¯èƒ½:æ­£å¸¸ç»ˆæ­¢ ç”±æŸä¸ªä¿¡å·æ€æ­» ç”±ä½œä¸šæ§åˆ¶åœæ­¢*/
-#define WEXITSTATUS(status) /*WExitStatus to fetch the low-order 8 bits of the 
-argument that the child passed to exit,_exit,or_Exit*/
-#define WTERMSIG(status)  /*wtermsig to fetch the signal number that caused the 
-termination.*/
-#define WSTOPSIG(status)  /*Wstopsig to fetch the signal number that caused the 
-child to stop*/
-#define WIFEXITED(status)   /*WIFexited æ­£å¸¸ç»ˆæ­¢åˆ™ä¸ºçœŸã€‚æ­£å¸¸ç»ˆæ­¢æ—¶å¯ä»¥æ‰§è¡Œ
-WEXITSTATUS()*/
-#define WIFSIGNALED(status) /*WIFsignaled å¼‚å¸¸ç»ˆæ­¢åˆ™ä¸ºçœŸ(æ¥æ”¶ä¸€ä¸ªä¸æ•è·çš„ä¿¡å·)ã€‚
-æ­¤æ—¶å¯ä»¥è°ƒç”¨WTERMSIG()è·å–å­è¿›ç¨‹ç»ˆæ­¢çš„ä¿¡å·ç¼–å·*/
-#define WIFSTOPPED(status)  /*WIFstopped True if status was returned for a child 
-that is currently stopped.æ­¤æ—¶å¯ä»¥è°ƒç”¨WSTOPSIG()è·å–ä½¿å­è¿›ç¨‹æš‚åœçš„ä¿¡å·ç¼–å·*/
-#define WIFCONTINUED(status) /* True if status was returned for a child that has 
-been continued after a job control stop (XSI option; waitpid only).*/
+WIFEXITED 
+    True if status was returned for a child that terminated normally.In this case, we 
+    can execute WEXITSTATUS( status) to fetch the low-order 8 bits of the argument t-
+    hat the child passed to exit, _exit, or _Exit.
 
+WIFSIGNALED
+    True if status was returned for a child that terminated abnormally, by receipt of 
+    a signal that it didn't catch. In this case, we can execute WTERMSIG( status ) to 
+    fetch the signal number that caused the termination. Additionally, some implemen-
+    tations (but not the Single UNIX Specification) define the macro WCOREDUMP(status)
+    that returns true if a core file of the terminated process was generated.
+    
+WIFSTOPPED
+    True if status was returned for a child that is currently stopped. In this case, 
+    we can execute WSTOPSIG( status) to fetch the signal number that caused the chil-
+    d to stop
 
+WIFCONTINUED
+    True if status was returned for a child that has been continued after a job cont-
+    rol stop (XSI option; waitpid only).
+-----------------------------------------------------------------------------------*/
+#define WIFEXITED(status)
+#define WIFSIGNALED(status)
+#define WIFSTOPPED(status)
+#define WIFCONTINUED(status)
 
-/*******************************************************************************
- @statloc:è¿”å›è¿›ç¨‹çš„é€€å‡ºçŠ¶æ€(å¯ä»¥ä¼ NULL)ï¼Œå…¶ä¸­æŸäº›ä½è¡¨ç¤ºé€€å‡ºçŠ¶æ€(æ­£å¸¸è¿”å›)ï¼Œå…¶ä»–
-          ä½åˆ™æŒ‡ç¤ºä¿¡å·ç¼–å·(å¼‚å¸¸è¿”å›)
- return: process ID(é€€å‡ºè¿›ç¨‹) if OK, 0 (see later), or -1 on error
- 1 å¦‚æœæ‰€æœ‰å­è¿›ç¨‹éƒ½è¿˜åœ¨è¿è¡Œï¼Œåˆ™é˜»å¡ï¼Œæœ‰ä¸€ä¸ªç»ˆæ­¢waitå°±è¿”å›ã€‚
- 2 å¦‚æœå®ƒæ²¡æœ‰ä»»ä½•å­è¿›ç¨‹ï¼Œåˆ™ç«‹å³å‡ºé”™è¿”å›ã€‚è¿™æ˜¯å”¯ä¸€çš„å‡ºé”™åŸå› 
- ******************************************************************************/
+#define WEXITSTATUS(status)
+#define WTERMSIG(status)
+#define WSTOPSIG(status)
+#define WCOREDUMP(status)
+/*----------------------------------------------------------------------------------- 
+ @statloc:
+    @statloc is a pointer to an integer. If this argument is not a null pointer , the 
+    termination status of the terminated process is stored in the location pointed to 
+    by the argument. If we don't care about the termination status, we simply pass a 
+    null pointer as this argument.
+    
+    Traditionally, the integer status return has been defined by  the implementation, 
+    with certain bits indicating the exit status (for a normal return), other bits i-
+    ndicating the signal number (for an abnormal return ), one bit indicating whether 
+    a core file was generated, and so on. POSIX.1 specifies that the termination sta-
+    tus is to be looked at using various macros that are defined in <sys/wait.h>.Four
+    mutually exclusive macros tell us how the process terminated , and they all begin 
+    with WIF. Based on which of these four macros is true, other macros are used to -
+    obtain the exit status, signal number, and the like.
+ @return: 
+    process ID if OK, 0 (see later), or -1 on error. With @wait , the only real error 
+    is if the calling process has no children. ( Another error return is possible, in 
+    case the function call is interrupted by a signal.)
+    
+ When a process terminates, either normally or abnormally, the kernel notifies the p-
+ arent by sending the SIGCHLD signal to the parent. The parent can choose to ignore -
+ this signal, or it can provide a function that is called when the signal occurs: a -
+ signal handler. The default action for this signal is to be ignored.For now, we need 
+ to be aware that a process that calls @wait or @waitpid can
+ 1 Block, if all of its children are still running
+ 2 Return immediately with the termination status of a child, if a child has termina-
+   ted and is waiting for its termination status to be fetched
+ 3 Return immediately with an error, if it doesn't have any child processes
+
+ 1 If the process is calling wait because it received the SIGCHLD signal, we expect - 
+   @wait to return immediately. But if we call it at any random point in time, it ca-
+   n block
+ 2 If a child has already terminated and is a zombie , @wait returns immediately with 
+   that child's status. Otherwise, it blocks the caller until a child terminates . If 
+   the caller blocks and has multiple children, @wait returns when one terminates. We 
+   can always tell which child terminated , because the process ID is returned by the 
+   function.  
+----------------------------------------------------------------------------------- */
 pid_t wait(int *statloc);
 
-
+/*----------------------- @waitpid @options -----------------------------------------
+WUNTRACED
+    If the implementation supports job control , the status of any child specified by 
+    @pid that has been continued after being stopped, but whose status has not yet b-
+    een reported, is returned (XSI option).
+WNOHANG
+    The @waitpid function will not block if a child specified by @pid is not immedia-
+    tely available. In this case, the return value is 0.
+WUNTRACED
+    If the implementation supports job control , the status of any child specified by 
+    @pid that has stopped,and whose status has not been reported since it has stopped, 
+    is returned. The WIFSTOPPED macro determines whether the return value corresponds 
+    to a stopped child process.
+-----------------------------------------------------------------------------------*/
 #define WUNTRACED
-/*******************************************************************************
- @pid: pid == -1 ç­‰å¾…ä»»æ„å­è¿›ç¨‹
-       pid > 0   ç­‰å¾…å…¶è¿›ç¨‹IDä¸pidç›¸ç­‰çš„å­è¿›ç¨‹
-       pid == 0  ç­‰å¾…å…¶ç»„IDç­‰äºè¿›ç¨‹ç»„IDçš„ä»»æ„å­è¿›ç¨‹
-       pid < -1  ç­‰å¾…å…¶ç»„IDç­‰äºpidç»å¯¹å€¼çš„ä»»æ„å­è¿›ç¨‹
- @statloc:è¿”å›è¿›ç¨‹çš„é€€å‡ºçŠ¶æ€
- @options:å¯ä»¥ä¸º 0 æˆ–å¯ä»¥ç”¨"|"è¿ç®—ç¬¦æŠŠå®ƒä»¬è¿æ¥èµ·æ¥ä½¿ç”¨,å¦‚ WNOHANG | WUNTRACED
-      0         ç­‰å¾…
-      WNOHANG   è‹¥pidæŒ‡å®šçš„å­è¿›ç¨‹æ²¡æœ‰ç»“æŸï¼Œåˆ™waitpid()å‡½æ•°è¿”å›0ï¼Œä¸äºˆä»¥ç­‰å¾…ã€‚è‹¥ç»“
-                æŸï¼Œåˆ™è¿”å›è¯¥å­è¿›ç¨‹çš„IDã€‚
-      WUNTRACED è‹¥å­è¿›ç¨‹è¿›å…¥æš‚åœçŠ¶æ€ï¼Œåˆ™é©¬ä¸Šè¿”å›ï¼Œä½†å­è¿›ç¨‹çš„ç»“æŸçŠ¶æ€ä¸äºˆä»¥ç†ä¼šã€‚
-                WIFSTOPPED(status)å®ç¡®å®šè¿”å›å€¼æ˜¯å¦å¯¹åº”ä¸ä¸€ä¸ªæš‚åœå­è¿›ç¨‹ã€‚
-                
- return: process ID if OK, 0 (see later), or -1 on error
+#define WNOHANG
+#define WUNTRACED
 
- 1 å¦‚æœæŒ‡å®šçš„è¿›ç¨‹æˆ–è¿›ç¨‹ç»„ä¸å­˜åœ¨ï¼Œæˆ–è€…å‚æ•°pidæŒ‡å®šçš„è¿›ç¨‹ä¸æ˜¯è°ƒç”¨è¿›ç¨‹çš„å­è¿›ç¨‹åˆ™éƒ½å°†å‡ºé”™
- ******************************************************************************/
+/*-----------------------------------------------------------------------------------
+ @pid:
+    pid == -1 Waits for any child process. In this respect, @waitpid is equivalent t-
+              o @wait.
+    pid > 0   Waits for the child whose process ID equals pid.
+    pid == 0  Waits for any child whose process group ID equals that of the calling -
+              process. 
+    pid < -1  Waits for any child whose process group ID equals the absolute value of 
+              @pid.
+ @statloc:
+    the same as @wait
+ @options: WCONTINUED
+    The @options argument lets us further control the operation of @waitpid. This ar-
+    gument either is 0 or is constructed from the bitwise OR of the constants in Fig-
+    ure 8.7.
+ @return: 
+    process ID if OK, 0 (see later), or -1 on error. it's also possible to get an er-
+    ror if the specified process or process group does not exist or is not a child of 
+    the calling process.
+
+ 1 The @wait function can block the caller until  a child process terminates, whereas
+   @waitpid has an option that prevents it from blocking.
+
+ example: waitpid_eg01()
+-----------------------------------------------------------------------------------*/
 pid_t waitpid(pid_t pid,int *statloc,int options);
 
 
 #include <sys/wait.h>
-#define P_PID /*Wait for a particular process: id contains the process ID of the 
-child to wait for.*/
-#define P_PGID /*Wait for any child process in a particular process group: id 
-contains the process group ID of the children to wait for.*/
-#define P_ALL /*Wait for any child process: id is ignored*/
+/*-----------------------------------------------------------------------------------
+P_PID 
+    Wait for a particular process: @id contains the process ID of the child to wait 
+    for.
+P_PGID 
+    Wait for any child process in a particular process group: @id contains the proce-
+    ss group ID of the children to wait for.
+P_ALL 
+    Wait for any child process: @id is ignored.
+-----------------------------------------------------------------------------------*/
+#define P_PID 
+#define P_PGID
+#define P_ALL 
+/*-----------------------------------------------------------------------------------
+WCONTINUED 
+    Wait for a process that has previously stopped and has been  continued, and whose 
+    status has not yet been reported.
+WEXITED 
+    Wait for processes that have exited.
+WNOHANG  (WithNoHang) 
+    Return immediately instead of blocking if there  is no child exit status available.
+WNOWAIT 
+    Don't destroy the child exit status. The child's exit status  can be retrieved by 
+    a subsequent call to wait, waitid, or waitpid.
+WSTOPPED 
+    Wait for a process that has stopped and whose status has not  yet been reported
+-----------------------------------------------------------------------------------*/
+#define WCONTINUED 
+#define WEXITED
+#define WNOHANG
+#define WNOWAIT 
+#define WSTOPPED 
 
-#define WCONTINUED /*Wait for a process that has previously stopped and has been 
-continued, and whose status has not yet been reported.*/
-#define WEXITED /*Wait for processes that have exited.*/
-
-#define WNOHANG /* (WithNoHang) Return immediately instead of blocking if there 
-is no child exit status available.*/
-
-#define WNOWAIT /*Don't destroy the child exit status. The child's exit status 
-can be retrieved by a subsequent call to wait, waitid, or waitpid.*/
-#define WSTOPPED /*Wait for a process that has stopped and whose status has not 
-yet been reported*/
-
-/*******************************************************************************
- @idtype : å‚æ•°@idçš„ç±»å‹ï¼ŒP_PID P_PGID P_ALL
+/*-----------------------------------------------------------------------------------
+ @idtype :  P_PID  P_PGID 
  @id     :
+    The @id parameter is interpreted based on the value of @idtype. 
  @infop  : 
+    The @infop argument is a pointer to a @siginfo structure. This structure contains
+    detailed information about the signal generated that caused the state change in -
+    the child process. 
  @options: WCONTINUED WEXITED WNOHANG  WNOWAIT WSTOPPED
- Returns: 0 if OK, -1 on error
- ******************************************************************************/
+    The @options argument is a bitwise OR of the flags shown in Figure 8.10. These f-
+    lags indicate which state changes the caller is interested in. At least one of 
+    WCONTINUED, WEXITED, or WSTOPPED must be specified in the @options argument.
+ @Returns: 
+     0 if OK, -1 on error
+-----------------------------------------------------------------------------------*/
 int waitid(idtype_t idtype, id_t id, siginfo_t *infop, int options);
 
 
@@ -356,10 +483,20 @@ int waitid(idtype_t idtype, id_t id, siginfo_t *infop, int options);
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-/*return: process ID if OK, 0, or -1 on error*/
+/*-----------------------------------------------------------------------------------
+ @return: 
+    process ID if OK, 0, or -1 on error
+    
+ Most UNIX system implementations provide two additional functions: wait3 and wait4. 
+ Historically, these two variants descend from the BSD branch of the UNIX System. Th-
+ e only feature provided by these two functions that isn't provided by the wait,waitid, 
+ and waitpid functions is an additional argument that allows the kernel to return a -
+ summary of the resources used by the terminated process and all its child processes. 
+ The resource information includes such statistics as the amount of user CPU time, a-
+ mount of system CPU time, number of page faults, number of signals received, and the
+ like.
+-----------------------------------------------------------------------------------*/
 pid_t wait3(int *statloc,int options,struct rusage *rusage);
-
-/*return: process ID if OK, 0, or -1 on error*/
 pid_t wait4(pid_t pid,int *statloc,int options,struct rusage *rusage);
 
 
@@ -442,8 +579,8 @@ int fexecve(int fd,char *const argv[], char *const envp[]);
 function:
 return: 0 if OK,-1 on error
 
----->ä¿®æ”¹è§„åˆ™
-1 è‹¥è¿›ç¨‹å…·æœ‰è¶…çº§ç”¨æˆ·æƒé™ï¼Œåˆ™setuidå‡½æ•°å°†å®é™…ç”¨æˆ·IDã€æœ‰æ•ˆç”¨æˆ·ID,ä»¥åŠä¿å­˜çš„è®¾ç½®ç”¨æˆ·IDè®¾ç½®ä¸ºuid
+---->ĞŞ¸Ä¹æÔò
+1 Èô½ø³Ì¾ßÓĞ³¬¼¶ÓÃ»§È¨ÏŞ£¬Ôòsetuidº¯Êı½«Êµ¼ÊÓÃ»§ID¡¢ÓĞĞ§ÓÃ»§ID,ÒÔ¼°±£´æµÄÉèÖÃÓÃ»§IDÉèÖÃÎªuid
 2 If the process does not have superuser privileges, but uid equals either the real user ID or the saved set-user-ID,
   setuid sets only the effective user ID to uid. The real user ID and the saved set-user-ID are not changed.
 3 If neither of these two conditions is true,errno is set to EPERM and -1 is returned.
@@ -454,8 +591,8 @@ We can make a few statements about the three user IDs that the kernel maintains.
 2 The effective user ID is set by the exec functions only if the set-user-ID bit is set for the program file. 
   If the set-user-ID bit is not set, the exec functions leave the effective user ID as its current value. 
   We can call setuid at any time to set the effective user ID to either the real user ID or the saved set-user-ID.  
-  Naturally, we canâ€™t set the effective user ID to any random value.
-3 The saved set-user-ID is copied from the effective user ID by exec.If the fileâ€™s set-user-ID bit is set, this copy is saved after exec stores 
+  Naturally, we can¡¯t set the effective user ID to any random value.
+3 The saved set-user-ID is copied from the effective user ID by exec.If the file¡¯s set-user-ID bit is set, this copy is saved after exec stores 
   the effective user ID from the file's user ID.*/
 int setuid(uid_t uid);
 int setgid(gid_t gid);
@@ -476,19 +613,19 @@ pid_t getpgid(pid_t pid);
   function:A process joins an existing process group or creates a new process group by calling @setpgid
   Returns: 0 if OK,-1 on error
 
-  1 æŠŠè¿›ç¨‹@pidçš„è¿›ç¨‹ç»„IDè®¾ç½®æˆ@pgid,å¦‚æœ@pid==@pgid,åˆ™è¿›ç¨‹@pidå˜æˆè¿›ç¨‹ç»„ç»„é•¿.
-  2 if @pid==0  ä½¿ç”¨è°ƒç”¨è€…çš„è¿›ç¨‹ID
-  3 if @pgid==0 åˆ™è¿›ç¨‹@pidçš„è¿›ç¨‹IDä½œä¸ºè¿›ç¨‹ç»„ID
-  4 ä¸€ä¸ªè¿›ç¨‹åªèƒ½ä¸ºè‡ªå·±æˆ–å®ƒçš„å­è¿›ç¨‹è®¾ç½®è¿›ç¨‹ç»„ID
-  5 å­è¿›ç¨‹è°ƒç”¨execç³»åˆ—å‡½æ•°å,è¿›ç¨‹ç»„ä¸èƒ½æ”¹å˜*/
+  1 °Ñ½ø³Ì@pidµÄ½ø³Ì×éIDÉèÖÃ³É@pgid,Èç¹û@pid==@pgid,Ôò½ø³Ì@pid±ä³É½ø³Ì×é×é³¤.
+  2 if @pid==0  Ê¹ÓÃµ÷ÓÃÕßµÄ½ø³ÌID
+  3 if @pgid==0 Ôò½ø³Ì@pidµÄ½ø³ÌID×÷Îª½ø³Ì×éID
+  4 Ò»¸ö½ø³ÌÖ»ÄÜÎª×Ô¼º»òËüµÄ×Ó½ø³ÌÉèÖÃ½ø³Ì×éID
+  5 ×Ó½ø³Ìµ÷ÓÃexecÏµÁĞº¯Êıºó,½ø³Ì×é²»ÄÜ¸Ä±ä*/
 int setpgid(pid_t pid,pid_t pgid);
 
 /*
 function:A process establishes a new session by calling the @setsid function.
 returns: process group ID if OK,-1 on error
 
-1 å¦‚æœè°ƒç”¨è¯¥å‡½æ•°çš„è¿›ç¨‹æ˜¯ç»„é•¿è¿›ç¨‹,åˆ™å‡½æ•°è¿”å›å‡ºé”™.
-2 å¦‚æœä¸æ˜¯ç»„é•¿è¿›ç¨‹,åˆ™@setsidåˆ›å»ºä¸€ä¸ªæ–°ä¼šè¯.
+1 Èç¹ûµ÷ÓÃ¸Ãº¯ÊıµÄ½ø³ÌÊÇ×é³¤½ø³Ì,Ôòº¯Êı·µ»Ø³ö´í.
+2 Èç¹û²»ÊÇ×é³¤½ø³Ì,Ôò@setsid´´½¨Ò»¸öĞÂ»á»°.
 2.1 The process becomes the session leader of this new session. (A session leader is
     the process that creates a session.) The process is the only process in this new session.
 2.2 The process becomes the process group leader of a new process group. The new
@@ -529,8 +666,8 @@ pid_t getsid(pid_t pid);
 int setjmp(jmp_buf env);
 
 /*******************************************************************************
- @env:è°ƒç”¨@setjmpæ—¶ä½¿ç”¨çš„@env
- @val:ä»@setjmpè¿”å›çš„å€¼ï¼Œå…¥å‚å¿…é¡»å¤§äº0
+ @env:µ÷ÓÃ@setjmpÊ±Ê¹ÓÃµÄ@env
+ @val:´Ó@setjmp·µ»ØµÄÖµ£¬Èë²Î±ØĞë´óÓÚ0
  ******************************************************************************/
 void longjmp(jmp_buf env,int val);
 

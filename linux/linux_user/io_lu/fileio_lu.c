@@ -2,17 +2,17 @@
 #include <fcntl.h>
 /*******************************************************************************
  @path: 
-    è¦æ‰“å¼€æˆ–åˆ›å»ºæ–‡ä»¶çš„åå­—
+    Òª´ò¿ª»ò´´½¨ÎÄ¼şµÄÃû×Ö
  @oflag: O_RDWR
  @mode:  S_IEXEC
-    åˆ›å»ºæ—¶æ‰ä¼šç”¨åˆ°ï¼Œç”¨äºæŒ‡å®šæ–‡ä»¶çš„è®¿é—®æƒé™ä½ï¼ˆaccess permission bitsï¼‰
+    ´´½¨Ê±²Å»áÓÃµ½£¬ÓÃÓÚÖ¸¶¨ÎÄ¼şµÄ·ÃÎÊÈ¨ÏŞÎ»£¨access permission bits£©
  @function:
-    æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶(ä¹Ÿå¯ç”¨äºåˆ›å»ºæ–‡ä»¶)
+    ´ò¿ªÒ»¸öÎÄ¼ş(Ò²¿ÉÓÃÓÚ´´½¨ÎÄ¼ş)
  @return: 
     file descriptor if OK,-1 on error
 
- 1 openè¿”å›çš„æ–‡ä»¶æè¿°ç¬¦ä¸€å®šæ˜¯æœ€å°çš„æœªç”¨æè¿°ç¬¦æ•°å€¼ã€‚
- 2 @pathæ–‡ä»¶åæœ€å¤§å­—ç¬¦ä¸ªæ•°æ˜¯ NAME_MAX
+ 1 open·µ»ØµÄÎÄ¼şÃèÊö·ûÒ»¶¨ÊÇ×îĞ¡µÄÎ´ÓÃÃèÊö·ûÊıÖµ¡£
+ 2 @pathÎÄ¼şÃû×î´ó×Ö·û¸öÊıÊÇ NAME_MAX
 *******************************************************************************/
 int open(const char *path,int oflag,... /* mode_t mode*/ );
 int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
@@ -46,40 +46,40 @@ int close(int fd);
 SEEK_SET(0),the file's offset is set to @offset bytes from the beginning of the file.
 SEEK_CUR(1),the file's offset is set to its current value plus the @offset. The @offset can be positive or negative.
 SEEK_END(2),the file's offset is set to the size of the file plus the @offset. The @offset can be positive or negative.
-function: æ‰“å¼€ä¸€ä¸ªæ–‡ä»¶å¹¶è®¾ç½®å…¶åç§»é‡
+function: ´ò¿ªÒ»¸öÎÄ¼ş²¢ÉèÖÃÆäÆ«ÒÆÁ¿
 returns : new file offset if OK,-1 on error
-name    : lseekä¸­çš„lè¡¨ç¤ºé•¿æ•´å‹
+name    : lseekÖĞµÄl±íÊ¾³¤ÕûĞÍ
 
-@lseek only records the current file offset within the kernelâ€”it does not cause
+@lseek only records the current file offset within the kernel¡ªit does not cause
 any I/O to take place. This offset is then used by the next read or write operation.
 *******************************************************************************/
 off_t lseek(int fd,off_t offset,int whence);
 
 #include <unistd.h>
 /******************************************************************************
-@fd :è¯»å“ªä¸ªæ–‡ä»¶(å·²ç»æ‰“å¼€äº†)
-@buf:æŠŠè¯»çš„æ•°æ®æ”¾å…¥è¿™ä¸ªbufä¸­
-@nbytes:å¸Œæœ›è¯»å–æ•°æ®çš„é•¿åº¦
+@fd :¶ÁÄÄ¸öÎÄ¼ş(ÒÑ¾­´ò¿ªÁË)
+@buf:°Ñ¶ÁµÄÊı¾İ·ÅÈëÕâ¸öbufÖĞ
+@nbytes:Ï£Íû¶ÁÈ¡Êı¾İµÄ³¤¶È
 
 function:Data is read from an open file with the @read function.
 Returns: number of bytes read, 0 if end of file,-1 on error
 
-1 å‚æ•°countæ˜¯è¯·æ±‚è¯»å–çš„å­—èŠ‚æ•°ï¼Œè¯»ä¸Šæ¥çš„æ•°æ®ä¿å­˜åœ¨ç¼“å†²åŒºbufä¸­ï¼ŒåŒæ—¶æ–‡ä»¶çš„å½“å‰è¯»
-  å†™ä½ç½®å‘åç§»ã€‚
-2 è¯»å¸¸è§„æ–‡ä»¶æ—¶ï¼Œåœ¨è¯»åˆ°countä¸ªå­—èŠ‚ä¹‹å‰å·²åˆ°è¾¾æ–‡ä»¶æœ«å°¾ã€‚ä¾‹å¦‚ï¼Œè·æ–‡ä»¶æœ«å°¾è¿˜æœ‰30ä¸ªå­—
-  èŠ‚è€Œè¯·æ±‚è¯»100ä¸ªå­—èŠ‚ï¼Œåˆ™readè¿”å›30ï¼Œä¸‹æ¬¡readå°†è¿”å›0ã€‚
-3 é¢å‘æ–‡æœ¬çš„å¥—æ¥å­—è¯»æ“ä½œä¸­,ä¸€æ¬¡readä¸èƒ½ä¿è¯è¯»å…¥å®Œæ•´çš„ä¸€è¡Œæˆ–æ•´è¡Œ,è¯»å®Œæ•´çš„ä¸€è¡Œå¯
-  èƒ½éœ€è¦å¯¹æ­¤è°ƒç”¨read,å¹¶æ£€æŸ¥å…¶ä¸­æ˜¯å¦å‡ºç°äº†æ¢è¡Œç¬¦
-4 æœåŠ¡å™¨æ”¶åˆ°FINæ—¶,é€’é€ä¸€ä¸ªEOFç»™è¿›ç¨‹é˜»å¡ä¸­çš„read,æ”¶åˆ°åreadè¿”å›EOF
+1 ²ÎÊıcountÊÇÇëÇó¶ÁÈ¡µÄ×Ö½ÚÊı£¬¶ÁÉÏÀ´µÄÊı¾İ±£´æÔÚ»º³åÇøbufÖĞ£¬Í¬Ê±ÎÄ¼şµÄµ±Ç°¶Á
+  Ğ´Î»ÖÃÏòºóÒÆ¡£
+2 ¶Á³£¹æÎÄ¼şÊ±£¬ÔÚ¶Áµ½count¸ö×Ö½ÚÖ®Ç°ÒÑµ½´ïÎÄ¼şÄ©Î²¡£ÀıÈç£¬¾àÎÄ¼şÄ©Î²»¹ÓĞ30¸ö×Ö
+  ½Ú¶øÇëÇó¶Á100¸ö×Ö½Ú£¬Ôòread·µ»Ø30£¬ÏÂ´Îread½«·µ»Ø0¡£
+3 ÃæÏòÎÄ±¾µÄÌ×½Ó×Ö¶Á²Ù×÷ÖĞ,Ò»´Îread²»ÄÜ±£Ö¤¶ÁÈëÍêÕûµÄÒ»ĞĞ»òÕûĞĞ,¶ÁÍêÕûµÄÒ»ĞĞ¿É
+  ÄÜĞèÒª¶Ô´Ëµ÷ÓÃread,²¢¼ì²éÆäÖĞÊÇ·ñ³öÏÖÁË»»ĞĞ·û
+4 ·şÎñÆ÷ÊÕµ½FINÊ±,µİËÍÒ»¸öEOF¸ø½ø³Ì×èÈûÖĞµÄread,ÊÕµ½ºóread·µ»ØEOF
 5 POSIX.1 requires that read return -1 with errno set to EAGAIN if there is no 
   data to read from a nonblocking descriptor. 
 ******************************************************************************/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
 /******************************************************************************
- @fd    : å†™å“ªä¸ªæ–‡ä»¶(å·²ç»æ‰“å¼€äº†)
- @buf   : bufä¸­æ˜¯è¦å†™çš„æ•°æ®
- @nbytes: å†™å…¥æ•°æ®çš„é•¿åº¦
+ @fd    : Ğ´ÄÄ¸öÎÄ¼ş(ÒÑ¾­´ò¿ªÁË)
+ @buf   : bufÖĞÊÇÒªĞ´µÄÊı¾İ
+ @nbytes: Ğ´ÈëÊı¾İµÄ³¤¶È
  funtion: Data is written to an open file with the @write function.
  Returns: number of bytes written if OK,-1 on error
 
@@ -106,28 +106,28 @@ ssize_t write(int fd,const void *buf,size_t nbytes);
 
 #include <unistd.h>
 /******************************************************************************
-@fd    ï¼šè¦è¯»å–æ•°æ®çš„æ–‡ä»¶æè¿°ç¬¦
-@buf   ï¼šæ•°æ®ç¼“å­˜åŒºæŒ‡é’ˆï¼Œå­˜æ”¾è¯»å–å‡ºæ¥çš„æ•°æ®
-@count ï¼šè¯»å–æ•°æ®çš„å­—èŠ‚æ•°
-@offsetï¼šè¯»å–çš„èµ·å§‹åœ°å€çš„åç§»é‡ï¼Œè¯»å–åœ°å€=æ–‡ä»¶å¼€å§‹+offsetã€‚
-è¿”å›å€¼ï¼šæˆåŠŸï¼Œè¿”å›æˆåŠŸè¯»å–æ•°æ®çš„å­—èŠ‚æ•°ï¼›å¤±è´¥ï¼Œè¿”å›-1ï¼›
+@fd    £ºÒª¶ÁÈ¡Êı¾İµÄÎÄ¼şÃèÊö·û
+@buf   £ºÊı¾İ»º´æÇøÖ¸Õë£¬´æ·Å¶ÁÈ¡³öÀ´µÄÊı¾İ
+@count £º¶ÁÈ¡Êı¾İµÄ×Ö½ÚÊı
+@offset£º¶ÁÈ¡µÄÆğÊ¼µØÖ·µÄÆ«ÒÆÁ¿£¬¶ÁÈ¡µØÖ·=ÎÄ¼ş¿ªÊ¼+offset¡£
+·µ»ØÖµ£º³É¹¦£¬·µ»Ø³É¹¦¶ÁÈ¡Êı¾İµÄ×Ö½ÚÊı£»Ê§°Ü£¬·µ»Ø-1£»
 
-1 æ‰§è¡Œåï¼Œæ–‡ä»¶åç§»æŒ‡é’ˆä¸å˜
-2 ç›¸å½“äºé¡ºåºè°ƒç”¨lseekå’Œread,ä½†å…¶å®šä½å’Œè¯»å–æ“ä½œæ˜¯åŸå­çš„ã€‚lseekå’Œreadä¹‹é—´å¦‚æœè¢«ä¸­æ–­
-  å¯èƒ½é€ æˆé—®é¢˜ã€‚
+1 Ö´ĞĞºó£¬ÎÄ¼şÆ«ÒÆÖ¸Õë²»±ä
+2 Ïàµ±ÓÚË³Ğòµ÷ÓÃlseekºÍread,µ«Æä¶¨Î»ºÍ¶ÁÈ¡²Ù×÷ÊÇÔ­×ÓµÄ¡£lseekºÍreadÖ®¼äÈç¹û±»ÖĞ¶Ï
+  ¿ÉÄÜÔì³ÉÎÊÌâ¡£
 ******************************************************************************/
 ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
 
 /*******************************************************************************
-@fd    ï¼šè¦å†™å…¥æ•°æ®çš„æ–‡ä»¶æè¿°ç¬¦
-@buf   ï¼šæ•°æ®ç¼“å­˜åŒºæŒ‡é’ˆï¼Œå­˜æ”¾è¦å†™å…¥æ–‡ä»¶ä¸­çš„æ•°æ®
-@count ï¼šå†™å…¥æ–‡ä»¶ä¸­çš„æ•°æ®çš„å­—èŠ‚æ•°
-@offsetï¼šå†™å…¥åœ°å€=æ–‡ä»¶å¼€å§‹+offset
-è¿”å›å€¼ ï¼šæˆåŠŸï¼Œè¿”å›å†™å…¥åˆ°æ–‡ä»¶ä¸­çš„å­—èŠ‚æ•°ï¼›å¤±è´¥ï¼Œè¿”å›-1ï¼›
+@fd    £ºÒªĞ´ÈëÊı¾İµÄÎÄ¼şÃèÊö·û
+@buf   £ºÊı¾İ»º´æÇøÖ¸Õë£¬´æ·ÅÒªĞ´ÈëÎÄ¼şÖĞµÄÊı¾İ
+@count £ºĞ´ÈëÎÄ¼şÖĞµÄÊı¾İµÄ×Ö½ÚÊı
+@offset£ºĞ´ÈëµØÖ·=ÎÄ¼ş¿ªÊ¼+offset
+·µ»ØÖµ £º³É¹¦£¬·µ»ØĞ´Èëµ½ÎÄ¼şÖĞµÄ×Ö½ÚÊı£»Ê§°Ü£¬·µ»Ø-1£»
 
-1 æ‰§è¡Œåï¼Œæ–‡ä»¶åç§»æŒ‡é’ˆä¸å˜
-2 ç›¸å½“äºé¡ºåºè°ƒç”¨lseekå’Œwrite,ä½†å…¶å®šä½å’Œè¯»å–æ“ä½œæ˜¯åŸå­çš„ã€‚lseekå’Œreadä¹‹é—´å¦‚æœè¢«
-  ä¸­æ–­å¯èƒ½é€ æˆé—®é¢˜ã€‚
+1 Ö´ĞĞºó£¬ÎÄ¼şÆ«ÒÆÖ¸Õë²»±ä
+2 Ïàµ±ÓÚË³Ğòµ÷ÓÃlseekºÍwrite,µ«Æä¶¨Î»ºÍ¶ÁÈ¡²Ù×÷ÊÇÔ­×ÓµÄ¡£lseekºÍreadÖ®¼äÈç¹û±»
+  ÖĞ¶Ï¿ÉÄÜÔì³ÉÎÊÌâ¡£
 ******************************************************************************/
 ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
@@ -135,35 +135,35 @@ ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
 #include <unistd.h>
 /*
- dupå’Œdup2ä¹Ÿæ˜¯ä¸¤ä¸ªéå¸¸æœ‰ç”¨çš„è°ƒç”¨ï¼Œå®ƒä»¬çš„ä½œç”¨éƒ½æ˜¯ç”¨æ¥å¤åˆ¶ä¸€ä¸ªæ–‡ä»¶çš„æè¿°ç¬¦ã€‚å®ƒä»¬ç»å¸¸ç”¨æ¥
- é‡å®šå‘è¿›ç¨‹çš„stdinã€stdoutå’Œstderrã€‚
+ dupºÍdup2Ò²ÊÇÁ½¸ö·Ç³£ÓĞÓÃµÄµ÷ÓÃ£¬ËüÃÇµÄ×÷ÓÃ¶¼ÊÇÓÃÀ´¸´ÖÆÒ»¸öÎÄ¼şµÄÃèÊö·û¡£ËüÃÇ¾­³£ÓÃÀ´
+ ÖØ¶¨Ïò½ø³ÌµÄstdin¡¢stdoutºÍstderr¡£
 
 */
 /************************************************************************************
- è¿”å›å€¼:
-    æˆåŠŸè¿”å›æ–°çš„æè¿°ç¬¦,å¤±è´¥è¿”å›-1
- åŠŸèƒ½:
-    å¤åˆ¶æ–‡ä»¶æè¿°ç¬¦@fdã€‚ç»™è¯¥å‡½æ•°ä¸€ä¸ªæ—¢æœ‰çš„æè¿°ç¬¦ï¼Œå®ƒå°±ä¼šè¿”å›ä¸€ä¸ªæ–°çš„æè¿°ç¬¦ï¼Œè¿™ä¸ªæ–°çš„æ
-    è¿°ç¬¦æ˜¯ä¼ ç»™å®ƒçš„æè¿°ç¬¦çš„æ‹·è´ã€‚è¿™æ„å‘³ç€ï¼Œè¿™ä¸¤ä¸ªæè¿°ç¬¦å…±äº«åŒä¸€ä¸ª"æ–‡ä»¶è¡¨"ã€‚
+ ·µ»ØÖµ:
+    ³É¹¦·µ»ØĞÂµÄÃèÊö·û,Ê§°Ü·µ»Ø-1
+ ¹¦ÄÜ:
+    ¸´ÖÆÎÄ¼şÃèÊö·û@fd¡£¸ø¸Ãº¯ÊıÒ»¸ö¼ÈÓĞµÄÃèÊö·û£¬Ëü¾Í»á·µ»ØÒ»¸öĞÂµÄÃèÊö·û£¬Õâ¸öĞÂµÄÃè
+    Êö·ûÊÇ´«¸øËüµÄÃèÊö·ûµÄ¿½±´¡£ÕâÒâÎ¶×Å£¬ÕâÁ½¸öÃèÊö·û¹²ÏíÍ¬Ò»¸ö"ÎÄ¼ş±í"¡£
 
- 1 @dupè¿”å›çš„æ–°æè¿°ç¬¦ä¸€å®šæ˜¯å½“å‰å¯ç”¨æ–‡ä»¶æè¿°ç¬¦ä¸­çš„æœ€å°æ•°å€¼
- 2 æ–°æè¿°ç¬¦ä¸@fdå…±äº«ä¸€ä¸ªæ–‡ä»¶è¡¨é¡¹(file table entry)
- 3 æ–°æè¿°ç¬¦çš„æ‰§è¡Œæ—¶å…³é—­(close-on-exec)æ ‡å¿—æ€»æ˜¯ç”±@dupå‡½æ•°æ¸…é™¤
+ 1 @dup·µ»ØµÄĞÂÃèÊö·ûÒ»¶¨ÊÇµ±Ç°¿ÉÓÃÎÄ¼şÃèÊö·ûÖĞµÄ×îĞ¡ÊıÖµ
+ 2 ĞÂÃèÊö·ûÓë@fd¹²ÏíÒ»¸öÎÄ¼ş±íÏî(file table entry)
+ 3 ĞÂÃèÊö·ûµÄÖ´ĞĞÊ±¹Ø±Õ(close-on-exec)±êÖ¾×ÜÊÇÓÉ@dupº¯ÊıÇå³ı
 ************************************************************************************/
 int dup(int fd);
 
 /************************************************************************************
- è¿”å›å€¼:
-    æˆåŠŸè¿”å›æ–°çš„æè¿°ç¬¦,å¤±è´¥è¿”å›-1
- åŠŸèƒ½:
-    å¤åˆ¶æ–‡ä»¶æè¿°ç¬¦@fd,@fd2æ˜¯æŒ‡å®šçš„æ–°æè¿°ç¬¦.dup2å‡½æ•°è·Ÿdupå‡½æ•°ç›¸ä¼¼ï¼Œä½†dup2å‡½æ•°å…è®¸è°ƒç”¨
-    è€…è§„å®šä¸€ä¸ªæœ‰æ•ˆæè¿°ç¬¦å’Œç›®æ ‡æè¿°ç¬¦çš„idã€‚dup2å‡½æ•°æˆåŠŸè¿”å›æ—¶ï¼Œç›®æ ‡æè¿°ç¬¦ï¼ˆdup2å‡½æ•°çš„
-    ç¬¬äºŒä¸ªå‚æ•°ï¼‰å°†å˜æˆæºæè¿°ç¬¦ï¼ˆdup2å‡½æ•°çš„ç¬¬ä¸€ä¸ªå‚æ•°ï¼‰çš„å¤åˆ¶å“ï¼Œæ¢å¥è¯è¯´ï¼Œä¸¤ä¸ªæ–‡ä»¶æ
-    è¿°ç¬¦ç°åœ¨éƒ½æŒ‡å‘åŒä¸€ä¸ªæ–‡ä»¶ï¼Œå¹¶ä¸”æ˜¯å‡½æ•°ç¬¬ä¸€ä¸ªå‚æ•°æŒ‡å‘çš„æ–‡ä»¶ã€‚
+ ·µ»ØÖµ:
+    ³É¹¦·µ»ØĞÂµÄÃèÊö·û,Ê§°Ü·µ»Ø-1
+ ¹¦ÄÜ:
+    ¸´ÖÆÎÄ¼şÃèÊö·û@fd,@fd2ÊÇÖ¸¶¨µÄĞÂÃèÊö·û.dup2º¯Êı¸údupº¯ÊıÏàËÆ£¬µ«dup2º¯ÊıÔÊĞíµ÷ÓÃ
+    Õß¹æ¶¨Ò»¸öÓĞĞ§ÃèÊö·ûºÍÄ¿±êÃèÊö·ûµÄid¡£dup2º¯Êı³É¹¦·µ»ØÊ±£¬Ä¿±êÃèÊö·û£¨dup2º¯ÊıµÄ
+    µÚ¶ş¸ö²ÎÊı£©½«±ä³ÉÔ´ÃèÊö·û£¨dup2º¯ÊıµÄµÚÒ»¸ö²ÎÊı£©µÄ¸´ÖÆÆ·£¬»»¾ä»°Ëµ£¬Á½¸öÎÄ¼şÃè
+    Êö·ûÏÖÔÚ¶¼Ö¸ÏòÍ¬Ò»¸öÎÄ¼ş£¬²¢ÇÒÊÇº¯ÊıµÚÒ»¸ö²ÎÊıÖ¸ÏòµÄÎÄ¼ş¡£
 
- 1 å¦‚æœ@fd2å·²ç»æ‰“å¼€ï¼Œåˆ™å…ˆå…³é—­ã€‚
- 2 å¦‚æœ@fd==@fd2ï¼Œä¸å…³é—­@fd2ï¼Œç›´æ¥è¿”å›@fd2
- 3 æ–°æè¿°ç¬¦ä¸@fdå…±äº«ä¸€ä¸ªæ–‡ä»¶è¡¨é¡¹(file table entry)
+ 1 Èç¹û@fd2ÒÑ¾­´ò¿ª£¬ÔòÏÈ¹Ø±Õ¡£
+ 2 Èç¹û@fd==@fd2£¬²»¹Ø±Õ@fd2£¬Ö±½Ó·µ»Ø@fd2
+ 3 ĞÂÃèÊö·ûÓë@fd¹²ÏíÒ»¸öÎÄ¼ş±íÏî(file table entry)
 ************************************************************************************/
 int dup2(int fd,int fd2);
 /*
@@ -236,7 +236,7 @@ void sync(void);
 int fcntl(int fd,int cmd,... /* int arg */ );
 
 /******************************************************************************\
-                                 è®°å½•é”
+                                 ¼ÇÂ¼Ëø
 \******************************************************************************/
 
 #define F_RDLCK /*a shared read lock*/
@@ -267,16 +267,16 @@ int fcntl(int fd,int cmd,... /* int arg */ );
  the beginning of the file, but most applications specify @l_start as 0 and
  @l_whence as SEEK_SET.)
 
- ---->ä½¿ç”¨è§„åˆ™
+ ---->Ê¹ÓÃ¹æÔò
   We previously mentioned two types of locks: a shared read lock (l_type of
 F_RDLCK) and an exclusive write lock (F_WRLCK). The basic rule is that any number 
 of processes can have a shared read lock on a given byte, but only one process 
 can have an exclusive write lock on a given byte. Furthermore, if there are one 
 or more read locks on a byte, there can't be any write locks on that byte; if 
-there is an exclusive write lock on a byte, there canâ€™t be any read locks on 
+there is an exclusive write lock on a byte, there can¡¯t be any read locks on 
 that byte. 
 
----->å»ºè®®æ€§é”å’Œå¼ºåˆ¶æ€§é” Advisory versus Mandatory Locking
+---->½¨ÒéĞÔËøºÍÇ¿ÖÆĞÔËø Advisory versus Mandatory Locking
  ******************************************************************************/
 struct flock 
 {
@@ -305,7 +305,7 @@ locked, the calling process is put to sleep.The process wakes up either when the
 lock becomes available or when interrupted by a signal.*/
 
 /*******************************************************************************
-é”çš„ç»§æ‰¿ä¸é‡Šæ”¾
+ËøµÄ¼Ì³ĞÓëÊÍ·Å
 1 when a process terminates, all its locks are released. whenever a descriptor is 
   closed, any locks on the file referenced by that descriptor for that process are 
   released. This means that if we make the calls
@@ -339,7 +339,7 @@ lock becomes available or when interrupted by a signal.*/
 #include <sys/select.h>
 #include <sys/time.h>
 
-#define FD_SETSIZE  /*@selectçš„ç¬¬ä¸€ä¸ªå‚æ•°ï¼Œæœ€å¤§çš„æè¿°ç¬¦ä¸ªæ•°ï¼Œé€šå¸¸æ˜¯1024*/
+#define FD_SETSIZE  /*@selectµÄµÚÒ»¸ö²ÎÊı£¬×î´óµÄÃèÊö·û¸öÊı£¬Í¨³£ÊÇ1024*/
 
 struct timeval	
 {
@@ -348,22 +348,22 @@ struct timeval
 };
 
 /*******************************************************************************
- @maxfdp1: æè¿°ç¬¦ä¸ªæ•°+1
- @readset: è¯»æè¿°ç¬¦é›†ï¼Œå¯ä»¥ä¸ºNULL
- @readset: å†™æè¿°ç¬¦é›†ï¼Œå¯ä»¥ä¸ºNULL
- @readset: å¼‚å¸¸æè¿°ç¬¦é›†ï¼Œå¯ä»¥ä¸ºNULL
- @timeout: ç­‰å¾…æ—¶é—´
+ @maxfdp1: ÃèÊö·û¸öÊı+1
+ @readset: ¶ÁÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
+ @readset: Ğ´ÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
+ @readset: Òì³£ÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
+ @timeout: µÈ´ıÊ±¼ä
  function: 
-    å‘Šè¯‰å†…æ ¸
-    1 å…³å¿ƒçš„æè¿°ç¬¦
-    2 å…³å¿ƒæè¿°ç¬¦çš„å“ªäº›çŠ¶æ€ï¼Œæ¯”å¦‚æ˜¯å¦å¯è¯»ã€æ˜¯å¦å¯å†™ã€æè¿°ç¬¦çš„å¼‚å¸¸çŠ¶æ€
-    3 ç­‰å¾…æ—¶é—´
-    ä»selectè¿”å›å†…æ ¸å‘Šè¯‰æˆ‘ä»¬
-    1 å·²ç»å‡†å¤‡å¥½çš„æè¿°ç¬¦æ•°é‡
-    2 å¯¹äºè¯»ã€å†™æˆ–å¼‚å¸¸è¿™ä¸‰ä¸ªçŠ¶æ€ä¸­çš„æ¯ä¸€ä¸ªï¼Œå“ªäº›æè¿°ç¬¦å·²ç»å‡†å¤‡å¥½ã€‚
-      ä½¿ç”¨è¿™äº›è¿”å›ä¿¡æ¯å°±å¯ä»¥è°ƒç”¨ç›¸åº”çš„I/Oå‡½æ•°ï¼Œå¹¶ç¡®åˆ‡çŸ¥é“å‡½æ•°ä¸ä¼šé˜»å¡
+    ¸æËßÄÚºË
+    1 ¹ØĞÄµÄÃèÊö·û
+    2 ¹ØĞÄÃèÊö·ûµÄÄÄĞ©×´Ì¬£¬±ÈÈçÊÇ·ñ¿É¶Á¡¢ÊÇ·ñ¿ÉĞ´¡¢ÃèÊö·ûµÄÒì³£×´Ì¬
+    3 µÈ´ıÊ±¼ä
+    ´Óselect·µ»ØÄÚºË¸æËßÎÒÃÇ
+    1 ÒÑ¾­×¼±¸ºÃµÄÃèÊö·ûÊıÁ¿
+    2 ¶ÔÓÚ¶Á¡¢Ğ´»òÒì³£ÕâÈı¸ö×´Ì¬ÖĞµÄÃ¿Ò»¸ö£¬ÄÄĞ©ÃèÊö·ûÒÑ¾­×¼±¸ºÃ¡£
+      Ê¹ÓÃÕâĞ©·µ»ØĞÅÏ¢¾Í¿ÉÒÔµ÷ÓÃÏàÓ¦µÄI/Oº¯Êı£¬²¢È·ÇĞÖªµÀº¯Êı²»»á×èÈû
  Returns: 
-    positive count of ready descriptors, 0 on timeout, â€“1 on error
+    positive count of ready descriptors, 0 on timeout, ¨C1 on error
     
  There are three possible return values from @select.
  1 return -1 means that an error occurred. This can happen, for example, if a 
@@ -377,23 +377,23 @@ struct timeval
    same descriptor is ready to be read and written, it will be counted twice in 
    the return value. The only bits left on in the three descriptor sets are the 
    bits corresponding to the descriptors that are ready.
- ---->ç­‰å¾…çš„æ—¶é—´
- 1 æ°¸è¿œç­‰å¾…  timeout == NULL
- 2 ç­‰å¾…æŒ‡å®šçš„æ—¶é—´ å…·ä½“çš„æ—¶é—´ç”±timeoutæŒ‡å®š
- 3 ä¸ç­‰å¾…  timeoutä¸­çš„æ—¶é—´ä¸º0
+ ---->µÈ´ıµÄÊ±¼ä
+ 1 ÓÀÔ¶µÈ´ı  timeout == NULL
+ 2 µÈ´ıÖ¸¶¨µÄÊ±¼ä ¾ßÌåµÄÊ±¼äÓÉtimeoutÖ¸¶¨
+ 3 ²»µÈ´ı  timeoutÖĞµÄÊ±¼äÎª0
  The wait in the first two scenarios is normally interrupted if the process 
  catches a signal and returns from the signal handler.
 
  If we encounter the end of file on a descriptor, that descriptor is considered 
- readable by @select. We then call read and it returns 0â€”the way to signify end 
+ readable by @select. We then call read and it returns 0¡ªthe way to signify end 
  of file on UNIX systems. 
- ---->å‡†å¤‡å¥½
- 1 å¯¹äºè¯»æè¿°ç¬¦é›†ä¸­çš„ä¸€ä¸ªæè¿°ç¬¦çš„readæ“ä½œå°†ä¸ä¼šé˜»å¡ï¼Œåˆ™æ­¤æè¿°ç¬¦æ˜¯å‡†å¤‡å¥½çš„
- 2 å¯¹äºå†™æè¿°ç¬¦é›†ä¸­çš„ä¸€ä¸ªæè¿°ç¬¦çš„writeæ“ä½œå°†ä¸ä¼šé˜»å¡ï¼Œåˆ™æ­¤æè¿°ç¬¦æ˜¯å‡†å¤‡å¥½çš„
- 3 è‹¥å¼‚å¸¸æè¿°ç¬¦é›†ä¸­çš„ä¸€ä¸ªæè¿°ç¬¦æœ‰ä¸€ä¸ªæœªå†³å¼‚å¸¸çŠ¶æ€ï¼Œåˆ™æ­¤æè¿°ç¬¦æ˜¯å‡†å¤‡å¥½çš„ã€‚
-   å¼‚å¸¸çŠ¶æ€åŒ…æ‹¬
-   a åœ¨ç½‘ç»œè¿æ¥ä¸Šåˆ°è¾¾çš„å¸¦å¤–æ•°æ®
-   b å¤„äºæ•°æ®åŒ…æ¨¡å¼çš„ä¼ªç»ˆç«¯ä¸Šå‘ç”Ÿäº†æŸäº›çŠ¶æ€ã€‚
+ ---->×¼±¸ºÃ
+ 1 ¶ÔÓÚ¶ÁÃèÊö·û¼¯ÖĞµÄÒ»¸öÃèÊö·ûµÄread²Ù×÷½«²»»á×èÈû£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ
+ 2 ¶ÔÓÚĞ´ÃèÊö·û¼¯ÖĞµÄÒ»¸öÃèÊö·ûµÄwrite²Ù×÷½«²»»á×èÈû£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ
+ 3 ÈôÒì³£ÃèÊö·û¼¯ÖĞµÄÒ»¸öÃèÊö·ûÓĞÒ»¸öÎ´¾öÒì³£×´Ì¬£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ¡£
+   Òì³£×´Ì¬°üÀ¨
+   a ÔÚÍøÂçÁ¬½ÓÉÏµ½´ïµÄ´øÍâÊı¾İ
+   b ´¦ÓÚÊı¾İ°üÄ£Ê½µÄÎ±ÖÕ¶ËÉÏ·¢ÉúÁËÄ³Ğ©×´Ì¬¡£
  4 File descriptors for regular files always return ready for reading, writing, 
    and exception conditions.
  *******************************************************************************/
@@ -416,7 +416,7 @@ void FD_ZERO(fd_set *fdset);
 
 /*******************************************************************************
  After declaring a descriptor set, we must zero the set using FD_ZERO.Wethen set
- bits in the set for each descriptor that weâ€™reinterested in, as in
+ bits in the set for each descriptor that we¡¯reinterested in, as in
  ******************************************************************************/
 void fd_set_example()
 {
@@ -439,7 +439,7 @@ void fd_set_example()
  
 struct timespec {
   time_t tv_sec;       /* seconds */
-  long   tv_nsec;      /* nanoseconds çº³ç§’ */
+  long   tv_nsec;      /* nanoseconds ÄÉÃë */
 };
 
 /*******************************************************************************
@@ -458,20 +458,20 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 #include <poll.h>
 
 /********** Input events and returned revents for poll ***********/
-#define POLLIN       /*æ™®é€šæˆ–ä¼˜å…ˆçº§å¸¦æ•°æ®å¯è¯» */
-#define POLLRDNORM   /*æ™®é€šæ•°æ®å¯è¯»*/
-#define POLLRDBAND   /*ä¼˜å…ˆçº§å¸¦æ•°æ®å¯è¯»*/
-#define POLLPRI      /*é«˜ä¼˜å…ˆçº§æ•°æ®å¯è¯»*/
+#define POLLIN       /*ÆÕÍ¨»òÓÅÏÈ¼¶´øÊı¾İ¿É¶Á */
+#define POLLRDNORM   /*ÆÕÍ¨Êı¾İ¿É¶Á*/
+#define POLLRDBAND   /*ÓÅÏÈ¼¶´øÊı¾İ¿É¶Á*/
+#define POLLPRI      /*¸ßÓÅÏÈ¼¶Êı¾İ¿É¶Á*/
 
-#define POLLOUT      /*æ™®é€šæ•°æ®å¯å†™*/
-#define POLLWRNORM   /*æ™®é€šæ•°æ®å¯å†™*/
-#define POLLWRBAND   /*ä¼˜å…ˆçº§å¸¦æ•°æ®å¯å†™*/
+#define POLLOUT      /*ÆÕÍ¨Êı¾İ¿ÉĞ´*/
+#define POLLWRNORM   /*ÆÕÍ¨Êı¾İ¿ÉĞ´*/
+#define POLLWRBAND   /*ÓÅÏÈ¼¶´øÊı¾İ¿ÉĞ´*/
 
-#define POLLERR      /*å‘ç”Ÿé”™è¯¯ï¼Œä¸å¯ä½œä¸º@events*/
-#define POLLHUP      /*å‘ç”ŸæŒ‚èµ·ï¼Œä¸å¯ä½œä¸º@events*/
-#define POLLNVAL     /*æè¿°å­—ä¸æ˜¯ä¸€ä¸ªæ‰“å¼€çš„æ–‡ä»¶ï¼Œä¸å¯ä½œä¸º@events*/
+#define POLLERR      /*·¢Éú´íÎó£¬²»¿É×÷Îª@events*/
+#define POLLHUP      /*·¢Éú¹ÒÆğ£¬²»¿É×÷Îª@events*/
+#define POLLNVAL     /*ÃèÊö×Ö²»ÊÇÒ»¸ö´ò¿ªµÄÎÄ¼ş£¬²»¿É×÷Îª@events*/
 
-#define INFTIM       /*æ˜¯ä¸€ä¸ªè´Ÿå€¼ @pollçš„ç¬¬ä¸‰ä¸ªå‚æ•°,è¡¨ç¤ºæ°¸è¿œç­‰å¾…*/
+#define INFTIM       /*ÊÇÒ»¸ö¸ºÖµ @pollµÄµÚÈı¸ö²ÎÊı,±íÊ¾ÓÀÔ¶µÈ´ı*/
 
 /*******************************************************************************
  To tell the kernel which events we're interested in for each descriptor, we have
@@ -482,7 +482,7 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 struct pollfd 
 {
     int  fd; /* file descriptor to check, or <0 to ignore */
-    short  events; /* events of interest on fd POLLINç­‰å€¼*/
+    short  events; /* events of interest on fd POLLINµÈÖµ*/
     short  revents;  /* events that occurred on fd */
 };
 
@@ -494,9 +494,9 @@ struct pollfd
  @nfds   : 
     The number of elements in the array of structures is specified by the nfds argument.
  
- @timeout: INFTIMæ°¸è¿œç­‰å¾… 0ä¸ç­‰å¾… å¤§äº0ç­‰å¾…æŒ‡å®šçš„æ—¶é—´
+ @timeout: INFTIMÓÀÔ¶µÈ´ı 0²»µÈ´ı ´óÓÚ0µÈ´ıÖ¸¶¨µÄÊ±¼ä
  @returns: 
-    The return value from @poll is â€“1 if an error occurred, 0 if no descriptors are 
+    The return value from @poll is ¨C1 if an error occurred, 0 if no descriptors are 
     ready before the timer expires,otherwise it is the number of descriptors that have 
     a nonzero @revents member.
 
@@ -508,7 +508,7 @@ struct pollfd
  3 When the read half of a TCP connection is closed (e.g., a FIN is received), this 
    is also considered normal data and a subsequent read operation will return 0.
  4 The presence of an error for a TCP connection can be considered either normal data 
-   or an error (POLLERR). In either case, a subsequent read will return â€“1 with errno 
+   or an error (POLLERR). In either case, a subsequent read will return ¨C1 with errno 
    set to the appropriate value. This handles conditions such as the receipt of an RST 
    or a timeout.
  5 The availability of a new connection on a listening socket can be considered either 
@@ -529,23 +529,23 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
  kqueue, in that it operates on a configurable kernel object, exposed to user space as 
  a file descriptor of its own.
 
- EPOLLäº‹ä»¶æœ‰ä¸¤ç§æ¨¡å‹ Level Triggered (LT) å’Œ Edge Triggered (ET)ï¼š
+ EPOLLÊÂ¼şÓĞÁ½ÖÖÄ£ĞÍ Level Triggered (LT) ºÍ Edge Triggered (ET)£º
 
- LT(level triggeredï¼Œæ°´å¹³è§¦å‘æ¨¡å¼)
-    æ˜¯ç¼ºçœçš„å·¥ä½œæ–¹å¼ï¼Œå¹¶ä¸”åŒæ—¶æ”¯æŒ block å’Œ non-block socketã€‚åœ¨è¿™ç§åšæ³•ä¸­ï¼Œå†…æ ¸å‘Šè¯‰ä½ 
-    ä¸€ä¸ªæ–‡ä»¶æè¿°ç¬¦æ˜¯å¦å°±ç»ªäº†ï¼Œç„¶åä½ å¯ä»¥å¯¹è¿™ä¸ªå°±ç»ªçš„fdè¿›è¡ŒIOæ“ä½œã€‚å¦‚æœä½ ä¸ä½œä»»ä½•æ“ä½œï¼Œ
-    å†…æ ¸è¿˜æ˜¯ä¼šç»§ç»­é€šçŸ¥ä½ çš„ï¼Œæ‰€ä»¥ï¼Œè¿™ç§æ¨¡å¼ç¼–ç¨‹å‡ºé”™è¯¯å¯èƒ½æ€§è¦å°ä¸€ç‚¹ã€‚
+ LT(level triggered£¬Ë®Æ½´¥·¢Ä£Ê½)
+    ÊÇÈ±Ê¡µÄ¹¤×÷·½Ê½£¬²¢ÇÒÍ¬Ê±Ö§³Ö block ºÍ non-block socket¡£ÔÚÕâÖÖ×ö·¨ÖĞ£¬ÄÚºË¸æËßÄã
+    Ò»¸öÎÄ¼şÃèÊö·ûÊÇ·ñ¾ÍĞ÷ÁË£¬È»ºóÄã¿ÉÒÔ¶ÔÕâ¸ö¾ÍĞ÷µÄfd½øĞĞIO²Ù×÷¡£Èç¹ûÄã²»×÷ÈÎºÎ²Ù×÷£¬
+    ÄÚºË»¹ÊÇ»á¼ÌĞøÍ¨ÖªÄãµÄ£¬ËùÒÔ£¬ÕâÖÖÄ£Ê½±à³Ì³ö´íÎó¿ÉÄÜĞÔÒªĞ¡Ò»µã¡£
 
- ET(edge-triggeredï¼Œè¾¹ç¼˜è§¦å‘æ¨¡å¼)
-    æ˜¯é«˜é€Ÿå·¥ä½œæ–¹å¼ï¼Œåªæ”¯æŒno-block socketã€‚åœ¨è¿™ç§æ¨¡å¼ä¸‹ï¼Œå½“æè¿°ç¬¦ä»æœªå°±ç»ªå˜ä¸ºå°±ç»ªæ—¶ï¼Œ
-    å†…æ ¸é€šè¿‡epollå‘Šè¯‰ä½ ã€‚ç„¶åå®ƒä¼šå‡è®¾ä½ çŸ¥é“æ–‡ä»¶æè¿°ç¬¦å·²ç»å°±ç»ªï¼Œå¹¶ä¸”ä¸ä¼šå†ä¸ºé‚£ä¸ªæ–‡ä»¶
-    æè¿°ç¬¦å‘é€æ›´å¤šçš„å°±ç»ªé€šçŸ¥ï¼Œç­‰åˆ°ä¸‹æ¬¡æœ‰æ–°çš„æ•°æ®è¿›æ¥çš„æ—¶å€™æ‰ä¼šå†æ¬¡å‡ºå‘å°±ç»ªäº‹ä»¶ã€‚ 
+ ET(edge-triggered£¬±ßÔµ´¥·¢Ä£Ê½)
+    ÊÇ¸ßËÙ¹¤×÷·½Ê½£¬Ö»Ö§³Öno-block socket¡£ÔÚÕâÖÖÄ£Ê½ÏÂ£¬µ±ÃèÊö·û´ÓÎ´¾ÍĞ÷±äÎª¾ÍĞ÷Ê±£¬
+    ÄÚºËÍ¨¹ıepoll¸æËßÄã¡£È»ºóËü»á¼ÙÉèÄãÖªµÀÎÄ¼şÃèÊö·ûÒÑ¾­¾ÍĞ÷£¬²¢ÇÒ²»»áÔÙÎªÄÇ¸öÎÄ¼ş
+    ÃèÊö·û·¢ËÍ¸ü¶àµÄ¾ÍĞ÷Í¨Öª£¬µÈµ½ÏÂ´ÎÓĞĞÂµÄÊı¾İ½øÀ´µÄÊ±ºò²Å»áÔÙ´Î³ö·¢¾ÍĞ÷ÊÂ¼ş¡£ 
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
- åˆ›å»ºä¸€ä¸ªepollçš„å¥æŸ„ï¼Œsizeç”¨æ¥å‘Šè¯‰å†…æ ¸éœ€è¦ç›‘å¬çš„æ•°ç›®ä¸€å…±æœ‰å¤šå¤§ã€‚å½“åˆ›å»ºå¥½epollå¥æŸ„åï¼Œ
- å®ƒå°±æ˜¯ä¼šå ç”¨ä¸€ä¸ªfdå€¼ï¼Œåœ¨linuxä¸‹å¦‚æœæŸ¥çœ‹/proc/è¿›ç¨‹id/fd/ï¼Œæ˜¯èƒ½å¤Ÿçœ‹åˆ°è¿™ä¸ªfdçš„ï¼Œæ‰€ä»¥åœ¨
- ä½¿ç”¨å®Œepollåï¼Œå¿…é¡»è°ƒç”¨close() å…³é—­ï¼Œå¦åˆ™å¯èƒ½å¯¼è‡´fdè¢«è€—å°½ã€‚
+ ´´½¨Ò»¸öepollµÄ¾ä±ú£¬sizeÓÃÀ´¸æËßÄÚºËĞèÒª¼àÌıµÄÊıÄ¿Ò»¹²ÓĞ¶à´ó¡£µ±´´½¨ºÃepoll¾ä±úºó£¬
+ Ëü¾ÍÊÇ»áÕ¼ÓÃÒ»¸öfdÖµ£¬ÔÚlinuxÏÂÈç¹û²é¿´/proc/½ø³Ìid/fd/£¬ÊÇÄÜ¹»¿´µ½Õâ¸öfdµÄ£¬ËùÒÔÔÚ
+ Ê¹ÓÃÍêepollºó£¬±ØĞëµ÷ÓÃclose() ¹Ø±Õ£¬·ñÔò¿ÉÄÜµ¼ÖÂfd±»ºÄ¾¡¡£
  @size:
     The size is not the maximum size of the backing store but just a hint to the ker-
     nel about how to dimension internal structures. Since  Linux 2.6.8, the size arg-
@@ -560,20 +560,20 @@ int epoll_create1(int flags);
 
 
 /*-----------------------------------------------------------------------------------
- @epfd: epoll_create() çš„è¿”å›å€¼ã€‚
+ @epfd: epoll_create() µÄ·µ»ØÖµ¡£
  @op    EPOLL_CTL_ADD
- @fd    éœ€è¦ç›‘å¬çš„fd
- @event å‘Šè¯‰å†…æ ¸éœ€è¦ç›‘å¬ä»€ä¹ˆäº‹
+ @fd    ĞèÒª¼àÌıµÄfd
+ @event ¸æËßÄÚºËĞèÒª¼àÌıÊ²Ã´ÊÂ
 -----------------------------------------------------------------------------------*/
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 
 /*-----------------------------------------------------------------------------------
- æ”¶é›†åœ¨epollç›‘æ§çš„äº‹ä»¶ä¸­å·²ç»å‘é€çš„äº‹ä»¶ã€‚ å‚æ•°eventsæ˜¯åˆ†é…å¥½çš„epoll_eventç»“æ„ä½“æ•°ç»„ï¼Œ
- epollå°†ä¼šæŠŠå‘ç”Ÿçš„äº‹ä»¶èµ‹å€¼åˆ°eventsæ•°ç»„ä¸­ï¼ˆeventsä¸å¯ä»¥æ˜¯ç©ºæŒ‡é’ˆï¼Œå†…æ ¸åªè´Ÿè´£æŠŠæ•°æ®å¤åˆ¶
- åˆ°è¿™ä¸ªeventsæ•°ç»„ä¸­ï¼Œä¸ä¼šå»å¸®åŠ©æˆ‘ä»¬åœ¨ç”¨æˆ·æ€ä¸­åˆ†é…å†…å­˜ï¼‰ã€‚maxeventså‘Šä¹‹å†…æ ¸è¿™ä¸ªevents
- æœ‰å¤šå¤§ï¼Œè¿™ä¸ª maxeventsçš„å€¼ä¸èƒ½å¤§äºåˆ›å»ºepoll_create()æ—¶çš„sizeï¼Œå‚æ•°timeoutæ˜¯è¶…æ—¶æ—¶é—´
- ï¼ˆæ¯«ç§’ï¼Œ0ä¼šç«‹å³è¿”å›ï¼Œ-1å°†ä¸ç¡®å®šï¼Œä¹Ÿæœ‰è¯´æ³•è¯´æ˜¯æ°¸ä¹…é˜»å¡ï¼‰ã€‚å¦‚æœå‡½æ•°è°ƒç”¨æˆåŠŸï¼Œè¿”å›å¯¹åº”
- I/Oä¸Šå·²å‡†å¤‡å¥½çš„æ–‡ä»¶æè¿°ç¬¦æ•°ç›®ï¼Œå¦‚è¿”å›0è¡¨ç¤ºå·²è¶…æ—¶ã€‚
+ ÊÕ¼¯ÔÚepoll¼à¿ØµÄÊÂ¼şÖĞÒÑ¾­·¢ËÍµÄÊÂ¼ş¡£ ²ÎÊıeventsÊÇ·ÖÅäºÃµÄepoll_event½á¹¹ÌåÊı×é£¬
+ epoll½«»á°Ñ·¢ÉúµÄÊÂ¼ş¸³Öµµ½eventsÊı×éÖĞ£¨events²»¿ÉÒÔÊÇ¿ÕÖ¸Õë£¬ÄÚºËÖ»¸ºÔğ°ÑÊı¾İ¸´ÖÆ
+ µ½Õâ¸öeventsÊı×éÖĞ£¬²»»áÈ¥°ïÖúÎÒÃÇÔÚÓÃ»§Ì¬ÖĞ·ÖÅäÄÚ´æ£©¡£maxevents¸æÖ®ÄÚºËÕâ¸öevents
+ ÓĞ¶à´ó£¬Õâ¸ö maxeventsµÄÖµ²»ÄÜ´óÓÚ´´½¨epoll_create()Ê±µÄsize£¬²ÎÊıtimeoutÊÇ³¬Ê±Ê±¼ä
+ £¨ºÁÃë£¬0»áÁ¢¼´·µ»Ø£¬-1½«²»È·¶¨£¬Ò²ÓĞËµ·¨ËµÊÇÓÀ¾Ã×èÈû£©¡£Èç¹ûº¯Êıµ÷ÓÃ³É¹¦£¬·µ»Ø¶ÔÓ¦
+ I/OÉÏÒÑ×¼±¸ºÃµÄÎÄ¼şÃèÊö·ûÊıÄ¿£¬Èç·µ»Ø0±íÊ¾ÒÑ³¬Ê±¡£
 -----------------------------------------------------------------------------------*/
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
 
@@ -585,17 +585,17 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 #define PROT_EXEC   /* Region can be executed. */
 #define PROT_NONE   /* Region cannot be accessed. */
 /* @mmmap @flag */
-#define MAP_FIXED   /* è¿”å›å€¼å¿…é¡»ç­‰äº@addr MAP_SHAREDå’ŒMAP_PRIVATEå¿…é¡»æŒ‡å®šä¸€ä¸ªï¼Œä½†ä¸èƒ½åŒæ—¶æŒ‡å®šã€‚*/
-#define MAP_SHARED	/* å­˜å‚¨æ“ä½œç›¸å½“äºå¯¹è¯¥æ–‡ä»¶çš„write.*/
-#define MAP_PRIVATE /* å¯¹æ˜ å°„åŒºçš„å­˜å‚¨æ“ä½œå¯¼è‡´åˆ›å»ºè¯¥æ˜ å°„æ–‡ä»¶çš„ä¸€ä¸ªç§æœ‰å‰¯æœ¬ã€‚*/
+#define MAP_FIXED   /* ·µ»ØÖµ±ØĞëµÈÓÚ@addr MAP_SHAREDºÍMAP_PRIVATE±ØĞëÖ¸¶¨Ò»¸ö£¬µ«²»ÄÜÍ¬Ê±Ö¸¶¨¡£*/
+#define MAP_SHARED	/* ´æ´¢²Ù×÷Ïàµ±ÓÚ¶Ô¸ÃÎÄ¼şµÄwrite.*/
+#define MAP_PRIVATE /* ¶ÔÓ³ÉäÇøµÄ´æ´¢²Ù×÷µ¼ÖÂ´´½¨¸ÃÓ³ÉäÎÄ¼şµÄÒ»¸öË½ÓĞ¸±±¾¡£*/
 
 /*-----------------------------------------------------------------------------------
  @addr:
-    æ˜ å°„å­˜å‚¨åŒºçš„èµ·å§‹åœ°å€,0è¡¨ç¤ºè®©ç³»ç»Ÿè‡ªåŠ¨é€‰æ‹©ã€‚é¡µè¾¹ç•Œå¯¹é½
+    Ó³Éä´æ´¢ÇøµÄÆğÊ¼µØÖ·,0±íÊ¾ÈÃÏµÍ³×Ô¶¯Ñ¡Ôñ¡£Ò³±ß½ç¶ÔÆë
  @len: 
-    æ˜ å°„çš„å­—èŠ‚æ•°
+    Ó³ÉäµÄ×Ö½ÚÊı
  @prot:
-    æ˜ å°„åŒºçš„ä¿æŠ¤è¦æ±‚(æŒ‰ä½æˆ–)
+    Ó³ÉäÇøµÄ±£»¤ÒªÇó(°´Î»»ò)
     PROT_READ Region can be read.
     PROT_WRITE Region can be written.
     PROT_EXEC Region can be executed.
@@ -609,9 +609,9 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
     to all processes that are sharing the object, and these changes do modify the un-
     derlying object. 
  @fd:  
-    è¢«æ˜ å°„æ–‡ä»¶çš„æè¿°ç¬¦,æ˜ å°„æ–‡ä»¶å‰è¦æ‰“å¼€è¯¥æ–‡ä»¶
+    ±»Ó³ÉäÎÄ¼şµÄÃèÊö·û,Ó³ÉäÎÄ¼şÇ°Òª´ò¿ª¸ÃÎÄ¼ş
  @off: 
-    è¦æ˜ å°„å­—èŠ‚åœ¨æ–‡ä»¶ä¸­çš„èµ·å§‹åç§»é‡
+    ÒªÓ³Éä×Ö½ÚÔÚÎÄ¼şÖĞµÄÆğÊ¼Æ«ÒÆÁ¿
  @Returns: 
     starting address of mapped region if OK,MAP_FAILED on error
 
@@ -708,34 +708,34 @@ int mprotect(void *addr,size_t len,int prot);
 #include <sys/uio.h>
 
 /************************************************************************************
- read()å’Œwrite()ç³»ç»Ÿè°ƒç”¨æ¯æ¬¡åœ¨æ–‡ä»¶å’Œè¿›ç¨‹çš„åœ°å€ç©ºé—´ä¹‹é—´ä¼ é€ä¸€å—è¿ç»­çš„æ•°æ®ã€‚ä½†æ˜¯ï¼Œåº”ç”¨æœ‰
- æ—¶ä¹Ÿéœ€è¦å°†åˆ†æ•£åœ¨å†…å­˜å¤šå¤„åœ°æ–¹çš„æ•°æ®è¿ç»­å†™åˆ°æ–‡ä»¶ä¸­ï¼Œæˆ–è€…åä¹‹ã€‚åœ¨è¿™ç§æƒ…å†µä¸‹ï¼Œå¦‚æœè¦ä»æ–‡
- ä»¶ä¸­è¯»ä¸€ç‰‡è¿ç»­çš„æ•°æ®è‡³è¿›ç¨‹çš„ä¸åŒåŒºåŸŸï¼Œä½¿ç”¨read()åˆ™è¦ä¹ˆä¸€æ¬¡å°†å®ƒä»¬è¯»è‡³ä¸€ä¸ªè¾ƒå¤§çš„ç¼“å†²åŒº
- ä¸­ï¼Œç„¶åå°†å®ƒä»¬åˆ†æˆè‹¥å¹²éƒ¨åˆ†å¤åˆ¶åˆ°ä¸åŒçš„åŒºåŸŸï¼Œè¦ä¹ˆè°ƒç”¨read()è‹¥å¹²æ¬¡åˆ†æ‰¹å°†å®ƒä»¬è¯»è‡³ä¸åŒåŒº
- åŸŸã€‚åŒæ ·ï¼Œå¦‚æœæƒ³å°†ç¨‹åºä¸­ä¸åŒåŒºåŸŸçš„æ•°æ®å—è¿ç»­åœ°å†™è‡³æ–‡ä»¶ï¼Œä¹Ÿå¿…é¡»è¿›è¡Œç±»ä¼¼çš„å¤„ç†ã€‚
+ read()ºÍwrite()ÏµÍ³µ÷ÓÃÃ¿´ÎÔÚÎÄ¼şºÍ½ø³ÌµÄµØÖ·¿Õ¼äÖ®¼ä´«ËÍÒ»¿éÁ¬ĞøµÄÊı¾İ¡£µ«ÊÇ£¬Ó¦ÓÃÓĞ
+ Ê±Ò²ĞèÒª½«·ÖÉ¢ÔÚÄÚ´æ¶à´¦µØ·½µÄÊı¾İÁ¬ĞøĞ´µ½ÎÄ¼şÖĞ£¬»òÕß·´Ö®¡£ÔÚÕâÖÖÇé¿öÏÂ£¬Èç¹ûÒª´ÓÎÄ
+ ¼şÖĞ¶ÁÒ»Æ¬Á¬ĞøµÄÊı¾İÖÁ½ø³ÌµÄ²»Í¬ÇøÓò£¬Ê¹ÓÃread()ÔòÒªÃ´Ò»´Î½«ËüÃÇ¶ÁÖÁÒ»¸ö½Ï´óµÄ»º³åÇø
+ ÖĞ£¬È»ºó½«ËüÃÇ·Ö³ÉÈô¸É²¿·Ö¸´ÖÆµ½²»Í¬µÄÇøÓò£¬ÒªÃ´µ÷ÓÃread()Èô¸É´Î·ÖÅú½«ËüÃÇ¶ÁÖÁ²»Í¬Çø
+ Óò¡£Í¬Ñù£¬Èç¹ûÏë½«³ÌĞòÖĞ²»Í¬ÇøÓòµÄÊı¾İ¿éÁ¬ĞøµØĞ´ÖÁÎÄ¼ş£¬Ò²±ØĞë½øĞĞÀàËÆµÄ´¦Àí¡£
 
- UNIXæä¾›äº†å¦å¤–ä¸¤ä¸ªå‡½æ•°â€”readv()å’Œwritev()ï¼Œå®ƒä»¬åªéœ€ä¸€æ¬¡ç³»ç»Ÿè°ƒç”¨å°±å¯ä»¥å®ç°åœ¨æ–‡ä»¶å’Œè¿›ç¨‹
- çš„å¤šä¸ªç¼“å†²åŒºä¹‹é—´ä¼ é€æ•°æ®ï¼Œå…é™¤äº†å¤šæ¬¡ç³»ç»Ÿè°ƒç”¨æˆ–å¤åˆ¶æ•°æ®çš„å¼€é”€ã€‚readv()ç§°ä¸ºæ•£å¸ƒè¯»ï¼Œå³å°†
- æ–‡ä»¶ä¸­è‹¥å¹²è¿ç»­çš„æ•°æ®å—è¯»å…¥å†…å­˜åˆ†æ•£çš„ç¼“å†²åŒºä¸­ã€‚writev()ç§°ä¸ºèšé›†å†™ï¼Œå³æ”¶é›†å†…å­˜ä¸­åˆ†æ•£çš„
- è‹¥å¹²ç¼“å†²åŒºä¸­çš„æ•°æ®å†™è‡³æ–‡ä»¶çš„è¿ç»­åŒºåŸŸä¸­ã€‚
+ UNIXÌá¹©ÁËÁíÍâÁ½¸öº¯Êı¡ªreadv()ºÍwritev()£¬ËüÃÇÖ»ĞèÒ»´ÎÏµÍ³µ÷ÓÃ¾Í¿ÉÒÔÊµÏÖÔÚÎÄ¼şºÍ½ø³Ì
+ µÄ¶à¸ö»º³åÇøÖ®¼ä´«ËÍÊı¾İ£¬Ãâ³ıÁË¶à´ÎÏµÍ³µ÷ÓÃ»ò¸´ÖÆÊı¾İµÄ¿ªÏú¡£readv()³ÆÎªÉ¢²¼¶Á£¬¼´½«
+ ÎÄ¼şÖĞÈô¸ÉÁ¬ĞøµÄÊı¾İ¿é¶ÁÈëÄÚ´æ·ÖÉ¢µÄ»º³åÇøÖĞ¡£writev()³ÆÎª¾Û¼¯Ğ´£¬¼´ÊÕ¼¯ÄÚ´æÖĞ·ÖÉ¢µÄ
+ Èô¸É»º³åÇøÖĞµÄÊı¾İĞ´ÖÁÎÄ¼şµÄÁ¬ĞøÇøÓòÖĞ¡£
 
- å‚æ•°@fildesæ˜¯æ–‡ä»¶æè¿°å­—ã€‚@iovæ˜¯ä¸€ä¸ªç»“æ„æ•°ç»„ï¼Œå®ƒçš„æ¯ä¸ªå…ƒç´ æŒ‡æ˜å­˜å‚¨å™¨ä¸­çš„ä¸€ä¸ªç¼“å†²åŒºã€‚
- å‚æ•°@iovcntæŒ‡å‡ºæ•°ç»„@iovçš„å…ƒç´ ä¸ªæ•°ï¼Œå…ƒç´ ä¸ªæ•°è‡³å¤šä¸è¶…è¿‡IOV_MAXã€‚Linuxä¸­å®šä¹‰IOV_MAXçš„å€¼
- ä¸º1024ã€‚
+ ²ÎÊı@fildesÊÇÎÄ¼şÃèÊö×Ö¡£@iovÊÇÒ»¸ö½á¹¹Êı×é£¬ËüµÄÃ¿¸öÔªËØÖ¸Ã÷´æ´¢Æ÷ÖĞµÄÒ»¸ö»º³åÇø¡£
+ ²ÎÊı@iovcntÖ¸³öÊı×é@iovµÄÔªËØ¸öÊı£¬ÔªËØ¸öÊıÖÁ¶à²»³¬¹ıIOV_MAX¡£LinuxÖĞ¶¨ÒåIOV_MAXµÄÖµ
+ Îª1024¡£
 
- readv()åˆ™å°†fildesæŒ‡å®šæ–‡ä»¶ä¸­çš„æ•°æ®æŒ‰iov[0]ã€iov[1]ã€...ã€iov[iovcntâ€“1]è§„å®šçš„é¡ºåºå’Œé•¿
- åº¦ï¼Œåˆ†æ•£åœ°è¯»åˆ°å®ƒä»¬æŒ‡å®šçš„å­˜å‚¨åœ°å€ä¸­ã€‚readv()çš„è¿”å›å€¼æ˜¯è¯»å…¥çš„æ€»å­—èŠ‚æ•°ã€‚å¦‚æœæ²¡æœ‰æ•°æ®å¯
- è¯»å’Œé‡åˆ°äº†æ–‡ä»¶å°¾ï¼Œå…¶è¿”å›å€¼ä¸º0ã€‚
+ readv()Ôò½«fildesÖ¸¶¨ÎÄ¼şÖĞµÄÊı¾İ°´iov[0]¡¢iov[1]¡¢...¡¢iov[iovcnt¨C1]¹æ¶¨µÄË³ĞòºÍ³¤
+ ¶È£¬·ÖÉ¢µØ¶Áµ½ËüÃÇÖ¸¶¨µÄ´æ´¢µØÖ·ÖĞ¡£readv()µÄ·µ»ØÖµÊÇ¶ÁÈëµÄ×Ü×Ö½ÚÊı¡£Èç¹ûÃ»ÓĞÊı¾İ¿É
+ ¶ÁºÍÓöµ½ÁËÎÄ¼şÎ²£¬Æä·µ»ØÖµÎª0¡£
 
- æœ‰äº†è¿™ä¸¤ä¸ªå‡½æ•°ï¼Œå½“æƒ³è¦é›†ä¸­å†™å‡ºæŸå¼ é“¾è¡¨æ—¶ï¼Œåªéœ€è®©iovæ•°ç»„çš„å„ä¸ªå…ƒç´ åŒ…å«é“¾è¡¨ä¸­å„ä¸ªè¡¨é¡¹
- çš„åœ°å€å’Œå…¶é•¿åº¦ï¼Œç„¶åå°†iovå’Œå®ƒçš„å…ƒç´ ä¸ªæ•°ä½œä¸ºå‚æ•°ä¼ é€’ç»™writev()ï¼Œè¿™äº›æ•°æ®ä¾¿å¯ä¸€æ¬¡å†™å‡ºã€‚
+ ÓĞÁËÕâÁ½¸öº¯Êı£¬µ±ÏëÒª¼¯ÖĞĞ´³öÄ³ÕÅÁ´±íÊ±£¬Ö»ĞèÈÃiovÊı×éµÄ¸÷¸öÔªËØ°üº¬Á´±íÖĞ¸÷¸ö±íÏî
+ µÄµØÖ·ºÍÆä³¤¶È£¬È»ºó½«iovºÍËüµÄÔªËØ¸öÊı×÷Îª²ÎÊı´«µİ¸øwritev()£¬ÕâĞ©Êı¾İ±ã¿ÉÒ»´ÎĞ´³ö¡£
 ************************************************************************************/
 
-/* return: number of bytes read or written, â€“1 on error */ 
+/* return: number of bytes read or written, ¨C1 on error */ 
 ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 
-/*@iov:ç»“æ„ä½“æ•°ç»„æŒ‡é’ˆ
-  return: number of bytes read or written, â€“1 on error */
+/*@iov:½á¹¹ÌåÊı×éÖ¸Õë
+  return: number of bytes read or written, ¨C1 on error */
 ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
  
 
@@ -755,4 +755,5 @@ ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
 #include <sys/ioctl.h> /* BSD and Linux */
 int ioctl(int fd, int request, ...);
 	
+
 
