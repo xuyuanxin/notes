@@ -2,17 +2,17 @@
 #include <fcntl.h>
 /*******************************************************************************
  @path: 
-    Òª´ò¿ª»ò´´½¨ÎÄ¼þµÄÃû×Ö
+    要打开或创建文件的名字
  @oflag: O_RDWR
  @mode:  S_IEXEC
-    ´´½¨Ê±²Å»áÓÃµ½£¬ÓÃÓÚÖ¸¶¨ÎÄ¼þµÄ·ÃÎÊÈ¨ÏÞÎ»£¨access permission bits£©
+    创建时才会用到，用于指定文件的访问权限位（access permission bits）
  @function:
-    ´ò¿ªÒ»¸öÎÄ¼þ(Ò²¿ÉÓÃÓÚ´´½¨ÎÄ¼þ)
+    打开一个文件(也可用于创建文件)
  @return: 
     file descriptor if OK,-1 on error
 
- 1 open·µ»ØµÄÎÄ¼þÃèÊö·ûÒ»¶¨ÊÇ×îÐ¡µÄÎ´ÓÃÃèÊö·ûÊýÖµ¡£
- 2 @pathÎÄ¼þÃû×î´ó×Ö·û¸öÊýÊÇ NAME_MAX
+ 1 open返回的文件描述符一定是最小的未用描述符数值。
+ 2 @path文件名最大字符个数是 NAME_MAX
 *******************************************************************************/
 int open(const char *path,int oflag,... /* mode_t mode*/ );
 int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
@@ -46,40 +46,40 @@ int close(int fd);
 SEEK_SET(0),the file's offset is set to @offset bytes from the beginning of the file.
 SEEK_CUR(1),the file's offset is set to its current value plus the @offset. The @offset can be positive or negative.
 SEEK_END(2),the file's offset is set to the size of the file plus the @offset. The @offset can be positive or negative.
-function: ´ò¿ªÒ»¸öÎÄ¼þ²¢ÉèÖÃÆäÆ«ÒÆÁ¿
+function: 打开一个文件并设置其偏移量
 returns : new file offset if OK,-1 on error
-name    : lseekÖÐµÄl±íÊ¾³¤ÕûÐÍ
+name    : lseek中的l表示长整型
 
-@lseek only records the current file offset within the kernel¡ªit does not cause
+@lseek only records the current file offset within the kernel—it does not cause
 any I/O to take place. This offset is then used by the next read or write operation.
 *******************************************************************************/
 off_t lseek(int fd,off_t offset,int whence);
 
 #include <unistd.h>
 /******************************************************************************
-@fd :¶ÁÄÄ¸öÎÄ¼þ(ÒÑ¾­´ò¿ªÁË)
-@buf:°Ñ¶ÁµÄÊý¾Ý·ÅÈëÕâ¸öbufÖÐ
-@nbytes:Ï£Íû¶ÁÈ¡Êý¾ÝµÄ³¤¶È
+@fd :读哪个文件(已经打开了)
+@buf:把读的数据放入这个buf中
+@nbytes:希望读取数据的长度
 
 function:Data is read from an open file with the @read function.
 Returns: number of bytes read, 0 if end of file,-1 on error
 
-1 ²ÎÊýcountÊÇÇëÇó¶ÁÈ¡µÄ×Ö½ÚÊý£¬¶ÁÉÏÀ´µÄÊý¾Ý±£´æÔÚ»º³åÇøbufÖÐ£¬Í¬Ê±ÎÄ¼þµÄµ±Ç°¶Á
-  Ð´Î»ÖÃÏòºóÒÆ¡£
-2 ¶Á³£¹æÎÄ¼þÊ±£¬ÔÚ¶Áµ½count¸ö×Ö½ÚÖ®Ç°ÒÑµ½´ïÎÄ¼þÄ©Î²¡£ÀýÈç£¬¾àÎÄ¼þÄ©Î²»¹ÓÐ30¸ö×Ö
-  ½Ú¶øÇëÇó¶Á100¸ö×Ö½Ú£¬Ôòread·µ»Ø30£¬ÏÂ´Îread½«·µ»Ø0¡£
-3 ÃæÏòÎÄ±¾µÄÌ×½Ó×Ö¶Á²Ù×÷ÖÐ,Ò»´Îread²»ÄÜ±£Ö¤¶ÁÈëÍêÕûµÄÒ»ÐÐ»òÕûÐÐ,¶ÁÍêÕûµÄÒ»ÐÐ¿É
-  ÄÜÐèÒª¶Ô´Ëµ÷ÓÃread,²¢¼ì²éÆäÖÐÊÇ·ñ³öÏÖÁË»»ÐÐ·û
-4 ·þÎñÆ÷ÊÕµ½FINÊ±,µÝËÍÒ»¸öEOF¸ø½ø³Ì×èÈûÖÐµÄread,ÊÕµ½ºóread·µ»ØEOF
+1 参数count是请求读取的字节数，读上来的数据保存在缓冲区buf中，同时文件的当前读
+  写位置向后移。
+2 读常规文件时，在读到count个字节之前已到达文件末尾。例如，距文件末尾还有30个字
+  节而请求读100个字节，则read返回30，下次read将返回0。
+3 面向文本的套接字读操作中,一次read不能保证读入完整的一行或整行,读完整的一行可
+  能需要对此调用read,并检查其中是否出现了换行符
+4 服务器收到FIN时,递送一个EOF给进程阻塞中的read,收到后read返回EOF
 5 POSIX.1 requires that read return -1 with errno set to EAGAIN if there is no 
   data to read from a nonblocking descriptor. 
 ******************************************************************************/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
 /******************************************************************************
- @fd    : Ð´ÄÄ¸öÎÄ¼þ(ÒÑ¾­´ò¿ªÁË)
- @buf   : bufÖÐÊÇÒªÐ´µÄÊý¾Ý
- @nbytes: Ð´ÈëÊý¾ÝµÄ³¤¶È
+ @fd    : 写哪个文件(已经打开了)
+ @buf   : buf中是要写的数据
+ @nbytes: 写入数据的长度
  funtion: Data is written to an open file with the @write function.
  Returns: number of bytes written if OK,-1 on error
 
@@ -106,28 +106,28 @@ ssize_t write(int fd,const void *buf,size_t nbytes);
 
 #include <unistd.h>
 /******************************************************************************
-@fd    £ºÒª¶ÁÈ¡Êý¾ÝµÄÎÄ¼þÃèÊö·û
-@buf   £ºÊý¾Ý»º´æÇøÖ¸Õë£¬´æ·Å¶ÁÈ¡³öÀ´µÄÊý¾Ý
-@count £º¶ÁÈ¡Êý¾ÝµÄ×Ö½ÚÊý
-@offset£º¶ÁÈ¡µÄÆðÊ¼µØÖ·µÄÆ«ÒÆÁ¿£¬¶ÁÈ¡µØÖ·=ÎÄ¼þ¿ªÊ¼+offset¡£
-·µ»ØÖµ£º³É¹¦£¬·µ»Ø³É¹¦¶ÁÈ¡Êý¾ÝµÄ×Ö½ÚÊý£»Ê§°Ü£¬·µ»Ø-1£»
+@fd    ：要读取数据的文件描述符
+@buf   ：数据缓存区指针，存放读取出来的数据
+@count ：读取数据的字节数
+@offset：读取的起始地址的偏移量，读取地址=文件开始+offset。
+返回值：成功，返回成功读取数据的字节数；失败，返回-1；
 
-1 Ö´ÐÐºó£¬ÎÄ¼þÆ«ÒÆÖ¸Õë²»±ä
-2 Ïàµ±ÓÚË³Ðòµ÷ÓÃlseekºÍread,µ«Æä¶¨Î»ºÍ¶ÁÈ¡²Ù×÷ÊÇÔ­×ÓµÄ¡£lseekºÍreadÖ®¼äÈç¹û±»ÖÐ¶Ï
-  ¿ÉÄÜÔì³ÉÎÊÌâ¡£
+1 执行后，文件偏移指针不变
+2 相当于顺序调用lseek和read,但其定位和读取操作是原子的。lseek和read之间如果被中断
+  可能造成问题。
 ******************************************************************************/
 ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
 
 /*******************************************************************************
-@fd    £ºÒªÐ´ÈëÊý¾ÝµÄÎÄ¼þÃèÊö·û
-@buf   £ºÊý¾Ý»º´æÇøÖ¸Õë£¬´æ·ÅÒªÐ´ÈëÎÄ¼þÖÐµÄÊý¾Ý
-@count £ºÐ´ÈëÎÄ¼þÖÐµÄÊý¾ÝµÄ×Ö½ÚÊý
-@offset£ºÐ´ÈëµØÖ·=ÎÄ¼þ¿ªÊ¼+offset
-·µ»ØÖµ £º³É¹¦£¬·µ»ØÐ´Èëµ½ÎÄ¼þÖÐµÄ×Ö½ÚÊý£»Ê§°Ü£¬·µ»Ø-1£»
+@fd    ：要写入数据的文件描述符
+@buf   ：数据缓存区指针，存放要写入文件中的数据
+@count ：写入文件中的数据的字节数
+@offset：写入地址=文件开始+offset
+返回值 ：成功，返回写入到文件中的字节数；失败，返回-1；
 
-1 Ö´ÐÐºó£¬ÎÄ¼þÆ«ÒÆÖ¸Õë²»±ä
-2 Ïàµ±ÓÚË³Ðòµ÷ÓÃlseekºÍwrite,µ«Æä¶¨Î»ºÍ¶ÁÈ¡²Ù×÷ÊÇÔ­×ÓµÄ¡£lseekºÍreadÖ®¼äÈç¹û±»
-  ÖÐ¶Ï¿ÉÄÜÔì³ÉÎÊÌâ¡£
+1 执行后，文件偏移指针不变
+2 相当于顺序调用lseek和write,但其定位和读取操作是原子的。lseek和read之间如果被
+  中断可能造成问题。
 ******************************************************************************/
 ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
@@ -135,35 +135,35 @@ ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
 #include <unistd.h>
 /*
- dupºÍdup2Ò²ÊÇÁ½¸ö·Ç³£ÓÐÓÃµÄµ÷ÓÃ£¬ËüÃÇµÄ×÷ÓÃ¶¼ÊÇÓÃÀ´¸´ÖÆÒ»¸öÎÄ¼þµÄÃèÊö·û¡£ËüÃÇ¾­³£ÓÃÀ´
- ÖØ¶¨Ïò½ø³ÌµÄstdin¡¢stdoutºÍstderr¡£
+ dup和dup2也是两个非常有用的调用，它们的作用都是用来复制一个文件的描述符。它们经常用来
+ 重定向进程的stdin、stdout和stderr。
 
 */
 /************************************************************************************
- ·µ»ØÖµ:
-    ³É¹¦·µ»ØÐÂµÄÃèÊö·û,Ê§°Ü·µ»Ø-1
- ¹¦ÄÜ:
-    ¸´ÖÆÎÄ¼þÃèÊö·û@fd¡£¸ø¸Ãº¯ÊýÒ»¸ö¼ÈÓÐµÄÃèÊö·û£¬Ëü¾Í»á·µ»ØÒ»¸öÐÂµÄÃèÊö·û£¬Õâ¸öÐÂµÄÃè
-    Êö·ûÊÇ´«¸øËüµÄÃèÊö·ûµÄ¿½±´¡£ÕâÒâÎ¶×Å£¬ÕâÁ½¸öÃèÊö·û¹²ÏíÍ¬Ò»¸ö"ÎÄ¼þ±í"¡£
+ 返回值:
+    成功返回新的描述符,失败返回-1
+ 功能:
+    复制文件描述符@fd。给该函数一个既有的描述符，它就会返回一个新的描述符，这个新的描
+    述符是传给它的描述符的拷贝。这意味着，这两个描述符共享同一个"文件表"。
 
- 1 @dup·µ»ØµÄÐÂÃèÊö·ûÒ»¶¨ÊÇµ±Ç°¿ÉÓÃÎÄ¼þÃèÊö·ûÖÐµÄ×îÐ¡ÊýÖµ
- 2 ÐÂÃèÊö·ûÓë@fd¹²ÏíÒ»¸öÎÄ¼þ±íÏî(file table entry)
- 3 ÐÂÃèÊö·ûµÄÖ´ÐÐÊ±¹Ø±Õ(close-on-exec)±êÖ¾×ÜÊÇÓÉ@dupº¯ÊýÇå³ý
+ 1 @dup返回的新描述符一定是当前可用文件描述符中的最小数值
+ 2 新描述符与@fd共享一个文件表项(file table entry)
+ 3 新描述符的执行时关闭(close-on-exec)标志总是由@dup函数清除
 ************************************************************************************/
 int dup(int fd);
 
 /************************************************************************************
- ·µ»ØÖµ:
-    ³É¹¦·µ»ØÐÂµÄÃèÊö·û,Ê§°Ü·µ»Ø-1
- ¹¦ÄÜ:
-    ¸´ÖÆÎÄ¼þÃèÊö·û@fd,@fd2ÊÇÖ¸¶¨µÄÐÂÃèÊö·û.dup2º¯Êý¸údupº¯ÊýÏàËÆ£¬µ«dup2º¯ÊýÔÊÐíµ÷ÓÃ
-    Õß¹æ¶¨Ò»¸öÓÐÐ§ÃèÊö·ûºÍÄ¿±êÃèÊö·ûµÄid¡£dup2º¯Êý³É¹¦·µ»ØÊ±£¬Ä¿±êÃèÊö·û£¨dup2º¯ÊýµÄ
-    µÚ¶þ¸ö²ÎÊý£©½«±ä³ÉÔ´ÃèÊö·û£¨dup2º¯ÊýµÄµÚÒ»¸ö²ÎÊý£©µÄ¸´ÖÆÆ·£¬»»¾ä»°Ëµ£¬Á½¸öÎÄ¼þÃè
-    Êö·ûÏÖÔÚ¶¼Ö¸ÏòÍ¬Ò»¸öÎÄ¼þ£¬²¢ÇÒÊÇº¯ÊýµÚÒ»¸ö²ÎÊýÖ¸ÏòµÄÎÄ¼þ¡£
+ 返回值:
+    成功返回新的描述符,失败返回-1
+ 功能:
+    复制文件描述符@fd,@fd2是指定的新描述符.dup2函数跟dup函数相似，但dup2函数允许调用
+    者规定一个有效描述符和目标描述符的id。dup2函数成功返回时，目标描述符（dup2函数的
+    第二个参数）将变成源描述符（dup2函数的第一个参数）的复制品，换句话说，两个文件描
+    述符现在都指向同一个文件，并且是函数第一个参数指向的文件。
 
- 1 Èç¹û@fd2ÒÑ¾­´ò¿ª£¬ÔòÏÈ¹Ø±Õ¡£
- 2 Èç¹û@fd==@fd2£¬²»¹Ø±Õ@fd2£¬Ö±½Ó·µ»Ø@fd2
- 3 ÐÂÃèÊö·ûÓë@fd¹²ÏíÒ»¸öÎÄ¼þ±íÏî(file table entry)
+ 1 如果@fd2已经打开，则先关闭。
+ 2 如果@fd==@fd2，不关闭@fd2，直接返回@fd2
+ 3 新描述符与@fd共享一个文件表项(file table entry)
 ************************************************************************************/
 int dup2(int fd,int fd2);
 /*
@@ -236,7 +236,7 @@ void sync(void);
 int fcntl(int fd,int cmd,... /* int arg */ );
 
 /******************************************************************************\
-                                 ¼ÇÂ¼Ëø
+                                 记录锁
 \******************************************************************************/
 
 #define F_RDLCK /*a shared read lock*/
@@ -267,16 +267,16 @@ int fcntl(int fd,int cmd,... /* int arg */ );
  the beginning of the file, but most applications specify @l_start as 0 and
  @l_whence as SEEK_SET.)
 
- ---->Ê¹ÓÃ¹æÔò
+ ---->使用规则
   We previously mentioned two types of locks: a shared read lock (l_type of
 F_RDLCK) and an exclusive write lock (F_WRLCK). The basic rule is that any number 
 of processes can have a shared read lock on a given byte, but only one process 
 can have an exclusive write lock on a given byte. Furthermore, if there are one 
 or more read locks on a byte, there can't be any write locks on that byte; if 
-there is an exclusive write lock on a byte, there can¡¯t be any read locks on 
+there is an exclusive write lock on a byte, there can’t be any read locks on 
 that byte. 
 
----->½¨ÒéÐÔËøºÍÇ¿ÖÆÐÔËø Advisory versus Mandatory Locking
+---->建议性锁和强制性锁 Advisory versus Mandatory Locking
  ******************************************************************************/
 struct flock 
 {
@@ -305,7 +305,7 @@ locked, the calling process is put to sleep.The process wakes up either when the
 lock becomes available or when interrupted by a signal.*/
 
 /*******************************************************************************
-ËøµÄ¼Ì³ÐÓëÊÍ·Å
+锁的继承与释放
 1 when a process terminates, all its locks are released. whenever a descriptor is 
   closed, any locks on the file referenced by that descriptor for that process are 
   released. This means that if we make the calls
@@ -339,7 +339,7 @@ lock becomes available or when interrupted by a signal.*/
 #include <sys/select.h>
 #include <sys/time.h>
 
-#define FD_SETSIZE  /*@selectµÄµÚÒ»¸ö²ÎÊý£¬×î´óµÄÃèÊö·û¸öÊý£¬Í¨³£ÊÇ1024*/
+#define FD_SETSIZE  /*@select的第一个参数，最大的描述符个数，通常是1024*/
 
 struct timeval	
 {
@@ -348,22 +348,22 @@ struct timeval
 };
 
 /*******************************************************************************
- @maxfdp1: ÃèÊö·û¸öÊý+1
- @readset: ¶ÁÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
- @readset: Ð´ÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
- @readset: Òì³£ÃèÊö·û¼¯£¬¿ÉÒÔÎªNULL
- @timeout: µÈ´ýÊ±¼ä
+ @maxfdp1: 描述符个数+1
+ @readset: 读描述符集，可以为NULL
+ @readset: 写描述符集，可以为NULL
+ @readset: 异常描述符集，可以为NULL
+ @timeout: 等待时间
  function: 
-    ¸æËßÄÚºË
-    1 ¹ØÐÄµÄÃèÊö·û
-    2 ¹ØÐÄÃèÊö·ûµÄÄÄÐ©×´Ì¬£¬±ÈÈçÊÇ·ñ¿É¶Á¡¢ÊÇ·ñ¿ÉÐ´¡¢ÃèÊö·ûµÄÒì³£×´Ì¬
-    3 µÈ´ýÊ±¼ä
-    ´Óselect·µ»ØÄÚºË¸æËßÎÒÃÇ
-    1 ÒÑ¾­×¼±¸ºÃµÄÃèÊö·ûÊýÁ¿
-    2 ¶ÔÓÚ¶Á¡¢Ð´»òÒì³£ÕâÈý¸ö×´Ì¬ÖÐµÄÃ¿Ò»¸ö£¬ÄÄÐ©ÃèÊö·ûÒÑ¾­×¼±¸ºÃ¡£
-      Ê¹ÓÃÕâÐ©·µ»ØÐÅÏ¢¾Í¿ÉÒÔµ÷ÓÃÏàÓ¦µÄI/Oº¯Êý£¬²¢È·ÇÐÖªµÀº¯Êý²»»á×èÈû
+    告诉内核
+    1 关心的描述符
+    2 关心描述符的哪些状态，比如是否可读、是否可写、描述符的异常状态
+    3 等待时间
+    从select返回内核告诉我们
+    1 已经准备好的描述符数量
+    2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
+      使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
  Returns: 
-    positive count of ready descriptors, 0 on timeout, ¨C1 on error
+    positive count of ready descriptors, 0 on timeout, –1 on error
     
  There are three possible return values from @select.
  1 return -1 means that an error occurred. This can happen, for example, if a 
@@ -377,23 +377,23 @@ struct timeval
    same descriptor is ready to be read and written, it will be counted twice in 
    the return value. The only bits left on in the three descriptor sets are the 
    bits corresponding to the descriptors that are ready.
- ---->µÈ´ýµÄÊ±¼ä
- 1 ÓÀÔ¶µÈ´ý  timeout == NULL
- 2 µÈ´ýÖ¸¶¨µÄÊ±¼ä ¾ßÌåµÄÊ±¼äÓÉtimeoutÖ¸¶¨
- 3 ²»µÈ´ý  timeoutÖÐµÄÊ±¼äÎª0
+ ---->等待的时间
+ 1 永远等待  timeout == NULL
+ 2 等待指定的时间 具体的时间由timeout指定
+ 3 不等待  timeout中的时间为0
  The wait in the first two scenarios is normally interrupted if the process 
  catches a signal and returns from the signal handler.
 
  If we encounter the end of file on a descriptor, that descriptor is considered 
- readable by @select. We then call read and it returns 0¡ªthe way to signify end 
+ readable by @select. We then call read and it returns 0—the way to signify end 
  of file on UNIX systems. 
- ---->×¼±¸ºÃ
- 1 ¶ÔÓÚ¶ÁÃèÊö·û¼¯ÖÐµÄÒ»¸öÃèÊö·ûµÄread²Ù×÷½«²»»á×èÈû£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ
- 2 ¶ÔÓÚÐ´ÃèÊö·û¼¯ÖÐµÄÒ»¸öÃèÊö·ûµÄwrite²Ù×÷½«²»»á×èÈû£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ
- 3 ÈôÒì³£ÃèÊö·û¼¯ÖÐµÄÒ»¸öÃèÊö·ûÓÐÒ»¸öÎ´¾öÒì³£×´Ì¬£¬Ôò´ËÃèÊö·ûÊÇ×¼±¸ºÃµÄ¡£
-   Òì³£×´Ì¬°üÀ¨
-   a ÔÚÍøÂçÁ¬½ÓÉÏµ½´ïµÄ´øÍâÊý¾Ý
-   b ´¦ÓÚÊý¾Ý°üÄ£Ê½µÄÎ±ÖÕ¶ËÉÏ·¢ÉúÁËÄ³Ð©×´Ì¬¡£
+ ---->准备好
+ 1 对于读描述符集中的一个描述符的read操作将不会阻塞，则此描述符是准备好的
+ 2 对于写描述符集中的一个描述符的write操作将不会阻塞，则此描述符是准备好的
+ 3 若异常描述符集中的一个描述符有一个未决异常状态，则此描述符是准备好的。
+   异常状态包括
+   a 在网络连接上到达的带外数据
+   b 处于数据包模式的伪终端上发生了某些状态。
  4 File descriptors for regular files always return ready for reading, writing, 
    and exception conditions.
  *******************************************************************************/
@@ -416,7 +416,7 @@ void FD_ZERO(fd_set *fdset);
 
 /*******************************************************************************
  After declaring a descriptor set, we must zero the set using FD_ZERO.Wethen set
- bits in the set for each descriptor that we¡¯reinterested in, as in
+ bits in the set for each descriptor that we’reinterested in, as in
  ******************************************************************************/
 void fd_set_example()
 {
@@ -439,7 +439,7 @@ void fd_set_example()
  
 struct timespec {
   time_t tv_sec;       /* seconds */
-  long   tv_nsec;      /* nanoseconds ÄÉÃë */
+  long   tv_nsec;      /* nanoseconds 纳秒 */
 };
 
 /*******************************************************************************
@@ -458,20 +458,20 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 #include <poll.h>
 
 /********** Input events and returned revents for poll ***********/
-#define POLLIN       /*ÆÕÍ¨»òÓÅÏÈ¼¶´øÊý¾Ý¿É¶Á */
-#define POLLRDNORM   /*ÆÕÍ¨Êý¾Ý¿É¶Á*/
-#define POLLRDBAND   /*ÓÅÏÈ¼¶´øÊý¾Ý¿É¶Á*/
-#define POLLPRI      /*¸ßÓÅÏÈ¼¶Êý¾Ý¿É¶Á*/
+#define POLLIN       /*普通或优先级带数据可读 */
+#define POLLRDNORM   /*普通数据可读*/
+#define POLLRDBAND   /*优先级带数据可读*/
+#define POLLPRI      /*高优先级数据可读*/
 
-#define POLLOUT      /*ÆÕÍ¨Êý¾Ý¿ÉÐ´*/
-#define POLLWRNORM   /*ÆÕÍ¨Êý¾Ý¿ÉÐ´*/
-#define POLLWRBAND   /*ÓÅÏÈ¼¶´øÊý¾Ý¿ÉÐ´*/
+#define POLLOUT      /*普通数据可写*/
+#define POLLWRNORM   /*普通数据可写*/
+#define POLLWRBAND   /*优先级带数据可写*/
 
-#define POLLERR      /*·¢Éú´íÎó£¬²»¿É×÷Îª@events*/
-#define POLLHUP      /*·¢Éú¹ÒÆð£¬²»¿É×÷Îª@events*/
-#define POLLNVAL     /*ÃèÊö×Ö²»ÊÇÒ»¸ö´ò¿ªµÄÎÄ¼þ£¬²»¿É×÷Îª@events*/
+#define POLLERR      /*发生错误，不可作为@events*/
+#define POLLHUP      /*发生挂起，不可作为@events*/
+#define POLLNVAL     /*描述字不是一个打开的文件，不可作为@events*/
 
-#define INFTIM       /*ÊÇÒ»¸ö¸ºÖµ @pollµÄµÚÈý¸ö²ÎÊý,±íÊ¾ÓÀÔ¶µÈ´ý*/
+#define INFTIM       /*是一个负值 @poll的第三个参数,表示永远等待*/
 
 /*******************************************************************************
  To tell the kernel which events we're interested in for each descriptor, we have
@@ -482,7 +482,7 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 struct pollfd 
 {
     int  fd; /* file descriptor to check, or <0 to ignore */
-    short  events; /* events of interest on fd POLLINµÈÖµ*/
+    short  events; /* events of interest on fd POLLIN等值*/
     short  revents;  /* events that occurred on fd */
 };
 
@@ -494,9 +494,9 @@ struct pollfd
  @nfds   : 
     The number of elements in the array of structures is specified by the nfds argument.
  
- @timeout: INFTIMÓÀÔ¶µÈ´ý 0²»µÈ´ý ´óÓÚ0µÈ´ýÖ¸¶¨µÄÊ±¼ä
+ @timeout: INFTIM永远等待 0不等待 大于0等待指定的时间
  @returns: 
-    The return value from @poll is ¨C1 if an error occurred, 0 if no descriptors are 
+    The return value from @poll is –1 if an error occurred, 0 if no descriptors are 
     ready before the timer expires,otherwise it is the number of descriptors that have 
     a nonzero @revents member.
 
@@ -508,7 +508,7 @@ struct pollfd
  3 When the read half of a TCP connection is closed (e.g., a FIN is received), this 
    is also considered normal data and a subsequent read operation will return 0.
  4 The presence of an error for a TCP connection can be considered either normal data 
-   or an error (POLLERR). In either case, a subsequent read will return ¨C1 with errno 
+   or an error (POLLERR). In either case, a subsequent read will return –1 with errno 
    set to the appropriate value. This handles conditions such as the receipt of an RST 
    or a timeout.
  5 The availability of a new connection on a listening socket can be considered either 
@@ -529,23 +529,23 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
  kqueue, in that it operates on a configurable kernel object, exposed to user space as 
  a file descriptor of its own.
 
- EPOLLÊÂ¼þÓÐÁ½ÖÖÄ£ÐÍ Level Triggered (LT) ºÍ Edge Triggered (ET)£º
+ EPOLL事件有两种模型 Level Triggered (LT) 和 Edge Triggered (ET)：
 
- LT(level triggered£¬Ë®Æ½´¥·¢Ä£Ê½)
-    ÊÇÈ±Ê¡µÄ¹¤×÷·½Ê½£¬²¢ÇÒÍ¬Ê±Ö§³Ö block ºÍ non-block socket¡£ÔÚÕâÖÖ×ö·¨ÖÐ£¬ÄÚºË¸æËßÄã
-    Ò»¸öÎÄ¼þÃèÊö·ûÊÇ·ñ¾ÍÐ÷ÁË£¬È»ºóÄã¿ÉÒÔ¶ÔÕâ¸ö¾ÍÐ÷µÄfd½øÐÐIO²Ù×÷¡£Èç¹ûÄã²»×÷ÈÎºÎ²Ù×÷£¬
-    ÄÚºË»¹ÊÇ»á¼ÌÐøÍ¨ÖªÄãµÄ£¬ËùÒÔ£¬ÕâÖÖÄ£Ê½±à³Ì³ö´íÎó¿ÉÄÜÐÔÒªÐ¡Ò»µã¡£
+ LT(level triggered，水平触发模式)
+    是缺省的工作方式，并且同时支持 block 和 non-block socket。在这种做法中，内核告诉你
+    一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，
+    内核还是会继续通知你的，所以，这种模式编程出错误可能性要小一点。
 
- ET(edge-triggered£¬±ßÔµ´¥·¢Ä£Ê½)
-    ÊÇ¸ßËÙ¹¤×÷·½Ê½£¬Ö»Ö§³Öno-block socket¡£ÔÚÕâÖÖÄ£Ê½ÏÂ£¬µ±ÃèÊö·û´ÓÎ´¾ÍÐ÷±äÎª¾ÍÐ÷Ê±£¬
-    ÄÚºËÍ¨¹ýepoll¸æËßÄã¡£È»ºóËü»á¼ÙÉèÄãÖªµÀÎÄ¼þÃèÊö·ûÒÑ¾­¾ÍÐ÷£¬²¢ÇÒ²»»áÔÙÎªÄÇ¸öÎÄ¼þ
-    ÃèÊö·û·¢ËÍ¸ü¶àµÄ¾ÍÐ÷Í¨Öª£¬µÈµ½ÏÂ´ÎÓÐÐÂµÄÊý¾Ý½øÀ´µÄÊ±ºò²Å»áÔÙ´Î³ö·¢¾ÍÐ÷ÊÂ¼þ¡£ 
+ ET(edge-triggered，边缘触发模式)
+    是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，
+    内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件
+    描述符发送更多的就绪通知，等到下次有新的数据进来的时候才会再次出发就绪事件。 
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
- ´´½¨Ò»¸öepollµÄ¾ä±ú£¬sizeÓÃÀ´¸æËßÄÚºËÐèÒª¼àÌýµÄÊýÄ¿Ò»¹²ÓÐ¶à´ó¡£µ±´´½¨ºÃepoll¾ä±úºó£¬
- Ëü¾ÍÊÇ»áÕ¼ÓÃÒ»¸öfdÖµ£¬ÔÚlinuxÏÂÈç¹û²é¿´/proc/½ø³Ìid/fd/£¬ÊÇÄÜ¹»¿´µ½Õâ¸öfdµÄ£¬ËùÒÔÔÚ
- Ê¹ÓÃÍêepollºó£¬±ØÐëµ÷ÓÃclose() ¹Ø±Õ£¬·ñÔò¿ÉÄÜµ¼ÖÂfd±»ºÄ¾¡¡£
+ 创建一个epoll的句柄，size用来告诉内核需要监听的数目一共有多大。当创建好epoll句柄后，
+ 它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在
+ 使用完epoll后，必须调用close() 关闭，否则可能导致fd被耗尽。
  @size:
     The size is not the maximum size of the backing store but just a hint to the ker-
     nel about how to dimension internal structures. Since  Linux 2.6.8, the size arg-
@@ -560,20 +560,20 @@ int epoll_create1(int flags);
 
 
 /*-----------------------------------------------------------------------------------
- @epfd: epoll_create() µÄ·µ»ØÖµ¡£
+ @epfd: epoll_create() 的返回值。
  @op    EPOLL_CTL_ADD
- @fd    ÐèÒª¼àÌýµÄfd
- @event ¸æËßÄÚºËÐèÒª¼àÌýÊ²Ã´ÊÂ
+ @fd    需要监听的fd
+ @event 告诉内核需要监听什么事
 -----------------------------------------------------------------------------------*/
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 
 /*-----------------------------------------------------------------------------------
- ÊÕ¼¯ÔÚepoll¼à¿ØµÄÊÂ¼þÖÐÒÑ¾­·¢ËÍµÄÊÂ¼þ¡£ ²ÎÊýeventsÊÇ·ÖÅäºÃµÄepoll_event½á¹¹ÌåÊý×é£¬
- epoll½«»á°Ñ·¢ÉúµÄÊÂ¼þ¸³Öµµ½eventsÊý×éÖÐ£¨events²»¿ÉÒÔÊÇ¿ÕÖ¸Õë£¬ÄÚºËÖ»¸ºÔð°ÑÊý¾Ý¸´ÖÆ
- µ½Õâ¸öeventsÊý×éÖÐ£¬²»»áÈ¥°ïÖúÎÒÃÇÔÚÓÃ»§Ì¬ÖÐ·ÖÅäÄÚ´æ£©¡£maxevents¸æÖ®ÄÚºËÕâ¸öevents
- ÓÐ¶à´ó£¬Õâ¸ö maxeventsµÄÖµ²»ÄÜ´óÓÚ´´½¨epoll_create()Ê±µÄsize£¬²ÎÊýtimeoutÊÇ³¬Ê±Ê±¼ä
- £¨ºÁÃë£¬0»áÁ¢¼´·µ»Ø£¬-1½«²»È·¶¨£¬Ò²ÓÐËµ·¨ËµÊÇÓÀ¾Ã×èÈû£©¡£Èç¹ûº¯Êýµ÷ÓÃ³É¹¦£¬·µ»Ø¶ÔÓ¦
- I/OÉÏÒÑ×¼±¸ºÃµÄÎÄ¼þÃèÊö·ûÊýÄ¿£¬Èç·µ»Ø0±íÊ¾ÒÑ³¬Ê±¡£
+ 收集在epoll监控的事件中已经发送的事件。 参数events是分配好的epoll_event结构体数组，
+ epoll将会把发生的事件赋值到events数组中（events不可以是空指针，内核只负责把数据复制
+ 到这个events数组中，不会去帮助我们在用户态中分配内存）。maxevents告之内核这个events
+ 有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间
+ （毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。如果函数调用成功，返回对应
+ I/O上已准备好的文件描述符数目，如返回0表示已超时。
 -----------------------------------------------------------------------------------*/
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
 
@@ -585,17 +585,17 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 #define PROT_EXEC   /* Region can be executed. */
 #define PROT_NONE   /* Region cannot be accessed. */
 /* @mmmap @flag */
-#define MAP_FIXED   /* ·µ»ØÖµ±ØÐëµÈÓÚ@addr MAP_SHAREDºÍMAP_PRIVATE±ØÐëÖ¸¶¨Ò»¸ö£¬µ«²»ÄÜÍ¬Ê±Ö¸¶¨¡£*/
-#define MAP_SHARED	/* ´æ´¢²Ù×÷Ïàµ±ÓÚ¶Ô¸ÃÎÄ¼þµÄwrite.*/
-#define MAP_PRIVATE /* ¶ÔÓ³ÉäÇøµÄ´æ´¢²Ù×÷µ¼ÖÂ´´½¨¸ÃÓ³ÉäÎÄ¼þµÄÒ»¸öË½ÓÐ¸±±¾¡£*/
+#define MAP_FIXED   /* 返回值必须等于@addr MAP_SHARED和MAP_PRIVATE必须指定一个，但不能同时指定。*/
+#define MAP_SHARED	/* 存储操作相当于对该文件的write.*/
+#define MAP_PRIVATE /* 对映射区的存储操作导致创建该映射文件的一个私有副本。*/
 
 /*-----------------------------------------------------------------------------------
  @addr:
-    Ó³Éä´æ´¢ÇøµÄÆðÊ¼µØÖ·,0±íÊ¾ÈÃÏµÍ³×Ô¶¯Ñ¡Ôñ¡£Ò³±ß½ç¶ÔÆë
+    映射存储区的起始地址,0表示让系统自动选择。页边界对齐
  @len: 
-    Ó³ÉäµÄ×Ö½ÚÊý
+    映射的字节数
  @prot:
-    Ó³ÉäÇøµÄ±£»¤ÒªÇó(°´Î»»ò)
+    映射区的保护要求(按位或)
     PROT_READ Region can be read.
     PROT_WRITE Region can be written.
     PROT_EXEC Region can be executed.
@@ -609,9 +609,9 @@ int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
     to all processes that are sharing the object, and these changes do modify the un-
     derlying object. 
  @fd:  
-    ±»Ó³ÉäÎÄ¼þµÄÃèÊö·û,Ó³ÉäÎÄ¼þÇ°Òª´ò¿ª¸ÃÎÄ¼þ
+    被映射文件的描述符,映射文件前要打开该文件
  @off: 
-    ÒªÓ³Éä×Ö½ÚÔÚÎÄ¼þÖÐµÄÆðÊ¼Æ«ÒÆÁ¿
+    要映射字节在文件中的起始偏移量
  @Returns: 
     starting address of mapped region if OK,MAP_FAILED on error
 
@@ -708,34 +708,34 @@ int mprotect(void *addr,size_t len,int prot);
 #include <sys/uio.h>
 
 /************************************************************************************
- read()ºÍwrite()ÏµÍ³µ÷ÓÃÃ¿´ÎÔÚÎÄ¼þºÍ½ø³ÌµÄµØÖ·¿Õ¼äÖ®¼ä´«ËÍÒ»¿éÁ¬ÐøµÄÊý¾Ý¡£µ«ÊÇ£¬Ó¦ÓÃÓÐ
- Ê±Ò²ÐèÒª½«·ÖÉ¢ÔÚÄÚ´æ¶à´¦µØ·½µÄÊý¾ÝÁ¬ÐøÐ´µ½ÎÄ¼þÖÐ£¬»òÕß·´Ö®¡£ÔÚÕâÖÖÇé¿öÏÂ£¬Èç¹ûÒª´ÓÎÄ
- ¼þÖÐ¶ÁÒ»Æ¬Á¬ÐøµÄÊý¾ÝÖÁ½ø³ÌµÄ²»Í¬ÇøÓò£¬Ê¹ÓÃread()ÔòÒªÃ´Ò»´Î½«ËüÃÇ¶ÁÖÁÒ»¸ö½Ï´óµÄ»º³åÇø
- ÖÐ£¬È»ºó½«ËüÃÇ·Ö³ÉÈô¸É²¿·Ö¸´ÖÆµ½²»Í¬µÄÇøÓò£¬ÒªÃ´µ÷ÓÃread()Èô¸É´Î·ÖÅú½«ËüÃÇ¶ÁÖÁ²»Í¬Çø
- Óò¡£Í¬Ñù£¬Èç¹ûÏë½«³ÌÐòÖÐ²»Í¬ÇøÓòµÄÊý¾Ý¿éÁ¬ÐøµØÐ´ÖÁÎÄ¼þ£¬Ò²±ØÐë½øÐÐÀàËÆµÄ´¦Àí¡£
+ read()和write()系统调用每次在文件和进程的地址空间之间传送一块连续的数据。但是，应用有
+ 时也需要将分散在内存多处地方的数据连续写到文件中，或者反之。在这种情况下，如果要从文
+ 件中读一片连续的数据至进程的不同区域，使用read()则要么一次将它们读至一个较大的缓冲区
+ 中，然后将它们分成若干部分复制到不同的区域，要么调用read()若干次分批将它们读至不同区
+ 域。同样，如果想将程序中不同区域的数据块连续地写至文件，也必须进行类似的处理。
 
- UNIXÌá¹©ÁËÁíÍâÁ½¸öº¯Êý¡ªreadv()ºÍwritev()£¬ËüÃÇÖ»ÐèÒ»´ÎÏµÍ³µ÷ÓÃ¾Í¿ÉÒÔÊµÏÖÔÚÎÄ¼þºÍ½ø³Ì
- µÄ¶à¸ö»º³åÇøÖ®¼ä´«ËÍÊý¾Ý£¬Ãâ³ýÁË¶à´ÎÏµÍ³µ÷ÓÃ»ò¸´ÖÆÊý¾ÝµÄ¿ªÏú¡£readv()³ÆÎªÉ¢²¼¶Á£¬¼´½«
- ÎÄ¼þÖÐÈô¸ÉÁ¬ÐøµÄÊý¾Ý¿é¶ÁÈëÄÚ´æ·ÖÉ¢µÄ»º³åÇøÖÐ¡£writev()³ÆÎª¾Û¼¯Ð´£¬¼´ÊÕ¼¯ÄÚ´æÖÐ·ÖÉ¢µÄ
- Èô¸É»º³åÇøÖÐµÄÊý¾ÝÐ´ÖÁÎÄ¼þµÄÁ¬ÐøÇøÓòÖÐ¡£
+ UNIX提供了另外两个函数—readv()和writev()，它们只需一次系统调用就可以实现在文件和进程
+ 的多个缓冲区之间传送数据，免除了多次系统调用或复制数据的开销。readv()称为散布读，即将
+ 文件中若干连续的数据块读入内存分散的缓冲区中。writev()称为聚集写，即收集内存中分散的
+ 若干缓冲区中的数据写至文件的连续区域中。
 
- ²ÎÊý@fildesÊÇÎÄ¼þÃèÊö×Ö¡£@iovÊÇÒ»¸ö½á¹¹Êý×é£¬ËüµÄÃ¿¸öÔªËØÖ¸Ã÷´æ´¢Æ÷ÖÐµÄÒ»¸ö»º³åÇø¡£
- ²ÎÊý@iovcntÖ¸³öÊý×é@iovµÄÔªËØ¸öÊý£¬ÔªËØ¸öÊýÖÁ¶à²»³¬¹ýIOV_MAX¡£LinuxÖÐ¶¨ÒåIOV_MAXµÄÖµ
- Îª1024¡£
+ 参数@fildes是文件描述字。@iov是一个结构数组，它的每个元素指明存储器中的一个缓冲区。
+ 参数@iovcnt指出数组@iov的元素个数，元素个数至多不超过IOV_MAX。Linux中定义IOV_MAX的值
+ 为1024。
 
- readv()Ôò½«fildesÖ¸¶¨ÎÄ¼þÖÐµÄÊý¾Ý°´iov[0]¡¢iov[1]¡¢...¡¢iov[iovcnt¨C1]¹æ¶¨µÄË³ÐòºÍ³¤
- ¶È£¬·ÖÉ¢µØ¶Áµ½ËüÃÇÖ¸¶¨µÄ´æ´¢µØÖ·ÖÐ¡£readv()µÄ·µ»ØÖµÊÇ¶ÁÈëµÄ×Ü×Ö½ÚÊý¡£Èç¹ûÃ»ÓÐÊý¾Ý¿É
- ¶ÁºÍÓöµ½ÁËÎÄ¼þÎ²£¬Æä·µ»ØÖµÎª0¡£
+ readv()则将fildes指定文件中的数据按iov[0]、iov[1]、...、iov[iovcnt–1]规定的顺序和长
+ 度，分散地读到它们指定的存储地址中。readv()的返回值是读入的总字节数。如果没有数据可
+ 读和遇到了文件尾，其返回值为0。
 
- ÓÐÁËÕâÁ½¸öº¯Êý£¬µ±ÏëÒª¼¯ÖÐÐ´³öÄ³ÕÅÁ´±íÊ±£¬Ö»ÐèÈÃiovÊý×éµÄ¸÷¸öÔªËØ°üº¬Á´±íÖÐ¸÷¸ö±íÏî
- µÄµØÖ·ºÍÆä³¤¶È£¬È»ºó½«iovºÍËüµÄÔªËØ¸öÊý×÷Îª²ÎÊý´«µÝ¸øwritev()£¬ÕâÐ©Êý¾Ý±ã¿ÉÒ»´ÎÐ´³ö¡£
+ 有了这两个函数，当想要集中写出某张链表时，只需让iov数组的各个元素包含链表中各个表项
+ 的地址和其长度，然后将iov和它的元素个数作为参数传递给writev()，这些数据便可一次写出。
 ************************************************************************************/
 
-/* return: number of bytes read or written, ¨C1 on error */ 
+/* return: number of bytes read or written, –1 on error */ 
 ssize_t readv(int filedes, const struct iovec *iov, int iovcnt);
 
-/*@iov:½á¹¹ÌåÊý×éÖ¸Õë
-  return: number of bytes read or written, ¨C1 on error */
+/*@iov:结构体数组指针
+  return: number of bytes read or written, –1 on error */
 ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
  
 
@@ -749,8 +749,10 @@ ssize_t writev(int filedes, const struct iovec *iov, int iovcnt);
     request.
  
  @returns: -1 on error, something else if OK
-
+ 
 ************************************************************************************/
 #include <unistd.h> /* System V */
 #include <sys/ioctl.h> /* BSD and Linux */
 int ioctl(int fd, int request, ...);
+	
+
