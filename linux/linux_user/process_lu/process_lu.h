@@ -185,6 +185,35 @@ waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称
 一个会话可包含多个进程组，但只能有一个前台进程组。
 
 
+
+
+User Identification
+
+User ID
+    The user ID from our entry in the password file is a numeric value that identifi-
+    es us to the system. This user ID is assigned by the system administrator when o-
+    ur login name is assigned, and we cannot change it. The user ID is normally assi-
+    gned to be unique for every user.
+    
+    We call the user whose user ID is 0 either root or the superuser. The entry in t-
+    he password file normally has a login name of root, and we refer to the special -
+    privileges of this user as superuser privileges.
+
+Group ID
+    Our entry in the password file also specifies our numeric group ID. This, too, is 
+    assigned by the system administrator when our login name is assigned. Typically,-
+    the password file contains multiple entries that specify the same group ID. Grou-
+    ps are normally used to collect users together into projects or departments. Thi-
+    s allows the sharing of resources, such as files, among members of the same group. 
+
+Supplementar y Group IDs
+    most versions of the UNIX System allow a user to belong to other groups. This pr-
+    actice started with 4.2BSD, which allowed a user to belong to up to 16 additional 
+    groups. These supplementary group IDs are obtained at login time by reading the -
+    file /etc/group and finding the first 16 entries that list the user as a member. 
+    As we shall see in the next chapter, POSIX requires that a system support at lea-
+    st 8 supplementary groups per process, but most systems support at least 16.
+
 gcc -static hello1.c                <---- prevent gcc from using shared libraries
 
 

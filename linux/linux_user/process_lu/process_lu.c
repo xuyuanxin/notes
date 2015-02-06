@@ -575,49 +575,144 @@ int execvp(const char *filename,char *const argv[]);
 int fexecve(int fd,char *const argv[], char *const envp[]);
 
 #include <unistd.h>
-/*
-function:
-return: 0 if OK,-1 on error
+/*-----------------------------------------------------------------------------------
+ @function
+    We can set the real user ID and effective user ID with the @setuid function. Sim-
+    ilarly, we can set the real group ID and the effective group ID with the  @setgid
+    function
+ @return: 
+    0 if OK,-1 on error
+    
+ In the UNIX System, privileges, are based on user and group IDs. When our programs -
+ need additional privileges or need to gain access to resources that they currently -
+ aren't allowed to access, they need to change their user or group ID to an ID that -
+ has the appropriate privilege or access. Similarly , when our programs need to lower 
+ their privileges or prevent access to certain resources, they do so by changing eit-
+ her their user ID or group ID to an ID without the privilege or ability access to t-
+ he resource.
 
----->修改规则
-1 若进程具有超级用户权限，则setuid函数将实际用户ID、有效用户ID,以及保存的设置用户ID设置为uid
-2 If the process does not have superuser privileges, but uid equals either the real user ID or the saved set-user-ID,
-  setuid sets only the effective user ID to uid. The real user ID and the saved set-user-ID are not changed.
-3 If neither of these two conditions is true,errno is set to EPERM and -1 is returned.
+ There are rules for who can change the IDs. Let's consider only the user ID for now.
+ (Everything we describe for the user ID also applies to the group ID.)  Here, we are 
+ assuming that _POSIX_SAVED_IDS is true. If this feature isn't provided , then delete 
+ all preceding references to the saved set-user-ID
+ 1 If the process has superuser privileges, the @setuid function sets the real user -
+   ID, effective user ID, and saved set-user-ID to @uid.
+ 2 If the process does not have superuser privileges, but @uid equals either the real
+   user ID or the saved set-user-ID, @setuid sets only the effective user ID to @uid.
+   The real user ID and the saved set-user-ID are not changed.
+ 3 If neither of these two conditions is true, errno is set to EPERM and -1 is retur-
+   ned.
 
-We can make a few statements about the three user IDs that the kernel maintains.
-1 Only a superuser process can change the real user ID. Normally,the real user ID is set by the login(1) program when we log in and never changes. 
-  Because login is a superuser process, it sets all three user IDs when it call ssetuid.
-2 The effective user ID is set by the exec functions only if the set-user-ID bit is set for the program file. 
-  If the set-user-ID bit is not set, the exec functions leave the effective user ID as its current value. 
-  We can call setuid at any time to set the effective user ID to either the real user ID or the saved set-user-ID.  
-  Naturally, we can’t set the effective user ID to any random value.
-3 The saved set-user-ID is copied from the effective user ID by exec.If the file’s set-user-ID bit is set, this copy is saved after exec stores 
-  the effective user ID from the file's user ID.*/
+ We can make a few statements about the three user IDs that the kernel maintains.
+ 1 Only a superuser process can change the real user ID. Normally, the real user ID -
+   is set by the login(1) program when we log in and never changes . Because login is 
+   a superuser process, it sets all three user IDs when it calls @setuid.
+ 2 The effective user ID is set by the @exec functions only if the set-user-ID bit is 
+   set for the program file. If the set-user-ID bit is not set, the @exec functions -
+   leave the effective user ID as its current value . We can call @setuid at any time 
+   to set the effective user ID to either the real user  ID or the saved set-user-ID.  
+ 3 The saved set-user-ID is copied from the effective user ID by @exec. If the file's 
+   set-user-ID bit is set,this copy is saved after @exec stores the effective user ID 
+   from the file's user ID. 
+
+ +---------------------------------------------------------------------------------------------------------+
+ |                            various ways these three user IDs can be changed                             |
+ +---------------------------------------------------------------------------------------------------------+
+ |                   |                             exec                   |          setuid(uid)           |
+ | ID                |----------------------------------------------------|--------------------------------|
+ |                   |  set-user-ID bit off          | set-user-ID bit on | superuser  | upprivileged user |
+ |---------------------------------------------------------------------------------------------------------|
+ | real user ID      | unchanged                     | unchanged          | set to uid | unchanged         |
+ |---------------------------------------------------------------------------------------------------------|
+ | effective user ID | unchanged                     | set form user ID   | set to uid | set to uid        |
+ |                   |                               | of program file    |            |                   |
+ |---------------------------------------------------------------------------------------------------------|
+ | saved set-user ID | copied from effective user ID | copied form        | set to uid | unchanged         |
+ |                   |                               | effective user ID  |            |                   |    
+ +---------------------------------------------------------------------------------------------------------+
+-----------------------------------------------------------------------------------*/
 int setuid(uid_t uid);
 int setgid(gid_t gid);
 
+/*-----------------------------------------------------------------------------------
+ @func
+    Historically, BSD supported the swapping of the real user ID and the effective u-
+    ser ID with the @setreuid function.
+ @return: 
+    0 if OK, -1 on error. We can supply a value of -1 for any of the arguments to in-
+    dicate that the corresponding ID should remain unchanged.
+-----------------------------------------------------------------------------------*/
+int setreuid(uid_t ruid, uid_t euid);
+int setregid(gid_t rgid, gid_t egid);
 
+/*-----------------------------------------------------------------------------------
+ @return: 
+    0 if OK, -1 on error
 
-#include <unistd.h>
-/*Returns: process group ID of calling process*/
+ POSIX.1 includes the two functions @seteuid and @setegid.These functions are similar 
+ to @setuid and @setgid, but only the effective user ID or effective group ID is cha-
+ nged. An unprivileged user can set  its effective user ID to either its real user ID 
+ or its saved set-user-ID. For a privileged user, only the effective user ID is set -
+ to @uid. (This behavior differs from that of the @setuid function, which changes all 
+ three user IDs.)    
+-----------------------------------------------------------------------------------*/
+int seteuid(uid_t uid);
+int setegid(gid_t gid);
+
+/*-----------------------------------------------------------------------------------
+ @func 
+    The function @getpgrp returns the process group ID of the calling process.
+ @Returns: 
+    process group ID of calling process
+
+ In addition to having a process ID, each process belongs to a process group. A proc-
+ ess group is a collection of one or more processes, usually associated with the same 
+ job, that can receive signals from the same terminal. Each process group has a uniq-
+ ue process group ID. Process group IDs are similar to process IDs: they are positive 
+ integers and can be stored in a pid_t data type. 
+-----------------------------------------------------------------------------------*/
 pid_t getpgrp(void);
 
-/*
-  returns: process group ID if OK,-1 on error
-
-  1 getpgid(0)==getpgrp()*/
+/*-----------------------------------------------------------------------------------
+ @pid
+    If @pid is 0, the process group ID of the calling process is returned. 
+ @returns: 
+    process group ID if OK,-1 on error.
+ @func
+    the @getpgrp function took a @pid argument and returned the process group for th-
+    at process.
+-----------------------------------------------------------------------------------*/
 pid_t getpgid(pid_t pid);
 
-/*
-  function:A process joins an existing process group or creates a new process group by calling @setpgid
-  Returns: 0 if OK,-1 on error
 
-  1 把进程@pid的进程组ID设置成@pgid,如果@pid==@pgid,则进程@pid变成进程组组长.
-  2 if @pid==0  使用调用者的进程ID
-  3 if @pgid==0 则进程@pid的进程ID作为进程组ID
-  4 一个进程只能为自己或它的子进程设置进程组ID
-  5 子进程调用exec系列函数后,进程组不能改变*/
+
+
+/*-----------------------------------------------------------------------------------
+  @pid @pgid
+     This function sets the process group ID to @pgid in the process whose process ID 
+     equals @pid. If the two arguments are equal, the process specified by @pid beco-
+     mes a process group leader. If @pid is 0, the process ID of the caller  is used. 
+     Also, if pgid is 0, the process ID specified by @pid is used as the process gro-
+     up ID.
+  @function:
+     A process joins an existing process group or creates a new process group by cal-
+     ling @setpgid. 
+  @Returns: 
+     0 if OK,-1 on error
+
+  Each process group can have a process group leader. The leader is identified by its 
+  process group ID being equal to its process ID. It is possible  for a process group 
+  leader to create a process group, create processes in the group, and then terminate. 
+  The process group still exists, as long as at least one process is in the group, r-
+  egardless of whether the group leader terminates . This is called the process group 
+  lifetime—the period of time that begins when the group is created and ends when t-
+  he last remaining process leaves the group. The last remaining process in the proc-
+  ess group can either terminate or enter some other process group.
+
+ A process can set the process group ID of only itself or any of its children. Furth-
+ ermore, it can't change the process group ID of one of its children after that child
+ has called one of the @exec functions.
+-----------------------------------------------------------------------------------*/
 int setpgid(pid_t pid,pid_t pgid);
 
 /*
