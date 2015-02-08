@@ -81,4 +81,23 @@ ev_io的移除
     然后是把watcher的active标志位复位，并减少全局active的watcher计数。
     最后是把fd加入到fdchanges中，因为移除一个watcher，可能会改变fd上感兴趣的事件，所
     以要在下一轮循环中重新计算该fd上的事件集合。
+*/
+
+#define ev_init(ev,cb_) do {			\
+  ((ev_watcher *)(void *)(ev))->active  =	\
+  ((ev_watcher *)(void *)(ev))->pending = 0;	\
+  ev_set_priority ((ev), 0);			\
+  ev_set_cb ((ev), cb_);			\
+} while (0)
+
+
+int ev_io_init(ev_io *ev,void *cb,int fd,int events)
+{
+	ev->active   = 0;
+	ev->pending  = 0;
+	ev->priority = 0;
+	ev->cb       = cb;
+	ev->fd       = fd; 
+	ev->events   = (events) | EV__IOFDSET;
+}
 

@@ -273,24 +273,7 @@ enum {
 # define EV_DECL_PRIORITY int priority;
 #endif
 
-/*
- @active: 
-     表示当前watcher是否被激活。ev_TYPE_start调用后置位，ev_TYPE_stop调用后复位；
- @pending: 
-    表示当前watcher有事件就绪，等待处理。pending的值其实就是当前watcher在pendings队列
-    中的下标；
- @priority: 
-    是当前watcher的优先级；
- @data: 
-    附加数据指针，用来在watcher中携带额外所需的数据；
- @cb：
-    是事件触发后的回调函数定义。
 
- 具体的watcher再在此基础上添加额外的属性。 开发者可以根据需要，选择特定类型的watcher，
- 创建实例并进行初始化，然后将实例注册到loop中即可。libev中定义了若干种类型的watcher，
- 每类watcher负责解决某一特定领域的问题（如：io, timer, signal等），可以在ev.h中看到这
- 些watcher的定义。
-*/
 /* shared by all watchers */
 #define EV_WATCHER(type)			\
   int active; /* private */			\
@@ -331,8 +314,8 @@ typedef struct ev_io
 {
   EV_WATCHER_LIST (ev_io)
 
-  int fd;     /* fd是监听的文件描述符 */
-  int events; /* events是感兴趣的事件。  */
+  int fd;
+  int events;
 } ev_io;
 
 /* invoked after a specific time, repeatable (based on monotonic clock) */
@@ -720,6 +703,7 @@ EV_API_DECL void ev_resume  (EV_P) EV_THROW;
 
 #define ev_io_init(ev,cb,fd,events)          \
 	do { ev_init ((ev), (cb)); ev_io_set ((ev),(fd),(events)); } while (0)
+		
 #define ev_timer_init(ev,cb,after,repeat)    do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)
 #define ev_periodic_init(ev,cb,ofs,ival,rcb) do { ev_init ((ev), (cb)); ev_periodic_set ((ev),(ofs),(ival),(rcb)); } while (0)
 #define ev_signal_init(ev,cb,signum)         do { ev_init ((ev), (cb)); ev_signal_set ((ev), (signum)); } while (0)
