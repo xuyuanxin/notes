@@ -101,3 +101,34 @@ int ev_io_init(ev_io *ev,void *cb,int fd,int events)
 	ev->events   = (events) | EV__IOFDSET;
 }
 
+/*-----------------------------------------------------------------------------------
+ notes01
+    是对函数 “ev_verify"的调用，那么ev_verify是干什么的呢？用文档的话“This can be 
+    used to catch bugs inside libev itself”，如果看其代码的话，就是去检测Libev的内部
+    数据结构，判断各边界值是否合理，不合理的时候assert掉。
+-----------------------------------------------------------------------------------*/
+void ev_io_start (ev_loop *loop, ev_io *w)
+{
+    int fd = w->fd;
+
+    if (expect_false (ev_is_active (w)))
+        return;
+
+    assert (("libev: ev_io_start called with negative fd", fd >= 0));
+    assert (("libev: ev_io_start called with illegal event mask", !(w->events & ~(EV__IOFDSET | EV_READ | EV_WRITE))));
+
+    EV_FREQUENT_CHECK; /* notes01 */
+
+    ev_start (EV_A_ (W)w, 1);
+    array_needsize (ANFD, anfds, anfdmax, fd + 1, array_init_zero);
+    wlist_add (&anfds[fd].head, (WL)w);
+
+    /* common bug, apparently */
+    assert (("libev: ev_io_start called with corrupted watcher", ((WL)w)->next != (WL)w));
+
+    fd_change (EV_A_ fd, w->events & EV__IOFDSET | EV_ANFD_REIFY);
+    w->events &= ~EV__IOFDSET;
+
+    EV_FREQUENT_CHECK;
+}
+
