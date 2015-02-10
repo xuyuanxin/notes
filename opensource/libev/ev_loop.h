@@ -25,7 +25,7 @@ ev_tstamp timeout_blocktime;
 
  int  backend;
  int  activecnt; /* total number of active events ("refcount") */
- EV_ATOMIC_T  loop_done;  /* signal by ev_break */
+   EV_ATOMIC_T  loop_done;  /* signal by ev_break */
 
  int  backend_fd;
  ev_tstamp  backend_mintime; /* assumed typical timer resolution */
@@ -33,7 +33,7 @@ static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
 static void (*backend_poll)(EV_P_ ev_tstamp timeout);
 
  ANFD *  anfds;
- int  anfdmax;
+   int  anfdmax;
 
 static int evpipe [2];
  ev_io  pipe_w;
@@ -91,7 +91,7 @@ static int evpipe [2];
  HANDLE  iocp;
 #endif
 
- int *  fdchanges;
+ int  *fdchanges;
  int  fdchangemax;
  int  fdchangecnt;
 
@@ -156,8 +156,8 @@ static ANFS fs_hash [EV_INOTIFY_HASHSIZE];
  unsigned int  origflags; /* original loop flags */
 
 #if EV_FEATURE_API || EV_GENWRAP
- unsigned int  loop_count; /* total number of loop iterations/blocks */
- unsigned int  loop_depth; /* #ev_run enters - #ev_run leaves */
+   unsigned int  loop_count; /* total number of loop iterations/blocks */
+   unsigned int  loop_depth; /* #ev_run enters - #ev_run leaves */
 
  void *  userdata;
 /* C++ doesn't support the ev_loop_callback typedef here. stinks. */

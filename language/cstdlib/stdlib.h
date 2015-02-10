@@ -40,3 +40,57 @@ long int atol ( const char * str );
 int putenv(char *str);
 
 
+/*-----------------------------------------------------------------------------------
+ @ptr
+    Pointer to a memory block previously allocated with malloc, calloc or realloc. A-
+    lternatively, this can be a null pointer , in which case a new block is allocated 
+    (as if malloc was called).
+ @size
+    New size for the memory block, in bytes.
+ @ret
+    A null-pointer indicates either that @size was zero(an thus @ptr was deallocated), 
+    or that the function did not allocate storage (and thus the block pointed by @ptr 
+    was not modified).(C90 C++98)
+    A null-pointer indicates that the function failed to allocate storage, and thus -
+    the block pointed by @ptr was not modified.(C99 C11 C++11)
+
+ 1 In case that @ptr is a null pointer, the function behaves like @malloc , assigning 
+   a new block of size bytes and returning a pointer to its beginning.
+ 2 if @size is zero, the memory previously allocated at @ptr is deallocated as if a -
+   call to @free was made, and a null pointer is returned.(C90 C++98)
+   If @size is zero, the return value depends on the particular library implementati-
+   on: it may either be a null pointer or some other location that shall not be dere-
+   ferenced.(C99 C11 C++11)
+ 3 If the function fails to allocate the requested block of memory, a null pointer is 
+   returned, and the memory block pointed to by argument @ptr is not deallocated ( it 
+   is still valid, and with its contents unchanged).
+
+reference
+    http://www.cplusplus.com/reference/cstdlib/realloc/?kw=realloc
+    http://blog.csdn.net/snlying/article/details/4005238
+example:
+-----------------------------------------------------------------------------------*/
+void* realloc (void* ptr, size_t size);
+
+/*-----------------------------------------------------------------------------------
+ @ptr
+    Pointer to a memory block previously allocated with malloc, calloc or realloc.
+ @func
+    Deallocate memory block
+    
+ A block of memory previously allocated by a call to malloc, calloc or realloc is de-
+ allocated, making it available again for further allocations. If @ptr does not point 
+ to a block of memory allocated with the above functions,it causes undefined behavior.
+ If @ptr is a null pointer, the function does nothing. Notice that this function does 
+ not change the value of @ptr itself, hence it still points to the same (now invalid) 
+ location.
+
+reference
+    http://www.cplusplus.com/reference/cstdlib/free/?kw=free
+example:
+-----------------------------------------------------------------------------------*/
+void free (void* ptr);
+
+
+
+

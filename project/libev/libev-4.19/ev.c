@@ -1504,21 +1504,20 @@ ev_syserr (const char *msg)
     }
 }
 
-static void *
-ev_realloc_emul (void *ptr, long size) EV_THROW
+/*-----------------------------------------------------------------------------------
+ some systems, notably openbsd and darwin, fail to properly implement realloc (x, 0) 
+ (as required by both ansi c-89 and the single unix specification, so work around th-
+ em here. recently, also (at least) fedora and debian started breaking it, despite d-
+ ocumenting it otherwise.
+-----------------------------------------------------------------------------------*/
+static void *ev_realloc_emul (void *ptr, long size) EV_THROW
 {
-  /* some systems, notably openbsd and darwin, fail to properly
-   * implement realloc (x, 0) (as required by both ansi c-89 and
-   * the single unix specification, so work around them here.
-   * recently, also (at least) fedora and debian started breaking it,
-   * despite documenting it otherwise.
-   */
+    if (size) {
+        return realloc (ptr, size);
+    }
 
-  if (size)
-    return realloc (ptr, size);
-
-  free (ptr);
-  return 0;
+    free (ptr);
+    return 0;
 }
 
 static void *(*alloc)(void *ptr, long size) EV_THROW = ev_realloc_emul;
@@ -1529,22 +1528,21 @@ ev_set_allocator (void *(*cb)(void *ptr, long size) EV_THROW) EV_THROW
   alloc = cb;
 }
 
-inline_speed void *
-ev_realloc (void *ptr, long size)
+inline_speed void *ev_realloc (void *ptr, long size)
 {
-  ptr = alloc (ptr, size);
+    ptr = alloc(ptr, size);
 
-  if (!ptr && size)
+    if (!ptr && size)
     {
-#if EV_AVOID_STDIO
-      ev_printerr ("(libev) memory allocation failed, aborting.\n");
-#else
-      fprintf (stderr, "(libev) cannot allocate %ld bytes, aborting.", size);
-#endif
-      abort ();
+        #if EV_AVOID_STDIO
+        ev_printerr ("(libev) memory allocation failed, aborting.\n");
+        #else
+        fprintf (stderr, "(libev) cannot allocate %ld bytes, aborting.", size);
+        #endif
+        abort();
     }
 
-  return ptr;
+    return ptr;
 }
 
 #define ev_malloc(size) ev_realloc (0, (size))
@@ -1558,20 +1556,20 @@ ev_realloc (void *ptr, long size)
 /* file descriptor info structure */
 typedef struct
 {
-  WL head;
-  unsigned char events; /* the events watched for */
-  unsigned char reify;  /* flag set when this ANFD needs reification (EV_ANFD_REIFY, EV__IOFDSET) */
-  unsigned char emask;  /* the epoll backend stores the actual kernel mask in here */
-  unsigned char unused;
-#if EV_USE_EPOLL
-  unsigned int egen;    /* generation counter to counter epoll bugs */
-#endif
-#if EV_SELECT_IS_WINSOCKET || EV_USE_IOCP
-  SOCKET handle;
-#endif
-#if EV_USE_IOCP
-  OVERLAPPED or, ow;
-#endif
+    WL head;
+    unsigned char events; /* the events watched for */
+    unsigned char reify;  /* flag set when this ANFD needs reification (EV_ANFD_REIFY, EV__IOFDSET) */
+    unsigned char emask;  /* the epoll backend stores the actual kernel mask in here */
+    unsigned char unused;
+    #if EV_USE_EPOLL
+    unsigned int egen;    /* generation counter to counter epoll bugs */
+    #endif
+    #if EV_SELECT_IS_WINSOCKET || EV_USE_IOCP
+    SOCKET handle;
+    #endif
+    #if EV_USE_IOCP
+    OVERLAPPED or, ow;
+    #endif
 } ANFD;
 
 /* stores the pending event set for a given watcher */
@@ -1721,32 +1719,29 @@ ev_sleep (ev_tstamp delay) EV_THROW
 
 /* find a suitable new size for the given array, */
 /* hopefully by rounding to a nice-to-malloc size */
-inline_size int
-array_nextsize (int elem, int cur, int cnt)
+inline_size int array_nextsize (int elem, int cur, int cnt)
 {
-  int ncur = cur + 1;
+    int ncur = cur + 1;
 
-  do
-    ncur <<= 1;
-  while (cnt > ncur);
+    do {
+        ncur <<= 1;
+    }while (cnt > ncur);
 
-  /* if size is large, round to MALLOC_ROUND - 4 * longs to accommodate malloc overhead */
-  if (elem * ncur > MALLOC_ROUND - sizeof (void *) * 4)
-    {
-      ncur *= elem;
-      ncur = (ncur + elem + (MALLOC_ROUND - 1) + sizeof (void *) * 4) & ~(MALLOC_ROUND - 1);
-      ncur = ncur - sizeof (void *) * 4;
-      ncur /= elem;
+    /* if size is large, round to MALLOC_ROUND - 4 * longs to accommodate malloc overhead */
+    if (elem * ncur > MALLOC_ROUND - sizeof (void *) * 4) {
+        ncur *= elem;
+        ncur = (ncur + elem + (MALLOC_ROUND - 1) + sizeof (void *) * 4) & ~(MALLOC_ROUND - 1);
+        ncur = ncur - sizeof (void *) * 4;
+        ncur /= elem;
     }
 
-  return ncur;
+    return ncur;
 }
 
-static void * noinline ecb_cold
-array_realloc (int elem, void *base, int *cur, int cnt)
+static void * noinline ecb_cold array_realloc (int elem, void *base, int *cur, int cnt)
 {
-  *cur = array_nextsize (elem, *cur, cnt);
-  return ev_realloc (base, elem * *cur);
+    *cur = array_nextsize (elem, *cur, cnt);
+    return ev_realloc (base, elem * (*cur));
 }
 
 #define array_init_zero(base,count)	\
@@ -1922,17 +1917,15 @@ fd_reify (EV_P)
 }
 
 /* something about the given fd changed */
-inline_size void
-fd_change (EV_P_ int fd, int flags)
+inline_size void fd_change (struct ev_loop *loop, int fd, int flags)
 {
-  unsigned char reify = anfds [fd].reify;
-  anfds [fd].reify |= flags;
+    unsigned char reify = loop->anfds[fd].reify;
+	loop->anfds[fd].reify |= flags;
 
-  if (expect_true (!reify))
-    {
-      ++fdchangecnt;
-      array_needsize (int, fdchanges, fdchangemax, fdchangecnt, EMPTY2);
-      fdchanges [fdchangecnt - 1] = fd;
+    if (expect_true(!reify)) {
+        ++loop->fdchangecnt;
+        array_needsize (int, fdchanges, fdchangemax, fdchangecnt, EMPTY2);
+        loop->fdchanges[loop->fdchangecnt - 1] = fd;
     }
 }
 
@@ -2926,41 +2919,37 @@ array_verify (EV_P_ W *ws, int cnt)
 #endif
 
 #if EV_FEATURE_API
-void ecb_cold
-ev_verify (EV_P) EV_THROW
+void ecb_cold ev_verify (struct ev_loop *loop ) EV_THROW
 {
 #if EV_VERIFY
-  int i;
-  WL w, w2;
+    int i;
+    WL w, w2;
 
-  assert (activecnt >= -1);
+    assert (activecnt >= -1);
+    assert (fdchangemax >= fdchangecnt);
+	
+    for (i = 0; i < loop->fdchangecnt; ++i) {
+      assert (("libev: negative fd in fdchanges", loop->fdchanges[i] >= 0));
+    }
 
-  assert (fdchangemax >= fdchangecnt);
-  for (i = 0; i < fdchangecnt; ++i)
-    assert (("libev: negative fd in fdchanges", fdchanges [i] >= 0));
+    assert (loop->anfdmax >= 0);
+  
+    for (i = 0; i < loop->anfdmax; ++i) {
+        int j = 0;
 
-  assert (anfdmax >= 0);
-  for (i = 0; i < anfdmax; ++i)
-    {
-      int j = 0;
-
-      for (w = w2 = anfds [i].head; w; w = w->next)
-        {
-          verify_watcher (EV_A_ (W)w);
-
-          if (j++ & 1)
-            {
-              assert (("libev: io watcher list contains a loop", w != w2));
-              w2 = w2->next;
+        for (w = w2 = loop->anfds[i].head; w; w = w->next) {
+            verify_watcher (loop, (W)w);
+            if (j++ & 1) {
+                assert (("libev: io watcher list contains a loop", w != w2));
+                w2 = w2->next;
             }
-
-          assert (("libev: inactive fd watcher on anfd list", ev_active (w) == 1));
-          assert (("libev: fd mismatch between watcher and anfd", ((ev_io *)w)->fd == i));
+            assert (("libev: inactive fd watcher on anfd list", ev_active (w) == 1));
+            assert (("libev: fd mismatch between watcher and anfd", ((ev_io *)w)->fd == i));
         }
     }
 
-  assert (timermax >= timercnt);
-  verify_heap (EV_A_ timers, timercnt);
+    assert (timermax >= timercnt);
+    verify_heap (EV_A_ timers, timercnt);
 
 #if EV_PERIODIC_ENABLE
   assert (periodicmax >= periodiccnt);
@@ -3331,32 +3320,30 @@ time_update (EV_P_ ev_tstamp max_block)
     }
 }
 
-int
-ev_run (EV_P_ int flags)
+int ev_run (struct ev_loop *loop, int flags)
 {
-#if EV_FEATURE_API
-  ++loop_depth;
-#endif
+    #if EV_FEATURE_API
+    ++loop->loop_depth;
+    #endif
 
-  assert (("libev: ev_loop recursion during release detected", loop_done != EVBREAK_RECURSE));
+    assert (("libev: ev_loop recursion during release detected", 
+            loop->loop_done != EVBREAK_RECURSE));
 
-  loop_done = EVBREAK_CANCEL;
+    loop->loop_done = EVBREAK_CANCEL;
 
-  EV_INVOKE_PENDING; /* in case we recurse, ensure ordering stays nice and clean */
+    EV_INVOKE_PENDING; /* in case we recurse, ensure ordering stays nice and clean */
 
-  do
-    {
+    do {
 #if EV_VERIFY >= 2
-      ev_verify (EV_A);
+        ev_verify (EV_A);
 #endif
 
 #ifndef _WIN32
-      if (expect_false (curpid)) /* penalise the forking check even more */
-        if (expect_false (getpid () != curpid))
-          {
-            curpid = getpid ();
-            postfork = 1;
-          }
+        if (expect_false (curpid)) /* penalise the forking check even more */
+            if (expect_false (getpid () != curpid)) {
+                curpid = getpid ();
+                postfork = 1;
+            }
 #endif
 
 #if EV_FORK_ENABLE
@@ -3549,11 +3536,10 @@ ev_resume (EV_P) EV_THROW
 /*****************************************************************************/
 /* singly-linked list management, used when the expected list length is short */
 
-inline_size void
-wlist_add (WL *head, WL elem)
+inline_size void wlist_add (WL *head, WL elem)
 {
-  elem->next = *head;
-  *head = elem;
+    elem->next = *head;
+    *head = elem;
 }
 
 inline_size void
@@ -3608,12 +3594,11 @@ pri_adjust (EV_P_ W w)
   ev_set_priority (w, pri);
 }
 
-inline_speed void
-ev_start (EV_P_ W w, int active)
+inline_speed void ev_start (struct ev_loop *loop, W w, int active)
 {
-  pri_adjust (EV_A_ w);
-  w->active = active;
-  ev_ref (EV_A);
+    pri_adjust (loop, w);
+    w->active = active;
+    ev_ref (EV_A);
 }
 
 inline_size void
@@ -3625,30 +3610,31 @@ ev_stop (EV_P_ W w)
 
 /*****************************************************************************/
 
-void noinline
-ev_io_start (EV_P_ ev_io *w) EV_THROW
+void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
 {
-  int fd = w->fd;
+    int fd = w->fd;
 
-  if (expect_false (ev_is_active (w)))
-    return;
+    if (expect_false (ev_is_active (w)))
+        return;
 
-  assert (("libev: ev_io_start called with negative fd", fd >= 0));
-  assert (("libev: ev_io_start called with illegal event mask", !(w->events & ~(EV__IOFDSET | EV_READ | EV_WRITE))));
+    assert (("libev: ev_io_start called with negative fd", fd >= 0));
+    assert (("libev: ev_io_start called with illegal event mask", 
+		     !(w->events & ~(EV__IOFDSET | EV_READ | EV_WRITE))));
 
-  EV_FREQUENT_CHECK;
+    EV_FREQUENT_CHECK;
 
-  ev_start (EV_A_ (W)w, 1);
-  array_needsize (ANFD, anfds, anfdmax, fd + 1, array_init_zero);
-  wlist_add (&anfds[fd].head, (WL)w);
+    ev_start (loop, (W)w, 1);
+    array_needsize(ANFD, anfds, anfdmax, fd + 1, array_init_zero);
+    wlist_add (&anfds[fd].head, (WL)w);
 
-  /* common bug, apparently */
-  assert (("libev: ev_io_start called with corrupted watcher", ((WL)w)->next != (WL)w));
+    /* common bug, apparently */
+    assert (("libev: ev_io_start called with corrupted watcher", 
+            ((WL)w)->next != (WL)w));
 
-  fd_change (EV_A_ fd, w->events & EV__IOFDSET | EV_ANFD_REIFY);
-  w->events &= ~EV__IOFDSET;
+    fd_change (loop, fd, w->events & EV__IOFDSET | EV_ANFD_REIFY);
+    w->events &= ~EV__IOFDSET;
 
-  EV_FREQUENT_CHECK;
+    EV_FREQUENT_CHECK;
 }
 
 void noinline

@@ -7,7 +7,7 @@
 static struct ev_loop default_loop_struct;
 struct ev_loop *ev_default_loop_ptr;
 
-struct ev_loop *ev_default_loop (unsigned int flags) 
+struct ev_loop *x_ev_default_loop (unsigned int flags) 
 {
     if (!ev_default_loop_ptr)
     {
@@ -35,7 +35,7 @@ struct ev_loop *ev_default_loop (unsigned int flags)
 }
 
 /* initialise a loop structure, must be zero-initialised */
-static void loop_init (struct ev_loop *loop, unsigned int flags)
+static void x_loop_init (struct ev_loop *loop, unsigned int flags)
 {
     if (!backend)
     {

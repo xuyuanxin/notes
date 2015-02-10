@@ -91,7 +91,7 @@ ev_io的移除
 } while (0)
 
 
-int ev_io_init(ev_io *ev,void *cb,int fd,int events)
+int x_ev_io_init(ev_io *ev,void *cb,int fd,int events)
 {
 	ev->active   = 0;
 	ev->pending  = 0;
@@ -107,7 +107,7 @@ int ev_io_init(ev_io *ev,void *cb,int fd,int events)
     used to catch bugs inside libev itself”，如果看其代码的话，就是去检测Libev的内部
     数据结构，判断各边界值是否合理，不合理的时候assert掉。
 -----------------------------------------------------------------------------------*/
-void ev_io_start (ev_loop *loop, ev_io *w)
+void x_ev_io_start (ev_loop *loop, ev_io *w)
 {
     int fd = w->fd;
 
@@ -119,7 +119,7 @@ void ev_io_start (ev_loop *loop, ev_io *w)
 
     EV_FREQUENT_CHECK; /* notes01 */
 
-    ev_start (EV_A_ (W)w, 1);
+    ev_start (loop, (W)w, 1);
     array_needsize (ANFD, anfds, anfdmax, fd + 1, array_init_zero);
     wlist_add (&anfds[fd].head, (WL)w);
 
