@@ -16,33 +16,33 @@
  *******************************************************************************
                               algo
  *******************************************************************************
- 从左往右扫描，当遇到重复字母时，以上一个重复字母的 index+1，作为新的搜索起始位置，
- 直到最后一个字母，复杂度是 O ( n )。
+ ��������ɨ�裬�������ظ���ĸʱ������һ���ظ���ĸ�� index+1����Ϊ�µ�������ʼλ�ã�
+ ֱ�����һ����ĸ�����Ӷ��� O ( n )��
 
  example : "abcdbefchijk"
  ---------------------------------------------------------
  start
  |    
  a b c d b e f c h i j k
-         | <-- 发现b上次出现的位置在start之后，说明有重复。 maxlen = 4
+         | <-- ����b�ϴγ��ֵ�λ����start֮��˵�����ظ��� maxlen = 4
          i
  ---------------------------------------------------------
    start
-     | <-- 更新start位置    
+     | <-- ����startλ��    
  a b c d b e f c h i j k
-         | <-- 更新b上次出现的位置
+         | <-- ����b�ϴγ��ֵ�λ��
          i
  ---------------------------------------------------------
    start
      |   
  a b c d b e f c h i j k
-               | <-- 发现c上次出现的位置等于start之后，说明有重复。 maxlen = 5
+               | <-- ����c�ϴγ��ֵ�λ�õ���start֮��˵�����ظ��� maxlen = 5
                i
  ---------------------------------------------------------
      start
-       | <-- 更新start位置    
+       | <-- ����startλ��    
  a b c d b e f c h i j k
-               | <-- 更新c上次出现的位置
+               | <-- ����c�ϴγ��ֵ�λ��
                i
  ---------------------------------------------------------
      start
@@ -59,8 +59,8 @@ class Solution {
 public:
 
 int lengthOfLongestSubstring(string s) {
-    int last[256];  /* 记录字符上次出现过的位置 */
-    int start = 0; /* 记录当前子串的起始位置 */
+    int last[256];  /* ��¼�ַ��ϴγ��ֹ���λ�� */
+    int start = 0; /* ��¼��ǰ�Ӵ�����ʼλ�� */
 	int max_len = 0;
 	
     fill(last, last + 256, -1);
@@ -73,7 +73,7 @@ int lengthOfLongestSubstring(string s) {
         last[s[i]] = i;
     }
 	
-    return max((int)s.size() - start, max_len); /* 别忘了最后一次，例如"abcd" */
+    return max((int)s.size() - start, max_len); /* ���������һ�Σ�����"abcd" */
 }
 
 
@@ -95,4 +95,5 @@ int main()
 	
 	return 0;
 }
+
 
