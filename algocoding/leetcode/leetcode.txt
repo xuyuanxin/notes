@@ -1,1 +1,23 @@
-4 Median of Two Sorted Arrays
+004 Median of Two Sorted Arrays
+There are two sorted arrays A and B of size m and n respectively. Find the median of 
+the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+
+005 Longest Palindromic Substring
+Given a string S, find the longest palindromic substring in S. You may assume that t-
+he maximum length of S is 1000, and there exists one unique longest palindromic subs-
+tring.
+
+06 ZigZag Conversion 
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows 
+like this: (you may want to display this pattern in a fixed font for better legibili-
+ty)
+
+P   A   H   N
+A P L S I I G
+Y   I   R
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the code that will take a string and make this conversion given a number of ro-
+ws:
+
+string convert(string text, int nRows);
+convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
