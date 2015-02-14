@@ -1666,19 +1666,17 @@ ev_time (void) EV_THROW
 }
 #endif
 
-inline_size ev_tstamp
-get_clock (void)
+inline_size ev_tstamp get_clock (void)
 {
 #if EV_USE_MONOTONIC
-  if (expect_true (have_monotonic))
-    {
-      struct timespec ts;
-      clock_gettime (CLOCK_MONOTONIC, &ts);
-      return ts.tv_sec + ts.tv_nsec * 1e-9;
+    if (expect_true (have_monotonic)) {
+        struct timespec ts;
+        clock_gettime (CLOCK_MONOTONIC, &ts);
+        return ts.tv_sec + ts.tv_nsec * 1e-9;
     }
 #endif
 
-  return ev_time ();
+    return ev_time ();
 }
 
 #if EV_MULTIPLICITY
@@ -2558,10 +2556,9 @@ ev_embeddable_backends (void) EV_THROW
   return flags;
 }
 
-unsigned int
-ev_backend (EV_P) EV_THROW
+unsigned int ev_backend (struct ev_loop *loop) EV_THROW
 {
-  return backend;
+    return backend;
 }
 
 #if EV_FEATURE_API
@@ -2616,46 +2613,42 @@ ev_set_loop_release_cb (EV_P_ void (*release)(EV_P) EV_THROW, void (*acquire)(EV
 #endif
 
 /* initialise a loop structure, must be zero-initialised */
-static void noinline ecb_cold
-loop_init (EV_P_ unsigned int flags) EV_THROW
+static void noinline ecb_cold loop_init (struct ev_loop *loop, unsigned int flags) EV_THROW
 {
-  if (!backend)
-    {
-      origflags = flags;
+    if (!loop->backend) {
+        loop->origflags = flags;
 
 #if EV_USE_REALTIME
-      if (!have_realtime)
-        {
-          struct timespec ts;
-
-          if (!clock_gettime (CLOCK_REALTIME, &ts))
-            have_realtime = 1;
+        if (!have_realtime) {
+            struct timespec ts;
+            if (!clock_gettime (CLOCK_REALTIME, &ts)) {
+                have_realtime = 1;
+		    }
         }
 #endif
 
 #if EV_USE_MONOTONIC
-      if (!have_monotonic)
-        {
-          struct timespec ts;
-
-          if (!clock_gettime (CLOCK_MONOTONIC, &ts))
-            have_monotonic = 1;
+        if (!have_monotonic) {
+            struct timespec ts;
+            if (!clock_gettime (CLOCK_MONOTONIC, &ts)) {
+                have_monotonic = 1;
+            }
         }
 #endif
 
       /* pid check not overridable via env */
 #ifndef _WIN32
-      if (flags & EVFLAG_FORKCHECK)
-        curpid = getpid ();
+        if (flags & EVFLAG_FORKCHECK) {
+            loop->curpid = getpid ();
+        }
 #endif
 
-      if (!(flags & EVFLAG_NOENV)
-          && !enable_secure ()
-          && getenv ("LIBEV_FLAGS"))
-        flags = atoi (getenv ("LIBEV_FLAGS"));
+        if (!(flags & EVFLAG_NOENV) && !enable_secure () && getenv ("LIBEV_FLAGS")) {
+            flags = atoi (getenv ("LIBEV_FLAGS"));
+        }
 
-      ev_rt_now          = ev_time ();
-      mn_now             = get_clock ();
+        ev_rt_now          = ev_time ();
+        mn_now             = get_clock ();
       now_floor          = mn_now;
       rtmn_diff          = ev_rt_now - mn_now;
 #if EV_FEATURE_API
@@ -3001,6 +2994,7 @@ void ecb_cold ev_verify (struct ev_loop *loop ) EV_THROW
 }
 #endif
 
+#if 0
 #if EV_MULTIPLICITY
 struct ev_loop * ecb_cold
 #else
@@ -3033,6 +3027,34 @@ ev_default_loop (unsigned int flags) EV_THROW
 
   return ev_default_loop_ptr;
 }
+#else
+struct ev_loop * ecb_cold ev_default_loop (unsigned int flags) EV_THROW
+{
+    if (!ev_default_loop_ptr) {
+#if EV_MULTIPLICITY
+        struct ev_loop *loop = ev_default_loop_ptr = &default_loop_struct;
+#else
+        ev_default_loop_ptr = 1;
+#endif
+
+        loop_init (loop, flags);
+
+        if (ev_backend (loop)) {
+#if EV_CHILD_ENABLE
+            ev_signal_init (&childev, childcb, SIGCHLD);
+            ev_set_priority (&childev, EV_MAXPRI);
+            ev_signal_start (EV_A_ &childev);
+            ev_unref (EV_A); /* child watcher should not keep loop alive */
+#endif
+        } else {
+            ev_default_loop_ptr = 0;
+		}
+    }
+
+    return ev_default_loop_ptr;
+}
+
+#endif
 
 void
 ev_loop_fork (EV_P) EV_THROW

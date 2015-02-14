@@ -1,13 +1,13 @@
-004 Median of Two Sorted Arrays
+leetcode--0004 Median of Two Sorted Arrays (c++/python)
 There are two sorted arrays A and B of size m and n respectively. Find the median of 
 the two sorted arrays. The overall run time complexity should be O(log (m+n)).
 
-005 Longest Palindromic Substring
+leetcode--0005 Longest Palindromic Substring (c++/python)
 Given a string S, find the longest palindromic substring in S. You may assume that t-
 he maximum length of S is 1000, and there exists one unique longest palindromic subs-
 tring.
 
-06 ZigZag Conversion 
+leetcode--0006 ZigZag Conversion (python)
 The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows 
 like this: (you may want to display this pattern in a fixed font for better legibili-
 ty)

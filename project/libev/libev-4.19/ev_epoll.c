@@ -235,20 +235,19 @@ epoll_poll (EV_P_ ev_tstamp timeout)
     }
 }
 
-int inline_size
-epoll_init (EV_P_ int flags)
+int inline_size epoll_init (struct ev_loop *loop, int flags)
 {
 #ifdef EPOLL_CLOEXEC
-  backend_fd = epoll_create1 (EPOLL_CLOEXEC);
+    loop->backend_fd = epoll_create1 (EPOLL_CLOEXEC);
 
-  if (backend_fd < 0 && (errno == EINVAL || errno == ENOSYS))
+    if (backend_fd < 0 && (errno == EINVAL || errno == ENOSYS))
 #endif
-    backend_fd = epoll_create (256);
+    loop->backend_fd = epoll_create (256);
 
-  if (backend_fd < 0)
-    return 0;
+    if (backend_fd < 0)
+        return 0;
 
-  fcntl (backend_fd, F_SETFD, FD_CLOEXEC);
+    fcntl(loop->backend_fd, F_SETFD, FD_CLOEXEC);
 
   backend_mintime = 1e-3; /* epoll does sometimes return early, this is just to avoid the worst */
   backend_modify  = epoll_modify;

@@ -27,7 +27,7 @@ ev_tstamp timeout_blocktime;
  int  activecnt; /* total number of active events ("refcount") */
    EV_ATOMIC_T  loop_done;  /* signal by ev_break */
 
- int  backend_fd;
+   int  backend_fd; /* loop_init->epoll_init */
  ev_tstamp  backend_mintime; /* assumed typical timer resolution */
 static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
 static void (*backend_poll)(EV_P_ ev_tstamp timeout);
@@ -41,7 +41,7 @@ static int evpipe [2];
  EV_ATOMIC_T  pipe_write_skipped;
 
 #if !defined(_WIN32) || EV_GENWRAP
- pid_t  curpid;
+   pid_t  curpid; /*loop_init() */
 #endif
 
  char  postfork;  /* true if we need to recreate kernel state after fork */
@@ -153,7 +153,7 @@ static ANFS fs_hash [EV_INOTIFY_HASHSIZE];
  sigset_t  sigfd_set;
 #endif
 
- unsigned int  origflags; /* original loop flags */
+   unsigned int  origflags; /* loop_init() original loop flags */
 
 #if EV_FEATURE_API || EV_GENWRAP
    unsigned int  loop_count; /* total number of loop iterations/blocks */

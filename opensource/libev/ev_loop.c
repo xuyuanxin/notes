@@ -4,8 +4,6 @@
  象的一个全局指针。struct ev_loop称作为事件循环驱动器而将各种watcher称为事件监控器。
 -----------------------------------------------------------------------------------*/
 
-static struct ev_loop default_loop_struct;
-struct ev_loop *ev_default_loop_ptr;
 
 struct ev_loop *x_ev_default_loop (unsigned int flags) 
 {
