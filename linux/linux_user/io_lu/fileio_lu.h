@@ -5,7 +5,34 @@ struct iovec {
 
 #define IOV_MAX  /* 1024 */
 
-/*-------------------------------- @fcntl @cmd ------------------------------------**
+
+/*
+FD_CLOEXEC
+    It sets the close-on-exec flag for the file descriptor, which causes the file de-
+    scriptor to be automatically (and atomically ) closed when any of the exec-family 
+    functions succeed.
+
+*/
+#define FD_CLOEXEC
+
+
+/*-------------------------------- @fcntl @cmd --------------------------------------
+ F_DUPFD
+    Duplicate the file descriptor @fd. The new file descriptor is returned as the va-
+    lue of the function. It is the lowest-numbered descriptor that is not already op-
+    en, and that is greater than or equal to the third argument. The new descriptor -
+    shares the same file table entry as @fd. But the new descriptor has its own set -
+    of file descriptor flags, and its FD_CLOEXEC file descriptor flag is cleared. (T-
+    his means that the descriptor is left open across an @exec)
+ F_DUPFD_CLOEXEC  
+    Duplicate the file descriptor and set the FD_CLOEXEC file descriptor flag associ-
+    ated with the new descriptor. Returns the new file descriptor.
+ F_GETFD 
+    Return the file descriptor flags for @fd as the value of the function. Currently,
+    only one file descriptor flag is defined: the FD_CLOEXEC flag.
+ F_SETFD 
+    Set the file descriptor flags for @fd. The new flag value is set from the third -
+    argument (taken as an integer).
  F_GETOWN
     Get the process ID or process group ID currently receiving the  SIGIO and  SIGURG 
     signals.
@@ -14,18 +41,10 @@ struct iovec {
     positive arg specifies a  process ID. A  negative arg implies a process  group ID 
     equal to the absolute value of arg.
 **---------------------------------------------------------------------------------*/
-#define F_DUPFD  /*Duplicate the file descriptor @fd.The new file descriptor is 
-returned as the value of the function. It is the lowest-numbered descriptor that 
-is not already open, and that is greater than or equal to the third argument. 
-The new descriptor shares the same file table entry as @fd. But the new descriptor 
-has its own set of file descriptor flags, and its FD_CLOEXEC file descriptor 
-flag is cleared. (This means that the descriptor is left open across an exec)*/
-#define F_DUPFD_CLOEXEC /*Duplicate the file descriptor and set the FD_CLOEXEC 
-file descriptor flag associated with the new descriptor.Returns the new file descriptor.*/
-#define F_GETFD  /*Return the file descriptor flags for @fd as the value of the 
-function. Currently,only one file descriptor flag is defined: the FD_CLOEXEC flag.*/
-#define F_SETFD  /*Set the file descriptor flags for @fd.The new flag value is 
-set from the third argument (taken as an integer).*/
+#define F_DUPFD  /**/
+#define F_DUPFD_CLOEXEC /**/
+#define F_GETFD  /**/
+#define F_SETFD  /**/
 
 #define F_GETOWN 
 #define F_SETOWN

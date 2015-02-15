@@ -67,11 +67,10 @@
 
 #define EV_EMASK_EPERM 0x80
 
-static void
-epoll_modify (EV_P_ int fd, int oev, int nev)
+static void epoll_modify (ev_loop *loop, int fd, int oev, int nev)
 {
-  struct epoll_event ev;
-  unsigned char oldmask;
+    struct epoll_event ev;
+    unsigned char oldmask;
 
   /*
    * we handle EPOLL_CTL_DEL by ignoring it here
@@ -249,14 +248,14 @@ int inline_size epoll_init (struct ev_loop *loop, int flags)
 
     fcntl(loop->backend_fd, F_SETFD, FD_CLOEXEC);
 
-  backend_mintime = 1e-3; /* epoll does sometimes return early, this is just to avoid the worst */
-  backend_modify  = epoll_modify;
-  backend_poll    = epoll_poll;
+    loop->backend_mintime = 1e-3; /* epoll does sometimes return early, this is just to avoid the worst */
+    loop->backend_modify  = epoll_modify;
+    loop->backend_poll    = epoll_poll;
 
-  epoll_eventmax = 64; /* initial number of events receivable per poll */
-  epoll_events = (struct epoll_event *)ev_malloc (sizeof (struct epoll_event) * epoll_eventmax);
+    loop->epoll_eventmax = 64; /* initial number of events receivable per poll */
+    loop->epoll_events = (struct epoll_event *)ev_malloc (sizeof (struct epoll_event) * loop->epoll_eventmax);
 
-  return EVBACKEND_EPOLL;
+    return EVBACKEND_EPOLL;
 }
 
 void inline_size

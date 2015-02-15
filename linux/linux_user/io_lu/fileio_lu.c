@@ -213,17 +213,16 @@ int fsync(int fd);
 int fdatasync(int fd);
 void sync(void);
 
-/*********************************************************************************
+/*-----------------------------------------------------------------------------------
  @cmd: F_SETFL
- 
+    The @fcntl function is used for five different purposes.
+    1 Duplicate an existing descriptor (cmd=F_DUPFD or F_DUPFD_CLOEXEC)
+    2 Get/set file descriptor flags (cmd=F_GETFD or F_SETFD)
+    3 Get/set file status flags (cmd=F_GETFL or F_SETFL)
+    4 Get/set asynchronous I/O ownership (cmd=F_GETOWN or F_SETOWN)
+    5 Get/setrecordlocks (cmd=F_GETLK,F_SETLK,or F_SETLKW)
  @fun:
    The @fcntl function can change the properties of a file that is already open.
-   The @fcntl function is used for five different purposes.
-   1 Duplicate an existing descriptor (cmd=F_DUPFD or F_DUPFD_CLOEXEC)
-   2 Get/set file descriptor flags (cmd=F_GETFD or F_SETFD)
-   3 Get/set file status flags (cmd=F_GETFL or F_SETFL)
-   4 Get/set asynchronous I/O ownership (cmd=F_GETOWNorF_SETOWN)
-   5 Get/setrecordlocks (cmd=F_GETLK,F_SETLK,orF_SETLKW)
 @ret: 
    depends on @cmd if OK (see following),-1 on error
    The return value from @fcntl depends on the command. All commands return -1 on 
@@ -231,7 +230,7 @@ void sync(void);
    return values: F_DUPFD, F_GETFD, F_GETFL, and F_GETOWN. The first command returns 
    the new file descriptor, the next two return the corresponding flags, and the 
    final command returns a positive process ID or a negative process group ID.
-**********************************************************************************/
+-----------------------------------------------------------------------------------*/
 #include <fcntl.h>
 int fcntl(int fd,int cmd,... /* int arg */ );
 
@@ -543,9 +542,6 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
- 创建一个epoll的句柄，size用来告诉内核需要监听的数目一共有多大。当创建好epoll句柄后，
- 它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在
- 使用完epoll后，必须调用close() 关闭，否则可能导致fd被耗尽。
  @size:
     The size is not the maximum size of the backing store but just a hint to the ker-
     nel about how to dimension internal structures. Since  Linux 2.6.8, the size arg-
@@ -554,6 +550,12 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
     If flags is 0,then,other than the fact that the obsolete size argument is dropped, 
     epoll_create1() is the same as epoll_create().The following value can be included 
     in flags to obtain different behavior:EPOLL_CLOEXEC
+
+ @epoll_create 函数生成一个 epoll 专用的文件描述符。它其实是在内核申请一空间，用来存
+ 放你想关注的 socket fd 上是否发生以及发生了什么事件。 @size 就是你在这个 epoll fd 上
+ 能关注的最大 socket fd 数。 
+ 当创建好epoll句柄后，它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够
+ 看到这个fd的，所以在使用完epoll后，必须调用close() 关闭，否则可能导致fd被耗尽。
 -----------------------------------------------------------------------------------*/
 int epoll_create(int size);
 int epoll_create1(int flags);
@@ -574,6 +576,13 @@ int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
  有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间
  （毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。如果函数调用成功，返回对应
  I/O上已准备好的文件描述符数目，如返回0表示已超时。
+
+ 等侍注册在 @epfd 上的 socket fd 的事件的发生，如果发生则将发生的 sokct fd 和事件类型
+ 放入到 @events 数组中。 并且将注册在 @epfd 上的 socket fd 的事件类型给清空，所以如果
+ 下一个循环你还要关注这个 socket fd 的话，则需要用 
+             @epoll_ctl(epfd,EPOLL_CTL_MOD,listenfd,&ev)
+ 来重新设置socket fd的事件类型。这时不用EPOLL_CTL_ADD,因为socket fd并未清空，只是事件
+ 类型清空。
 -----------------------------------------------------------------------------------*/
 int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
 
