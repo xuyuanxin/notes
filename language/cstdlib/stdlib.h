@@ -77,6 +77,33 @@ example:
 -----------------------------------------------------------------------------------*/
 void* realloc (void* ptr, size_t size);
 
+
+/*-----------------------------------------------------------------------------------
+ @num
+    Number of elements to allocate.
+ @size
+    Size of each element.
+ @fun
+    Allocate and zero-initialize array
+ @ret
+    On success, a pointer to the memory block allocated by the function. The type of 
+    this pointer is always void*, which can be cast to the desired type of data poin-
+    ter in order to be dereferenceable. If the function failed to allocate the reque-
+    sted block of memory, a null pointer is returned.
+
+ Allocates a block of memory for an array of @num elements, each of them @size bytes 
+ long, and initializes all its bits to zero. The effective result is the allocation -
+ of a zero-initialized memory block of (@num*@size) bytes.
+ If @size is zero, the return value depends on the particular library implementation 
+ (it may or may not be a null pointer), but the returned pointer shall not be derefe-
+ renced.
+
+reference
+example:
+-----------------------------------------------------------------------------------*/
+void* calloc (size_t num, size_t size);
+
+
 /*-----------------------------------------------------------------------------------
  @ptr
     Pointer to a memory block previously allocated with malloc, calloc or realloc.
@@ -96,6 +123,7 @@ example:
 -----------------------------------------------------------------------------------*/
 void free (void* ptr);
 
-
+/* Returns the absolute value of parameter n  */
+int abs (int n);
 
 

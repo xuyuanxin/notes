@@ -519,6 +519,8 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 
 
 #include <sys/epoll.h> 
+
+
 /*-----------------------------------------------------------------------------------
  epoll is a Linux kernel system call,a scalable I/O event notification mechanism,first 
  introduced in Linux kernel 2.5.44. It is meant to replace the older POSIX select(2) 
@@ -543,48 +545,105 @@ int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
 
 /*-----------------------------------------------------------------------------------
  @size:
-    The size is not the maximum size of the backing store but just a hint to the ker-
-    nel about how to dimension internal structures. Since  Linux 2.6.8, the size arg-
-    ument is unused.
+    The @size argument specifies the number of file descriptors that we expect to mo-
+    nitor via the epoll instance. This argument is not an upper limit, but rather a -
+    hint to the kernel about how to initially dimension internal data structures. Si-
+    nce  Linux 2.6.8, the size argument is unused.
  @flags: 0 or EPOLL_CLOEXEC
     If flags is 0,then,other than the fact that the obsolete size argument is dropped, 
     epoll_create1() is the same as epoll_create().The following value can be included 
     in flags to obtain different behavior:EPOLL_CLOEXEC
+ @func
+    The epoll_create() system call creates a new epoll instance whose interest list -
+    is initially empty.
+ @ret
+    Returns file descriptor on success, or –1 on error
 
- @epoll_create 函数生成一个 epoll 专用的文件描述符。它其实是在内核申请一空间，用来存
- 放你想关注的 socket fd 上是否发生以及发生了什么事件。 @size 就是你在这个 epoll fd 上
- 能关注的最大 socket fd 数。 
- 当创建好epoll句柄后，它就是会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够
- 看到这个fd的，所以在使用完epoll后，必须调用close() 关闭，否则可能导致fd被耗尽。
+ As its function result,epoll_create() returns a file descriptor referring to the new
+ epoll instance. This file descriptor is used to refer to the epoll instance in other 
+ epoll system calls. When the file descriptor is no longer required, it should be cl-
+ osed in the usual way, using close(). When all file descriptors referring to an epo-
+ ll instance are closed, the instance is destroyed and its associated resources are -
+ released back to the system. ( Multiple file descriptors may refer to the same epoll 
+ instance as a consequence of calls to fork() or descriptor duplication using dup() -
+ or similar.)
+
+ Starting with kernel 2.6.27, Linux supports a new system call, epoll_create1(). Thi-
+ s system call performs the same task as epoll_create(), but drops the obsolete @size 
+ argument and adds a @flags argument that can be used to modify the behavior of the -
+ system call. One flag is currently supported: EPOLL_CLOEXEC, which causes the kernel 
+ to enable the close-on-exec flag (FD_CLOEXEC) for the new file descriptor. This flag 
+ is useful for the same reasons as the open() O_CLOEXEC flag. 
 -----------------------------------------------------------------------------------*/
 int epoll_create(int size);
 int epoll_create1(int flags);
 
 
 /*-----------------------------------------------------------------------------------
- @epfd: epoll_create() 的返回值。
+ @epfd: 
  @op    EPOLL_CTL_ADD
- @fd    需要监听的fd
- @event 告诉内核需要监听什么事
+    The @op argument specifies the operation to be performed
+ @fd    
+    The @fd argument identifies which of the file descriptors in the interest list is 
+    to have its settings modified.  This argument can be a file descriptor for a pipe, 
+    FIFO, socket, POSIX message queue, inotify instance, terminal, device, or even a-
+    nother epoll descriptor (i.e., we can build a kind of hierarchy of monitored des-
+    criptors). However, @fd can't be a file descriptor for a regular file or a direc-
+    tory (the error EPERM results).
+ @event 
+ @func
+    The epoll_ctl() system call modifies the interest list of the epoll instance ref-
+    erred to by the file descriptor epfd.
+ @ret
+    Returns 0 on success, or –1 on error
 -----------------------------------------------------------------------------------*/
-int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *ev);
+
+/* Using epoll_create() and epoll_ctl() */
+void epoll_eg01(int fd)
+{
+    int epfd;
+    struct epoll_event ev;
+    epfd = epoll_create(5);
+    if (epfd == -1)
+        errExit("epoll_create");
+    ev.data.fd = fd;
+    ev.events = EPOLLIN;
+    if (epoll_ctl(epfd, EPOLL_CTL_ADD, fd, ev) == -1)
+        errExit("epoll_ctl");
+}
+
 
 /*-----------------------------------------------------------------------------------
- 收集在epoll监控的事件中已经发送的事件。 参数events是分配好的epoll_event结构体数组，
- epoll将会把发生的事件赋值到events数组中（events不可以是空指针，内核只负责把数据复制
- 到这个events数组中，不会去帮助我们在用户态中分配内存）。maxevents告之内核这个events
- 有多大，这个 maxevents的值不能大于创建epoll_create()时的size，参数timeout是超时时间
- （毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。如果函数调用成功，返回对应
- I/O上已准备好的文件描述符数目，如返回0表示已超时。
-
- 等侍注册在 @epfd 上的 socket fd 的事件的发生，如果发生则将发生的 sokct fd 和事件类型
- 放入到 @events 数组中。 并且将注册在 @epfd 上的 socket fd 的事件类型给清空，所以如果
- 下一个循环你还要关注这个 socket fd 的话，则需要用 
-             @epoll_ctl(epfd,EPOLL_CTL_MOD,listenfd,&ev)
- 来重新设置socket fd的事件类型。这时不用EPOLL_CTL_ADD,因为socket fd并未清空，只是事件
- 类型清空。
+ @evlist @maxevents
+    The information about ready file descriptors is returned in the array of epoll_event
+    structures pointed to by @evlist. The @evlist array is allocated by the caller, -
+    and the number of elements it contains is specified in @maxevents.
+    Each item in the array @evlist returns information about a single ready file des-
+    criptor. The  @events subfield returns a mask of the events that have occurred on
+    this descriptor. The @data subfield returns whatever value was specified in ev.data
+    when we registered interest in this file descriptor using  epoll_ctl(). Note that 
+    the @data field provides the only mechanism for finding out the number of the fi-
+    le descriptor associated with this event. Thus, when we make the epoll_ctl() call 
+    that places a file descriptor in the interest list, we should either set ev.data.fd 
+    to the file descriptor number or set ev.data.ptr to point to a structure that co-
+    ntains the file descriptor number.
+ @timeout
+    If @timeout equals –1, block until an event occurs for one of the file descript-
+    ors in the interest list for @epfd or until a signal is caught.
+    If @timeout equals 0, perform a nonblocking check to see which events are curren-
+    tly available on the file descriptors in the interest list for @epfd.
+    If timeout is greater than 0, block for up to @timeout milliseconds, until an ev-
+    ent occurs on one of the file descriptors in the interest list for @epfd, or unt-
+    il a signal is caught.
+ @func
+    The epoll_wait() system call returns information about ready file descriptors from
+    the epoll instance referred to by the file descriptor @epfd. A single epoll_wait() 
+    call can return information about multiple ready file descriptors.
+ @ret
+   	Returns number of ready file descriptors, 0 on timeout, or –1 on error
 -----------------------------------------------------------------------------------*/
-int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+int epoll_wait(int epfd, struct epoll_event *evlist, int maxevents, int timeout);
 
 
 #include <sys/mman.h>

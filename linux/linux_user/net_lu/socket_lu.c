@@ -263,45 +263,47 @@ int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
 int bind (int sockfd, const struct sockaddr *myaddr, socklen_t addrlen);
 	  
 	 
-/*******************************************************************************
+/*-----------------------------------------------------------------------------------
  @sockfd:
- @backlog:maximum number of connections the kernel should queue for this socket
- function:TCP服务器调用
- returns: 0 if OK, -1 on error
+ @backlog: SOMAXCONN
+    maximum number of connections the kernel should queue for this socket.
+ @function
+ @returns: 
+    0 if OK, -1 on error
  
- This function is normally called after both the @socket and @bind functions and 
- must be called before calling the @accept function.
+ This function is normally called after both the @socket and @bind functions and must 
+ be called before calling the @accept function.
 
- When a socket is created by the @socket function, it is assumed to be an active 
- socket, that is, a client socket that will issue a connect.The @listen function 
- converts an unconnected socket into a passive socket, indicating that the kernel 
- should accept incoming connection requests directed to this socket. In terms of 
- the TCP state transition diagram ,the call to @listen moves the socket from the 
- CLOSED state to the LISTEN state.
+ When a socket is created by the @socket function, it is assumed to be an active soc-
+ ket, that is, a client socket that will issue a connect. The @listen function conve-
+ rts an unconnected socket into a passive socket, indicating that the kernel should -
+ accept incoming connection requests directed to this socket. In terms of the TCP st-
+ ate transition diagram,the call to @listen moves the socket from the CLOSED state to 
+ the LISTEN state.
 
  for a given listening socket, the kernel maintains two queues:
- 1 An incomplete connection queue, which contains an entry for each SYN that has 
-   arrived from a client for which the server is awaiting completion of the TCP 
-   three-way handshake. These sockets are in the SYN_RCVD state .
- 2 A completed connection queue, which contains an entry for each client with whom 
-   the TCP three-way handshake has completed.These sockets are in the ESTABLISHED 
-   state.When a SYN arrives from a client,TCP creates a new entry on the incomplete 
-   queue and then responds with the second segment of the three-way handshake:the 
-   server's SYN with an ACK of the client's SYN . This entry will remain on the 
-   incomplete queue until the third segment of the three-way handshake arrives 
-   (the client's ACK of the server's SYN), or until the entry times out. If the 
-   three-way handshake completes normally, the entry moves from the incomplete 
-   queue to the end of the completed queue. When the process calls @accept, the 
-   first entry on the completed queue is returned to the process,or if the queue 
-   is empty, the process is put to sleep until an entry is placed onto the 
-   completed queue.
+ 1 An incomplete connection queue, which contains an entry for each SYN that has arr-
+   ived from a client for which the server is awaiting completion of the TCP three w-
+   ay handshake. These sockets are in the SYN_RCVD state.
+ 2 A completed connection queue, which contains an entry for each client with whom t-
+   he TCP three-way handshake has completed. These sockets are in the ESTABLISHED st-
+   ate. When a SYN arrives from a client, TCP creates a new entry on the incomplete -
+   queue and then responds with the second segment of the three-way handshake:the se-
+   rver's SYN with an ACK of the client's SYN . This entry will remain on the incomp-
+   lete queue until the third segment of the three-way handshake arrives(the client's 
+   ACK of the server's SYN), or until the entry times out. If the three-way handshake 
+   completes normally, the entry moves from the incomplete queue to the end of the c-
+   ompleted queue. When the process calls @accept, the first entry on the completed -
+   queue is returned to the process, or if the queue is empty , the process is put to 
+   sleep until an entry is placed onto the completed queue.
 
- If the queues are full when a client SYN arrives, TCP ignores the arriving SYN; 
- it does not send an RST. This is because the condition is considered temporary, 
- and the client TCP will retransmit its SYN, hopefully finding room on the queue 
- in the near future.
-*******************************************************************************/	  
+ If the queues are full when a client SYN arrives, TCP ignores the arriving SYN; it -
+ does not send an RST. This is because the condition is considered temporary, and the 
+ client TCP will retransmit its SYN , hopefully finding room on the queue in the near 
+ future.
+-----------------------------------------------------------------------------------*/	  
 int listen (int sockfd, int backlog);
+
 	      
 /*******************************************************************************
  @cliaddr:

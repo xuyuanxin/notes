@@ -23,7 +23,7 @@ ev_prepare pending_w; /* dummy pending watcher */
 ev_tstamp io_blocktime;
 ev_tstamp timeout_blocktime;
 
- int  backend;
+    int  backend; /* loop_init() */
  int  activecnt; /* total number of active events ("refcount") */
    EV_ATOMIC_T  loop_done;  /* signal by ev_break */
 
@@ -32,8 +32,8 @@ ev_tstamp timeout_blocktime;
 static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
 static void (*backend_poll)(EV_P_ ev_tstamp timeout);
 
- ANFD *  anfds;
-   int  anfdmax;
+    ANFD *anfds;
+    int  anfdmax;
 
 static int evpipe [2];
  ev_io  pipe_w;
@@ -66,7 +66,7 @@ static int evpipe [2];
 #endif
 
 #if EV_USE_EPOLL || EV_GENWRAP
- struct epoll_event *  epoll_events;
+    struct epoll_event *epoll_events;
  int  epoll_eventmax;
  int *  epoll_eperms;
  int  epoll_epermcnt;

@@ -3,39 +3,29 @@
 # Filename: list_pylib.py
 #####################################################################################
 #你可以增加或删除项目，我们说列表是 可变的 数据类型，即这种类型是可以被改变的。
-# This is my shopping list
-shoplist=['apple','mango','carrot','banana']
-
-print 'I have',len(shoplist),'items to purchase.'
-
-print 'These items are:', # Notice the comma at end of the line
+shoplist=['apple','mango']
+print 'shoplist:', # Notice the comma at end of the line
 for item in shoplist:
 	print item,
 
-print '\nI also have to buy rice.'
+print '\nshoplist append rice:'
 shoplist.append('rice')
-print 'My shopping list is now',shoplist
+print shoplist
 
-print 'I will sort my list now'
+print 'shoplist sort:'
 shoplist.sort()
-print 'Sorted shopping list is',shoplist
+print shoplist
 
-print 'The first item I will buy is',shoplist[0]
+print 'The first item:',shoplist[0]
 olditem=shoplist[0]
 del shoplist[0]
-print 'I bought the',olditem
-print 'My shopping list is now',shoplist
+print 'del first item:',olditem
+print 'shoplist:',shoplist
 
 print '-----------------> list init <-----------------------'
-print '----> [[1] for i in range(3)]  = '
-list1 = [[1] for i in range(3)]
-print list1
-print '----> [[1 for i in range(3)]]  = '
-list2 = [[1 for i in range(3)]]
-print list2
-print '----> [[0 for i in range(n)] for i in range(m)] = '
-list3 = [[1 for i in range(3)] for i in range(3)]
-print list3
+print [[1] for i in range(3)] # [[1], [1], [1]]
+print [[1 for i in range(3)]] # [[1, 1, 1]]
+print [[1 for i in range(3)] for i in range(3)] # [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
 
 a = 0
 for i in range(1, 1):  #[1,1)
@@ -68,7 +58,7 @@ str1 = 'ABCDEFG'[:3]
 print str1 #'ABC'
 str2 = 'ABCDEFG'[::2] #每2个取一个：
 print str2 #'ACEG'
-
+print 'ABCDEFG'[-1::-1]
 #对象与参考
 #当你创建一个对象并给它赋一个变量的时候，这个变量仅仅 参考 那个对象，而不是表示这个对
 #象本身！也就是说，变量名指向你计算机中存储那个对象的内存。这被称作名称到对象的绑定。

@@ -1522,8 +1522,7 @@ static void *ev_realloc_emul (void *ptr, long size) EV_THROW
 
 static void *(*alloc)(void *ptr, long size) EV_THROW = ev_realloc_emul;
 
-void ecb_cold
-ev_set_allocator (void *(*cb)(void *ptr, long size) EV_THROW) EV_THROW
+void ecb_cold ev_set_allocator (void *(*cb)(void *ptr, long size) EV_THROW) EV_THROW
 {
   alloc = cb;
 }
@@ -2618,30 +2617,30 @@ static void noinline ecb_cold loop_init (struct ev_loop *loop, unsigned int flag
     if (!loop->backend) {
         loop->origflags = flags;
 
-#if EV_USE_REALTIME
+        #if EV_USE_REALTIME
         if (!have_realtime) {
             struct timespec ts;
             if (!clock_gettime (CLOCK_REALTIME, &ts)) {
                 have_realtime = 1;
 		    }
         }
-#endif
+        #endif
 
-#if EV_USE_MONOTONIC
+        #if EV_USE_MONOTONIC
         if (!have_monotonic) {
             struct timespec ts;
             if (!clock_gettime (CLOCK_MONOTONIC, &ts)) {
                 have_monotonic = 1;
             }
         }
-#endif
+        #endif
 
       /* pid check not overridable via env */
-#ifndef _WIN32
+        #ifndef _WIN32
         if (flags & EVFLAG_FORKCHECK) {
             loop->curpid = getpid ();
         }
-#endif
+        #endif
 
         if (!(flags & EVFLAG_NOENV) && !enable_secure () && getenv ("LIBEV_FLAGS")) {
             flags = atoi (getenv ("LIBEV_FLAGS"));
@@ -2687,7 +2686,7 @@ static void noinline ecb_cold loop_init (struct ev_loop *loop, unsigned int flag
       if (!backend && (flags & EVBACKEND_KQUEUE)) backend = kqueue_init (EV_A_ flags);
 #endif
 #if EV_USE_EPOLL
-      if (!backend && (flags & EVBACKEND_EPOLL )) backend = epoll_init  (EV_A_ flags);
+      if (!backend && (flags & EVBACKEND_EPOLL )) loop->backend = epoll_init  (loop, flags);
 #endif
 #if EV_USE_POLL
       if (!backend && (flags & EVBACKEND_POLL  )) backend = poll_init   (EV_A_ flags);
@@ -3031,21 +3030,21 @@ ev_default_loop (unsigned int flags) EV_THROW
 struct ev_loop * ecb_cold ev_default_loop (unsigned int flags) EV_THROW
 {
     if (!ev_default_loop_ptr) {
-#if EV_MULTIPLICITY
+        #if EV_MULTIPLICITY
         struct ev_loop *loop = ev_default_loop_ptr = &default_loop_struct;
-#else
+        #else
         ev_default_loop_ptr = 1;
-#endif
+        #endif
 
         loop_init (loop, flags);
 
         if (ev_backend (loop)) {
-#if EV_CHILD_ENABLE
+            #if EV_CHILD_ENABLE
             ev_signal_init (&childev, childcb, SIGCHLD);
             ev_set_priority (&childev, EV_MAXPRI);
             ev_signal_start (EV_A_ &childev);
             ev_unref (EV_A); /* child watcher should not keep loop alive */
-#endif
+            #endif
         } else {
             ev_default_loop_ptr = 0;
 		}

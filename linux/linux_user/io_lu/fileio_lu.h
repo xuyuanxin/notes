@@ -202,7 +202,24 @@ EPOLL_CLOEXEC
 */
 #define EPOLL_CLOEXEC
 
-/********************************* @epoll_ctl @op ***********************************/
+/********************************* @epoll_ctl @op **********************************
+EPOLL_CTL_ADD
+    Add the file descriptor @fd to the interest list for @epfd. The set of events th-
+    at we are interested in monitoring for @fd  is specified in the buffer pointed to
+    by @ev, as described below.If we attempt to add a file descriptor that is already 
+    in the interest list, epoll_ctl() fails with the error EEXIST.
+EPOLL_CTL_MOD
+    Modify the events setting for the file descriptor @fd, using the information spe-
+    cified in the buffer pointed to by @ev. If we attempt to modify the settings of -
+    a file descriptor that is not in the interest list for @epfd, epoll_ctl() fails -
+    with the error ENOENT.
+EPOLL_CTL_DEL
+    Remove the file descriptor @fd from the interest list for @epfd. The @ev argument 
+    is ignored for this operation. If  we attempt to remove a file descriptor that is 
+    not in the interest list for @epfd, epoll_ctl() fails with the error ENOENT. Clo-
+    sing a file descriptor automatically removes it from all of the epoll interest l-
+    ists of which it is a member.
+*/
 #define EPOLL_CTL_ADD    //注册新的fd到epfd中；
 #define EPOLL_CTL_MOD    //修改已经注册的fd的监听事件；
 #define EPOLL_CTL_DEL    //从epfd中删除一个fd；
@@ -215,23 +232,44 @@ typedef union epoll_data
   __uint64_t   u64;
 } epoll_data_t;
 
-/*---------------------- struct epoll_event @events ---------------------------
+/*
+@events
+    The @events subfield is a bit mask specifying the set of events that we are inte-
+    rested in monitoring for @fd.
+    The bit values that can be specified in ev.events when we call epoll_ctl() and t-
+    hat are placed in the evlist[].events fields returned by epoll_wait(). 
+    
  EPOLLIN 
-    表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；当对方关闭连接(FIN), 
-    EPOLLERR，都可以认为是一种EPOLLIN事件，在read的时候分别有0，-1两个返回值。
- EPOLLOUT    
-    表示对应的文件描述符可以写；
- EPOLLPRI    
-    表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
- EPOLLERR    
-    表示对应的文件描述符发生错误；
- EPOLLHUP    
-    表示对应的文件描述符被挂断；
- EPOLLET     
-    将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
- EPOLLONESHOT
-    只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次
-    把这个socket加入到EPOLL队列里。
+	表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；当对方关闭连接(FIN), 
+	EPOLLERR，都可以认为是一种EPOLLIN事件，在read的时候分别有0，-1两个返回值。
+ EPOLLOUT	 
+	表示对应的文件描述符可以写；
+ EPOLLPRI	 
+	表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；
+ EPOLLERR	 
+	表示对应的文件描述符发生错误；
+ EPOLLHUP	 
+	表示对应的文件描述符被挂断；
+ EPOLLET	 
+	将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。
+EPOLLONESHOT
+    By default, once a file descriptor is added to an epoll interest list using the -
+    epoll_ctl() EPOLL_CTL_ADD operation, it remains active (i.e., subsequent calls to 
+    epoll_wait() will inform us whenever the file descriptor is ready) until we expl-
+    icitly remove  it from the list using the epoll_ctl() EPOLL_CTL_DEL operation. If 
+    we want to be notified only once about a particular file descriptor, then  we can 
+    specify the EPOLLONESHOT flag(available since Linux 2.6.2) in the ev.events value 
+    passed in epoll_ctl(). If this flag is specified, then, after the next epoll_wait() 
+    call that informs us that the corresponding file descriptor is ready, the file d-
+    escriptor is marked inactive in the interest list, and we won't be informed about 
+    its state by future epoll_wait() calls. If  desired, we can subsequently reenable 
+    monitoring of this file descriptor using the epoll_ctl() EPOLL_CTL_MOD operation. 
+    ( We can't use the EPOLL_CTL_ADD operation for this purpose, because the inactive 
+    file descriptor is still part of the epoll interest list.)
+@data    
+    The @data subfield is a union, one of whose members can be used to specify infor-
+    mation that is passed back to the calling process (via epoll_wait()) if @fd later
+    becomes ready.
 */
 #define EPOLLIN
 #define EPOLLOUT 
@@ -242,9 +280,13 @@ typedef union epoll_data
 #define EPOLLONESHOT
 
 struct epoll_event {
-__uint32_t events; /* Epoll events */
-epoll_data_t data; /* User data variable */
+    __uint32_t events; /* Epoll events */
+    epoll_data_t data; /* User data variable */
 };
+
+
+
+
 
 
 /********************************* @ioctl @requst ***********************************

@@ -2,7 +2,8 @@
 #define ENXIO  6   /* No such device or address */
 #define EACCES 13  /* Permission denied */
 #define EEXIST 17  /* File exists */
-
+#define EINVAL 22  /*Invalid argument */
+#define ENOSYS 38  /* Function not implemented */
 /*
 Linux´íÎó´úÂëº¬Òå/Linux Error Code
 
@@ -11,6 +12,8 @@ C Name
 Value
 
 Description
+
+
 
 EPERM
 
@@ -126,11 +129,7 @@ EISDIR
 
 Is a directory
 
-EINVAL
 
-22
-
-Invalid argument
 
 ENFILE
 
@@ -222,11 +221,8 @@ ENOLCK
 
 No record locks available
 
-ENOSYS
 
-38
 
-Function not implemented
 
 ENOTEMPTY
 

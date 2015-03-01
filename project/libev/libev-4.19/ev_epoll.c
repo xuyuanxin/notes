@@ -80,16 +80,16 @@ static void epoll_modify (ev_loop *loop, int fd, int oev, int nev)
    * if the fd is added again, we try to ADD it, and, if that
    * fails, we assume it still has the same eventmask.
    */
-  if (!nev)
-    return;
+    if (!nev)
+      return;
 
-  oldmask = anfds [fd].emask;
-  anfds [fd].emask = nev;
+    oldmask = loop->anfds[fd].emask;
+    loop->anfds[fd].emask = nev;
 
-  /* store the generation counter in the upper 32 bits, the fd in the lower 32 bits */
-  ev.data.u64 = (uint64_t)(uint32_t)fd
-              | ((uint64_t)(uint32_t)++anfds [fd].egen << 32);
-  ev.events   = (nev & EV_READ  ? EPOLLIN  : 0)
+    /* store the generation counter in the upper 32 bits, the fd in the lower 32 bits */
+    ev.data.u64 = (uint64_t)(uint32_t)fd
+              | ((uint64_t)(uint32_t)++loop->anfds[fd].egen << 32);
+    ev.events   = (nev & EV_READ  ? EPOLLIN  : 0)
               | (nev & EV_WRITE ? EPOLLOUT : 0);
 
   if (expect_true (!epoll_ctl (backend_fd, oev && oldmask != nev ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, fd, &ev)))
@@ -236,14 +236,14 @@ epoll_poll (EV_P_ ev_tstamp timeout)
 
 int inline_size epoll_init (struct ev_loop *loop, int flags)
 {
-#ifdef EPOLL_CLOEXEC
+    #ifdef EPOLL_CLOEXEC
     loop->backend_fd = epoll_create1 (EPOLL_CLOEXEC);
 
-    if (backend_fd < 0 && (errno == EINVAL || errno == ENOSYS))
-#endif
+    if (loop->backend_fd < 0 && (errno == EINVAL || errno == ENOSYS))
+    #endif
     loop->backend_fd = epoll_create (256);
 
-    if (backend_fd < 0)
+    if (loop->backend_fd < 0)
         return 0;
 
     fcntl(loop->backend_fd, F_SETFD, FD_CLOEXEC);

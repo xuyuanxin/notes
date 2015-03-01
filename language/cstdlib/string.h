@@ -13,6 +13,14 @@ char *strncpy(char *dst, const char *src, size_t n);
     C string to be compared.
  @str2
     C string to be compared.
+ @ret
+    Returns an integral value indicating the relationship between the strings:
+    return value  indicates
+      <0          the first character that does not match has a lower value in ptr1 
+                  than in ptr2
+       0          the contents of both strings are equal
+      >0          the first character that does not match has a greater value in ptr1 
+                  than in ptr2
 -----------------------------------------------------------------------------------*/
 int strcmp ( const char * str1, const char * str2 );
 
@@ -86,5 +94,31 @@ char * strerror ( int errnum );
 const char * strchr ( const char * str, int character ); /* C++ */
 	  char * strchr (		char * str, int character );  /* C++ */
 	  char * strchr ( const char *, int ); /* C */
+
+/*-----------------------------------------------------------------------------------
+ @destination
+    Pointer to the destination array where the content is to be copied, type-casted -
+    to a pointer of type void*.
+ @source
+    Pointer to the source of data to be copied, type-casted to a pointer of type con-
+    st void*.
+ @num
+    Number of bytes to copy.
+ @func
+    Move block of memory
+ @ret
+    @destination is returned.
+
+ Copies the values of @num bytes from the location pointed by @source to the memory -
+ block pointed by @destination. Copying takes place as if an intermediate buffer were 
+ used, allowing the @destination and @source to overlap.
+ The underlying type of the objects pointed by both the @source and @destination poi-
+ nters are irrelevant for this function; The result is a binary copy of the data.
+ The function does not check for any terminating null character in @source - it alwa-
+ ys copies exactly num bytes.
+ To avoid overflows, the size of the arrays pointed by both the @destination and @so-
+ urce parameters, shall be at least @num bytes.    
+-----------------------------------------------------------------------------------*/
+void * memmove ( void * destination, const void * source, size_t num );
 
 

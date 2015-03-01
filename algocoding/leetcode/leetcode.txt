@@ -1,13 +1,16 @@
 leetcode--0004 Median of Two Sorted Arrays (c++/python)
+
 There are two sorted arrays A and B of size m and n respectively. Find the median of 
 the two sorted arrays. The overall run time complexity should be O(log (m+n)).
 
 leetcode--0005 Longest Palindromic Substring (c++/python)
+
 Given a string S, find the longest palindromic substring in S. You may assume that t-
 he maximum length of S is 1000, and there exists one unique longest palindromic subs-
 tring.
 
 leetcode--0006 ZigZag Conversion (python)
+
 The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows 
 like this: (you may want to display this pattern in a fixed font for better legibili-
 ty)
@@ -21,3 +24,18 @@ ws:
 
 string convert(string text, int nRows);
 convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".
+
+leetcode--0007 Reverse Integer ( c++/python)
+
+Reverse digits of an integer.
+Example1: x = 123, return 321
+Example2: x = -123, return -321
+Have you thought about this?
+Here are some good questions to ask before coding. Bonus points for you if you have already thought through this!
+If the integer's last digit is 0, what should the output be? ie, cases such as 10, 100.
+Did you notice that the reversed integer might overflow? Assume the input is a 32-bit integer, then the reverse of 1000000003 overflows. How should you handle such cases?
+For the purpose of this problem, assume that your function returns 0 when the reversed integer overflows.
+Update (2014-11-10):
+Test cases had been added to test the overflow behavior.
+
+
