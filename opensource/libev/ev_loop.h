@@ -24,7 +24,7 @@ ev_tstamp io_blocktime;
 ev_tstamp timeout_blocktime;
 
     int  backend; /* loop_init() */
- int  activecnt; /* total number of active events ("refcount") */
+    int  activecnt; /* total number of active events ("refcount") ev_start()*/
    EV_ATOMIC_T  loop_done;  /* signal by ev_break */
 
    int  backend_fd; /* loop_init->epoll_init */

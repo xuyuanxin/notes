@@ -3,7 +3,7 @@
 #define EV_WRAP_H
 //struct ev_loop *loop;
 #define acquire_cb ((loop)->acquire_cb)
-#define activecnt ((loop)->activecnt) /* 事件驱动器上正监控的监控器数目 */
+#define activecnt ((loop)->activecnt) 
 #define anfdmax ((loop)->anfdmax)
 #define anfds ((loop)->anfds)
 #define async_pending ((loop)->async_pending)

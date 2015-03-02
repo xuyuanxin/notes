@@ -339,10 +339,10 @@ typedef struct ev_io
 -----------------------------------------------------------------------------------*/
 typedef struct ev_io
 {
-	int active; /* private */		  
-	int pending; /* private */			  
-	int priority; /* private */		  
-	void *data; /* rw */				  
+	int active;   /* private ev_io_init*/
+	int pending;  /* private */
+	int priority; /* private */
+	void *data;   /* rw */				  
 	void (*cb)(struct ev_loop *loop, struct ev_io *w, int revents); /* private */
     int fd;     /* fd是监听的文件描述符 */
     int events; /* events是感兴趣的事件。  */
@@ -732,8 +732,13 @@ EV_API_DECL void ev_resume  (EV_P) EV_THROW;
 #define ev_cleanup_set(ev)                   /* nop, yes, this is a serious in-joke */
 #define ev_async_set(ev)                     /* nop, yes, this is a serious in-joke */
 
-#define ev_io_init(ev,cb,fd,events)          \
+/* x_ev_io_init */
+#define ev_io_init(ev,cb,fd,events) \
 	do { ev_init ((ev), (cb)); ev_io_set ((ev),(fd),(events)); } while (0)
+
+
+
+
 		
 #define ev_timer_init(ev,cb,after,repeat)    do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)
 #define ev_periodic_init(ev,cb,ofs,ival,rcb) do { ev_init ((ev), (cb)); ev_periodic_set ((ev),(ofs),(ival),(rcb)); } while (0)

@@ -422,7 +422,9 @@ int FD_ISSET(int fd, fd_set *fdset); is the bit for fd on in fdset
 The kernel uses three data structures to represent an open file, and the relationships
 among them determine the effect one process has on another with regard to file sharing.
 1 entry in the process table
-  在进程表中记录着每个进程打开的文件，每个文件占一个表项，表项中记录的是文件描述符和指向文件表的指针
+  Every process has an entry in the process table. Within each process table entry is 
+  a table of open file descriptors, which we can think of as a vector, with one entry 
+  per descriptor. Associated with each file descriptor are
   (a)  The file descriptor flags (close-on-exec)
   (b)  A pointer to a file table entry
 2 file table
@@ -431,20 +433,19 @@ among them determine the effect one process has on another with regard to file s
   (b) The current file offset
   (c) A pointer to the v-node table entry for the file
 3 v-node
-  Each open file (or device) has a v-node structurethat contains information 
-  about the type of file and pointers to functions that operate on the file. 
-  v-node also contains the i-node for the file. This information is read from
-  disk when the file is opened, so that all the pertinent information about the
-  file is readily available. For example, the i-node contains the owner of the 
-  file, the size of the file, pointers to wherethe actual data blocks for the 
-  file are located on disk, and so on.
+  Each open file(or device) has a v-node structurethat contains information about the 
+  type of file and pointers to functions that operate on the file. v-node also conta-
+  ins the i-node for the file. This information is read from disk when the file is o-
+  pened, so that all the pertinent information about the file is readily available. -
+  For example, the i-node contains the owner of the file, the size of the file, poin-
+  ters to where the actual data blocks for the file are located on disk, and so on.
 
 
   
 +-----------------------------------------------+
 |              process table entry              |   进程表  记录每个进程打开的文件
-|------------------------------------------------
-|    fd0   | file descriptor flags  |   pointer |   file descriptor flags 和 pointer 称为一个表项
+|------------------------------------------------   file descriptor:
+|    fd0   | file descriptor flags  |   pointer |   
 |------------------------------------------------
 |    fd1   | file descriptor flags  |   pointer |   file descriptor flags  
 |------------------------------------------------  
@@ -454,12 +455,12 @@ among them determine the effect one process has on another with regard to file s
 +-----------------------------------------------+  
 
 +----------------------+
-|   file table entry   |    文件表(file table entry) 进程每个打开的文件对应一个文件表
+|   file table entry   |    文件表(file table entry)
 +----------------------+
-|   file status flags  |    如果多个进程打开同一个文件，每个进程都有自己的文件表 
+|   file status flags  |    如果多个进程打开同一个文件，每个进程都有自己的文件表但共享同一个v-node
 |-----------------------
-|  current file offset |
-|-----------------------  
+|  current file offset |    一个进程的不同描述符(fd0 fd1 etc)也可能指向同一个 file table entry
+|-----------------------    例如:fork系统调用时，父进程和子进程共享同一个 file table entry。
 |    v-node pointer    |
 +----------------------+  
 
@@ -472,10 +473,10 @@ among them determine the effect one process has on another with regard to file s
 |         v_data       |
 +----------------------+  
 
-It is possible for more than one file descriptor entry to point to the same 
-file table entry, as we'll see when we discuss the dup function. This also 
-happens after a fork when the parent and the child share the same file table 
-entry for each open descriptor 
+It is possible for more than one file descriptor entry to point to the same file tab-
+le entry, as we'll see when we discuss the @dup function. This also happens after a -
+fork when the parent and the child share the same file table entry for each open des-
+criptor 
 
 Given these data structures, we now need to be more specific about what happens
 with certain operations that we've already described.

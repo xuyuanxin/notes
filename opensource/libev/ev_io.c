@@ -83,7 +83,7 @@ ev_io的移除
     以要在下一轮循环中重新计算该fd上的事件集合。
 */
 
-#define ev_init(ev,cb_) do {			\
+#define x_ev_init(ev,cb_) do {			\
   ((ev_watcher *)(void *)(ev))->active  =	\
   ((ev_watcher *)(void *)(ev))->pending = 0;	\
   ev_set_priority ((ev), 0);			\
@@ -91,15 +91,25 @@ ev_io的移除
 } while (0)
 
 
+/*-----------------------------------------------------------------------------------
+ @ev
+ @cb
+    @fd上发送@events事件时，调用的回调函数
+ @fd
+    监测的描述符
+ @events  EV_READ
+    监测的事件
+-----------------------------------------------------------------------------------*/
 int x_ev_io_init(ev_io *ev,void *cb,int fd,int events)
 {
-	ev->active   = 0;
+	ev->active	 = 0;
 	ev->pending  = 0;
 	ev->priority = 0;
-	ev->cb       = cb;
-	ev->fd       = fd; 
-	ev->events   = (events) | EV__IOFDSET;
+	ev->cb		 = cb;
+	ev->fd		 = fd; 
+	ev->events	 = (events) | EV__IOFDSET;
 }
+
 
 /*-----------------------------------------------------------------------------------
  notes01

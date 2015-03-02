@@ -123,7 +123,7 @@ static void epoll_modify (ev_loop *loop, int fd, int oev, int nev)
       /* add fd to epoll_eperms, if not already inside */
       if (!(oldmask & EV_EMASK_EPERM))
         {
-          array_needsize (int, epoll_eperms, epoll_epermmax, epoll_epermcnt + 1, EMPTY2);
+          array_needsize (int, loop->epoll_eperms, epoll_epermmax, epoll_epermcnt + 1, EMPTY2);
           epoll_eperms [epoll_epermcnt++] = fd;
         }
 

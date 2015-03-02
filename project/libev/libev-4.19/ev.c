@@ -1714,8 +1714,13 @@ ev_sleep (ev_tstamp delay) EV_THROW
 
 #define MALLOC_ROUND 4096 /* prefer to allocate in chunks of this size, must be 2**n and >> 4 longs */
 
-/* find a suitable new size for the given array, */
-/* hopefully by rounding to a nice-to-malloc size */
+/*
+ @elem: 每个元素的大小
+ @cur:  当前元素的个数
+ @cnt:  需要的个数
+ find a suitable new size for the given array, 
+ hopefully by rounding to a nice-to-malloc size 
+*/
 inline_size int array_nextsize (int elem, int cur, int cnt)
 {
     int ncur = cur + 1;
@@ -1744,14 +1749,20 @@ static void * noinline ecb_cold array_realloc (int elem, void *base, int *cur, i
 #define array_init_zero(base,count)	\
   memset ((void *)(base), 0, sizeof (*(base)) * (count))
 
+/* 
+ @type: 类型 int ANFD etc
+ @base: type* 类型的指针，
+ @cur:  目前的大小
+ @cnt:  需要的大小
+ @init:
+*/
 #define array_needsize(type,base,cur,cnt,init)			\
-  if (expect_false ((cnt) > (cur)))				\
-    {								\
-      int ecb_unused ocur_ = (cur);					\
-      (base) = (type *)array_realloc				\
-         (sizeof (type), (base), &(cur), (cnt));		\
-      init ((base) + (ocur_), (cur) - ocur_);			\
-    }
+if (expect_false ((cnt) > (cur)))				\
+{								\
+    int ecb_unused ocur_ = (cur);					\
+    (base) = (type *)array_realloc(sizeof (type), (base), &(cur), (cnt));		\
+    init ((base) + (ocur_), (cur) - ocur_);			\
+}
 
 #if 0
 #define array_slim(type,stem)					\
@@ -3517,10 +3528,9 @@ ev_break (EV_P_ int how) EV_THROW
   loop_done = how;
 }
 
-void
-ev_ref (EV_P) EV_THROW
+void ev_ref (struct ev_loop *loop) EV_THROW
 {
-  ++activecnt;
+  ++loop->activecnt;
 }
 
 void
@@ -3619,7 +3629,7 @@ inline_speed void ev_start (struct ev_loop *loop, W w, int active)
 {
     pri_adjust (loop, w);
     w->active = active;
-    ev_ref (EV_A);
+    ev_ref (loop);
 }
 
 inline_size void
@@ -3631,6 +3641,14 @@ ev_stop (EV_P_ W w)
 
 /*****************************************************************************/
 
+
+/*-----------------------------------------------------------------------------------
+ @loop
+ @w
+    ev_io_init初始化后的watcher
+ @func
+    把@w挂到@loop上
+-----------------------------------------------------------------------------------*/
 void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
 {
     int fd = w->fd;
@@ -3645,8 +3663,8 @@ void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
     EV_FREQUENT_CHECK;
 
     ev_start (loop, (W)w, 1);
-    array_needsize(ANFD, anfds, anfdmax, fd + 1, array_init_zero);
-    wlist_add (&anfds[fd].head, (WL)w);
+    array_needsize(ANFD, loop->anfds, loop->anfdmax, fd + 1, array_init_zero);
+    wlist_add (&loop->anfds[fd].head, (WL)w);
 
     /* common bug, apparently */
     assert (("libev: ev_io_start called with corrupted watcher", 
