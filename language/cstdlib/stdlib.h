@@ -1,15 +1,46 @@
+/* http://www.tutorialspoint.com/c_standard_library/index.htm */
 
-#define EXIT_FAILURE  /* 作为exit()的参数来使用，表示没有成功地执行一个程序。 */
-#define EXIT_SUCCESS  /* 作为exit()的参数来使用，表示成功地执行一个程序。*/
+/*-----------------------------------------------------------------------------------
+NULL
+    A null-pointer constant is an integral constant expression that evaluates to zero 
+    (like 0 or 0L), or the cast of such value to type void* (like (void*)0).
+    A null pointer constant can be converted to any pointer type (or pointer-to-member 
+    type), which acquires a null pointer value. This is a special value that indicates 
+    that the pointer is not pointing to any object.
+EXIT_FAILURE
+    This is the value for the exit function to return in case of failure.
+EXIT_SUCCESS
+    This is the value for the exit function to return in case of success. 
+-----------------------------------------------------------------------------------*/
+#define NULL          /* null pointer constant. */
+#define EXIT_FAILURE  /*  */
+#define EXIT_SUCCESS  /* */
 
 
-/******************************************************************************
-@nptr: 参数nptr字符串，如果第一个非空格字符存在，是数字或者正负号则开始做类型转
-       换，之后检测到非数字(包括结束符 \0) 字符时停止转换，返回整型数。
-       否则，返回零，
-功 能: 把字符串转换成长整型数 ASCII to integer 
-*******************************************************************************/
-int atoi(const char *nptr); 
+
+/*-----------------------------------------------------------------------------------
+ @str
+    C-string beginning with the representation of an integral number.
+ @func
+    Convert string to integer
+ @ret
+    On success,the function returns the converted integral number as an int value. If 
+    the converted value would  be out of the range of representable values by an int, 
+    it causes undefined behavior. See @strtol for a more robust cross-platform alter-
+    native when this is a possibility. 
+
+ The function first discards as many whitespace characters (as in isspace) as necess-
+ ary until the first non-whitespace character is found. Then, starting from this cha-
+ racter, takes an optional initial plus or minus sign followed by as many base-10 di-
+ gits as possible, and interprets them as a numerical value. 
+ The string can contain additional characters after those that form the integral num-
+ ber, which are ignored and have no effect on the behavior of this function. If the -
+ first sequence of non-whitespace characters in  @str is not a valid integral number, 
+ or if no such sequence exists because either @str is empty or it contains only whit-
+ espace characters, no conversion is performed and zero is returned.    
+-----------------------------------------------------------------------------------*/
+int atoi (const char * str);
+
 
 /*-----------------------------------------------------------------------------------
  @str
@@ -35,6 +66,7 @@ int atoi(const char *nptr);
 -----------------------------------------------------------------------------------*/
 long int atol ( const char * str );
 
+
 /************************************************************************************
  @ret:
     0 if OK, nonzero on error
@@ -52,12 +84,19 @@ int putenv(char *str);
     (as if malloc was called).
  @size
     New size for the memory block, in bytes.
+ @func
+    Reallocate memory block. Changes the size of the memory block pointed to by @ptr.
  @ret
     A null-pointer indicates either that @size was zero(an thus @ptr was deallocated), 
     or that the function did not allocate storage (and thus the block pointed by @ptr 
     was not modified).(C90 C++98)
     A null-pointer indicates that the function failed to allocate storage, and thus -
     the block pointed by @ptr was not modified.(C99 C11 C++11)
+
+ The function may move the memory block to a new location ( whose address is returned 
+ by the function). The content of the memory block is preserved up to the lesser of -
+ the new and old sizes, even if the block is moved to a new location. If the new size 
+ is larger, the value of the newly allocated portion is indeterminate.    
 
  1 In case that @ptr is a null pointer, the function behaves like @malloc , assigning 
    a new block of size bytes and returning a pointer to its beginning.
@@ -73,10 +112,9 @@ int putenv(char *str);
 reference
     http://www.cplusplus.com/reference/cstdlib/realloc/?kw=realloc
     http://blog.csdn.net/snlying/article/details/4005238
-example:
+example: realloc_eg01()
 -----------------------------------------------------------------------------------*/
 void* realloc (void* ptr, size_t size);
-
 
 /*-----------------------------------------------------------------------------------
  @num
@@ -123,7 +161,25 @@ example:
 -----------------------------------------------------------------------------------*/
 void free (void* ptr);
 
+
 /* Returns the absolute value of parameter n  */
 int abs (int n);
 
 
+
+
+
+
+/* This function is a GNU extension. #include <malloc.h>*/
+size_t malloc_usable_size (void *ptr); 
+
+
+void realloc_eg01()
+{
+	nptr = realloc(ptr, newsize);
+	if (nptr == NULL) {
+		/* Handle error */
+	} else { /* realloc() succeeded */
+		ptr = nptr;
+	}
+}
