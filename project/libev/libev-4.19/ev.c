@@ -1785,23 +1785,22 @@ pendingcb (EV_P_ ev_prepare *w, int revents)
 {
 }
 
-void noinline
-ev_feed_event (EV_P_ void *w, int revents) EV_THROW
+void noinline ev_feed_event (struct ev_loop *loop, void *w, int revents) EV_THROW
 {
-  W w_ = (W)w;
-  int pri = ABSPRI (w_);
+    W w_ = (W)w;
+    int pri = ABSPRI (w_);
 
-  if (expect_false (w_->pending))
-    pendings [pri][w_->pending - 1].events |= revents;
-  else
-    {
-      w_->pending = ++pendingcnt [pri];
-      array_needsize (ANPENDING, pendings [pri], pendingmax [pri], w_->pending, EMPTY2);
-      pendings [pri][w_->pending - 1].w      = w_;
-      pendings [pri][w_->pending - 1].events = revents;
+    if (expect_false (w_->pending)) {
+        loop->pendings[pri][w_->pending - 1].events |= revents;
+    } else {
+        w_->pending = ++loop->pendingcnt [pri];
+        array_needsize(ANPENDING, loop->pendings [pri], loop->pendingmax [pri], 
+			           w_->pending, EMPTY2);
+        loop->pendings [pri][w_->pending - 1].w      = w_;
+        loop->pendings [pri][w_->pending - 1].events = revents;
     }
 
-  pendingpri = NUMPRI - 1;
+    loop->pendingpri = NUMPRI - 1;
 }
 
 inline_speed void
@@ -1830,30 +1829,28 @@ queue_events (EV_P_ W *events, int eventcnt, int type)
 
 /*****************************************************************************/
 
-inline_speed void
-fd_event_nocheck (EV_P_ int fd, int revents)
+inline_speed void fd_event_nocheck (struct ev_loop *loop, int fd, int revents)
 {
-  ANFD *anfd = anfds + fd;
-  ev_io *w;
+    ANFD *anfd = loop->anfds + fd;
+    ev_io *w;
 
-  for (w = (ev_io *)anfd->head; w; w = (ev_io *)((WL)w)->next)
-    {
-      int ev = w->events & revents;
+    for (w = (ev_io *)anfd->head; w; w = (ev_io *)((WL)w)->next) {
+        int ev = w->events & revents;
 
-      if (ev)
-        ev_feed_event (EV_A_ (W)w, ev);
+        if (ev) {
+            ev_feed_event (loop, (W)w, ev);
+        }
     }
 }
 
 /* do not submit kernel events for fds that have reify set */
 /* because that means they changed while we were polling for new events */
-inline_speed void
-fd_event (EV_P_ int fd, int revents)
+inline_speed void fd_event (struct ev_loop *loop,int fd, int revents)
 {
-  ANFD *anfd = anfds + fd;
+    ANFD *anfd = loop->anfds + fd;
 
-  if (expect_true (!anfd->reify))
-    fd_event_nocheck (EV_A_ fd, revents);
+    if(expect_true (!anfd->reify))
+        fd_event_nocheck (loop, fd, revents);
 }
 
 void
@@ -1932,7 +1929,7 @@ inline_size void fd_change (struct ev_loop *loop, int fd, int flags)
 
     if (expect_true(!reify)) {
         ++loop->fdchangecnt;
-        array_needsize (int, fdchanges, fdchangemax, fdchangecnt, EMPTY2);
+        array_needsize (int, loop->fdchanges, loop->fdchangemax, loop->fdchangecnt, EMPTY2);
         loop->fdchanges[loop->fdchangecnt - 1] = fd;
     }
 }
@@ -3470,7 +3467,7 @@ int ev_run (struct ev_loop *loop, int flags)
         ++loop_count;
 #endif
         assert ((loop_done = EVBREAK_RECURSE, 1)); /* assert for side effect */
-        backend_poll (EV_A_ waittime);
+        loop->backend_poll (loop,waittime);
         assert ((loop_done = EVBREAK_CANCEL, 1)); /* assert for side effect */
 
         pipe_write_wanted = 0; /* just an optimisation, no fence needed */

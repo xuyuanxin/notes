@@ -30,7 +30,7 @@ ev_tstamp timeout_blocktime;
    int  backend_fd; /* loop_init->epoll_init */
  ev_tstamp  backend_mintime; /* assumed typical timer resolution */
 static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
-static void (*backend_poll)(EV_P_ ev_tstamp timeout);
+    static void (*backend_poll)(EV_P_ ev_tstamp timeout); /* loop_init->epoll_init */
 
     ANFD *anfds;
     int  anfdmax;
