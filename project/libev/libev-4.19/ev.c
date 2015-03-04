@@ -1557,7 +1557,7 @@ typedef struct
 {
     WL head;
     unsigned char events; /* the events watched for */
-    unsigned char reify;  /* flag set when this ANFD needs reification (EV_ANFD_REIFY, EV__IOFDSET) */
+    unsigned char reify;  /* ev_io_start->fd_change flag set when this ANFD needs reification (EV_ANFD_REIFY, EV__IOFDSET) */
     unsigned char emask;  /* the epoll backend stores the actual kernel mask in here */
     unsigned char unused;
     #if EV_USE_EPOLL
@@ -1862,22 +1862,19 @@ ev_feed_fd_event (EV_P_ int fd, int revents) EV_THROW
 
 /* make sure the external fd watch events are in-sync */
 /* with the kernel/libev internal state */
-inline_size void
-fd_reify (EV_P)
+inline_size void fd_reify (struct ev_loop *loop )
 {
-  int i;
+    int i;
 
-#if EV_SELECT_IS_WINSOCKET || EV_USE_IOCP
-  for (i = 0; i < fdchangecnt; ++i)
-    {
-      int fd = fdchanges [i];
-      ANFD *anfd = anfds + fd;
+    #if EV_SELECT_IS_WINSOCKET || EV_USE_IOCP
+    for (i = 0; i < loop->fdchangecnt; ++i) {
+        int fd = loop->fdchanges [i];
+        ANFD *anfd = loop->anfds + fd;
 
-      if (anfd->reify & EV__IOFDSET && anfd->head)
-        {
-          SOCKET handle = EV_FD_TO_WIN32_HANDLE (fd);
+        if (anfd->reify & EV__IOFDSET && anfd->head) {
+            SOCKET handle = EV_FD_TO_WIN32_HANDLE (fd);
 
-          if (handle != anfd->handle)
+            if (handle != anfd->handle)
             {
               unsigned long arg;
 
@@ -1890,35 +1887,34 @@ fd_reify (EV_P)
             }
         }
     }
-#endif
+    #endif
 
-  for (i = 0; i < fdchangecnt; ++i)
-    {
-      int fd = fdchanges [i];
-      ANFD *anfd = anfds + fd;
-      ev_io *w;
+    for (i = 0; i < loop->fdchangecnt; ++i) {
+        int fd = loop->fdchanges [i];
+        ANFD *anfd = loop->anfds + fd;
+        ev_io *w;
 
-      unsigned char o_events = anfd->events;
-      unsigned char o_reify  = anfd->reify;
+        unsigned char o_events = anfd->events;
+        unsigned char o_reify  = anfd->reify;
 
-      anfd->reify  = 0;
+        anfd->reify  = 0;
 
-      /*if (expect_true (o_reify & EV_ANFD_REIFY)) probably a deoptimisation */
+        /*if (expect_true (o_reify & EV_ANFD_REIFY)) probably a deoptimisation */
         {
-          anfd->events = 0;
+            anfd->events = 0;
 
-          for (w = (ev_io *)anfd->head; w; w = (ev_io *)((WL)w)->next)
-            anfd->events |= (unsigned char)w->events;
+            for (w = (ev_io *)anfd->head; w; w = (ev_io *)((WL)w)->next)
+                anfd->events |= (unsigned char)w->events;
 
-          if (o_events != anfd->events)
-            o_reify = EV__IOFDSET; /* actually |= */
+            if (o_events != anfd->events)
+                o_reify = EV__IOFDSET; /* actually |= */
         }
 
-      if (o_reify & EV__IOFDSET)
-        backend_modify (EV_A_ fd, o_events, anfd->events);
+        if (o_reify & EV__IOFDSET)
+            loop->backend_modify (loop, fd, o_events, anfd->events); /* epoll_modify */
     }
 
-  fdchangecnt = 0;
+    loop->fdchangecnt = 0;
 }
 
 /* something about the given fd changed */
@@ -3363,49 +3359,48 @@ int ev_run (struct ev_loop *loop, int flags)
     EV_INVOKE_PENDING; /* in case we recurse, ensure ordering stays nice and clean */
 
     do {
-#if EV_VERIFY >= 2
+        #if EV_VERIFY >= 2
         ev_verify (EV_A);
-#endif
+        #endif
 
-#ifndef _WIN32
+        #ifndef _WIN32
         if (expect_false (curpid)) /* penalise the forking check even more */
             if (expect_false (getpid () != curpid)) {
                 curpid = getpid ();
                 postfork = 1;
             }
-#endif
+        #endif
 
-#if EV_FORK_ENABLE
-      /* we might have forked, so queue fork handlers */
-      if (expect_false (postfork))
-        if (forkcnt)
-          {
-            queue_events (EV_A_ (W *)forks, forkcnt, EV_FORK);
-            EV_INVOKE_PENDING;
-          }
-#endif
+        #if EV_FORK_ENABLE
+        /* we might have forked, so queue fork handlers */
+        if (expect_false (postfork))
+            if (forkcnt)
+            {
+                queue_events (EV_A_ (W *)forks, forkcnt, EV_FORK);
+                EV_INVOKE_PENDING;
+            }
+        #endif
 
-#if EV_PREPARE_ENABLE
+        #if EV_PREPARE_ENABLE
       /* queue prepare watchers (and execute them) */
-      if (expect_false (preparecnt))
+        if (expect_false (preparecnt))
         {
-          queue_events (EV_A_ (W *)prepares, preparecnt, EV_PREPARE);
-          EV_INVOKE_PENDING;
+            queue_events (EV_A_ (W *)prepares, preparecnt, EV_PREPARE);
+            EV_INVOKE_PENDING;
         }
-#endif
+        #endif
 
-      if (expect_false (loop_done))
-        break;
+        if (expect_false (loop_done))
+            break;
 
-      /* we might have forked, so reify kernel state if necessary */
-      if (expect_false (postfork))
-        loop_fork (EV_A);
+        /* we might have forked, so reify kernel state if necessary */
+        if (expect_false (postfork))
+            loop_fork (EV_A);
+       
+        fd_reify (loop); /* update fd-related kernel structures */
 
-      /* update fd-related kernel structures */
-      fd_reify (EV_A);
-
-      /* calculate blocking time */
-      {
+        /* calculate blocking time */
+        {
         ev_tstamp waittime  = 0.;
         ev_tstamp sleeptime = 0.;
 
@@ -3692,28 +3687,28 @@ ev_io_stop (EV_P_ ev_io *w) EV_THROW
   EV_FREQUENT_CHECK;
 }
 
-void noinline
-ev_timer_start (EV_P_ ev_timer *w) EV_THROW
+void noinline ev_timer_start (struct ev_loop *loop, ev_timer *w) EV_THROW
 {
-  if (expect_false (ev_is_active (w)))
-    return;
+    if (expect_false (ev_is_active (w))) {
+        return;
+    }
 
-  ev_at (w) += mn_now;
+    ev_at(w) += loop->mn_now;
 
-  assert (("libev: ev_timer_start called with negative timer repeat value", w->repeat >= 0.));
+    assert (("libev: ev_timer_start called with negative timer repeat value", w->repeat >= 0.));
 
-  EV_FREQUENT_CHECK;
+    EV_FREQUENT_CHECK;
 
-  ++timercnt;
-  ev_start (EV_A_ (W)w, timercnt + HEAP0 - 1);
-  array_needsize (ANHE, timers, timermax, ev_active (w) + 1, EMPTY2);
-  ANHE_w (timers [ev_active (w)]) = (WT)w;
-  ANHE_at_cache (timers [ev_active (w)]);
-  upheap (timers, ev_active (w));
+    ++loop->timercnt;
+    ev_start (loop, (W)w, loop->timercnt + HEAP0 - 1);
+    array_needsize (ANHE, loop->timers, loop->timermax, ev_active(w) + 1, EMPTY2);
+    ANHE_w (loop->timers [ev_active (w)]) = (WT)w;
+    ANHE_at_cache (loop->timers [ev_active (w)]);
+    upheap (loop->timers, ev_active (w));
 
-  EV_FREQUENT_CHECK;
+    EV_FREQUENT_CHECK;
 
-  /*assert (("libev: internal timer heap corruption", timers [ev_active (w)] == (WT)w));*/
+    /*assert (("libev: internal timer heap corruption", timers [ev_active (w)] == (WT)w));*/
 }
 
 void noinline

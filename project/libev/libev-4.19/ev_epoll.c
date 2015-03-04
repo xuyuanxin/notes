@@ -67,6 +67,10 @@
 
 #define EV_EMASK_EPERM 0x80
 
+/*
+
+ fd_reify
+*/
 static void epoll_modify (ev_loop *loop, int fd, int oev, int nev)
 {
     struct epoll_event ev;

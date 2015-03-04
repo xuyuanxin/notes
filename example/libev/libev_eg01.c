@@ -61,7 +61,7 @@ int main (void)
     ev_timer_init (&timeout_watcher, timeout_cb, 5.5, 0.);
     ev_timer_start (loop, &timeout_watcher);/* notes03 */
 	
-    ev_run (loop, 0); /* now wait for events to arrive */
+    ev_run(loop, 0); /* now wait for events to arrive */
     return 0;         /* break was called, so exit */
 }
 

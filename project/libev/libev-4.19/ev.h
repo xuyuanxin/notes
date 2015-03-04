@@ -343,20 +343,35 @@ typedef struct ev_io
 	int pending;  /* private */
 	int priority; /* private */
 	void *data;   /* rw */				  
-	void (*cb)(struct ev_loop *loop, struct ev_io *w, int revents); /* private */
-    int fd;     /* fd是监听的文件描述符 */
-    int events; /* events是感兴趣的事件。  */
+	void (*cb)(struct ev_loop *loop, struct ev_io *w, int revents); /* ev_io_init private */
+    int fd;     /* ev_io_init */
+    int events; /* ev_io_init ev_io_start interest events  */
 } ev_io;
 #endif
 
 /* invoked after a specific time, repeatable (based on monotonic clock) */
 /* revent EV_TIMEOUT */
+#if 0
 typedef struct ev_timer
 {
   EV_WATCHER_TIME (ev_timer)
 
   ev_tstamp repeat; /* rw */
 } ev_timer;
+#else
+typedef struct ev_timer
+{
+    int active; /* private */			
+    int pending; /* private */			
+	int priority; /* private */
+	void *data;
+    void (*cb)(struct ev_loop *loop, struct ev_timer *w, int revents);	/* timer callback */	
+    ev_tstamp at; /* timer callback */
+
+    ev_tstamp repeat; /* timer loop or once */
+} ev_timer;
+
+#endif
 
 /* invoked at some specific time, possibly repeating at regular intervals (based on UTC) */
 /* revent EV_PERIODIC */
@@ -719,7 +734,9 @@ EV_API_DECL void ev_resume  (EV_P) EV_THROW;
 
 #define ev_io_set(ev,fd_,events_)            \
 	do { (ev)->fd = (fd_); (ev)->events = (events_) | EV__IOFDSET; } while (0)
-#define ev_timer_set(ev,after_,repeat_)      do { ((ev_watcher_time *)(ev))->at = (after_); (ev)->repeat = (repeat_); } while (0)
+#define ev_timer_set(ev,after_,repeat_)      
+do { ((ev_watcher_time *)(ev))->at = (after_); (ev)->repeat = (repeat_); } while (0)
+	
 #define ev_periodic_set(ev,ofs_,ival_,rcb_)  do { (ev)->offset = (ofs_); (ev)->interval = (ival_); (ev)->reschedule_cb = (rcb_); } while (0)
 #define ev_signal_set(ev,signum_)            do { (ev)->signum = (signum_); } while (0)
 #define ev_child_set(ev,pid_,trace_)         do { (ev)->pid = (pid_); (ev)->flags = !!(trace_); } while (0)
@@ -732,15 +749,37 @@ EV_API_DECL void ev_resume  (EV_P) EV_THROW;
 #define ev_cleanup_set(ev)                   /* nop, yes, this is a serious in-joke */
 #define ev_async_set(ev)                     /* nop, yes, this is a serious in-joke */
 
-/* x_ev_io_init */
+#if 0
 #define ev_io_init(ev,cb,fd,events) \
 	do { ev_init ((ev), (cb)); ev_io_set ((ev),(fd),(events)); } while (0)
+#else
+/*-----------------------------------------------------------------------------------
+ @ev: io watcher
+ @cb: io callback
+ @fd: 
+ @events  EV_READ
+-----------------------------------------------------------------------------------*/
+int ev_io_init(ev_io *ev,void *cb,int fd,int events)
+{
+	ev->active	 = 0;
+	ev->pending  = 0;
+	ev->priority = 0;
+	ev->cb		 = cb;
+	ev->fd		 = fd; 
+	ev->events	 = (events) | EV__IOFDSET;
+}
+#endif
 
 
-
-
-		
-#define ev_timer_init(ev,cb,after,repeat)    do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)
+/*
+ @ev:timer watcher  ev_timer*
+ @cb:timer callback
+ @after: period
+ @repeat: loop or once
+*/
+#define ev_timer_init(ev,cb,after,repeat)    
+do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)
+	
 #define ev_periodic_init(ev,cb,ofs,ival,rcb) do { ev_init ((ev), (cb)); ev_periodic_set ((ev),(ofs),(ival),(rcb)); } while (0)
 #define ev_signal_init(ev,cb,signum)         do { ev_init ((ev), (cb)); ev_signal_set ((ev), (signum)); } while (0)
 #define ev_child_init(ev,cb,pid,trace)       do { ev_init ((ev), (cb)); ev_child_set ((ev),(pid),(trace)); } while (0)

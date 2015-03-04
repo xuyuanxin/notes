@@ -29,7 +29,7 @@ ev_tstamp timeout_blocktime;
 
    int  backend_fd; /* loop_init->epoll_init */
  ev_tstamp  backend_mintime; /* assumed typical timer resolution */
-static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
+    static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
     static void (*backend_poll)(EV_P_ ev_tstamp timeout); /* loop_init->epoll_init */
 
     ANFD *anfds;
@@ -91,13 +91,13 @@ static int evpipe [2];
  HANDLE  iocp;
 #endif
 
- int  *fdchanges;
- int  fdchangemax;
- int  fdchangecnt;
+    int  *fdchanges; /* ev_io_start->fd_change */
+    int  fdchangemax;
+    int  fdchangecnt;
 
  ANHE *  timers;
- int  timermax;
- int  timercnt;
+ int  timermax; 
+    int  timercnt; /* ev_timer_start */
 
 #if EV_PERIODIC_ENABLE || EV_GENWRAP
  ANHE *  periodics;
