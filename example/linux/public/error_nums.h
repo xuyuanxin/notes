@@ -1,3 +1,5 @@
+#define EPERM   1  /* Operation not permitted */
+#define ENOENT  2  /* No such file or directory */
 #define EINTR   4  /* Interrupted system call */
 #define ENXIO   6  /* No such device or address */
 #define EACCES 13  /* Permission denied */
@@ -15,17 +17,9 @@ Description
 
 
 
-EPERM
 
-1
 
-Operation not permitted
 
-ENOENT
-
-2
-
-No such file or directory
 
 ESRCH
 

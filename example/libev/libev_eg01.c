@@ -24,7 +24,8 @@ static void stdin_cb (EV_P_ ev_io *w, int revents)
 /* another callback, this time for a time-out */
 static void timeout_cb (EV_P_ ev_timer *w, int revents)
 {
-    puts ("timeout");
+    puts ("timeout\n");
+	
     ev_break (EV_A_ EVBREAK_ONE);
 }
 
@@ -78,7 +79,7 @@ all2: # for cygwin
 ---- setup libev
 1 tar xzf libev-3.9.tar.gz
 2 cd libev-3.9
-3 ./configure --prefix=/usr //specify path,default is /usr/local
+3 ./configure --prefix=/usr     //specify path,default is /usr/local
 4 make
 5 make install
 

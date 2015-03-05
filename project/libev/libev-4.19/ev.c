@@ -1556,7 +1556,7 @@ inline_speed void *ev_realloc (void *ptr, long size)
 typedef struct
 {
     WL head;
-    unsigned char events; /* the events watched for */
+    unsigned char events; /* fd_reify the events watched for */
     unsigned char reify;  /* ev_io_start->fd_change flag set when this ANFD needs reification (EV_ANFD_REIFY, EV__IOFDSET) */
     unsigned char emask;  /* the epoll backend stores the actual kernel mask in here */
     unsigned char unused;
@@ -1574,8 +1574,8 @@ typedef struct
 /* stores the pending event set for a given watcher */
 typedef struct
 {
-  W w;
-  int events; /* the pending event set for the given watcher */
+    W w;
+    int events; /* the pending event set for the given watcher */
 } ANPENDING;
 
 #if EV_USE_INOTIFY
@@ -1890,7 +1890,7 @@ inline_size void fd_reify (struct ev_loop *loop )
     #endif
 
     for (i = 0; i < loop->fdchangecnt; ++i) {
-        int fd = loop->fdchanges [i];
+        int fd = loop->fdchanges[i];
         ANFD *anfd = loop->anfds + fd;
         ev_io *w;
 
@@ -1931,15 +1931,13 @@ inline_size void fd_change (struct ev_loop *loop, int fd, int flags)
 }
 
 /* the given fd is invalid/unusable, so make sure it doesn't hurt us anymore */
-inline_speed void ecb_cold
-fd_kill (EV_P_ int fd)
+inline_speed void ecb_cold fd_kill (struct ev_loop *loop, int fd)
 {
-  ev_io *w;
+    ev_io *w;
 
-  while ((w = (ev_io *)anfds [fd].head))
-    {
-      ev_io_stop (EV_A_ w);
-      ev_feed_event (EV_A_ (W)w, EV_ERROR | EV_READ | EV_WRITE);
+    while ((w = (ev_io *)loop->anfds [fd].head)) {
+        ev_io_stop (loop, w);
+        ev_feed_event (EV_A_ (W)w, EV_ERROR | EV_READ | EV_WRITE);
     }
 }
 
@@ -3085,18 +3083,15 @@ ev_pending_count (EV_P) EV_THROW
   return count;
 }
 
-void noinline
-ev_invoke_pending (EV_P)
+void noinline ev_invoke_pending (struct ev_loop *loop)
 {
-  pendingpri = NUMPRI;
+    loop->pendingpri = NUMPRI;
 
-  while (pendingpri) /* pendingpri possibly gets modified in the inner loop */
-    {
-      --pendingpri;
+    while (loop->pendingpri) {/* pendingpri possibly gets modified in the inner loop */
+        --loop->pendingpri;
 
-      while (pendingcnt [pendingpri])
-        {
-          ANPENDING *p = pendings [pendingpri] + --pendingcnt [pendingpri];
+        while (loop->pendingcnt[loop->pendingpri]) {
+          ANPENDING *p = loop->pendings[loop->pendingpri] + --loop->pendingcnt[loop->pendingpri];
 
           p->w->pending = 0;
           EV_CB_INVOKE (p->w, p->events);
@@ -3497,12 +3492,8 @@ int ev_run (struct ev_loop *loop, int flags)
 #endif
 
       EV_INVOKE_PENDING;
-    }
-  while (expect_true (
-    activecnt
-    && !loop_done
-    && !(flags & (EVRUN_ONCE | EVRUN_NOWAIT))
-  ));
+    } while (expect_true (loop->activecnt && 
+  	     !loop->loop_done && !(flags & (EVRUN_ONCE | EVRUN_NOWAIT))));
 
   if (loop_done == EVBREAK_ONE)
     loop_done = EVBREAK_CANCEL;
@@ -3668,8 +3659,7 @@ void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
     EV_FREQUENT_CHECK;
 }
 
-void noinline
-ev_io_stop (EV_P_ ev_io *w) EV_THROW
+void noinline ev_io_stop (struct ev_loop *loop, ev_io *w) EV_THROW
 {
   clear_pending (EV_A_ (W)w);
   if (expect_false (!ev_is_active (w)))

@@ -30,7 +30,7 @@
     趣的事件。 ev_io从它诞生的那一刻起，便于文件描述符紧密结合在一起了。ev_io的实例被
     存储在loop->anfds的结构中。anfds的结构如下图所示：
             ANFD
-          +--------+      ev_io linked list
+          +--------+      ev_io linked list (ev_watcher_list)
           |  head  |----> w0 ----> w1 ----> w2
           |--------|
           | events |
@@ -40,7 +40,7 @@
              /|\
  loop->anfds  |
     +-----+   |  
-    | fd0 |----  
+    | fd0 |----              ev_loop.anfds  ANFD
     +-----+     
     | fd1 |       
     +-----+       

@@ -593,7 +593,7 @@ int epoll_create1(int flags);
  @event 
  @func
     The epoll_ctl() system call modifies the interest list of the epoll instance ref-
-    erred to by the file descriptor epfd.
+    erred to by the file descriptor @epfd.
  @ret
     Returns 0 on success, or ¨C1 on error
 -----------------------------------------------------------------------------------*/

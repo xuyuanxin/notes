@@ -664,6 +664,8 @@ EV_API_DECL void ev_walk (EV_P_ int types, void (*cb)(EV_P_ int type, void *w)) 
 
 #endif /* prototypes */
 
+enum {};
+
 /* ev_run flags values */
 enum {
   EVRUN_NOWAIT = 1, /* do not block/wait */

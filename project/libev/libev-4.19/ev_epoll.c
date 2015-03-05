@@ -67,10 +67,13 @@
 
 #define EV_EMASK_EPERM 0x80
 
-/*
-
- fd_reify
-*/
+/*-----------------------------------------------------------------------------------
+ @loop: loop
+ @fd:
+ @oev: old event
+ @nev: excepct event
+ fd_reify->epoll_modify
+-----------------------------------------------------------------------------------*/
 static void epoll_modify (ev_loop *loop, int fd, int oev, int nev)
 {
     struct epoll_event ev;
@@ -96,49 +99,43 @@ static void epoll_modify (ev_loop *loop, int fd, int oev, int nev)
     ev.events   = (nev & EV_READ  ? EPOLLIN  : 0)
               | (nev & EV_WRITE ? EPOLLOUT : 0);
 
-  if (expect_true (!epoll_ctl (backend_fd, oev && oldmask != nev ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, fd, &ev)))
-    return;
-
-  if (expect_true (errno == ENOENT))
-    {
-      /* if ENOENT then the fd went away, so try to do the right thing */
-      if (!nev)
-        goto dec_egen;
-
-      if (!epoll_ctl (backend_fd, EPOLL_CTL_ADD, fd, &ev))
+    if (expect_true (!epoll_ctl(loop->backend_fd, 
+		oev && oldmask != nev ? EPOLL_CTL_MOD : EPOLL_CTL_ADD, fd, &ev)))
         return;
-    }
-  else if (expect_true (errno == EEXIST))
-    {
-      /* EEXIST means we ignored a previous DEL, but the fd is still active */
-      /* if the kernel mask is the same as the new mask, we assume it hasn't changed */
-      if (oldmask == nev)
-        goto dec_egen;
 
-      if (!epoll_ctl (backend_fd, EPOLL_CTL_MOD, fd, &ev))
-        return;
-    }
-  else if (expect_true (errno == EPERM))
-    {
-      /* EPERM means the fd is always ready, but epoll is too snobbish */
-      /* to handle it, unlike select or poll. */
-      anfds [fd].emask = EV_EMASK_EPERM;
+    if (expect_true (errno == ENOENT)) {
+        /* if ENOENT then the fd went away, so try to do the right thing */
+        if (!nev)
+            goto dec_egen;
 
-      /* add fd to epoll_eperms, if not already inside */
-      if (!(oldmask & EV_EMASK_EPERM))
-        {
-          array_needsize (int, loop->epoll_eperms, epoll_epermmax, epoll_epermcnt + 1, EMPTY2);
-          epoll_eperms [epoll_epermcnt++] = fd;
+        if (!epoll_ctl (loop->backend_fd, EPOLL_CTL_ADD, fd, &ev))
+            return;
+    } else if (expect_true (errno == EEXIST)){
+        /* EEXIST means we ignored a previous DEL, but the fd is still active */
+        /* if the kernel mask is the same as the new mask, we assume it hasn't changed */
+        if (oldmask == nev)
+            goto dec_egen;
+
+        if (!epoll_ctl (backend_fd, EPOLL_CTL_MOD, fd, &ev))
+            return;
+    } else if (expect_true (errno == EPERM)) {
+        /* EPERM means the fd is always ready, but epoll is too snobbish */
+        /* to handle it, unlike select or poll. */
+        loop->anfds [fd].emask = EV_EMASK_EPERM;
+
+        /* add fd to epoll_eperms, if not already inside */
+        if (!(oldmask & EV_EMASK_EPERM)) {
+            array_needsize (int, loop->epoll_eperms, epoll_epermmax, epoll_epermcnt + 1, EMPTY2);
+            loop->epoll_eperms [loop->epoll_epermcnt++] = fd;
         }
 
-      return;
+        return;
     }
 
-  fd_kill (EV_A_ fd);
+    fd_kill (loop, fd);
 
 dec_egen:
-  /* we didn't successfully call epoll_ctl, so decrement the generation counter again */
-  --anfds [fd].egen;
+  --anfds [fd].egen; /* we didn't successfully call epoll_ctl, so decrement the generation counter again */
 }
 
 /*-----------------------------------------------------------------------------------
