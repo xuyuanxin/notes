@@ -493,8 +493,8 @@ struct signalfd_siginfo
 /*
  * libecb - http://software.schmorp.de/pkg/libecb
  *
- * Copyright (¬©) 2009-2014 Marc Alexander Lehmann <libecb@schmorp.de>
- * Copyright (¬©) 2011 Emanuele Giaquinta
+ * Copyright (Êºè) 2009-2014 Marc Alexander Lehmann <libecb@schmorp.de>
+ * Copyright (Êºè) 2011 Emanuele Giaquinta
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modifica-
@@ -1679,10 +1679,16 @@ inline_size ev_tstamp get_clock (void)
 }
 
 #if EV_MULTIPLICITY
-ev_tstamp
-ev_now (EV_P) EV_THROW
+/*-----------------------------------------------------------------------------------
+ Returns the current "event loop time", which is the time the event loop received ev-
+ ents and started processing them. This timestamp does not change as long as callbac-
+ ks are being processed, and this is also the base time used for relative timers. Yo-
+ u can treat it as the timestamp of the event occurring (or more correctly, libev fi-
+ nding out about it).
+-----------------------------------------------------------------------------------*/
+ev_tstamp ev_now (EV_P) EV_THROW
 {
-  return ev_rt_now;
+    return ev_rt_now;
 }
 #endif
 
@@ -1715,9 +1721,9 @@ ev_sleep (ev_tstamp delay) EV_THROW
 #define MALLOC_ROUND 4096 /* prefer to allocate in chunks of this size, must be 2**n and >> 4 longs */
 
 /*
- @elem: √ø∏ˆ‘™Àÿµƒ¥Û–°
- @cur:  µ±«∞‘™Àÿµƒ∏ˆ ˝
- @cnt:  –Ë“™µƒ∏ˆ ˝
+ @elem: ÊØè‰∏™ÂÖÉÁ¥†ÁöÑÂ§ßÂ∞è
+ @cur:  ÂΩìÂâçÂÖÉÁ¥†ÁöÑ‰∏™Êï∞
+ @cnt:  ÈúÄË¶ÅÁöÑ‰∏™Êï∞
  find a suitable new size for the given array, 
  hopefully by rounding to a nice-to-malloc size 
 */
@@ -1750,10 +1756,10 @@ static void * noinline ecb_cold array_realloc (int elem, void *base, int *cur, i
   memset ((void *)(base), 0, sizeof (*(base)) * (count))
 
 /* 
- @type: ¿‡–Õ int ANFD etc
- @base: type* ¿‡–Õµƒ÷∏’Î£¨
- @cur:  ƒø«∞µƒ¥Û–°
- @cnt:  –Ë“™µƒ¥Û–°
+ @type: Á±ªÂûã int ANFD etc
+ @base: type* Á±ªÂûãÁöÑÊåáÈíàÔºå
+ @cur:  ÁõÆÂâçÁöÑÂ§ßÂ∞è
+ @cnt:  ÈúÄË¶ÅÁöÑÂ§ßÂ∞è
  @init:
 */
 #define array_needsize(type,base,cur,cnt,init)			\
@@ -1785,6 +1791,18 @@ pendingcb (EV_P_ ev_prepare *w, int revents)
 {
 }
 
+/*-----------------------------------------------------------------------------------
+ Feeds the given event set into the event loop, as if the specified event had happen-
+ ed for the specified watcher (which must be a pointer to an initialised but not nec-
+ essarily started event watcher ). Obviously you must not free the watcher as long as 
+ it has pending events.
+
+ Stopping the watcher, letting libev invoke it,or calling ev_clear_pending will clear 
+ the pending event, even if the watcher was not started in the first place.
+
+ See also ev_feed_fd_event and ev_feed_signal_event for related functions that do not 
+ need a watcher.
+-----------------------------------------------------------------------------------*/
 void noinline ev_feed_event (struct ev_loop *loop, void *w, int revents) EV_THROW
 {
     W w_ = (W)w;
@@ -1793,11 +1811,11 @@ void noinline ev_feed_event (struct ev_loop *loop, void *w, int revents) EV_THRO
     if (expect_false (w_->pending)) {
         loop->pendings[pri][w_->pending - 1].events |= revents;
     } else {
-        w_->pending = ++loop->pendingcnt [pri];
-        array_needsize(ANPENDING, loop->pendings [pri], loop->pendingmax [pri], 
+        w_->pending = ++loop->pendingcnt[pri];
+        array_needsize(ANPENDING, loop->pendings[pri], loop->pendingmax[pri], 
 			           w_->pending, EMPTY2);
-        loop->pendings [pri][w_->pending - 1].w      = w_;
-        loop->pendings [pri][w_->pending - 1].events = revents;
+        loop->pendings[pri][w_->pending - 1].w      = w_;
+        loop->pendings[pri][w_->pending - 1].events = revents;
     }
 
     loop->pendingpri = NUMPRI - 1;
@@ -2557,56 +2575,136 @@ ev_embeddable_backends (void) EV_THROW
   return flags;
 }
 
+/* Returns one of the EVBACKEND_* flags indicating the event backend in use. */
 unsigned int ev_backend (struct ev_loop *loop) EV_THROW
 {
-    return backend;
+    return loop->backend;
 }
 
 #if EV_FEATURE_API
-unsigned int
-ev_iteration (EV_P) EV_THROW
+/*-----------------------------------------------------------------------------------
+ Returns the current iteration count for the event loop, which is identical to the n-
+ umber of times libev did poll for new events. It starts at 0 and happily wraps arou-
+ nd with enough iterations.
+
+ This value can sometimes be useful as a generation counter of sorts ( it "ticks" the 
+ number of loop iterations ) , as it roughly corresponds with ev_prepare and ev_check 
+ calls - and is incremented between the prepare and check phases.
+-----------------------------------------------------------------------------------*/
+unsigned int ev_iteration (struct ev_loop *loop) EV_THROW
 {
-  return loop_count;
+    return loop->loop_count;
 }
 
-unsigned int
-ev_depth (EV_P) EV_THROW
+/*-----------------------------------------------------------------------------------
+ Returns the number of times @ev_run was entered minus the number of times @ev_run w-
+ as exited normally, in other words, the recursion depth.
+
+ Outside @ev_run, this number is zero. In a callback, this number is 1,unless @ev_run 
+ was invoked recursively (or from another thread), in which case it is higher.
+
+ Leaving @ev_run abnormally (setjmp/longjmp, cancelling the thread, throwing an exce-
+ ption etc.), doesn't count as "exit" - consider this as a hint to avoid such ungent-
+ leman-like behaviour unless it's really convenient, in which case it is fully suppo-
+ rted.
+-----------------------------------------------------------------------------------*/
+unsigned int ev_depth (struct ev_loop *loop) EV_THROW
 {
-  return loop_depth;
+    return loop->loop_depth;
 }
 
-void
-ev_set_io_collect_interval (EV_P_ ev_tstamp interval) EV_THROW
+
+/*-----------------------------------------------------------------------------------
+ These advanced functions influence the time that libev will spend waiting for events. 
+ Both time intervals are by default 0, meaning that libev will try to invoke timer/p-
+ eriodic callbacks and I/O callbacks with minimum latency.
+
+ Setting these to a higher value (the interval must be >= 0) allows libev to delay i-
+ nvocation of I/O and timer/periodic callbacks to increase efficiency of loop iterat-
+ ions (or to increase power-saving opportunities).
+
+ The idea is that sometimes your program runs just fast enough to handle one (or ver-
+ y few) event(s) per loop iteration. While this makes the program responsive, it also 
+ wastes a lot of CPU time to poll for new events,especially with backends like @select 
+ which have a high overhead for the actual polling but can deliver many events at once.
+
+ By setting a higher io collect interval you allow libev to spend more time collecting 
+ I/O events, so you can handle more events per iteration, at the cost of increasing -
+ latency. Timeouts (both @ev_periodic and @ev_timer) will not be affected. Setting t-
+ his to a non-null value will introduce an additional @ev_sleep call into most loop -
+ iterations.The sleep time ensures that libev will not poll for I/O events more often 
+ then once per this interval, on average (as long as the host time resolution is good 
+ enough).
+
+ Likewise, by setting a higher timeout collect interval you allow libev to spend more 
+ time collecting timeouts, at the expense of increased latency/jitter/inexactness(the 
+ watcher callback will be called later). ev_io watchers will not be affected. Setting 
+ this to a non-null value will not introduce any overhead in libev.
+
+ Many (busy) programs can usually benefit by setting the I/O collect interval to a v-
+ alue near 0.1 or so, which is often enough for interactive servers (of course not f-
+ or games), likewise for timeouts . It usually doesn't make much sense to set it to a 
+ lower value than 0.01, as this approaches the timing granularity of most systems. N-
+ ote that if you do transactions with the outside world and you can't increase the p-
+ arallelity, then this setting will limit your transaction rate ( if you need to poll 
+ once per transaction and the I/O collect interval is 0.01, then you can't do more t-
+ han 100 transactions per second).
+
+ Setting the timeout collect interval can improve the opportunity for saving power, -
+ as the program will "bundle" timer callback invocations that are "near" in time tog-
+ ether, by delaying some, thus reducing the number of times the process sleeps and w-
+ akes up again. Another useful technique to reduce iterations/wake-ups is to use @ev_periodic 
+ watchers and make sure they fire on, say, one-second boundaries only.
+
+ Example: we only need 0.1s timeout granularity, and we wish not to poll more often -
+ than 100 times per second:
+
+   ev_set_timeout_collect_interval (EV_DEFAULT_UC_ 0.1);
+   ev_set_io_collect_interval (EV_DEFAULT_UC_ 0.01);
+-----------------------------------------------------------------------------------*/
+void ev_set_io_collect_interval (EV_P_ ev_tstamp interval) EV_THROW
 {
   io_blocktime = interval;
 }
 
-void
-ev_set_timeout_collect_interval (EV_P_ ev_tstamp interval) EV_THROW
+void ev_set_timeout_collect_interval (EV_P_ ev_tstamp interval) EV_THROW
 {
   timeout_blocktime = interval;
 }
 
-void
-ev_set_userdata (EV_P_ void *data) EV_THROW
+
+/*-----------------------------------------------------------------------------------
+ Set and retrieve a single void * associated with a loop. When @ev_set_userdata has -
+ never been called, then @ev_userdata returns 0.
+
+ These two functions can be used to associate arbitrary data with a loop, and are in-
+ tended solely for the @invoke_pending_cb, release and acquire callbacks described a-
+ bove, but of course can be (ab-)used for any other purpose as well.
+-----------------------------------------------------------------------------------*/
+void ev_set_userdata (struct ev_loop *loop, void *data) EV_THROW
 {
-  userdata = data;
+    loop->userdata = data;
 }
 
-void *
-ev_userdata (EV_P) EV_THROW
+void *ev_userdata (struct ev_loop *loop ) EV_THROW
 {
-  return userdata;
+    return loop->userdata;
 }
 
-void
-ev_set_invoke_pending_cb (EV_P_ ev_loop_callback invoke_pending_cb) EV_THROW
+/*-----------------------------------------------------------------------------------
+ This overrides the invoke pending functionality of the loop: Instead of invoking all 
+ pending watchers when there are any, @ev_run will call this callback instead. This -
+ is useful, for example, when you want to invoke the actual watchers inside another -
+ context (another thread etc.).
+
+ If you want to reset the callback, use @ev_invoke_pending as new callback.
+-----------------------------------------------------------------------------------*/
+void ev_set_invoke_pending_cb (struct ev_loop *loop, ev_loop_callback invoke_pending_cb) EV_THROW
 {
-  invoke_cb = invoke_pending_cb;
+    loop->invoke_cb = invoke_pending_cb;
 }
 
-void
-ev_set_loop_release_cb (EV_P_ void (*release)(EV_P) EV_THROW, void (*acquire)(EV_P) EV_THROW) EV_THROW
+void ev_set_loop_release_cb (EV_P_ void (*release)(EV_P) EV_THROW, void (*acquire)(EV_P) EV_THROW) EV_THROW
 {
   release_cb = release;
   acquire_cb = acquire;
@@ -2706,9 +2804,30 @@ static void noinline ecb_cold loop_init (struct ev_loop *loop, unsigned int flag
     }
 }
 
-/* free up a loop structure */
-void ecb_cold
-ev_loop_destroy (EV_P)
+/*-----------------------------------------------------------------------------------
+ @loop
+ @func: free up a loop structure 
+
+ Destroys an event @loop object (frees all memory and kernel state etc.). None of the 
+ active event watchers will be stopped in the normal sense,so e.g. ev_is_active might 
+ still return true. It is your responsibility to either stop all watchers cleanly yo-
+ urself before calling this function, or cope with the fact afterwards (which is usu-
+ ally the easiest thing, you can just ignore the watchers and/or free () them for ex-
+ ample).
+
+ Note that certain global state, such as signal state(and installed signal handlers), 
+ will not be freed by this function, and related watchers (such as signal and child -
+ watchers) would need to be stopped manually.
+
+ This function is normally used on loop objects allocated by @ev_loop_new, but it can 
+ also be used on the default loop returned by @ev_default_loop, in which case it is -
+ not thread-safe.
+
+ Note that it is not advisable to call this function on the default loop except in t-
+ he rare occasion where you really need to free its resources. If you need dynamical-
+ ly allocated loops it is better to use @ev_loop_new and @ev_loop_destroy. 
+-----------------------------------------------------------------------------------*/
+void ecb_cold ev_loop_destroy (struct ev_loop *loop)
 {
   int i;
 
@@ -2859,8 +2978,40 @@ loop_fork (EV_P)
 
 #if EV_MULTIPLICITY
 
-struct ev_loop * ecb_cold
-ev_loop_new (unsigned int flags) EV_THROW
+/*-----------------------------------------------------------------------------------
+ @flags  EVFLAG_AUTO EVFLAG_NOENV etc.
+    The @flags argument can be used to specify special behaviour or specific backends 
+    to use, and is usually specified as 0 (or EVFLAG_AUTO).
+ @func @ret
+    This will create and initialise a new event loop object. If the loop could not be 
+    initialised, returns false.
+
+ This function is thread-safe, and one common way to use libev with threads is indeed 
+ to create one loop per thread, and using the default loop in the "main" or "initial" 
+ thread.
+
+
+ If one or more of the backend flags are or'ed into the @flags value, then only these 
+ backends will be tried (in the reverse order as listed here). If none are specified, 
+ all backends in ev_recommended_backends () will be tried.
+
+ Example: Try to create a event loop that uses epoll and nothing else.
+
+   struct ev_loop *epoller = ev_loop_new (EVBACKEND_EPOLL | EVFLAG_NOENV);
+   if (!epoller)
+     fatal ("no epoll found here, maybe it hides under your chair");
+
+ Example: Use whatever libev has to offer, but make sure that kqueue is used if avai-
+ lable.
+
+   struct ev_loop *loop = ev_loop_new (ev_recommended_backends () | EVBACKEND_KQUEUE);
+
+
+EVFLAG_AUTO
+    The default flags value. Use this if you have no clue (it's the right thing, bel-
+    ieve me).
+-----------------------------------------------------------------------------------*/
+struct ev_loop * ecb_cold ev_loop_new (unsigned int flags) EV_THROW
 {
   EV_P = (struct ev_loop *)ev_malloc (sizeof (struct ev_loop));
 
@@ -2913,6 +3064,15 @@ array_verify (EV_P_ W *ws, int cnt)
 #endif
 
 #if EV_FEATURE_API
+/*-----------------------------------------------------------------------------------
+ This function only does something when EV_VERIFY support has been compiled in, which 
+ is the default for non-minimal builds.It tries to go through all internal structures 
+ and checks them for validity. If anything is found to be inconsistent, it will print 
+ an error message to standard error and call abort ().
+
+ This can be used to catch bugs inside libev itself: under normal circumstances, this 
+ function will never abort as of course libev keeps its data structures consistent.
+-----------------------------------------------------------------------------------*/
 void ecb_cold ev_verify (struct ev_loop *loop ) EV_THROW
 {
 #if EV_VERIFY
@@ -3029,6 +3189,39 @@ ev_default_loop (unsigned int flags) EV_THROW
   return ev_default_loop_ptr;
 }
 #else
+/*-----------------------------------------------------------------------------------
+ This returns the "default" event loop object , which is what you should normally use 
+ when you just need "the event loop" . Event loop objects and the flags parameter are 
+ described in more detail in the entry for ev_loop_new.
+
+ If the default loop is already initialised then this function simply returns it (and 
+ ignores the flags. If that is troubling you, check ev_backend () afterwards). Other-
+ wise it will create it with the given flags, which should almost always be 0, unless 
+ the caller is also the one calling ev_run or otherwise qualifies as "the main progr-
+ am".
+
+ If you don't know what event loop to use, use the one returned from this function(or 
+ via the EV_DEFAULT macro).
+
+ Note that this function is not thread-safe, so if you want to use it from multiple -
+ threads, you have to employ some kind of mutex(note also that this case is unlikely, 
+ as loops cannot be shared easily between threads anyway).
+
+ The default loop is the only loop that can handle ev_child watchers, and to do this, 
+ it always registers a handler for SIGCHLD. If this is a problem for your application 
+ you can either create a dynamic loop with ev_loop_new which doesn't do that , or you 
+ can simply overwrite the SIGCHLD signal handler after calling ev_default_init.
+
+ Example: This is the most typical usage.
+
+   if (!ev_default_loop (0))
+     fatal ("could not initialise libev, bad $LIBEV_FLAGS in environment?");
+
+ Example: Restrict libev to the select and poll backends,and do not allow environment 
+ settings to be taken into account:
+
+   ev_default_loop (EVBACKEND_POLL | EVBACKEND_SELECT | EVFLAG_NOENV);
+-----------------------------------------------------------------------------------*/
 struct ev_loop * ecb_cold ev_default_loop (unsigned int flags) EV_THROW
 {
     if (!ev_default_loop_ptr) {
@@ -3057,10 +3250,40 @@ struct ev_loop * ecb_cold ev_default_loop (unsigned int flags) EV_THROW
 
 #endif
 
-void
-ev_loop_fork (EV_P) EV_THROW
+/*-----------------------------------------------------------------------------------
+ This function sets a flag that causes subsequent  @ev_run iterations to reinitialise 
+ the kernel state for backends that have one. Despite the name, you can call it anyt-
+ ime you are allowed to start or stop watchers (except inside an ev_prepare callback), 
+ but it makes most sense after forking, in the child process. You must call it (or u-
+ se EVFLAG_FORKCHECK) in the child before resuming or calling ev_run.
+
+ Again, you have to call it on any loop that you want to re-use after a fork, even if 
+ you do not plan to use the loop in the parent.This is because some kernel interfaces 
+ *cough* kqueue *cough* do funny things during fork.
+
+ On the other hand, you only need to call this function in the child process if and -
+ only if you want to use the event loop in the child. If you just fork+exec or create 
+ a new loop in the child, you don't have to call it at all (in fact,epoll is so badly 
+ broken that it makes a difference,but libev will usually detect this case on its own 
+ and do a costly reset of the backend).
+
+ The function itself is quite fast and  it's usually not a problem to call it just in 
+ case after a fork.
+
+ Example: Automate calling @ev_loop_fork on the default loop when using pthreads.
+
+   static void
+   post_fork_child (void)
+   {
+     ev_loop_fork (EV_DEFAULT);
+   }
+
+   ...
+   pthread_atfork (0, 0, post_fork_child);
+-----------------------------------------------------------------------------------*/
+void ev_loop_fork (struct ev_loop *loop) EV_THROW
 {
-  postfork = 1;
+    loop->postfork = 1;
 }
 
 /*****************************************************************************/
@@ -3071,18 +3294,27 @@ ev_invoke (EV_P_ void *w, int revents)
   EV_CB_INVOKE ((W)w, revents);
 }
 
-unsigned int
-ev_pending_count (EV_P) EV_THROW
+/* Returns the number of pending watchers. zero indicates that no watchers are pending. */
+unsigned int ev_pending_count (struct ev_loop *loop) EV_THROW
 {
-  int pri;
-  unsigned int count = 0;
+    int pri;
+    unsigned int count = 0;
 
-  for (pri = NUMPRI; pri--; )
-    count += pendingcnt [pri];
+    for (pri = NUMPRI; pri--; ) {
+        count += loop->pendingcnt [pri];
+    }
 
-  return count;
+    return count;
 }
 
+/*-----------------------------------------------------------------------------------
+ This call will simply invoke all pending watchers while resetting their pending sta-
+ te. Normally, @ev_run does this automatically when required, but when overriding the 
+ invoke callback this call comes handy. This function can be invoked from a watcher - 
+ this can be useful for example when you want to do some lengthy calculation and want 
+ to pass further event handling to another thread (you still have to make sure only -
+ one thread executes within @ev_invoke_pending or @ev_run of course).
+-----------------------------------------------------------------------------------*/
 void noinline ev_invoke_pending (struct ev_loop *loop)
 {
     loop->pendingpri = NUMPRI;
@@ -3340,6 +3572,91 @@ time_update (EV_P_ ev_tstamp max_block)
     }
 }
 
+/*-----------------------------------------------------------------------------------
+ This function usually is called after you have initialised all your watchers and you 
+ want to start handling events . It will ask the operating system for any new events, 
+ call the watcher callbacks, and then repeat the whole process indefinitely : This is 
+ why event loops are called loops.
+
+ If the flags argument is specified as 0, it will keep handling events until either -
+ no event watchers are active anymore or @ev_break was called.
+
+ The return value is false if there are no more active watchers ( which usually means 
+ "all jobs done" or "deadlock"), and true in all other cases ( which usually means "-
+ you should call @ev_run again").
+
+ Please note that an explicit @ev_break is usually better than relying on all watche-
+ rs to be stopped when deciding when a program has finished (especially in interacti-
+ ve programs), but having a program that automatically loops as long as it has to and 
+ no longer by virtue of relying on its watchers stopping correctly, that is truly a -
+ thing of beauty.
+
+ This function is mostly exception-safe - you can break out of a @ev_run call by cal-
+ ling @longjmp in a callback, throwing a C++ exception and so on. This does not decr-
+ ement the @ev_depth value, nor will it clear any outstanding EVBREAK_ONE breaks.
+
+ A flags value of EVRUN_NOWAIT will look for new events, will handle those events an-
+ d any already outstanding ones, but will not wait and block your process in case th-
+ ere are no events and will return after one iteration of the loop. This is sometimes 
+ useful to poll and handle new events while doing lengthy calculations, to keep the -
+ program responsive.
+
+ A flags value of EVRUN_ONCE will look for new events (waiting if necessary) and will 
+ handle those and any already outstanding ones. It will block your process until at -
+ least one new event arrives (which could be an event internal to libev itself, so t-
+ here is no guarantee that a user-registered callback will be called), and will retu-
+ rn after one iteration of the loop.
+
+ This is useful if you are waiting for some external event in conjunction with somet-
+ hing not expressible using other libev watchers (i.e. "roll your own ev_run"). Howe-
+ ver, a pair of ev_prepare/ev_check watchers is usually a better approach for this k-
+ ind of thing.
+
+ Here are the gory details of what @ev_run does ( this is for your understanding, not 
+ a guarantee that things will work exactly like this in future versions):
+
+   - Increment loop depth.
+   - Reset the ev_break status.
+   - Before the first iteration, call any pending watchers.
+   LOOP:
+   - If EVFLAG_FORKCHECK was used, check for a fork.
+   - If a fork was detected (by any means), queue and call all fork watchers.
+   - Queue and call all prepare watchers.
+   - If ev_break was called, goto FINISH.
+   - If we have been forked, detach and recreate the kernel state
+     as to not disturb the other process.
+   - Update the kernel state with all outstanding changes.
+   - Update the "event loop time" (ev_now ()).
+   - Calculate for how long to sleep or block, if at all
+     (active idle watchers, EVRUN_NOWAIT or not having
+     any active watchers at all will result in not sleeping).
+   - Sleep if the I/O and timer collect interval say so.
+   - Increment loop iteration counter.
+   - Block the process, waiting for any events.
+   - Queue all outstanding I/O (fd) events.
+   - Update the "event loop time" (ev_now ()), and do time jump adjustments.
+   - Queue all expired timers.
+   - Queue all expired periodics.
+   - Queue all idle watchers with priority higher than that of pending events.
+   - Queue all check watchers.
+   - Call all queued watchers in reverse order (i.e. check watchers first).
+     Signals and child watchers are implemented as I/O watchers, and will
+     be handled here by queueing them when their watcher gets executed.
+   - If ev_break has been called, or EVRUN_ONCE or EVRUN_NOWAIT
+     were used, or there are no active watchers, goto FINISH, otherwise
+     continue with step LOOP.
+   FINISH:
+   - Reset the ev_break status iff it was EVBREAK_ONE.
+   - Decrement the loop depth.
+   - Return.
+
+ Example: Queue some jobs and then loop until no events are outstanding anymore.
+
+   ... queue jobs here, make sure they register event watchers as long
+   ... as they still have work to do (even an idle watcher will do..)
+   ev_run (my_loop, 0);
+   ... jobs done or somebody called break. yeah!
+-----------------------------------------------------------------------------------*/
 int ev_run (struct ev_loop *loop, int flags)
 {
     #if EV_FEATURE_API
@@ -3505,10 +3822,24 @@ int ev_run (struct ev_loop *loop, int flags)
   return activecnt;
 }
 
-void
-ev_break (EV_P_ int how) EV_THROW
+/*-----------------------------------------------------------------------------------
+ @loop
+ @how  EVBREAK_ONE EVBREAK_ALL
+ @func
+    Can be used to make a call to @ev_run return early (but only after it has proces-
+    sed all outstanding events). 
+
+ This "break state" will be cleared on the next call to  @ev_run . It is safe to call 
+ @ev_break from outside any @ev_run calls, too, in which case it will have no effect.
+
+EVBREAK_ONE
+    will make the innermost @ev_run call return
+EVBREAK_ALL
+    will make all nested @ev_run calls return.
+-----------------------------------------------------------------------------------*/
+void ev_break (struct ev_loop *loop, int how) EV_THROW
 {
-  loop_done = how;
+    loop->loop_done = how;
 }
 
 void ev_ref (struct ev_loop *loop) EV_THROW
@@ -3522,20 +3853,48 @@ ev_unref (EV_P) EV_THROW
   --activecnt;
 }
 
-void
-ev_now_update (EV_P) EV_THROW
+/*-----------------------------------------------------------------------------------
+ Establishes the current time by querying the kernel, updating the time returned by - 
+ @ev_now in the progress. This is a costly operation and is usually done automatical-
+ ly within @ev_run.
+
+ This function is rarely useful, but when some event callback runs for a very long t-
+ ime without entering the event loop, updating libev's idea of the current time is  a 
+ good idea.
+
+ See also The special problem of time updates in the ev_timer section.
+-----------------------------------------------------------------------------------*/
+void ev_now_update (struct ev_loop *loop) EV_THROW
 {
-  time_update (EV_A_ 1e100);
+    time_update (loop, 1e100);
 }
 
-void
-ev_suspend (EV_P) EV_THROW
+/*-----------------------------------------------------------------------------------
+ These two functions suspend and resume an event loop, for use when the loop is not -
+ used for a while and timeouts should not be processed.
+
+ A typical use case would be an interactive program such as a game: When the user pr-
+ esses ^Z to suspend the game and resumes it an hour later it would be best to handle 
+ timeouts as if no time had actually passed while the program was suspended. This can 
+ be achieved by calling @ev_suspend in your SIGTSTP handler, sending yourself a SIGSTOP 
+ and calling @ev_resume directly afterwards to resume timer processing.
+
+ Effectively, all @ev_timer watchers will be delayed by the time spend between @ev_suspend 
+ and @ev_resume, and all @ev_periodic watchers will be rescheduled (that is,they will 
+ lose any events that would have occurred while suspended).
+
+ After calling @ev_suspend you must not call any function on the given loop other th-
+ an @ev_resume, and you must not call @ev_resume without a previous call to @ev_suspend.
+
+ Calling ev_suspend/ev_resume has the side effect of updating the event loop time (s-
+ ee @ev_now_update).
+-----------------------------------------------------------------------------------*/
+void ev_suspend (struct ev_loop *loop) EV_THROW
 {
-  ev_now_update (EV_A);
+    ev_now_update (loop);
 }
 
-void
-ev_resume (EV_P) EV_THROW
+void ev_resume (struct ev_loop *loop) EV_THROW
 {
   ev_tstamp mn_prev = mn_now;
 
@@ -3628,9 +3987,9 @@ ev_stop (EV_P_ W w)
 /*-----------------------------------------------------------------------------------
  @loop
  @w
-    ev_io_init≥ı ºªØ∫Ûµƒwatcher
+    ev_io_initÂàùÂßãÂåñÂêéÁöÑwatcher
  @func
-    ∞—@wπ“µΩ@loop…œ
+    Êää@wÊåÇÂà∞@loop‰∏ä
 -----------------------------------------------------------------------------------*/
 void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
 {
@@ -4902,3 +5261,102 @@ ev_walk (EV_P_ int types, void (*cb)(EV_P_ int type, void *w)) EV_THROW
   #include "ev_wrap.h"
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <ev.h>    // a single header file is required
+#include <stdio.h> 
+
+int main()
+{
+	ev_tstamp  curt,sleept=2.0;
+	unsigned int be_flags = 0;
+	
+    printf("version major:%d minor:%d\n", ev_version_major(),ev_version_minor());
+	be_flags = ev_supported_backends();
+	printf("Backend Flags:0x%x 0x%x 0x%x\n",be_flags,ev_recommended_backends(),ev_embeddable_backends());
+	ev_feed_signal(); ev_feed_event();
+	
+	curt = ev_time();
+	printf("CurTime:%f sleeping %fs \n",curt,sleept);
+	ev_sleep(sleept);
+	curt = ev_time();
+	printf("Wakeup CurTime:%f\n",curt);
+
+	return 0;
+
+}
+
+
+
+
+int tmp01()
+{
+    ev_default_loop (EVBACKEND_POLL | EVBACKEND_SELECT | EVFLAG_NOENV);
+}
+
+
+
+/*
+
+linux-iu5j:/home/xyx/srccode/libev/libev-4.19 # make install                                                                        
+make[1]: Entering directory `/home/xyx/srccode/libev/libev-4.19'                                                                    
+ /bin/mkdir -p '/usr/lib'                                                                                                           
+ /bin/sh ./libtool   --mode=install /usr/bin/install -c   libev.la '/usr/lib'                                                       
+libtool: install: /usr/bin/install -c .libs/libev.so.4.0.0 /usr/lib/libev.so.4.0.0                                                  
+libtool: install: (cd /usr/lib && { ln -s -f libev.so.4.0.0 libev.so.4 || { rm -f libev.so.4 && ln -s libev.so.4.0.0 libev.so.4; }; 
+})                                                                                                                                  
+libtool: install: (cd /usr/lib && { ln -s -f libev.so.4.0.0 libev.so || { rm -f libev.so && ln -s libev.so.4.0.0 libev.so; }; })    
+libtool: install: /usr/bin/install -c .libs/libev.lai /usr/lib/libev.la                                                             
+libtool: install: /usr/bin/install -c .libs/libev.a /usr/lib/libev.a                                                                
+libtool: install: chmod 644 /usr/lib/libev.a                                                                                        
+libtool: install: ranlib /usr/lib/libev.a                                                                                           
+libtool: finish: PATH="/home/xyx/bin:/usr/local/bin:/usr/bin:/sbin:/usr/sbin:/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/games:/usr/lib/mi
+t/bin:/usr/lib/mit/sbin:/sbin" ldconfig -n /usr/lib                                                                                 
+----------------------------------------------------------------------                                                              
+Libraries have been installed in:                                                                                                   
+   /usr/lib                                                                                                                         
+                                                                                                                                    
+If you ever happen to want to link against installed libraries                                                                      
+in a given directory, LIBDIR, you must either use libtool, and                                                                      
+specify the full pathname of the library, or use the `-LLIBDIR'                                                                     
+flag during linking and do at least one of the following:                                                                           
+   - add LIBDIR to the `LD_LIBRARY_PATH' environment variable                                                                       
+     during execution                                                                                                               
+   - add LIBDIR to the `LD_RUN_PATH' environment variable                                                                           
+     during linking                                                                                                                 
+   - use the `-Wl,-rpath -Wl,LIBDIR' linker flag                                                                                    
+   - have your system administrator add LIBDIR to `/etc/ld.so.conf'                                                                 
+                                                                                                                                    
+See any operating system documentation about shared libraries for                                                                   
+more information, such as the ld(1) and ld.so(8) manual pages.                                                                      
+----------------------------------------------------------------------                                                              
+ /bin/mkdir -p '/usr/include'                                                                                                       
+ /usr/bin/install -c -m 644 ev.h ev++.h event.h '/usr/include'                                                                      
+ /bin/mkdir -p '/usr/share/man/man3'                                                                                                
+ /usr/bin/install -c -m 644 ev.3 '/usr/share/man/man3'                                                                              
+make[1]: Leaving directory `/home/xyx/srccode/libev/libev-4.19'
+
+
+LD_RUN_PATH=/usr/local/lib/
+export LD_RUN_PATH
+#gcc  -L/usr/local/lib gf_libev.c -lev
+all:
+	gcc -LLIBDIR libev_eg01.c -lev
+all2: # for cygwin
+	gcc  -L/usr/local/lib libev_eg01.c -lev	 	
+gf: # for cygwin
+	gcc  -L/usr/local/lib gf_libev.c -lev	
+
+*/
