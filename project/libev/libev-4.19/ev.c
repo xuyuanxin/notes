@@ -493,8 +493,8 @@ struct signalfd_siginfo
 /*
  * libecb - http://software.schmorp.de/pkg/libecb
  *
- * Copyright (漏) 2009-2014 Marc Alexander Lehmann <libecb@schmorp.de>
- * Copyright (漏) 2011 Emanuele Giaquinta
+ * Copyright (©) 2009-2014 Marc Alexander Lehmann <libecb@schmorp.de>
+ * Copyright (©) 2011 Emanuele Giaquinta
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modifica-
@@ -1555,7 +1555,7 @@ inline_speed void *ev_realloc (void *ptr, long size)
 /* file descriptor info structure */
 typedef struct
 {
-    WL head;
+    WL head; /* ev_io_start */
     unsigned char events; /* fd_reify the events watched for */
     unsigned char reify;  /* ev_io_start->fd_change flag set when this ANFD needs reification (EV_ANFD_REIFY, EV__IOFDSET) */
     unsigned char emask;  /* the epoll backend stores the actual kernel mask in here */
@@ -1721,9 +1721,9 @@ ev_sleep (ev_tstamp delay) EV_THROW
 #define MALLOC_ROUND 4096 /* prefer to allocate in chunks of this size, must be 2**n and >> 4 longs */
 
 /*
- @elem: 每个元素的大小
- @cur:  当前元素的个数
- @cnt:  需要的个数
+ @elem: ÿ��Ԫ�صĴ�С
+ @cur:  ��ǰԪ�صĸ���
+ @cnt:  ��Ҫ�ĸ���
  find a suitable new size for the given array, 
  hopefully by rounding to a nice-to-malloc size 
 */
@@ -1756,10 +1756,10 @@ static void * noinline ecb_cold array_realloc (int elem, void *base, int *cur, i
   memset ((void *)(base), 0, sizeof (*(base)) * (count))
 
 /* 
- @type: 类型 int ANFD etc
- @base: type* 类型的指针，
- @cur:  目前的大小
- @cnt:  需要的大小
+ @type: int ANFD etc
+ @base: type* 
+ @cur:  current size
+ @cnt:  new size
  @init:
 */
 #define array_needsize(type,base,cur,cnt,init)			\
@@ -1802,6 +1802,9 @@ pendingcb (EV_P_ ev_prepare *w, int revents)
 
  See also ev_feed_fd_event and ev_feed_signal_event for related functions that do not 
  need a watcher.
+
+ ev_run->ev_feed_event
+ ev_invoke_pending
 -----------------------------------------------------------------------------------*/
 void noinline ev_feed_event (struct ev_loop *loop, void *w, int revents) EV_THROW
 {
@@ -1879,7 +1882,10 @@ ev_feed_fd_event (EV_P_ int fd, int revents) EV_THROW
 }
 
 /* make sure the external fd watch events are in-sync */
-/* with the kernel/libev internal state */
+/* with the kernel/libev internal state 
+
+ ev_run->fd_reify
+*/
 inline_size void fd_reify (struct ev_loop *loop )
 {
     int i;
@@ -3288,10 +3294,14 @@ void ev_loop_fork (struct ev_loop *loop) EV_THROW
 
 /*****************************************************************************/
 
-void
-ev_invoke (EV_P_ void *w, int revents)
+/*-----------------------------------------------------------------------------------
+ Invoke the watcher with the given loop and revents. Neither loop nor revents need to 
+ be valid as long as the watcher callback can deal with that fact, as both are simply 
+ passed through to the callback.
+-----------------------------------------------------------------------------------*/
+void ev_invoke (struct ev_loop *loop, void *w, int revents)
 {
-  EV_CB_INVOKE ((W)w, revents);
+    EV_CB_INVOKE ((W)w, revents);
 }
 
 /* Returns the number of pending watchers. zero indicates that no watchers are pending. */
@@ -3314,6 +3324,8 @@ unsigned int ev_pending_count (struct ev_loop *loop) EV_THROW
  this can be useful for example when you want to do some lengthy calculation and want 
  to pass further event handling to another thread (you still have to make sure only -
  one thread executes within @ev_invoke_pending or @ev_run of course).
+
+ ev_feed_event
 -----------------------------------------------------------------------------------*/
 void noinline ev_invoke_pending (struct ev_loop *loop)
 {
@@ -3931,31 +3943,35 @@ wlist_del (WL *head, WL elem)
 }
 
 /* internal, faster, version of ev_clear_pending */
-inline_speed void
-clear_pending (EV_P_ W w)
+inline_speed void clear_pending (struct ev_loop *loop, W w)
 {
-  if (w->pending)
-    {
+    if (w->pending) {
       pendings [ABSPRI (w)][w->pending - 1].w = (W)&pending_w;
       w->pending = 0;
     }
 }
 
-int
-ev_clear_pending (EV_P_ void *w) EV_THROW
-{
-  W w_ = (W)w;
-  int pending = w_->pending;
+/*-----------------------------------------------------------------------------------
+ If the watcher is pending, this function clears its pending status and returns its -
+ revents bitset (as if its callback was invoked). If the watcher isn't pending it do-
+ es nothing and returns 0.
 
-  if (expect_true (pending))
-    {
-      ANPENDING *p = pendings [ABSPRI (w_)] + pending - 1;
-      p->w = (W)&pending_w;
-      w_->pending = 0;
-      return p->events;
+ Sometimes it can be useful to "poll" a watcher instead of waiting for its callback -
+ to be invoked, which can be accomplished with this function.
+-----------------------------------------------------------------------------------*/
+int ev_clear_pending (struct ev_loop *loop, void *w) EV_THROW
+{
+    W w_ = (W)w;
+    int pending = w_->pending;
+
+    if (expect_true (pending)) {
+        ANPENDING *p = loop->pendings [ABSPRI (w_)] + pending - 1;
+        p->w = (W)&loop->pending_w;
+        w_->pending = 0;
+        return p->events;
+    } else {
+        return 0;
     }
-  else
-    return 0;
 }
 
 inline_size void
@@ -3985,11 +4001,12 @@ ev_stop (EV_P_ W w)
 
 
 /*-----------------------------------------------------------------------------------
- @loop
- @w
-    ev_io_init初始化后的watcher
- @func
-    把@w挂到@loop上
+ Starts (activates) the given watcher. Only active watchers will receive events. If -
+ the watcher is already active nothing will happen.
+ 
+ Example: Start the ev_io watcher that is being abused as example in this whole sect-
+ ion.
+	ev_io_start (EV_DEFAULT_UC, &w);
 -----------------------------------------------------------------------------------*/
 void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
 {
@@ -4018,22 +4035,32 @@ void noinline ev_io_start (struct ev_loop *loop, ev_io *w) EV_THROW
     EV_FREQUENT_CHECK;
 }
 
+/*-----------------------------------------------------------------------------------
+ Stops the given watcher if active, and clears the pending status(whether the watcher 
+ was active or not).
+
+ It is possible that stopped watchers are pending - for example, non-repeating timers 
+ are being stopped when they become pending - but calling ev_TYPE_stop ensures that -
+ the watcher is neither active nor pending. If you want to free or reuse the memory -
+ used by the watcher it is therefore a good idea to always call its ev_TYPE_stop fun-
+ ction.
+-----------------------------------------------------------------------------------*/
 void noinline ev_io_stop (struct ev_loop *loop, ev_io *w) EV_THROW
 {
-  clear_pending (EV_A_ (W)w);
-  if (expect_false (!ev_is_active (w)))
-    return;
+    clear_pending (loop, (W)w);
+    if (expect_false (!ev_is_active (w)))
+        return;
 
-  assert (("libev: ev_io_stop called with illegal fd (must stay constant after start!)", w->fd >= 0 && w->fd < anfdmax));
+    assert (("libev: ev_io_stop called with illegal fd (must stay constant after start!)", w->fd >= 0 && w->fd < anfdmax));
 
-  EV_FREQUENT_CHECK;
+    EV_FREQUENT_CHECK;
 
-  wlist_del (&anfds[w->fd].head, (WL)w);
-  ev_stop (EV_A_ (W)w);
+    wlist_del (&anfds[w->fd].head, (WL)w);
+    ev_stop (EV_A_ (W)w);
 
-  fd_change (EV_A_ w->fd, EV_ANFD_REIFY);
+    fd_change (EV_A_ w->fd, EV_ANFD_REIFY);
 
-  EV_FREQUENT_CHECK;
+    EV_FREQUENT_CHECK;
 }
 
 void noinline ev_timer_start (struct ev_loop *loop, ev_timer *w) EV_THROW
@@ -5262,101 +5289,3 @@ ev_walk (EV_P_ int types, void (*cb)(EV_P_ int type, void *w)) EV_THROW
 #endif
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#include <ev.h>    // a single header file is required
-#include <stdio.h> 
-
-int main()
-{
-	ev_tstamp  curt,sleept=2.0;
-	unsigned int be_flags = 0;
-	
-    printf("version major:%d minor:%d\n", ev_version_major(),ev_version_minor());
-	be_flags = ev_supported_backends();
-	printf("Backend Flags:0x%x 0x%x 0x%x\n",be_flags,ev_recommended_backends(),ev_embeddable_backends());
-	ev_feed_signal(); ev_feed_event();
-	
-	curt = ev_time();
-	printf("CurTime:%f sleeping %fs \n",curt,sleept);
-	ev_sleep(sleept);
-	curt = ev_time();
-	printf("Wakeup CurTime:%f\n",curt);
-
-	return 0;
-
-}
-
-
-
-
-int tmp01()
-{
-    ev_default_loop (EVBACKEND_POLL | EVBACKEND_SELECT | EVFLAG_NOENV);
-}
-
-
-
-/*
-
-linux-iu5j:/home/xyx/srccode/libev/libev-4.19 # make install                                                                        
-make[1]: Entering directory `/home/xyx/srccode/libev/libev-4.19'                                                                    
- /bin/mkdir -p '/usr/lib'                                                                                                           
- /bin/sh ./libtool   --mode=install /usr/bin/install -c   libev.la '/usr/lib'                                                       
-libtool: install: /usr/bin/install -c .libs/libev.so.4.0.0 /usr/lib/libev.so.4.0.0                                                  
-libtool: install: (cd /usr/lib && { ln -s -f libev.so.4.0.0 libev.so.4 || { rm -f libev.so.4 && ln -s libev.so.4.0.0 libev.so.4; }; 
-})                                                                                                                                  
-libtool: install: (cd /usr/lib && { ln -s -f libev.so.4.0.0 libev.so || { rm -f libev.so && ln -s libev.so.4.0.0 libev.so; }; })    
-libtool: install: /usr/bin/install -c .libs/libev.lai /usr/lib/libev.la                                                             
-libtool: install: /usr/bin/install -c .libs/libev.a /usr/lib/libev.a                                                                
-libtool: install: chmod 644 /usr/lib/libev.a                                                                                        
-libtool: install: ranlib /usr/lib/libev.a                                                                                           
-libtool: finish: PATH="/home/xyx/bin:/usr/local/bin:/usr/bin:/sbin:/usr/sbin:/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/games:/usr/lib/mi
-t/bin:/usr/lib/mit/sbin:/sbin" ldconfig -n /usr/lib                                                                                 
-----------------------------------------------------------------------                                                              
-Libraries have been installed in:                                                                                                   
-   /usr/lib                                                                                                                         
-                                                                                                                                    
-If you ever happen to want to link against installed libraries                                                                      
-in a given directory, LIBDIR, you must either use libtool, and                                                                      
-specify the full pathname of the library, or use the `-LLIBDIR'                                                                     
-flag during linking and do at least one of the following:                                                                           
-   - add LIBDIR to the `LD_LIBRARY_PATH' environment variable                                                                       
-     during execution                                                                                                               
-   - add LIBDIR to the `LD_RUN_PATH' environment variable                                                                           
-     during linking                                                                                                                 
-   - use the `-Wl,-rpath -Wl,LIBDIR' linker flag                                                                                    
-   - have your system administrator add LIBDIR to `/etc/ld.so.conf'                                                                 
-                                                                                                                                    
-See any operating system documentation about shared libraries for                                                                   
-more information, such as the ld(1) and ld.so(8) manual pages.                                                                      
-----------------------------------------------------------------------                                                              
- /bin/mkdir -p '/usr/include'                                                                                                       
- /usr/bin/install -c -m 644 ev.h ev++.h event.h '/usr/include'                                                                      
- /bin/mkdir -p '/usr/share/man/man3'                                                                                                
- /usr/bin/install -c -m 644 ev.3 '/usr/share/man/man3'                                                                              
-make[1]: Leaving directory `/home/xyx/srccode/libev/libev-4.19'
-
-
-LD_RUN_PATH=/usr/local/lib/
-export LD_RUN_PATH
-#gcc  -L/usr/local/lib gf_libev.c -lev
-all:
-	gcc -LLIBDIR libev_eg01.c -lev
-all2: # for cygwin
-	gcc  -L/usr/local/lib libev_eg01.c -lev	 	
-gf: # for cygwin
-	gcc  -L/usr/local/lib gf_libev.c -lev	
-
-*/

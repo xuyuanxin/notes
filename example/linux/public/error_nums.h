@@ -2,10 +2,13 @@
 #define ENOENT  2  /* No such file or directory */
 #define EINTR   4  /* Interrupted system call */
 #define ENXIO   6  /* No such device or address */
+#define EBADF   9  /* Bad file number */
+#define ENOMEM 12  /* Out of memory */
 #define EACCES 13  /* Permission denied */
 #define EEXIST 17  /* File exists */
 #define EINVAL 22  /* Invalid argument */
 #define ENOSYS 38  /* Function not implemented */
+
 /*
 Linux´íÎó´úÂëº¬Òå/Linux Error Code
 
@@ -49,11 +52,6 @@ ENOEXEC
 
 Exec format error
 
-EBADF
-
-9
-
-Bad file number
 
 ECHILD
 
@@ -67,11 +65,7 @@ EAGAIN
 
 Try again
 
-ENOMEM
 
-12
-
-Out of memory
 
 
 

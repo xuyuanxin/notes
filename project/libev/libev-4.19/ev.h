@@ -291,16 +291,40 @@ enum {
   ev_tstamp at;     /* private */
 
 /* base class, nothing to see here unless you subclass */
+#if 0
 typedef struct ev_watcher
 {
   EV_WATCHER (ev_watcher)
 } ev_watcher;
+#else
+typedef struct ev_watcher
+{
+    int active; 
+    int pending;  /* ev_feed_event */
+    int priority;
+    void *data; 
+    void (*cb)(struct ev_loop *loop, struct ev_watcher *w, int revents);
+} ev_watcher;
+#endif
+
 
 /* base class, nothing to see here unless you subclass */
+#if 0
 typedef struct ev_watcher_list
 {
   EV_WATCHER_LIST (ev_watcher_list)
 } ev_watcher_list;
+#else
+typedef struct ev_watcher_list
+{
+    int active; 
+    int pending;
+    int priority;
+    void *data; 
+    void (*cb)(struct ev_loop *loop, struct ev_watcher_list *w, int revents);
+    struct ev_watcher_list *next;
+} ev_watcher_list;
+#endif
 
 /* base class, nothing to see here unless you subclass */
 typedef struct ev_watcher_time
@@ -773,12 +797,22 @@ int ev_io_init(ev_io *ev,void *cb,int fd,int events)
 #endif
 
 
-/*
+/*-----------------------------------------------------------------------------------
  @ev:timer watcher  ev_timer*
  @cb:timer callback
  @after: period
  @repeat: loop or once
-*/
+
+ Configure the timer to trigger after @after seconds. If @repeat is 0. , then it will 
+ automatically be stopped once the timeout is reached. If it is positive, then the t-
+ imer will automatically be configured to trigger again @repeat seconds later, again, 
+ and again, until stopped manually.
+ The timer itself will do a best-effort at avoiding drift, that is , if you configure 
+ a timer to trigger every 10 seconds, then it will normally trigger at exactly 10 se-
+ cond intervals. If, however, your program cannot keep up with the timer ( because it 
+ takes longer than those 10 seconds to do stuff) the timer will not fire more than o-
+ nce per event loop iteration.
+-----------------------------------------------------------------------------------*/
 #define ev_timer_init(ev,cb,after,repeat)    
 do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)
 	
@@ -794,8 +828,8 @@ do { ev_init ((ev), (cb)); ev_timer_set ((ev),(after),(repeat)); } while (0)
 #define ev_cleanup_init(ev,cb)               do { ev_init ((ev), (cb)); ev_cleanup_set ((ev)); } while (0)
 #define ev_async_init(ev,cb)                 do { ev_init ((ev), (cb)); ev_async_set ((ev)); } while (0)
 
-#define ev_is_pending(ev)                    (0 + ((ev_watcher *)(void *)(ev))->pending) /* ro, true when watcher is waiting for callback invocation */
-#define ev_is_active(ev)                     (0 + ((ev_watcher *)(void *)(ev))->active) /* ro, true when the watcher has been started */
+#define ev_is_pending(ev) (0 + ((ev_watcher *)(void *)(ev))->pending) /* ro, true when watcher is waiting for callback invocation */
+#define ev_is_active(ev)  (0 + ((ev_watcher *)(void *)(ev))->active) /* ro, true when the watcher has been started */
 
 #define ev_cb(ev)                            (ev)->cb /* rw */
 

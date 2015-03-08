@@ -49,8 +49,11 @@ int atoi_test(char *str)
 
 int main()
 {
-    printf("INT_MAX:%d INT_MIN:%d\n",INT_MAX,INT_MIN);
+    printf("INT_MAX:0x%x %d INT_MIN:0x%x %d\n",INT_MAX,INT_MAX,INT_MIN,INT_MIN);
 	atoi_test("1");
-	atoi_test("  -123  asdfasdf1234");	
+	atoi_test("  -123  asdfasdf1234");
+	atoi_test("-2147483648");
+	atoi_test("-2147483647");
+	
 	return 0;
 }

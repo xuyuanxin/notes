@@ -456,48 +456,66 @@ const struct timespec *restrict tsptr,const sigset_t *restrict sigmask);
 
 #include <poll.h>
 
-/********** Input events and returned revents for poll ***********/
-#define POLLIN       /*普通或优先级带数据可读 */
-#define POLLRDNORM   /*普通数据可读*/
-#define POLLRDBAND   /*优先级带数据可读*/
-#define POLLPRI      /*高优先级数据可读*/
+/********** Input events and returned revents for @poll ***********/
+#define POLLIN       /* Data other than high-priority data can be read */
+#define POLLRDNORM   /* Equivalent to POLLIN */
+#define POLLRDBAND   /* Priority data can be read (unused on Linux) */
+#define POLLPRI      /* High-priority data can be read */
+#define POLLRDHUP    /* Shutdown on peer socket */
 
-#define POLLOUT      /*普通数据可写*/
-#define POLLWRNORM   /*普通数据可写*/
-#define POLLWRBAND   /*优先级带数据可写*/
+#define POLLOUT      /* Normal data can be written */
+#define POLLWRNORM   /* Equivalent to POLLOUT */
+#define POLLWRBAND   /* Priority data can be written */
 
-#define POLLERR      /*发生错误，不可作为@events*/
-#define POLLHUP      /*发生挂起，不可作为@events*/
-#define POLLNVAL     /*描述字不是一个打开的文件，不可作为@events*/
+#define POLLERR      /* An error has occurred */
+#define POLLHUP      /* A hangup has occurred */
+#define POLLNVAL     /* File descriptor is not open */
+
+#define POLLMSG      /* Unused on Linux (and unspecified in SUSv3) */
 
 #define INFTIM       /*是一个负值 @poll的第三个参数,表示永远等待*/
 
-/*******************************************************************************
- To tell the kernel which events we're interested in for each descriptor, we have
- to set the @events member of each array element to one or more of the values in 
- Figure 14.17. On return, the @revents member is set by the kernel, thereby 
- specifying which events have occurred for each descriptor. 
- ******************************************************************************/
+/*-----------------------------------------------------------------------------------
+@events @revents
+   The @events and @revents fields of the pollfd structure are bit masks . The caller 
+   initializes  @events to specify the events to be monitored for the file descriptor 
+   @fd. Upon return from poll(), @revents is set to indicate which of those events a-
+   ctually occurred for this file descriptor. 
+
+   The first group of bits in this table (POLLIN, POLLRDNORM, POLLRDBAND, POLLPRI,and 
+   POLLRDHUP) are concerned with input events. The next group of bits (POLLOUT, POLLWRNORM, 
+   and POLLWRBAND) are concerned with output events. The third group of bits(POLLERR,
+   POLLHUP, and POLLNVAL) are set in the @revents field to return additional informa-
+   tion about the file descriptor.If specified in the @events field, these three bits 
+   are ignored. The final bit (POLLMSG) is unused by poll() on Linux.
+-----------------------------------------------------------------------------------*/
 struct pollfd 
 {
-    int  fd; /* file descriptor to check, or <0 to ignore */
-    short  events; /* events of interest on fd POLLIN等值*/
-    short  revents;  /* events that occurred on fd */
+    int  fd;        /* file descriptor to check, or <0 to ignore */
+    short  events;  /* events of interest on fd. POLLIN etc*/
+    short  revents; /* events that occurred on fd */
 };
 
-/************************************************************************************
- @fdarray: 
-    a pointer to the first element of an array of structures.Each element of the array 
-    is a pollfd structure that specifies the conditions to be tested for a given 
+/*-----------------------------------------------------------------------------------
+ @fds: 
+    a pointer to the first element of an array of structures.Each element of the arr-
+    ay is a  @pollfd structure that specifies the conditions to be tested for a given 
     descriptor, fd.
- @nfds   : 
-    The number of elements in the array of structures is specified by the nfds argument.
- 
- @timeout: INFTIM永远等待 0不等待 大于0等待指定的时间
+ @nfds
+    The number of elements in the array of structures is specified by the nfds argum-
+    ent. The nfds_t data type used to type the  @nfds argument is an unsigned integer 
+    type.
+ @timeout: INFTIM
+    If @timeout equals –1,block until one of the file descriptors listed in the @fds 
+    array is ready (as defined by the corresponding events field) or a signal is cau-
+    ght. If @timeout equals 0, do not block—just perform a check to see which file -
+    descriptors are ready. If @timeout is greater than 0, block for up to @timeout m-
+    illiseconds, until one of the file descriptors in @fds is ready, or until a sign-
+    al is caught.
  @returns: 
-    The return value from @poll is –1 if an error occurred, 0 if no descriptors are 
-    ready before the timer expires,otherwise it is the number of descriptors that have 
-    a nonzero @revents member.
+    The return value from @poll is –1 if an error occurred , 0 if no descriptors are 
+    ready before the timer expires, otherwise it is the number of descriptors that h-
+    ave a nonzero @revents member.
 
  With regard to TCP and UDP sockets, the following conditions cause @poll to return 
  the specified revent. Unfortunately, POSIX leaves many holes (i.e., optional ways 
@@ -513,8 +531,8 @@ struct pollfd
  5 The availability of a new connection on a listening socket can be considered either 
    normal data or priority data. Most implementations consider this normal data.
  6 The completion of a nonblocking connect is considered to make a socket writable.
-************************************************************************************/
-int poll(struct pollfd fdarray[], nfds_t nfds,int timeout);
+-----------------------------------------------------------------------------------*/
+int poll(struct pollfd fds[], nfds_t nfds,int timeout);
 
 
 

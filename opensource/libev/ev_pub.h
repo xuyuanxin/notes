@@ -1,21 +1,6 @@
-typedef struct ev_watcher
-{
-    int active; 
-    int pending;
-    int priority;
-    void *data; 
-    void (*cb)(struct ev_loop *loop, struct ev_watcher *w, int revents);
-} ev_watcher;
 
-typedef struct ev_watcher_list
-{
-    int active; 
-    int pending;
-    int priority;
-    void *data; 
-    void (*cb)(struct ev_loop *loop, struct ev_watcher_list *w, int revents);
-    struct ev_watcher_list *next;
-} ev_watcher_list;
+
+
 
 union ev_any_watcher
 {

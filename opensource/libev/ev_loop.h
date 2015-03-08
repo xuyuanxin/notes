@@ -14,7 +14,7 @@ W * rfeeds;
 int rfeedmax;
 int rfeedcnt;
 
-static ANPENDING *pendings [NUMPRI];
+    static ANPENDING *pendings [NUMPRI]; /* ev_feed_event */
 static int pendingmax [NUMPRI];
 static int pendingcnt [NUMPRI];
 int pendingpri; /* highest priority currently pending */
@@ -25,11 +25,11 @@ ev_tstamp timeout_blocktime;
 
     int  backend; /* loop_init() */
     int  activecnt; /* total number of active events ("refcount") ev_start()*/
-   EV_ATOMIC_T  loop_done;  /* signal by ev_break */
+    EV_ATOMIC_T  loop_done;  /* signal by ev_break */
 
    int  backend_fd; /* loop_init->epoll_init */
  ev_tstamp  backend_mintime; /* assumed typical timer resolution */
-    static void (*backend_modify)(EV_P_ int fd  int oev  int nev);
+    static void (*backend_modify)(EV_P_ int fd  int oev  int nev); /* fd_reify */
     static void (*backend_poll)(EV_P_ ev_tstamp timeout); /* loop_init->epoll_init */
 
     ANFD *anfds;
