@@ -8,4 +8,8 @@ all2: # for cygwin
 gf: 
 	gcc gf_libev.c -lev
 gf2: 
-	gcc  -L/usr/local/lib gf_libev.c -lev		
+	gcc  -L/usr/local/lib gf_libev.c -lev	
+timer: 
+	gcc  -L/usr/local/lib timer_libev_eg.c -lev
+timer2: 
+	gcc timer_libev_eg.c -lev	
