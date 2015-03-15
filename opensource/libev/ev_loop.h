@@ -95,8 +95,8 @@ static int evpipe [2];
     int  fdchangemax;
     int  fdchangecnt;
 
- ANHE *  timers;
- int  timermax; 
+    ANHE *timers;  /* ev_timer_start */
+    int  timermax; 
     int  timercnt; /* ev_timer_start */
 
 #if EV_PERIODIC_ENABLE || EV_GENWRAP

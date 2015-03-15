@@ -2133,25 +2133,23 @@ downheap (ANHE *heap, int N, int k)
 #endif
 
 /* towards the root */
-inline_speed void
-upheap (ANHE *heap, int k)
+inline_speed void upheap (ANHE *heap, int k)
 {
-  ANHE he = heap [k];
+    ANHE he = heap[k];
 
-  for (;;)
-    {
-      int p = HPARENT (k);
+    for (;;) {
+        int p = HPARENT(k);
 
-      if (UPHEAP_DONE (p, k) || ANHE_at (heap [p]) <= ANHE_at (he))
-        break;
+        if (UPHEAP_DONE (p, k) || ANHE_at (heap [p]) <= ANHE_at (he))
+            break;
 
-      heap [k] = heap [p];
-      ev_active (ANHE_w (heap [k])) = k;
-      k = p;
+        heap[k] = heap[p];
+        ev_active (ANHE_w (heap [k])) = k;
+        k = p;
     }
 
-  heap [k] = he;
-  ev_active (ANHE_w (he)) = k;
+    heap[k] = he;
+    ev_active(ANHE_w(he)) = k;
 }
 
 /* move an element suitably so it is in a correct place */
@@ -4076,11 +4074,11 @@ void noinline ev_timer_start (struct ev_loop *loop, ev_timer *w) EV_THROW
     EV_FREQUENT_CHECK;
 
     ++loop->timercnt;
-    ev_start (loop, (W)w, loop->timercnt + HEAP0 - 1);
-    array_needsize (ANHE, loop->timers, loop->timermax, ev_active(w) + 1, EMPTY2);
-    ANHE_w (loop->timers [ev_active (w)]) = (WT)w;
-    ANHE_at_cache (loop->timers [ev_active (w)]);
-    upheap (loop->timers, ev_active (w));
+    ev_start(loop, (W)w, loop->timercnt + HEAP0 - 1);
+    array_needsize(ANHE, loop->timers, loop->timermax, ev_active(w) + 1, EMPTY2);
+    ANHE_w(loop->timers[ev_active(w)]) = (WT)w;
+    ANHE_at_cache(loop->timers[ev_active(w)]);
+    upheap(loop->timers, ev_active(w));
 
     EV_FREQUENT_CHECK;
 
@@ -4117,8 +4115,20 @@ ev_timer_stop (EV_P_ ev_timer *w) EV_THROW
   EV_FREQUENT_CHECK;
 }
 
-void noinline
-ev_timer_again (EV_P_ ev_timer *w) EV_THROW
+/*-----------------------------------------------------------------------------------
+ This will act as if the timer timed out, and restarts it again if it is repeating. -
+ It basically works like calling @ev_timer_stop , updating the timeout to the @repeat 
+ value and calling @ev_timer_start.
+
+ The exact semantics are as in the following rules, all of which will be applied to -
+ the watcher:
+ If the timer is pending, the pending status is always cleared.
+ If the timer is started but non-repeating, stop it (as if it timed out, without inv-
+ oking it).
+ If the timer is repeating, make the repeat value the new timeout and start the time-
+ r, if necessary.
+-----------------------------------------------------------------------------------*/
+void noinline ev_timer_again (struct ev_loop *loop, ev_timer *w) EV_THROW
 {
   EV_FREQUENT_CHECK;
 
@@ -4144,8 +4154,17 @@ ev_timer_again (EV_P_ ev_timer *w) EV_THROW
   EV_FREQUENT_CHECK;
 }
 
-ev_tstamp
-ev_timer_remaining (EV_P_ ev_timer *w) EV_THROW
+/*-----------------------------------------------------------------------------------
+ Returns the remaining time until a timer fires. If the timer is active, then this t-
+ ime is relative to the current event loop time, otherwise it's the timeout value cu-
+ rrently configured.
+
+ That is, after an ev_timer_set (w, 5, 7), ev_timer_remaining returns 5. When the ti-
+ mer is started and one second passes, ev_timer_remaining will return 4. When the ti-
+ mer expires and is restarted, it will return roughly 7 (likely slightly less as cal-
+ lback invocation takes some time, too), and so on.
+-----------------------------------------------------------------------------------*/
+ev_tstamp ev_timer_remaining (EV_P_ ev_timer *w) EV_THROW
 {
   return ev_at (w) - (ev_is_active (w) ? mn_now : 0.);
 }

@@ -5,11 +5,21 @@ need to use an import directive.
 -----------------------------------------------------------------------------------*/
 import java.util.*;
 
-/**
- * This program demonstrates console input.
- * @version 1.10 2004-02-10
- * @author Cay Horstmann
- */
+/*-----------------------------------------------------------------------------------
+ To read console input, you first construct a Scanner that is attached to System.in :
+     Scanner in = new Scanner(System.in);
+ Now you can use the various methods of the Scanner class to read input. For example, 
+ the nextLine method reads a line of input.
+     System.out.print("What is your name? ");
+     String name = in.nextLine();
+ Here, we use the nextLine method because the input might contain spaces. To read a -
+ single word (delimited by whitespace), call
+     String firstName = in.next();
+ To read an integer, use the nextInt method.
+     System.out.print("How old are you? ");
+     int age = in.nextInt();
+ Similarly, the nextDouble method reads the next floating-point number.
+-----------------------------------------------------------------------------------*/
 public class InputTest
 {
    public static void main(String[] args)

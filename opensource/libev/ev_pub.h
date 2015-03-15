@@ -21,17 +21,7 @@ union ev_any_watcher
   struct ev_async async;
 };
 
-/* 定时器watcher */
-typedef struct ev_watcher_time
-{
-    int active; 
-    int pending;
-    int priority;
-    void *data; 
-    void (*cb)(struct ev_loop *loop, struct ev_watcher_time *w, int revents);
 
-    ev_tstamp at;     /* 这个at就是派生类中新的自有成员 ，表示的是at时间触发 */
-} ev_watcher_time;
 
 
 /* 信号watcher */

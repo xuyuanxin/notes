@@ -299,7 +299,7 @@ typedef struct ev_watcher
 #else
 typedef struct ev_watcher
 {
-    int active; 
+    int active;   /* timeridx */
     int pending;  /* ev_feed_event */
     int priority;
     void *data; 
@@ -327,10 +327,23 @@ typedef struct ev_watcher_list
 #endif
 
 /* base class, nothing to see here unless you subclass */
+#if 0
 typedef struct ev_watcher_time
 {
   EV_WATCHER_TIME (ev_watcher_time)
 } ev_watcher_time;
+#else
+typedef struct ev_watcher_time
+{
+    int active; 
+    int pending;
+    int priority;
+    void *data; 
+    void (*cb)(struct ev_loop *loop, struct ev_watcher_time *w, int revents);
+
+    ev_tstamp at;     /* */
+} ev_watcher_time;
+#endif
 
 /* invoked when fd is either EV_READable or EV_WRITEable */
 /* revent EV_READ, EV_WRITE */
@@ -383,14 +396,25 @@ typedef struct ev_timer
   ev_tstamp repeat; /* rw */
 } ev_timer;
 #else
+/*-----------------------------------------------------------------------------------
+ Configure the timer to trigger after @at seconds. If @repeat is 0., then it will au-
+ tomatically be stopped once the timeout is reached. If it is positive,then the timer 
+ will automatically be configured to trigger again  @repeat seconds later, again, and 
+ again, until stopped manually.
+
+ @repeat
+     The current repeat value. Will be used each time the watcher times out or 
+     @ev_timer_again is called, and determines the next timeout (if any), which is a-
+     lso when any modifications are taken into account.
+-----------------------------------------------------------------------------------*/
 typedef struct ev_timer
 {
-    int active; /* private */			
-    int pending; /* private */			
+    int active;   /* private */			
+    int pending;  /* private */			
 	int priority; /* private */
 	void *data;
     void (*cb)(struct ev_loop *loop, struct ev_timer *w, int revents);	/* timer callback */	
-    ev_tstamp at; /* timer callback */
+    ev_tstamp at; /*  */
 
     ev_tstamp repeat; /* timer loop or once */
 } ev_timer;
