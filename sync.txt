@@ -1,3 +1,4 @@
-http://www.wooyun.org/
-http://libemu.carnivore.it/
-http://projectshellcode.com/
+
+http://jarson.asia/resource/CSAPP.pdf
+http://sourceforge.net/projects/nepenthes/files/libemu%20development/   
+Nepenthes -finest collection
