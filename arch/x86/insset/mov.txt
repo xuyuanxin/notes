@@ -1,12 +1,58 @@
-
+----> mov 
 movb S,D         S -> D  传送字节
 movw S,D         S -> D  传送字
 movl S,D         S -> D  传送双字
 
 说明:
-b、l、w表示分别在大小为1、2和4个字节的数据上进程操作
+b、l、w表示分别在大小为1、2和4个字节的数据上进行操作
 
 例子
 执行前  %dh = CD，%eax = 98765432
 执  行  movb %dh,%al
 执行后  %eax = 987654CD
+
+----> movz   Move with zero extension
+movzbw S,D   // S -> D  Move zero-extended byte to word
+movzbl S,D   // S -> D  Move zero-extended byte to double word
+movzwl S,D   // S -> D  Move zero-extended word to double word
+
+With sign expansion, the upper bits of the destination are filled in with copies of -
+the most significant bit of the source value. With zero expansion, the upper bits are 
+filled with zeros. 
+
+例子
+执行前  %dh = CD，%eax = 98765432
+执  行  movzbw %dh,%al
+执行后  %eax = 000000CD
+
+----> movs  Move with sign extension
+movs 有两种含义，有操作数和无操作数是指令的意思不一样
+---->---->有操作数
+movsbw S,D    Move sign-extended byte to word
+movsbl S,D    Move sign-extended byte to double word    
+movswl S,D    Move sign-extended word to double word
+
+例子
+执行前  %dh = CD，%eax = 98765432
+执  行  movsbw %dh,%al
+执行后  %eax = FFFFFFCD
+
+---->---->无操作数:
+从 esi 所指的地方复制一个长字(32-bit)到 edi 所指的地方。每次执行 MOVS 指令时，数据传送
+后，ESI 和 EDI 寄存器会自动改变，为另一次传送做准备。ESI、EDI 可能递增也可能递减，这取
+决于 EFLAGS中 的 DF 标志。如果 DF 被清零则递增，DF 被设置，则递减。CLD 将 DF 清零，STD
+设置DF标志。
+
+例如：linux内核buffer.c中一段代码。
+#define COPYBLK(from,to) \
+__asm__("cld\n\t" \
+ "rep\n\t" \
+ "movsl\n\t" \
+ ::"c" (BLOCK_SIZE/4),"S" (from),"D" (to) \
+ :"cx","di","si")
+ 
+cld   Clear the DF flag in the EFLAGS register
+rep   重复其后的字符串操作指令，重复的次数由CX来决定
+
+这里的 BLOCK_SIZE 是一个逻辑块的大小，为1024字节。这里的嵌入汇编没有输出寄存器，输入寄
+存器分别是CX、SI、DI，改变的寄存器也是这三个寄存器。

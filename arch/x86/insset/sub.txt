@@ -1,0 +1,3 @@
+sub
+
+sub S,D      D=D-S    

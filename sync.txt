@@ -1,4 +1,2 @@
 
-http://jarson.asia/resource/CSAPP.pdf
-http://sourceforge.net/projects/nepenthes/files/libemu%20development/   
-Nepenthes -finest collection
+

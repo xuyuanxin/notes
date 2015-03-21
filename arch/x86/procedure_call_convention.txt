@@ -1,0 +1,164 @@
+
+int swap_add(int *xp, int *yp)
+{
+    int x = *xp;
+    int y = *yp;
+    *xp=y;
+    *yp=x;
+    return x+y;
+}
+
+int caller()
+{
+    int arg1 = 534;
+    int arg2 = 1057;
+    int sum = swap_add(&arg1, &arg2);
+    int diff = arg1 - arg2;
+    return sum * diff;
+}
+
+----> caller stack init 
+		  +------+ <---- %ebp
+		  | used |
+		  +------+ <---- %esp
+
+caller:
+caller 01:  pushl %ebp               Save old %ebp
+caller 02:  movl %esp, %ebp          Set %ebp as frame pointer
+caller 03:  subl $24, %esp           Allocate 24 bytes on stack
+caller 04:  movl $534, -4(%ebp)      Set arg1 to 534
+caller 05:  movl $1057, -8(%ebp)     Set arg2 to 1057
+caller 06:  leal -8(%ebp), %eax      Compute &arg2
+caller 07:  movl %eax, 4(%esp)       Store on stack
+caller 08:  leal -4(%ebp), %eax      Compute &arg1
+caller 09:  movl %eax, (%esp)        Store on stack
+
+		  +----------+  
+		  |   used   |
+		  +----------+ 
+		  | old %ebp |
+		  +----------+ <---- %ebp (begin stack of caller)
+		  |   arg1   | <---- (movl $534, -4(%ebp))
+		  +----------+
+		  |   arg2   | <---- (movl $1057, -8(%ebp))
+		  +----------+ 
+		  |          |
+		  +----------+
+		  |          |
+		  +----------+ <---- leal -8(%ebp), %eax
+		  |   @arg2  |       movl %eax, 4(%esp)
+		  +----------+
+		  |   @arg1  |
+		  +----------+ <---- %esp ( subl $24, %esp )  
+
+caller 10:  call swap_add            Call the swap_add function
+
+		  +----------+  
+		  |   used   |
+		  +----------+ 
+		  | old %ebp |
+		  +----------+ 
+		  |   arg1   | 
+		  +----------+
+		  |   arg2   | 
+		  +----------+ 
+		  |          |
+		  +----------+
+		  |          |
+		  +----------+ 
+		  |   @arg2  |    
+		  +----------+
+		  |   @arg1  |
+		  +----------+ 
+		  | ret addr |  
+		  +----------+ <---- %esp (call )  
+  
+swap_add:
+swap_add 01:  pushl %ebp             Save old %ebp
+swap_add 02:  movl %esp, %ebp        Set %ebp as frame pointer
+swap_add 03:  pushl %ebx             Save %ebx
+swap_add 04:  movl 8(%ebp), %edx     Get xp
+swap_add 05:  movl 12(%ebp), %ecx    Get yp
+swap_add 06:  movl (%edx), %ebx      Get x
+swap_add 07:  movl (%ecx), %eax      Get y
+swap_add 08:  movl %eax, (%edx)      Store y at xp
+swap_add 09:  movl %ebx, (%ecx)      Store x at yp
+swap_add 10:  addl %ebx, %eax        Return value = x+y
+
+		  +----------+  
+		  |   used   |
+		  +----------+ 
+		  | old %ebp |        
+		  +----------+ <--------   old %ebp        
+		  |   arg1   |        /|\
+		  +----------+         |
+		  |   arg2   | 
+		  +----------+ 
+		  |          |         
+		  +----------+
+		  |          |   stack of caller  
+		  +----------+ 
+		  |   @arg2  | 
+		  +----------+
+		  |   @arg1  |
+		  +----------+        |
+		  | ret addr |       \|/
+		  +----------+ <------- old %esp
+		  | old %ebp |
+		  +----------+ <---- %ebp
+		  | save %ebx|
+		  +----------+ <---- %esp
+  
+swap_add 11:  popl %ebx              Restore %ebx
+swap_add 12:  popl %ebp              Restore %ebp
+
+		  +----------+  
+		  |   used   |
+		  +----------+ 
+		  | old %ebp |        
+		  +----------+ <---- %ebp        
+		  |   arg1   |        
+		  +----------+         
+		  |   arg2   | 
+		  +----------+ 
+		  |          |         
+		  +----------+
+		  |          |    
+		  +----------+ 
+		  |   @arg2  | 
+		  +----------+
+		  |   @arg1  |
+		  +----------+        
+		  | ret addr |       
+		  +----------+ <------- %esp
+
+swap_add 13:  ret Return
+
+		  +----------+  
+		  |   used   |
+		  +----------+ 
+		  | old %ebp |        
+		  +----------+ <---- %ebp        
+		  |   arg1   |        
+		  +----------+         
+		  |   arg2   | 
+		  +----------+ 
+		  |          |         
+		  +----------+
+		  |          |    
+		  +----------+ 
+		  |   @arg2  | 
+		  +----------+
+		  |   @arg1  |
+		  +----------+ <------- %esp      
+		  | ret addr |       
+		  +----------+ 
+
+
+caller 11:  movl -4(%ebp), %edx
+caller 12:  subl -8(%ebp), %edx
+caller 13:  imull %edx, %eax
+caller 14:  leave
+caller 15:  ret
+
+

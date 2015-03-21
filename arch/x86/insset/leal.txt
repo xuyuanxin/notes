@@ -1,3 +1,6 @@
-﻿leal 9(%eax,%ecx,2),%edx
+﻿leal
+load effective addressload effective address. This instruction can be used to genera-
+te pointers for later memory references. In addition, it can be used to compactly de-
+scribe common arithmetic operations. 
 
-相当于:edx = 9+eax+2*ecx
+leal 9(%eax,%ecx,2),%edx  //edx = 9+eax+2*ecx

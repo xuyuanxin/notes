@@ -1,0 +1,3 @@
+not
+
+not D      D=~D   取补

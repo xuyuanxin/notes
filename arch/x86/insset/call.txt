@@ -1,0 +1,57 @@
+
+Instruction       Description
+------------------------------------------
+call  Label       Procedure call
+call  *Operand    Procedure call
+leave             Prepare stack for return
+ret               Return from call
+
+
+The call instruction has a target indicating the address of the instruction where the 
+called procedure starts. Like jumps, a call can either be direct or indirect. In ass-
+embly code, the target of a direct call is given as a label, while the target of an -
+indirect call is given by a * followed by an operand specifier using one of the form-
+ats described in Section 3.4.1.
+
+call
+    The effect of a  @call instruction is to push a "return address" on the stack and 
+    jump to the start of the called procedure. The "return address" is the address of 
+    the instruction immediately following the @call in the program, so that execution 
+    will resume at this location when the called procedure returns. 
+
+ret
+    The @ret instruction pops an address off the stack and jumps to this location. T-
+    he proper use of this instruction is to have prepared the stack so that the stack 
+    pointer points to the place where the preceding call instruction stored its retu-
+    rn address.
+
+leave
+    The @leave instruction can be used to prepare the stack for returning. It is equ-
+    ivalent to the following code sequence:
+        movl %ebp, %esp  //Set stack pointer to beginning of frame
+        popl %ebp     //Restore saved %ebp and set stack ptr to end of caller's frame
+
+example
+    Beginning of function sum
+    08048394 <sum>:
+    8048394: 55                push %ebp
+    ...
+    Return from function sum
+    80483a4: c3                ret
+    ...
+    Call to sum from main
+    80483dc: e8 b3 ff ff ff    call 8048394 <sum>
+    80483e1: 83 c4 14          add $0x14,%esp
+    
+-------------------------------------------------------------------------------------
+    %eip: 0x080483dc               %eip: 0x08048394                %eip:0x080483e1
+    %esp: 0xff9bc960               %esp: 0xff9bc95c                %esp:0xff9bc960 
+    +-------+                      +------------+                  +----------+
+    |   .   |             call     |     .      |           ret    |          |
+    |   .   |             ---->    |     .      |           ---->  |          |
+    |   .   |                      |     .      |                  |          |
+    +-------+ <-- %esp             +------------+                  +----------+ <-- %esp 
+                                   | 0x080483e1 |
+                                   +------------+ <-- %esp 
+-------------------------------------------------------------------------------------
+

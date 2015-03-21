@@ -1,0 +1,3 @@
+neg
+
+neg D     D=-D
