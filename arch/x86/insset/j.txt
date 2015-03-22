@@ -1,0 +1,29 @@
+﻿Instruction   Synonym   Jump condition    Description
+jmp Label               1                 Direct jump
+jmp *Operand            1                 Indirect jump
+je Label      jz        ZF                Equal/zero
+jne Label     jnz       ~ZF               Not equal/not zero
+js Label                SF                Negative
+jns Label               ~SF               Nonnegative
+jg Label      jnle      ~(SF ^ OF) & ~ZF  Greater (signed >)
+jge Label     jnl       ~(SF ^ OF)        Greater or equal (signed >=)
+jl Label      jnge      SF ^ OF           Less (signed <)
+jle Label     jng       (SF ^ OF) | ZF    Less or equal (signed <=)
+ja Label      jnbe      ~CF & ~ZF         Above (unsigned >)
+jae Label     jnb       ~CF               Above or equal (unsigned >=)
+jb Label      jnae      CF                Below (unsigned <)
+jbe Label     jna       CF | ZF           Below or equal (unsigned <=)
+
+The jmp instruction jumps unconditionally. It can be either a direct jump , where the 
+jump target is encoded as part of the instruction, or an indirect jump,where the jump 
+target is read from a register or a memory location. Conditional jumps can only be d-
+irect.
+
+There are several different encodings for jumps, but some of the most commonly used -
+ones are PC relative. That is, they encode the difference between the address  of the 
+target instruction and the address of the instruction immediately following the jump. 
+These offsets can be encoded using 1, 2, or 4 bytes. A second encoding method is to -
+give an "absolute" address, using 4 bytes to directly specify the target. The assemb-
+ler and linker select the appropriate encodings of the jump destinations.
+
+

@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-MKDIR = mkdir#mkdir 创建目录
+MKDIR = mkdir #mkdir 创建目录
 
 RM = rm       #rm命令删除目录及文件。#-r, -R, --recursive 递归删除目录及其内容
 RMFLAGS = -fr #-f, --force 强制删除。忽略不存在的文件，不提示确认

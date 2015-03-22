@@ -183,3 +183,13 @@ void realloc_eg01()
 		ptr = nptr;
 	}
 }
+
+/*-----------------------------------------------------------------------------------
+ The system() function allows the calling program to execute an arbitrary shell comm-
+ and. 
+
+ example: system("ls | wc");
+
+-----------------------------------------------------------------------------------*/
+int system(const char *command);
+

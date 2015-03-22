@@ -1,0 +1,16 @@
+﻿sal
+sal k,D    D=D<<k
+
+
+the shift amount is given first, and the value to shift is given second. Both arithm-
+etic and logical right shifts are possible. The shift amount is encoded as a single -
+byte, since only shift amounts between 0 and 31 are possible (only the low-order 5 b-
+its of the shift amount are considered). The shift amount is given either as an imme-
+diate or in the singlebyte register element %cl. (These instructions are unusual in -
+only allowing this specific register as operand.)  
+
+there are two names for the left shift instruction: sal and shl. Both have the same -
+effect, filling from the right with zeros. The right shift instructions differ in th-
+at sar performs an arithmetic shift (fill with copies of the sign bit), whereas shr -
+performs a logical shift (fill with zeros). The destination operand of a shift opera-
+tion can be either a register or a memory location. 

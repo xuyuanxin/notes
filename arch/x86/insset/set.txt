@@ -1,0 +1,35 @@
+﻿Instruction   Synonym    Effect             Set condition
+------------------------------------------------
+sete   D      setz       D<--ZF             Equal/zero
+setne  D      setnz      D<--~ZF            Not equal/not zero
+sets   D                 D<--SF             Negative
+setns  D                 D<--~SF            Nonnegative
+setg   D      setnle     D<--~(SF^OF)&~ZF   Greater (signed >)
+setge  D      setnl      D<--~(SF^OF)       Greater or equal (signed >=)
+setl   D      setnge     D<--SF^OF          Less (signed <)
+setle  D      setng      D<--(SF^ F)|ZF     Less or equal (signed <=)
+seta   D      setnbe     D<--~CF & ~ZF      Above (unsigned >)
+setae  D      setnb      D<--~CF            Above or equal (unsigned >=)
+setb   D      setnae     D<--CF             Below (unsigned <)
+setbe  D      setna      D<--CF | ZF        Below or equal (unsigned <=)
+
+We refer to this entire class of instructions as the set instructions; they differ f-
+rom one another based on which combinations of condition codes they consider, as ind-
+icated by the different suffixes for the instruction names. It is important to recog-
+nize that the suffixes for these instructions denote different conditions and not di-
+fferent operand sizes. For example, instructions setl and setb denote "set less " and 
+"set below," not "set long word" or "set byte."
+
+A set instruction has either one of the eight single-byte register elements or a sin-
+gle-byte memory location as its destination, setting this byte to either 0 or 1. To -
+generate a 32-bit result, we must also clear the high-order 24 bits. A typical instr-
+uction sequence to compute the C expression a < b, where a and b are both of type int
+, proceeds as follows: a is in %edx, b is in %eax
+    cmpl %eax, %edx       Compare a:b
+    setl %al              Set low order byte of %eax to 0 or 1
+    movzbl %al, %eax      Set remaining bytes of %eax to 0
+The movzbl instruction clears the high-order 3 bytes of %eax.
+
+
+
+

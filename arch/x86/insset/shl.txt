@@ -1,1 +1,3 @@
 ﻿shl k,D     D=D<<k 左移
+
+详见 sal

@@ -4,8 +4,6 @@
 控制寄存器
 其它寄存器
 
-
-
 ----> 通用寄存器
 
 31                16                 0
@@ -27,6 +25,8 @@
 %esp  %sp[31~16]     stack pointer
 %ebp  %bp[31~16]     frame pointer
 
+%eax  returning the value from any function that returns an integer or pointer.
+%eip  
 
 Due to its origins as a 16-bit architecture that expanded into a 32-bit one, Intel u-
 ses the term “word” to refer to a 16-bit data type. Based on this , they refer to 32-
@@ -61,6 +61,23 @@ eip
 "其它"寄存器包括的是不属于前3个分类的寄存器，其中值得关注的是"扩展标志"(EFLAGS)寄存
 器，它由不同的标志位组成，用于保存指令执行后的状态和控制指令执行流程的标志信息。	
 
+
+----> condition code registers 
+In addition to the integer registers, the CPU maintains a set of single-bit condition
+code registers describing attributes of the most recent arithmetic or logical operat-
+ion. These registers can then be tested to perform conditional branches. The most us-
+eful condition codes are:
+CF: 
+    Carry Flag. The most recent operation generated a carry out of the most signifi-
+	cant bit. Used to detect overflow for unsigned operations.
+ZF: 
+    Zero Flag. The most recent operation yielded zero.
+SF: 
+    Sign Flag. The most recent operation yielded a negative value.
+OF:
+    Overflow Flag. The most recent operation caused a two's-complement overflow, eit-
+	her negative or positive.
+
 ----> Register Usage Conventions
 procedure Q is called by P
 
@@ -72,7 +89,7 @@ callee-save registers: %ebx, %esi, and %edi
 	re) may need these values for its future computations.In addition, registers %ebp 
 	and %esp must be maintained according to the conventions described here.
 
-%eax  returning the value from any function that returns an integer or pointer.
+
 
 
 

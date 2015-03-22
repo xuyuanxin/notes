@@ -165,7 +165,8 @@ waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称
 
 ----> 进程组:
 进程组就是一些进程的组合,他们彼此之间或者存在父子、兄弟关系，或者在功能上有相近的联系。
-进程必定属于一个进程组，也只能属于一个进程组。 一个进程组中可以包含多个进程。 进程组的生命周期从被创建开始，到其内所有进程终止或离开该组。
+进程必定属于一个进程组，也只能属于一个进程组。 一个进程组中可以包含多个进程。 进程组的
+生命周期从被创建开始，到其内所有进程终止或离开该组。
 ----> 进程组的作用:
 进程组就是为了方便对进程进行管理。假设要完成一个任务，需要同时并发100个进程。
 当用户处于某种原因要终止这个任务时，要是没有进程组，就需要手动的一个个去杀死这100个进程，
@@ -206,13 +207,74 @@ Group ID
     ps are normally used to collect users together into projects or departments. Thi-
     s allows the sharing of resources, such as files, among members of the same group. 
 
-Supplementar y Group IDs
+Supplementary Group IDs
     most versions of the UNIX System allow a user to belong to other groups. This pr-
     actice started with 4.2BSD, which allowed a user to belong to up to 16 additional 
     groups. These supplementary group IDs are obtained at login time by reading the -
     file /etc/group and finding the first 16 entries that list the user as a member. 
     As we shall see in the next chapter, POSIX requires that a system support at lea-
     st 8 supplementary groups per process, but most systems support at least 16.
+
+ Every process has a set of associated numeric user identifiers (UIDs) and group ide-
+ ntifiers (GIDs). Sometimes, these are referred to as process credentials. These ide-
+ ntifiers are as follows:
+ 1 real user ID and group ID;
+ 2 effective user ID and group ID;
+ 3 saved set-user-ID and saved set-group-ID;
+ 4 file-system user ID and group ID (Linux-specific); and
+ 5 supplementary group IDs.
+
+Real User ID and Real Group ID
+    The real user ID and group ID identify the user and group to which the process b-
+    elongs . As part of the login process, a login shell gets its real user and group 
+    IDs from the third and fourth fields of the user's password record in the /etc/p-
+    asswd file. When a new process is created (e.g., when the shell executes a progr-
+    am), it inherits these identifiers from its parent.
+Effective User ID and Effective Group ID
+    the effective user ID and group ID, in conjunction with the supplementary group -
+    IDs, are used to determine the permissions  granted to a process when it tries to 
+    perform various operations (i.e., system calls). Normally, the effective user and 
+    group IDs have the same values as the corresponding real IDs, but there are two -
+    ways in which the effective IDs can assume different values. One way is through -
+    the use of system calls. The second way is through the execution of set-user-ID -
+    and set-group-ID programs.
+Set-User-ID and Set-Group-ID Programs
+    A set-user-ID program allows a process to gain privileges it would not normally -
+    have, by setting the process's effective user ID to the same value as the user ID 
+    (owner) of the executable file. A set-group-ID program performs the analogous ta-
+    sk for the process's effective group ID. (The terms set-user-ID program and set-group-ID 
+    program are sometimes abbreviated as set-UID program and set-GID program.)
+Saved Set-User-ID and Saved Set-Group-ID
+    The saved set-user-ID and saved set-group-ID are designed for use with set-user-ID
+    and set-group-ID programs. When a program is executed, the following steps ( among 
+    many others) occur:
+    1 If the set-user-ID (set-group-ID ) permission bit is enabled on the executable,
+      then the effective user (group) ID of the process is made the same as the owner
+      of the executable. If the set-user-ID (set-group-ID) bit is not set, then no c-
+      hange is made to the effective user (group) ID of the process.
+    2 The values for the saved set-user-ID and saved set-group-ID are copied from the 
+      corresponding effective IDs. This copying occurs regardless of whether the set-user-ID 
+      or set-group-ID bit is set on the file being executed.
+       
+    As an example of the effect of the above steps, suppose that a process whose real 
+    user ID,effective user ID, and saved set-user-ID are all 1000 execs a set-user-ID 
+    program owned by root (user ID 0). After the exec, the user IDs of the process w-
+    ill be changed as follows:
+            real=1000 effective=0 saved=0
+    Various system calls allow a set-user-ID program to switch  its effective user ID 
+    between the values of the real user ID and the saved set-user-ID.Analogous system
+    calls allow a set-group-ID program to modify its effective group ID. In this man-
+    ner, the program can temporarily drop and regain whatever privileges are associa-
+    ted with the user (group) ID of the execed file. 
+
+Supplementary Group IDs
+    The supplementary group IDs are a set of additional groups to which a process be-
+    longs. A new process inherits these IDs from its parent.A login shell obtains its
+    supplementary group IDs from the system group file. As noted above, these IDs are
+    used in conjunction with the effective and file-system IDs to determine permissi-
+    ons for accessing files, System V IPC objects, and other system resources.
+
+
 
 gcc -static hello1.c                <---- prevent gcc from using shared libraries
 

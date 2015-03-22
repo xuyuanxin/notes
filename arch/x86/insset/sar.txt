@@ -1,0 +1,5 @@
+﻿sar 
+sar k,D    D=D>>k
+
+
+详见 sal

@@ -1,0 +1,11 @@
+﻿cmp  S1,S2       Compare Based on   S1-S2
+cmpb             Compare byte
+cmpw             Compare word
+cmpl             Compare double word
+
+The cmp instructions set the condition codes according to the differences of their t-
+wo operands. They behave in the same way as the sub instructions, except that they s-
+et the condition codes without updating their destinations. 
+
+These instructions set the zero flag if the two operands are equal. The other flags -
+can be used to determine ordering relations between the two operands. 

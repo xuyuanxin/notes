@@ -122,3 +122,5 @@ const char * strchr ( const char * str, int character ); /* C++ */
 void * memmove ( void * destination, const void * source, size_t num );
 
 
+void *memcpy(void *dest, const void *src, size_t n);
+

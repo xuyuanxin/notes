@@ -1,0 +1,12 @@
+http://www.cygwin.cn/pub   
+
+
+Devel
+  binutils: The GNU assembler
+  gcc-core: C compiler
+  gcc-g++:  C++ compiler 
+  make: The GNU version of the 'make' utility
+  gcc-mingw-core: Mingw32 support
+  gcc-mingw-g++: Mingw32 support
+  gdb: The GNU Debugger
+  nasm: The Netwide Assembler
