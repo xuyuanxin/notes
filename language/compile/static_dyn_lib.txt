@@ -1,0 +1,72 @@
+http://www.cnblogs.com/feisky/archive/2010/03/09/1681996.html
+
+-------------------------------------------------------------------------------------
+库从本质上来说是一种可执行代码的二进制格式，可以被载入内存中执行。库分静态库和动态库两
+种。 
+
+----> 静态库和动态库的区别
+1 静态函数库
+  这类库的名字一般是 libxxx.a ；利用静态函数库编译成的文件比较大，因为整个函数库的所有
+  数据都会被整合进目标代码中，他的优点就显而易见了，即编译后的执行程序不需要外部的函数
+  库支持，因为所有使用的函数都已经被编译进去了。当然这也会成为他的缺点，因为如果静态函
+  数库改变了，那么你的程序必须重新编译。
+2 动态函数库
+  这类库的名字一般是 libxxx.so ;相对于静态函数库，动态函数库在编译的时候 并没有被编译
+  进目标代码中，你的程序执行到相关函数时才调用该函数库里的相应函数，因此动态函数库所产
+  生的可执行文件比较小。由于函数库没有被整合进你的程序，而是程序运行时动态的申请并调用，所以程序的运行环境中必须提供相应的库。动态函数库的改变并不影响你的程序，所以动态函数库的升级比较方便。 
+  linux系统有几个重要的目录存放相应的函数库，如/lib /usr/lib。
+  
+----> 动态库的使用 
+(1)设计库代码 
+
+[bill@billstone make_lib]$ cat pr1.c 
+
+int p = 2; 
+
+void print(){ 
+
+                printf("This is the first dll src!\n"); 
+
+} 
+
+[bill@billstone make_lib]$   
+
+(2)生成动态库 
+
+[bill@billstone make_lib]$ gcc -O -fpic -shared -o dl.so pr1.c 
+
+[bill@billstone make_lib]$ ls -l *.so 
+
+-rwxrwxr-x        1 bill          bill                  6592    4 月  15 15:19 dl.so 
+
+[bill@billstone make_lib]$ 
+
+动态库的隐式调用 
+
+  在编译调用库函数代码时指明动态库的位置及名字,  看下面实例 
+
+[bill@billstone make_lib]$ cat main.c 
+
+int main() 
+
+{ 
+
+                print(); 
+
+                return 0; 
+
+} 
+
+[bill@billstone make_lib]$ gcc -o tdl main.c ./dl.so 
+
+[bill@billstone make_lib]$ ./tdl 
+
+This is the first dll src! 
+
+[bill@billstone make_lib]$ 
+
+当动态库的位置活名字发生改变时,  程序将无法正常运行;  而动态库取代静态库的好处之一则是通过更新动态库而随时升级库的内容. 
+
+动态库的显式调用 
+
+  显式调用动态库需要四个函数的支持,  函数 dlopen 打开动态库,  函数 dlsym 获取动态库中对象基址,  函数 dlerror 获取显式动态库操作中的错误信息,  函数 doclose 关闭动态库.
