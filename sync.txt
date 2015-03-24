@@ -1,16 +1,6 @@
 
 
 
-http://linuxcommand.org/
-
-
-wc
-cp
-mv
-if
-for
-chmod
-cat
 
 sed
 awk
