@@ -1,0 +1,55 @@
+echo is the basic command for printing in the terminal.
+echo puts a newline at the end of every invocation by default:
+
+$ echo "Welcome to Bash"
+Welcome to Bash
+
+$ echo Welcome to Bash
+Welcome to Bash
+
+$ echo 'text in quote'
+text in quote
+
+$ echo "cannot include exclamation - ! within double quotes"
+cannot include exclamation - ! within double quotes
+
+Hence, if you want to print !, do not use within double-quotes or you may  escape the 
+! with a special escape character (\) prefixed with it.
+$ echo Hello world !
+Or:
+$ echo 'Hello world !'
+Or:
+$ echo "Hello world \!" #Escape character \ prefixed.
+
+The side effects of each of the methods are as follows:
+When using echo without quotes, we cannot use a semicolon as it acts as a delimiter -
+between commands in the bash shell.
+$echo hello;hello #takes echo hello as one command and the second hello as the second 
+                  #command.
+
+When using echo with single quotes, the variables (for example, $var will not be exp-
+anded) inside the quotes will not be interpreted by Bash,but will be displayed as is.
+This means:
+$ echo '$var' #will return $var
+#whereas
+$ echo $var   #will return the value of the variable $var if defined or nothing at a-
+              #ll if it is not defined.
+			  
+			  
+By default, echo has a newline appended at the end of its output text. This can be a-
+voided by using the -n flag.
+
+echo can also accept escape sequences in double-quoted strings as argument. For using 
+escape sequences, use echo as echo -e "string containing escape sequences". For exam-
+ple:
+echo -e "1\t2\t3"
+123
+
+
+
+
+
+
+ 
+			  
+			  

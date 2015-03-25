@@ -8,5 +8,22 @@
 
   
 
-  
-  
+Finding length of string
+Get the length of a variable value as follows:
+length=${#var}
+For example:
+$ var=12345678901234567890
+$ echo ${#var}
+20
+length is the number of characters in the string.
+
+Identifying the current shell
+Display the currently used shell as follows:
+echo $SHELL
+Or, you can also use:
+echo $0 
+For example:
+$ echo $SHELL
+/bin/bash
+$ echo $0
+bash 

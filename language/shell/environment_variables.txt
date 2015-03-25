@@ -1,0 +1,39 @@
+When an application is executing, it will be passed with a set of variables called e-
+nvironment variables. Environment variables are variables that are not defined in the 
+current process, but are received from the parent processes. 
+
+HTTP_PROXY
+    HTTP_PROXY is an environment variable. This variable defines which proxy server -
+	should be used for an Internet connection. Usually, it is set as:
+    HTTP_PROXY=http://192.168.0.2:3128
+	export HTTP_PROXY
+	
+The export command is used to set the @env variable. Now any application, executed f-
+rom the current shell script will receive this variable. We can export custom variab-
+les for our own purposes in an application or shell script that is executed. There a-
+re many standard environment variables that are available for the shell by default.
+
+PATH. 
+    A typical PATH variable will contain:
+    $ echo $PATH
+    /home/slynux/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+    When given a command for execution, shell automatically searches for the executa-
+	ble in the list of directories in the PATH environment variable ( directory paths 
+	are delimited by the ":" character).Usually, $PATH is defined in /etc/environment 
+	or /etc/profile or ~/.bashrc. When we need to add a new path to the PATH environ-
+	ment, we use:
+    export PATH="$PATH:/home/user/bin"
+    Or, alternately, we can use:
+    $ PATH="$PATH:/home/user/bin"
+    $ export PATH
+	
+	
+
+
+
+
+
+
+
+
+	
