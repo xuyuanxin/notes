@@ -1,6 +1,8 @@
 
 
 
-
+vim
+vi
+http://www.zlib.net/
 sed
 awk
