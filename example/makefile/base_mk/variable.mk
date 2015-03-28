@@ -1,5 +1,5 @@
 #$ make -f variable.mk
-
+#取变量名: $(name) or ${name}
 .PHONY: all
 
 all1 all2:

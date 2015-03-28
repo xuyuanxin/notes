@@ -1,15 +1,17 @@
+#------------------------------------------------------------------------------------
 .PHONY: all clean
 
-MKDIR = mkdir #mkdir 创建目录
+MKDIR = mkdir    # mkdir 创建目录
 
-RM = rm       #rm命令删除目录及文件。#-r, -R, --recursive 递归删除目录及其内容
-RMFLAGS = -fr #-f, --force 强制删除。忽略不存在的文件，不提示确认
+RM = rm          # rm命令删除目录及文件。#-r, -R, --recursive 递归删除目录及其内容
+RMFLAGS = -fr    # -f, --force 强制删除。忽略不存在的文件，不提示确认
 
 CC = gcc
 
-AR = ar       #ar:管理静态库。
-ARFLAGS = crs #c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连接效率;
-
+AR = ar          # ar:管理静态库。
+ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连
+                 # 接效率; 
+                 
 DIR_OBJS = objs
 DIR_EXES = $(ROOT)/build/exes
 DIR_DEPS = deps
@@ -33,6 +35,7 @@ OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS))
 DEPS = $(SRCS:.c=.dep)
 DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS))
 
+# 防止目录和目录中的文件循环依赖，造成死循环
 ifeq ("$(wildcard $(DIR_OBJS))", "")
 DEP_DIR_OBJS := $(DIR_OBJS)
 endif
@@ -46,7 +49,8 @@ ifeq ("$(wildcard $(DIR_LIBS))", "")
 DEP_DIR_LIBS := $(DIR_LIBS)
 endif
 
-all:  $(EXE) $(LIB) $(DEP_LIBS)
+#all:  $(EXE) $(LIB) $(DEP_LIBS)
+all: $(DEP_LIBS) $(LIB) $(EXE) 
 
 ifneq ($(MAKECMDGOALS), clean)
 include $(DEPS)
@@ -85,7 +89,7 @@ $(DIR_DEPS)/%.dep: $(DEP_DIR_DEPS) %.c
 	$(RM) $(RMFLAGS) $@.tmp ; \
 	$(CC) $(INCLUDE_DIRS) -E -MM $(filter %.c, $^) > $@.tmp ; \
 	sed 's,\(.*\)\.o[ :]*,objs/\1.o $@: ,g' < $@.tmp > $@ ; \
-	$(RM) $(RMFLAGS) $@.tmp
+	#$(RM) $(RMFLAGS) $@.tmp
 
 clean:
 	$(RM) $(RMFLAGS) $(RMS)

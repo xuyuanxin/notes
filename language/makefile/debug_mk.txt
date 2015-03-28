@@ -1,0 +1,49 @@
+-s: 采用静默模式，不打印make构建过程中调用的命令。
+-n: 只打印命令，不真正执行。
+
+
+
+$ make --help
+用法：make [选项] [目标] ...
+选项：
+  -b, -m                      忽略兼容性。
+  -B, --always-make           无条件 make 所有目标。
+  -C DIRECTORY, --directory=DIRECTORY
+                              在执行前先切换到 DIRECTORY 目录。
+  -d                          打印大量调试信息。
+  --debug[=FLAGS]             打印各种调试信息。
+  -e, --environment-overrides
+                              环境变量覆盖 makefile 中的变量。
+  --eval=STRING               Evaluate STRING as a makefile statement.
+  -f FILE, --file=FILE, --makefile=FILE
+                              从 FILE 中读入 makefile。
+  -h, --help                  打印该消息并退出。
+  -i, --ignore-errors         Ignore errors from recipes.
+  -I DIRECTORY, --include-dir=DIRECTORY
+                              在 DIRECTORY 中搜索被包含的 makefile。
+  -j [N], --jobs[=N]          同时允许 N 个任务；无参数表明允许无限个任务。
+  -k, --keep-going            当某些目标无法创建时仍然继续。
+  -l [N], --load-average[=N], --max-load[=N]
+                              在系统负载高于 N 时不启动多任务。
+  -L, --check-symlink-times   使用软链接及软链接目标中修改时间较晚的一个。
+  -n, --just-print, --dry-run, --recon
+                              Don't actually run any recipe; just print them.
+  -o FILE, --old-file=FILE, --assume-old=FILE
+                              将 FILE 当做很旧，不必重新生成。
+  -O[TYPE], --output-sync[=TYPE]
+                              Synchronize output of parallel jobs by TYPE.
+  -p, --print-data-base       打印 make 的内部数据库。
+  -q, --question              Run no recipe; exit status says if up to date.
+  -r, --no-builtin-rules      禁用内置隐含规则。
+  -R, --no-builtin-variables  禁用内置变量设置。
+  -s, --silent, --quiet       Don't echo recipes.
+  -S, --no-keep-going, --stop
+                              关闭 -k。
+  -t, --touch                 touch 目标而不是重新创建它们。
+  --trace                     Print tracing information.
+  -v, --version               打印 make 的版本号并退出。
+  -w, --print-directory       打印当前目录。
+  --no-print-directory        关闭 -w，即使 -w 默认开启。
+  -W FILE, --what-if=FILE, --new-file=FILE, --assume-new=FILE
+                              将 FILE 当做最新。
+  --warn-undefined-variables  当引用未定义变量的时候发出警告。
