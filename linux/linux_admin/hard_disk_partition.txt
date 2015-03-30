@@ -12,10 +12,3 @@ hda1表示第一个IDE硬盘的第一个主分区
 sdb7表示第二个SCSI硬盘的第三个逻辑分区。
 hda表示第一个IDE硬盘的MBR。直接使用硬盘设备的主设备名，则表示该硬盘的MBR。
 
-http://libemu.sourceforge.net/
-http://sourceforge.net/projects/libemu/
-
-
-http://sourceforge.net/projects/nepenthes/
-http://nepenthes.carnivore.it/
-
