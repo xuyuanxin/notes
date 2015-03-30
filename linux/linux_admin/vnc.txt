@@ -1,0 +1,63 @@
+#####################################################################################
+.....................................................................................
+http://xjsunjie.blog.51cto.com/999372/548595
+----> linux
+1 
+Yast-> remote administration -> Allow Remote Administration 
+Yast-> remote administration -> Firewall Settings
+
+2 启动vnc
+2.1 ssh登陆后，执行 vncserver
+2.2 提示设置密码
+
+3 配置启动脚本
+3.1 vim /root/.vnc/xstartup
+
+修改前:
+#/bin/sh
+xrdb $HOME/.Xresources
+xsetroot -solid grey
+xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+twm &
+
+修改后
+#/bin/sh
+xrdb $HOME/.Xresources
+xsetroot -solid grey
+xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+
+#twm &
+gnome-session &
+
+----> windows
+1 用浏览器连接 (开启 java applet)
+http://ip:port  # port = 桌面显示编号 + 5800
+
+2 用 vnc 客户端
+Server: ip:桌面显示编号
+
+
+
+
+----> linux 相关命令
+vncserver : 号码        # 启动停止的服务，注意:后有个空格
+vncserver -kill : 号码  # 停止服务
+
+/root/.vnc/machineName:2.pid  # 2是桌面显示编号
+/root/.vnc/machineName:2.log
+
+/tmp/.X11-unix/   # 启动的服务
+
+
+http://www.cnblogs.com/leetom/archive/2010/04/29/2845848.html
+终于明白vnc登录后could not acquire name on session bus错误的原因了 
+以前的vnc4server，在host运行vnc4server后，在远程登录之后只有一个terminal，gnome根本不
+启动，提示一个could not acquire name on session bus错误。后来找到解决方法，要host退出
+gnome（注销图形界面的用户，回到gdm的登录界面），在tty下运行vnc4server才能在远程登录
+gnome。 所以之后就一直以为要在远程使用gnome，就必须host关闭gnome。 最近使用vnc时，发
+现以前的理解错了。 因为用ssh登录host之后，运行vnc4server建立一个vnc会话之后，不管host
+是否登录了gnome，在远程都是能登录的。 其实是只要你用vnc4server命令创建会话的登录用户
+没有登录gnome，就可以用vncviewer登录。而在X下terminal创建会话的用户明显已经登录gnome
+了，同一个登录用户当然不能在两个gnome下工作了，所以就会出现could not acquire name on 
+session bus错误。 所以要使用vnc，只要在host的tty1～tty6下或者远程ssh登录后创建vnc会话
+就可以以gnome方式登录了。登录后还是打开一个很大的terminal窗口，关闭即可。
