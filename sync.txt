@@ -1,12 +1,6 @@
 awk
 
-http://x86.renejeschke.de/
-http://sandsprite.com/blogs/index.php?uid=7&pid=152
-http://sandsprite.com/CodeStuff/scdbg_manual/MANUAL_EN.html
-http://skypher.com/wiki/index.php?title=Hacking/Shellcode/GetPC
-http://repository.lib.ncsu.edu/ir/bitstream/1840.16/5484/1/etd.pdf
-http://my.oschina.net/dream0303/blog/192408
-https://github.com/buffer/pylibemu
+Shellcoder's Programming Uncovered
 
 qemu
 qemu-img
