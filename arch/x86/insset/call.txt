@@ -40,8 +40,8 @@ example
     80483a4: c3                ret
     ...
     Call to sum from main
-    80483dc: e8 b3 ff ff ff    call 8048394 <sum>
-    80483e1: 83 c4 14          add $0x14,%esp
+    80483dc: e8 b3 ff ff ff    call 8048394 <sum>   // 0xffffffb3=-77
+    80483e1: 83 c4 14          add $0x14,%esp       // 0x80483e1-0x8048394=0x4D=77
     
 -------------------------------------------------------------------------------------
     %eip: 0x080483dc               %eip: 0x08048394                %eip:0x080483e1
