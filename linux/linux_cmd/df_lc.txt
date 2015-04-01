@@ -1,0 +1,150 @@
+************************************************************************************* | 
+df                                                                                    |
+
+linuxdflinux
+
+1
+df [] []
+
+2
+
+ 1KB  POSIXLY_CORRECT 
+512
+
+3
+
+-a 
+-h 
+-H -h1K=10001K=1024
+-i inode
+-k 1024
+-l 
+-m 1048576
+--no-sync  sync 
+-P POSIX
+--sync sync
+-T 
+
+--block-size=<> 
+-t<> 
+-x<> 
+--help 
+--version 
+
+4
+1
+
+df
+
+[root@CT1190 log]# df
+               1K-              % 
+/dev/sda7             19840892    890896  17925856   5% /
+/dev/sda9            203727156 112797500  80413912  59% /opt
+/dev/sda8              4956284    570080   4130372  13% /var
+/dev/sda6             19840892   1977568  16839184  11% /usr
+/dev/sda3               988116     23880    913232   3% /boot
+tmpfs                 16473212         0  16473212   0% /dev/shm
+
+linuxdf1
+2102434
+342
+
+Use% 
+100Mounted on
+
+2inode
+
+df -i
+
+[root@CT1190 log]# df -i
+               Inode (I) (I) (I)% 
+/dev/sda7            5124480    5560 5118920    1% /
+/dev/sda9            52592640   50519 52542121    1% /opt
+/dev/sda8            1280000    8799 1271201    1% /var
+/dev/sda6            5124480   80163 5044317    2% /usr
+/dev/sda3             255232      34  255198    1% /boot
+tmpfs                4118303       1 4118302    1% /dev/shm
+
+3
+
+df -t ext3
+
+[root@CT1190 log]# df -t ext3
+               1K-              % 
+/dev/sda7             19840892    890896  17925856   5% /
+/dev/sda9            203727156  93089700 100121712  49% /opt
+/dev/sda8              4956284    570104   4130348  13% /var
+/dev/sda6             19840892   1977568  16839184  11% /usr
+/dev/sda3               988116     23880    913232   3% /boot
+
+4i
+
+df -ia
+
+[root@CT1190 log]# df -ia
+               Inode (I) (I) (I)% 
+/dev/sda7            5124480    5560 5118920    1% 
+/proc                       0       0       0    -  /proc
+sysfs                      0       0       0    -  /sys
+devpts                     0       0       0    -  /dev/pts
+/dev/sda9            52592640   50519 52542121    1% /opt
+/dev/sda8            1280000    8799 1271201    1% /var
+/dev/sda6            5124480   80163 5044317    2% /usr
+/dev/sda3             255232      34  255198    1% /boot
+tmpfs                4118303       1 4118302    1% /dev/shm
+none                       0       0       0    -  /proc/sys/fs/binfmt_misc
+
+5
+
+df -T
+
+root@CT1190 log]# df -T
+           1K-              % 
+/dev/sda7     ext3    19840892    890896  17925856   5% /
+/dev/sda9     ext3   203727156  93175692 100035720  49% /opt
+/dev/sda8     ext3     4956284    570104   4130348  13% /var
+/dev/sda6     ext3    19840892   1977568  16839184  11% /usr
+/dev/sda3     ext3      988116     23880    913232   3% /boot
+tmpfs        tmpfs    16473212         0  16473212   0% /dev/shm
+
+6 
+
+
+[root@CT1190 log]# df -h
+                  % 
+/dev/sda7              19G  871M   18G   5% /
+/dev/sda9             195G   89G   96G  49% /opt
+/dev/sda8             4.8G  557M  4.0G  13% /var
+/dev/sda6              19G  1.9G   17G  11% /usr
+/dev/sda3             965M   24M  892M   3% /boot
+tmpfs                  16G     0   16G   0% /dev/shm
+[root@CT1190 log]# df -H
+                     % 
+/dev/sda7               21G   913M    19G   5% /
+/dev/sda9              209G    96G   103G  49% /opt
+/dev/sda8              5.1G   584M   4.3G  13% /var
+/dev/sda6               21G   2.1G    18G  11% /usr
+/dev/sda3              1.1G    25M   936M   3% /boot
+tmpfs                   17G      0    17G   0% /dev/shm
+[root@CT1190 log]# df -lh
+                  % 
+/dev/sda7              19G  871M   18G   5% /
+/dev/sda9             195G   89G   96G  49% /opt
+/dev/sda8             4.8G  557M  4.0G  13% /var
+/dev/sda6              19G  1.9G   17G  11% /usr
+/dev/sda3             965M   24M  892M   3% /boot
+tmpfs                  16G     0   16G   0% /dev/shm
+[root@CT1190 log]# df -k
+               1K-              % 
+/dev/sda7             19840892    890896  17925856   5% /
+/dev/sda9            203727156  93292572  99918840  49% /opt
+/dev/sda8              4956284    570188   4130264  13% /var
+/dev/sda6             19840892   1977568  16839184  11% /usr
+/dev/sda3               988116     23880    913232   3% /boot
+tmpfs                 16473212         0  16473212   0% /dev/shm
+
+-h 
+-H-h,,10001024
+-k
+-l,nfs,df-lnsf
+-iinodelinux.
