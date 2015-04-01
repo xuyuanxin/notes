@@ -1,0 +1,31 @@
+
+
++-------------------------------------------------------------------------+
+| Instruction Prefixes | Opcode | ModR/M | SIB | Displacement | Immediate |
++-------------------------------------------------------------------------+
+
+
+ModR/M
++---------------------------------------+
+| Mod(7~6) | Reg/Opcode(5~3) | R/M(2~0) |
++---------------------------------------+
+
+SIB (Scale-Index-Base)
++-------------------------------------+
+| Scale(7~6) | Index(5~3) | Base(2~0) |
++-------------------------------------+
+
+
+Instruction Prefixes
+    Up to four prefixes of 1 byte each (optional)
+
+Opcode
+    1-, 2-, or 3-byte opcode.
+	
+Displacement
+    Address displacement of 1, 2, or 4 bytes or none 
+	
+Immediate
+    Immediate data of 1, 2, or 4 bytes or none
+	
+	
