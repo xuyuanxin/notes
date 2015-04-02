@@ -122,5 +122,45 @@ int main()
 
 
 
+/*
+int f( int );
+int (*pf)( int ) = &f;
 
+The ampersand(&) in the initialization is optional, because the compiler always conv-
+erts function names to function pointers wherever they are used. The ampersand does -
+explicitly what the compiler would have done implicitly anyway.
+
+int ans;
+ans = f( 25 );
+ans = (*pf)( 25 );
+ans = pf( 25 );
+ans = (*f)(25); // ok
+
+
+The first statement simply calls the function f by name, though its evaluation is pr-
+obably not what you expected . The function name f is first converted to a pointer to
+the function ; the pointer specifies where the function is located. The function call
+operator then invokes the function by executing the code beginning at this address.
+
+The second statement applies indirection to pf, which converts the function pointer -
+to a function name. This conversion is not really necessary, because the compiler co-
+nverts it back to a pointer before applying the function call operator. Nevertheless, 
+this statement has exactly the same effect as the first one.
+
+The third statement has the same effect as the first two . Indirection is not needed, 
+because the compiler wants a pointer to the function anyway. This example shows how -
+function pointers are usually used.
+
+http://www.cnblogs.com/CBDoctor/archive/2012/10/15/2725219.html
+int f( int );
+int (*pf)( int ) = &f;
+1 其实，f的函数名与pf函数指针都是一样的，即都是函数指针。f函数名是一个函数指针常量，
+  而pf是一个函数数指针变量，这是它们的关系。
+2 但函数名调用如果都得如(*f)(10)；这样，那书写与读起来都是不方便和不习惯的。所以C语言
+  的设计者们才会设计成又可允许f(10);这种形式地调用（这样方便多了并与数学中的函数形式一
+  样，不是吗？）。
+3 为统一起见，pf函数指针变量也可以pf(10)的形式来调用。
+4 赋值时，即可fp=&f形式，也可fp=f。
+
+*/
 

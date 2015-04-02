@@ -1,7 +1,10 @@
 awk
 
 Shellcoder's Programming Uncovered
-
+smashing the stack for fun and profit
+http://phrack.org/issues/49/14.html
+KVM虚拟化技术--实战与原理解析
+虚拟化技术原理与实现
 qemu
 qemu-img
 virsh
