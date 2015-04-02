@@ -17,12 +17,15 @@ void dump_stack()
 	int *beg;
 
 	beg = &a+740;
-	printf("stack--> esp:0x%x ebp:0x%x &a:0x%x\n",get_esp(),get_ebp(),&a);
+	printf("stack--> esp:0x%x ebp:0x%x &a:0x%x:%d &i:0x%x:%d &beg:0x%x 0x%x\n",
+		   get_esp(),get_ebp(),&a,a,&i,i,&beg,beg);
 	for(i = 0; i < 1024+64; i+=4)
 	{
 	    printf("\n0x%x: %08x %08x %08x %08x",(int)(beg-i),
 			   *(beg-i),*(beg-i-1),*(beg-i-2),*(beg-i-3));
 	}
+	
+	printf("stack--> esp:0x%x ebp:0x%x &a:0x%x:%d &i:0x%x:%d\n",get_esp(),get_ebp(),&a,a,&i,i);
 }
 
 void active (int idx,int value)
@@ -33,11 +36,13 @@ void active (int idx,int value)
 	
     printf("active--> ret:0x%x &a:0x%x 0x%x\n",*((int *)&a + 2),&a,&a+2);
 	printf("active--> esp:0x%x \n",get_esp());
-	*(&a+idx) = value;
     printf("active--> %d \n",a);
 	
 	printf("active--> esp2:0x%x ebp2:0x%x\n",get_esp(),get_ebp());
 	dump_stack();
+    //fflush();
+    printf("active--> &a:0x%x idx:%d addr:0x%x value:0x%x\n",&a,idx,(&a+idx),value);
+	*(&a+idx) = value;
 }
 
 void deactive()
