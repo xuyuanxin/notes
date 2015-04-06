@@ -1,0 +1,69 @@
+ATT versus Intel assembly-code formats
+In our presentation, we show assembly code in ATT (named after "AT&T", the company t-
+hat operated Bell Laboratories for many years) format, the default format for gcc, o-
+bjdump, and the other tools we will consider. Other programming tools, including tho-
+se from Microsoft as well as the documentation from Intel, show assembly code in Int-
+el format. The two formats differ in a number of ways. As an example, gcc can genera-
+te code in Intel format for the sum function using the following command line:
+
+----> simple.c
+int simple(int *xp, int y)
+{
+  int t = *xp + y;
+  *xp = t;
+  return t;
+}
+
+unix> gcc -O1 -S simple.c    # AT&T format
+simple:
+pushl %ebp          # Save frame pointer
+movl %esp, %ebp     # Create new frame pointer
+movl 8(%ebp), %edx  # Retrieve xp
+movl 12(%ebp), %eax # Retrieve y
+addl (%edx), %eax   # eax=*edx, Add *xp to get t
+movl %eax, (%edx)   # Store t at xp
+popl %ebp           # Restore frame pointer
+ret Return
+
+unix> gcc -O1 -S -masm=intel simple.c      # Intel format
+simple:
+push ebp
+mov ebp, esp
+mov edx, DWORD PTR [ebp+8]
+mov eax, DWORD PTR [ebp+12]
+add eax, DWORD PTR [edx]
+mov DWORD PTR [edx], eax
+pop ebp
+ret
+
+We see that the Intel and ATT formats differ in the following ways:
+. The Intel code omits the size designation suffixes. We see instruction mov instead -
+  of movl.
+. The Intel code omits the ¡®%¡¯ character in front of register names, using esp inste-
+  ad of %esp.
+. The Intel code has a different way of describing locations in memory, for example -
+  ¡®DWORD PTR [ebp+8]¡¯ rather than ¡®8(%ebp)¡¯.
+. Instructions with multiple operands list them in the reverse order. This can be ve-
+  ry confusing when switching between the two formats.
+Although we will not be using Intel format in our presentation, you will encounter it 
+in IA32 documentation from Intel and Windows documentation from Microsoft.
+
+
+When gcc is run with flags ¡®-S¡¯ and ¡®-O1¡¯, it generates the following file for
+simple.s:
+.file "simple.c"
+.text
+.globl simple
+.type simple, @function
+simple:
+pushl %ebp
+movl %esp, %ebp
+movl 8(%ebp), %edx
+movl 12(%ebp), %eax
+addl (%edx), %eax
+movl %eax, (%edx)
+popl %ebp
+ret
+.size simple, .-simple
+.ident "GCC: (Ubuntu 4.3.2-1ubuntu11) 4.3.2"
+.section .note.GNU-stack,"",@progbits

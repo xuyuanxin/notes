@@ -1,0 +1,41 @@
+# It will return lines of text that contain the given match_pattern.
+$ grep match_pattern filename
+#Or:
+$ grep "match_pattern" filename  
+
+# We can also read from stdin as follows:
+$ echo -e "this is a word\nnext line" | grep word
+
+# Perform a search in multiple files using a single grep invocation as follows:
+$ grep "match_text" file1 file2 file3 ...
+
+# Usually, the grep command considers match_text as a wildcard. To use regular expre-
+# ssions as input arguments, the -E option should be added, which means extended reg-
+# ular expression. Or we can a use regular expression enabled grep command, egrep. F-
+# or example:
+$ grep -E "[a-z]+"
+# Or:
+$ egrep "[a-z]+"
+
+# In order to output only the matching portion of text in a file, use the ¨Co option -
+# as follows:
+$ echo this is a line. | grep -o -E "[a-z]+\."
+line.
+# Or:
+$ echo this is a line. | egrep -o "[a-z]+\."
+line.
+
+# In order to print all of the lines, except the line containing match_pattern, use:
+$ grep -v match_pattern file
+# The ¨Cv option added to grep inverts the match results.
+
+# It should be noted that -c counts only the number of matching lines, not the numbe-
+# r of times a match is made. For example:
+$ echo -e "1 2 3 4\nhello\n5 6" | egrep -c "[0-9]"
+2
+# Even though there are 6 matching items, it prints 2 since there are only 2 matchin-
+# g lines. Multiple matches in a single line are counted only once. In order to count 
+# the number of matching items in a file, use the following hack:
+$ echo -e "1 2 3 4\nhello\n5 6" | egrep -o "[0-9]" | wc -l
+6
+

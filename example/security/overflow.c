@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 unsigned long get_esp(void) 
 {
@@ -16,12 +17,13 @@ void dump_stack()
 	int i = 0;
 	int *beg;
 
-	beg = &a+740;
+	beg = &a+128;
 	printf("stack--> esp:0x%x ebp:0x%x &a:0x%x:%d &i:0x%x:%d &beg:0x%x 0x%x\n",
 		   get_esp(),get_ebp(),&a,a,&i,i,&beg,beg);
-	for(i = 0; i < 1024+64; i+=4)
+	
+	for(i = 0; i < 128+64; i+=4)
 	{
-	    printf("\n0x%x: %08x %08x %08x %08x",(int)(beg-i),
+	    printf("0x%x: %08x %08x %08x %08x\n",(int)(beg-i),
 			   *(beg-i),*(beg-i-1),*(beg-i-2),*(beg-i-3));
 	}
 	
@@ -30,32 +32,29 @@ void dump_stack()
 
 void active (int idx,int value)
 {   
-    int flag=0x33334444;
-    int a = 0;
+    int flag=0x33333333;
+    int a = 0x44444444;
+	
 	printf("active--> esp1:0x%x ebp1:0x%x &flag:0x%x\n",get_esp(),get_ebp(),&flag);
-	
-    printf("active--> ret:0x%x &a:0x%x 0x%x\n",*((int *)&a + 2),&a,&a+2);
-	printf("active--> esp:0x%x \n",get_esp());
-    printf("active--> %d \n",a);
-	
-	printf("active--> esp2:0x%x ebp2:0x%x\n",get_esp(),get_ebp());
 	dump_stack();
     //fflush();
-    printf("active--> &a:0x%x idx:%d addr:0x%x value:0x%x\n",&a,idx,(&a+idx),value);
 	*(&a+idx) = value;
 }
 
-void deactive()
+int deactive()
 {
     printf("deactive--> haha\n");
+	exit(0);
 }
 
 int main(int argc,char *argv[]) 
 {
-    int flag=0x11112222;
+    int flag1=0x11111111;
     int idx,value;
+	int flag2=0x22222222;
 
-	printf("main--> esp1:0x%x ebp1:0x%x &flag:0x%x\n",get_esp(),get_ebp(),&flag);
+	printf("main--> esp1:0x%x ebp1:0x%x &flag1:0x%x &flag2:0x%x\n",
+		   get_esp(),get_ebp(),&flag1,&flag2);
 	
 	if(argc != 3){
 		printf("Usage: %s idx value\n",argv[0]);
@@ -64,7 +63,7 @@ int main(int argc,char *argv[])
 
 	idx = atoi(argv[1]);
 	value = atoi(argv[2]);
-	printf("main-->idx:%d value:0x%x\n",idx,value);	
+	printf("main--> idx:%d value:0x%x\n",idx,value);	
 	printf("main--> esp2:0x%x ebp2:0x%x\n",get_esp(),get_ebp());
     active(idx,value); 
     return 0; 

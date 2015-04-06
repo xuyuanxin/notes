@@ -1,0 +1,37 @@
+.....................................................................................|
+$ free                                                                               |
+                   total    used     free     shared  buffers  cached                |
+Mem:               1572988  1509260  63728    0       62800    277888                |
+-/+ buffers/cache:          1168572  404416                                          |
+Swap:              2096472  16628    2079844                                         |
+                                                                                     |
+Mem：   表示物理内存统计                                                             |
+-------------------------------------------------------------------------------------|
+total： 表示物理内存总量(total = used + free)                                        |
+used：  表示总计分配给缓存(包含buffers 与cache)使用的数量，但其中可能部分缓存并未实际|
+        使用。                                                                       |
+free：  未被分配的内存。                                                             |
+shared：共享内存。                                                                   | 
+buffers 系统分配但未被使用的buffers数量。                                            |
+cached：系统分配但未被使用的cache数量。                                              |
+                                                                                     |
+-/+ buffers/cache：表示物理内存的缓存统计                                            |
+-------------------------------------------------------------------------------------|
+used：也就是第一行中的used – buffers-cached 也是实际使用的内存总量。                 |
+free: buffers1 + cached1 + free1，这就是系统当前实际可用内存。                       |
+                                                                                     |
+A buffer is something that has yet to be "written" to disk. A cache is something that| 
+has been "read" from the disk and stored for later use. 也就是说buffer是用于存放要输 |
+出到disk（块设备）的数据的，而cache是存放从disk上读出的数据。这二者是为了提高IO性能的|
+，并由OS管理。                                                                       |
+                                                                                     |
+Swap:                                                                                |
+-------------------------------------------------------------------------------------|
+                                                                                     |
+                                                                                     |
+
+
+																					 
+
+
+

@@ -14,10 +14,26 @@ jae Label     jnb       ~CF               Above or equal (unsigned >=)
 jb Label      jnae      CF                Below (unsigned <)
 jbe Label     jna       CF | ZF           Below or equal (unsigned <=)
 
+
+jump destinations are generally indicated in assembly code by a label. Consider the -
+following (very contrived) assembly-code
+sequence:
+1 movl $0,%eax                Set %eax to 0
+2 jmp .L1 Goto .L1
+3 movl (%eax),%edx            Null pointer dereference
+4 .L1:
+5 popl %edx
+The instruction jmp .L1 will cause the program to skip over the movl instruction and -
+instead resume execution with the popl instruction.
+
+----> jmp
 The jmp instruction jumps unconditionally. It can be either a direct jump , where the 
 jump target is encoded as part of the instruction, or an indirect jump,where the jump 
 target is read from a register or a memory location. Conditional jumps can only be d-
 irect.
+            # As examples, the instruction
+jmp *%eax   # uses the value in register %eax as the jump target, and the instruction
+jmp *(%eax) # reads the jump target from memory, using the value in %eax as the read address.
 
 There are several different encodings for jumps, but some of the most commonly used -
 ones are PC relative. That is, they encode the difference between the address  of the 
