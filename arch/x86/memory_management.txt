@@ -71,6 +71,26 @@ DS: 数据段寄存器。                                                       
 地址的中间10位在二级页表中选择一个表项，这个表项存储着基地址，这个基地址加上线性地址的|
 最后12位构成最终的物理地址。                                                          |
 
+----> pages, page frames, page tables
+For the sake of efficiency, linear addresses are grouped in fixed-length intervals c-
+alled pages ; contiguous linear addresses within a page are mapped into contiguous p-
+hysical addresses. Following the usual convention, we shall use the term "page" to r-
+efer both to a set of linear addresses and to the data contained in this group of ad-
+dresses.
+
+The paging unit thinks of all RAM as partitioned into fixed-length page frames (some-
+times referred to as physical pages ). Each page frame contains a page that is, the -
+length of a page frame coincides with that of a page. A page frame is a constituent -
+of main memory, and hence it is a storage area. It is important to distinguish a page 
+from a page frame; the former is just a block of data, which may be stored in any pa-
+ge frame or on disk.
+
+The data structures that map linear to physical addresses are called page tables ; t-
+hey are stored in main memory and must be properly initialized by the kernel before -
+enabling the paging unit.
+
+----> Regular Paging
+
 
 
 
