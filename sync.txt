@@ -13,3 +13,7 @@ virsh
 virt-manage 
 virsh net-start default
 
+strdup
+bcopy
+http://bbs.pediy.com/showthread.php?p=1291221
+
