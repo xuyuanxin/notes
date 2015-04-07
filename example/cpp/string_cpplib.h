@@ -1,3 +1,27 @@
+/*-----------------------------------------------------------------------------------
+In addition to the built-in types, C++ defines a rich library of abstract data types. 
+Among the most important library types are string, which supports variable-length ch-
+aracter strings, and vector, which defines variable-size collections. Associated with 
+string and vector are companion types known as iterators,which are used to access the 
+characters in a string or the elements in a vector.
+
+The built-in types are defined directly by the C++ language. These types represent f-
+acilities present in most computer hardware, such as numbers or characters. The stan-
+dard library defines a number of additional types of a higher-level nature that comp-
+uter hardware usually does not implement directly.
+
+A string is a variable-length sequence of characters. To use the string type, we must
+include the string header. Because it is part of the library,string is defined in the
+std namespace. Our examples assume the following code:
+#include <string>
+using std::string;
+
+
+-----------------------------------------------------------------------------------*/
+
+
+
+
 /*******************************************************************************
             Member Functions of the Standard Class string
  *******************************************************************************

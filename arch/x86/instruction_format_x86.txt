@@ -29,3 +29,17 @@ Immediate
     Immediate data of 1, 2, or 4 bytes or none
 	
 	
+imm是立即数的意思，而imm8就是指8个比特大小的立即数，
+r：寄存器，如r16就代表ax、cx等，r32就代表eax、ebx等
+m：内存地址，如[01]、[123]、[0FFFF]等
+r/m：寄存器或内存
+ib：代表OpCode后面跟着一个byte型数值
+iw：代表OpCode后面跟着一个word型数值
+id：代表OpCode后面跟着一个dword型数值
+/digit：代表此OpCode存在ModR/M结构，且ModR/M结构的reg/opcode域为opcode：opcode的补充操作码
+/r：代表此OpCode存在ModR/M结构，且ModR/M结构的reg/opcode域为reg，表示第二个操作码寄存器
+
+-------------------------------------------------------------------------------------
+intel手册分为三册，手册1是给汇编程序员用的，主要指导你怎么写汇编程序；手册2是给编译器
+设计者用的，主要指导你怎么给你的编译器写一个x86后端；手册3是给系统程序员用的，主要是
+指导操作系统编写者如何利用CPU。

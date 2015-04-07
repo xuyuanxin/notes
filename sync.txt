@@ -16,4 +16,6 @@ virsh net-start default
 strdup
 bcopy
 http://bbs.pediy.com/showthread.php?p=1291221
+http://bbs.pediy.com/showthread.php?t=191802
+http://bbs.pediy.com/showthread.php?t=133565
 
