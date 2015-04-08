@@ -1,0 +1,179 @@
+http://www.comptechdoc.org/os/linux/usersguide/linux_ugfilestruct.html
+.....................................................................................
+Parts of a Unix directory tree. See the FSSTND standard (Filesystem standard)
+
+/			Root
+|---root		The home directory for the root user
+|---home		Contains the user's home directories
+|    |----ftp		Users include many services as listed here
+|    |----httpd
+|    |----samba
+|    |----user1
+|    |----user2
+|---bin			Commands needed during bootup that might be needed by normal users
+|---sbin		Like bin but commands are not intended for normal users.  Commands run by LINUX.
+|---proc		This filesystem is not on a disk.  Exists in the kernels imagination (virtual).  This directory
+|    |			Holds information about kernel parameters and system configuration.
+|    |----1		A directory with info about process number 1.  Each process
+|				has a directory below proc.  
+|---usr			Contains all commands, libraries, man pages, games and static files for normal
+|    |			operation.
+|    |----bin		Almost all user commands.  some commands are in /bin or /usr/local/bin.
+|    |----sbin		System admin commands not needed on the root filesystem.  e.g., most server 
+|    |			programs.
+|    |----include	Header files for the C programming language.  Should be below /user/lib for
+|    |			consistency.
+|    |----lib		Unchanging data files for programs and subsystems
+|    |----local		The place for locally installed software and other files.
+|    |----man		Manual pages
+|    |----info		Info documents
+|    |----doc		Documentation for various packages
+|    |----tmp
+|    |----X11R6		The X windows system files.  There is a directory similar to usr below this 
+|    |			directory.
+|    |----X386		Like X11R6 but for X11 release 5
+|---boot		Files used by the bootstrap loader, LILO.  Kernel images are often kept here.
+|---lib			Shared libraries needed by the programs on the root filesystem
+|    |----modules 	Loadable kernel modules, especially those needed to boot the system after
+|			 disasters.
+|---dev			Device files for devices such as disk drives, serial ports, etc.
+|---etc			Configuration files specific to the machine.
+|    |----skel		When a home directory is created it is initialized with files from this directory
+|    |----sysconfig 	Files that configure the linux system for networking, keyboard, time, and more.
+|---var			Contains files that change for mail, news, printers log files, man pages, temp files
+|    |----file
+|    |----lib		Files that change while the system is running normally
+|    |----local		Variable data for programs installed in /usr/local.
+|    |----lock		Lock files.  Used by a program to indicate it is using a particular device or file
+|    |----log		Log files from programs such as login and syslog which logs all logins,
+|    |			logouts, and other system messages.
+|    |----run		Files that contain information about the system that is valid until the system is
+|    |			next booted
+|    |----spool		Directories for mail, printer spools, news and other spooled work.
+|    |----tmp		Temporary files that are large or need to exist for longer than they should in
+|    |			/tmp.
+|    |----catman	A cache for man pages that are formatted on demand
+|---mnt			Mount points for temporary mounts by the system administrator.
+|---tmp			Temporary files.  Programs running after bootup should use /var/tmp.
+
+
+
+http://www.cnblogs.com/Bob-FD/archive/2012/07/12/2588233.html
+/：根目录，一般根目录下只存放目录，不要存放文件，/etc、/bin、/dev、/lib、/sbin应该和根目录放置在一个分区中
+
+/bin:/usr/bin:可执行二进制文件的目录，如常用的命令ls、tar、mv、cat等。
+
+/boot：放置linux系统启动时用到的一些文件。/boot/vmlinuz为linux的内核文件，以及/boot/gurb。建议单独分区，分区大小100M即可
+
+/dev：存放linux系统下的设备文件，访问该目录下某个文件，相当于访问某个设备，常用的是挂载光驱mount /dev/cdrom /mnt。
+
+/etc：系统配置文件存放的目录，不建议在此目录下存放可执行文件，重要的配置文件有/etc/inittab、/etc/fstab、/etc/init.d、/etc/X11、/etc/sysconfig、/etc/xinetd.d修改配置文件之前记得备份。
+
+注：/etc/X11存放与x windows有关的设置。
+
+/home：系统默认的用户家目录，新增用户账号时，用户的家目录都存放在此目录下，~表示当前用户的家目录，~test表示用户test的家目录。建议单独分区，并设置较大的磁盘空间，方便用户存放数据
+
+/lib:/usr/lib:/usr/local/lib：系统使用的函数库的目录，程序在执行过程中，需要调用一些额外的参数时需要函数库的协助，比较重要的目录为/lib/modules。
+
+/lost+fount：系统异常产生错误时，会将一些遗失的片段放置于此目录下，通常这个目录会自动出现在装置目录下。如加载硬盘于/disk 中，此目录下就会自动产生目录/disk/lost+found
+
+/mnt:/media：光盘默认挂载点，通常光盘挂载于/mnt/cdrom下，也不一定，可以选择任意位置进行挂载。
+
+/opt：给主机额外安装软件所摆放的目录。如：FC4使用的Fedora 社群开发软件，如果想要自行安装新的KDE 桌面软件，可以将该软件安装在该目录下。以前的 Linux 系统中，习惯放置在 /usr/local 目录下
+
+/proc：此目录的数据都在内存中，如系统核心，外部设备，网络状态，由于数据都存放于内存中，所以不占用磁盘空间，比较重要的目录有/proc/cpuinfo、/proc/interrupts、/proc/dma、/proc/ioports、/proc/net/*等
+
+/root：系统管理员root的家目录，系统第一个启动的分区为/，所以最好将/root和/放置在一个分区下。
+
+/sbin:/usr/sbin:/usr/local/sbin：放置系统管理员使用的可执行命令，如fdisk、shutdown、mount等。与/bin不同的是，这几个目录是给系统管理员root使用的命令，一般用户只能"查看"而不能设置和使用。
+
+/tmp：一般用户或正在执行的程序临时存放文件的目录,任何人都可以访问,重要数据不可放置在此目录下
+
+/srv：服务启动之后需要访问的数据目录，如www服务需要访问的网页数据存放在/srv/www内
+
+/usr：应用程序存放目录，/usr/bin存放应用程序，/usr/share存放共享数据，/usr/lib存放不能直接运行的，却是许多程序运行所必需的一些函数库文件。/usr/local:存放软件升级包。/usr/share/doc:系统说明文件存放目录。/usr/share/man: 程序说明文件存放目录，使用 man ls时会查询/usr/share/man/man1/ls.1.gz的内容建议单独分区，设置较大的磁盘空间
+
+/var：放置系统执行过程中经常变化的文件，如随时更改的日志文件/var/log，/var/log/message：所有的登录文件存放目录，/var/spool/mail：邮件存放的目录，/var/run:程序或服务启动后，其PID存放在该目录下。建议单独分区，设置较大的磁盘空间
+
+http://linux-wiki.cn/wiki/zh-hans/Linux%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84
+根文件系统
+/bin
+这一目录中存放了供所有用户使用的完成基本维护任务的命令。其中bin是binary的缩写，表示二进制文件，通常为可执行文件。一些常用的系统命令，如cp、ls等保存在该目录中。
+/boot
+这里存放的是启动Linux时使用的一些核心文件。如操作系统内核、引导程序Grub等。
+/dev
+在此目录中包含所有的系统设备文件。从此目录可以访问各种系统设备。如CD-ROM，磁盘驱动器，调制解调器和内存等。在该目录中还包含有各种实用功能，如用于创建设备文件的MAKEDEV。
+/etc
+该目录中包含系统和应用软件的配置文件。
+/etc/passwd
+该目录中包含了系统中的用户描述信息，每行记录一个用户的信息。
+/home
+存储普通用户的个人文件。每个用户的主目录均在/home下以自己的用户名命名。
+/lib
+这个目录里存放着系统最基本的共享链接库和内核模块。共享链接库在功能上类似于Windows里的.dll文件。
+/lib64
+64位系统有这个文件夹，64位程序的库。
+/lost+found
+这并不是Linux目录结构的组成部分，而是ext3文件系统用于保存丢失文件的地方。不恰当的关机操作和磁盘错误均会导致文件丢失，这意味着这些被标注为“在使用”，但却并未列于磁盘上的数据结构上。正常情况下，引导进程会运行fsck程序，该程序能发现这些文件。除了“/”分区上的这个目录外，在每个分区上均有一个lost+found目录。
+/media
+可移动设备的挂载点，当前的操作系统通常会把U盘等设备自动挂载到该文件夹下。
+/mnt
+临时用于挂载文件系统的地方。一般情况下这个目录是空的，而在我们将要挂载分区时在这个目录下建立目录，再将我们将要访问的设备挂载在这个目录上，这样我们就可访问文件了。（注意在GNOME中，只有挂载到/media的文件夹才会显示在“计算机”中，挂载到/mnt不会做为特殊设备显示，详见自动挂载分区）
+/opt
+多数第三方软件默认安装到此位置，如Adobe Reader、google-earth等。并不是每个系统都会创建这个目录。
+/proc
+它是存在于内存中的虚拟文件系统。里面保存了内核和进程的状态信息。多为文本文件，可以直接查看。如/proc/cpuinfo保存了有关CPU的信息。
+/root
+这是根用户的主目录。与保留给个人用户的/home下的目录很相似，该目录中还包含仅与根用户有关的条目。
+/sbin
+供超级用户使用的可执行文件，里面多是系统管理命令，如fsck, reboot, shutdown, ifconfig等。
+/tmp
+该目录用以保存临时文件。该目录具有Sticky特殊权限，所有用户都可以在这个目录中创建、编辑文件。但只有文件拥有者才能删除文件。为了加快临时文件的访问速度，有的实现把/tmp放在内存中。
+/usr
+静态的用户级应用程序等，见下。
+/var
+动态的程序数据等，见下文。
+/usr目录结构
+/usr通常是一个庞大的文件夹，其下的目录结构与根目录相似，但根目录中的文件多是系统级的文件，而/usr中是用户级的文件，一般与具体的系统无关。
+
+Hint.gif提示： 
+usr最早是user的缩写，/usr的作用与现在的/home相同。而目前其通常被认为是 User System Resources 的缩写，其中通常是用户级的软件等，与存放系统级文件的根目录形成对比。[2]
+应注意，程序的配置文件、动态的数据文件等都不会存放到/usr，所以除了安装、卸载软件外，一般无需修改/usr中的内容。说在系统正常运行时，/usr甚至可以被只读挂载。由于这一特性，/usr常被划分在单独的分区，甚至有时多台计算机可以共享一个/usr。
+
+/usr/bin
+多数日常应用程序存放的位置。如果/usr被放在单独的分区中，Linux的单用户模式不能访问/usr/bin，所以对系统至关重要的程序不应放在此文件夹中。
+/usr/include
+存放C/C++头文件的目录
+/usr/lib
+系统的库文件
+/usr/local
+新装的系统中这个文件夹是空的，可以用于存放个人安装的软件。安装了本地软件的/usr/local里的目录结构与/usr相似
+/usr/sbin
+在单用户模式中不用的系统管理程序，如apache2等。
+/usr/share
+与架构无关的数据。多数软件安装在此。
+/usr/X11R6
+该目录用于保存运行X-Window所需的所有文件。该目录中还包含用于运行GUI要的配置文件和二进制文件。
+/usr/src
+源代码
+/var目录结构
+/var中包括了一些数据文件，如系统日志等。/var的存放使得/usr被只读挂载成为可能。
+
+/var/cache
+应用程序的缓存文件
+/var/lib
+应用程序的信息、数据。如数据库的数据等都存放在此文件夹。
+/var/local
+/usr/local中程序的信息、数据
+/var/lock
+锁文件
+/var/log
+日志文件
+/var/opt
+/opt中程序的信息、数据
+/var/run
+正在执行着的程序的信息，如PID文件应存放于此
+/var/spool
+存放程序的假脱机数据（即spool data）
+/var/tmp
+临时文件
