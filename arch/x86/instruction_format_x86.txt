@@ -1,32 +1,69 @@
-
-
-+-------------------------------------------------------------------------+
-| Instruction Prefixes | Opcode | ModR/M | SIB | Displacement | Immediate |
-+-------------------------------------------------------------------------+
-
-
 ModR/M
 +---------------------------------------+
 | Mod(7~6) | Reg/Opcode(5~3) | R/M(2~0) |
 +---------------------------------------+
-
+ 
 SIB (Scale-Index-Base)
 +-------------------------------------+
 | Scale(7~6) | Index(5~3) | Base(2~0) |
 +-------------------------------------+
 
++-------------------------------------------------------------------------+
+| Instruction Prefixes | Opcode | ModR/M | SIB | Displacement | Immediate |
++-------------------------------------------------------------------------+
+Figure 2-1. Intel 64 and IA-32 Architectures Instruction Format
 
-Instruction Prefixes
-    Up to four prefixes of 1 byte each (optional)
+----> Instruction Prefixes
+Up to four prefixes of 1 byte each (optional)
 
-Opcode
-    1-, 2-, or 3-byte opcode.
+----> Opcode
+A primary opcode can be 1, 2, or 3 bytes in length . An additional 3-bit opcode field 
+is sometimes encoded in the ModR/M byte. Smaller fields can be defined within the pr-
+imary opcode. Such fields define the direction of operation, size of displacements, -
+register encoding, condition codes, or sign extension. Encoding fields used by an op-
+code vary depending on the class of operation.
+
+Two-byte opcode formats for general-purpose and SIMD instructions consist of:
+• An escape opcode byte 0FH as the primary opcode and a second opcode byte, or
+• A mandatory prefix (66H, F2H, or F3H), an escape opcode byte, and a second opcode b-
+  yte
+For example, CVTDQ2PD consists of the following sequence: F3 0F E6. The first byte is 
+a mandatory prefix (it is not considered as a repeat prefix).
+
+Three-byte opcode formats for general-purpose and SIMD instructions consist of:
+• An escape opcode byte 0FH as the primary opcode, plus two additional opcode bytes, or
+• A mandatory prefix (66H, F2H, or F3H), an escape opcode byte, plus two additional -
+  opcode bytes 
+For example, PHADDW for XMM registers consists of the following sequence:66 0F 38 01. 
+The first byte is the mandatory prefix.
 	
-Displacement
-    Address displacement of 1, 2, or 4 bytes or none 
+----> ModR/M  addressing-form specifier byte
+Many instructions that refer to an operand in memory have an addressing-form specifi-
+er byte (called the ModR/M byte) following the primary opcode. The ModR/M byte conta-
+ins three fields of information:
+• The mod field combines with the r/m field to form 32 possible values: eight regist-
+  ers and 24 addressing modes.
+• The reg/opcode field specifies either a register number or three more bits of opco-
+  de information. The purpose of the reg/opcode field is specified in the primary op-
+  code.
+• The r/m field can specify a register as an operand or it can be combined with the -
+  mod field to encode an addressing mode . Sometimes, certain combinations of the mod 
+  field and the r/m field is used to express opcode information for some instructions.
+
+Certain encodings of the ModR/M byte require a second addressing byte (the SIB byte). 
+The base-plus-index and scale-plus-index forms of 32-bit addressing require the SIB -
+byte. The SIB byte includes the following fields:
+• The scale field specifies the scale factor.
+• The index field specifies the register number of the index register.
+• The base field specifies the register number of the base register.
+See Section 2.1.5 for the encodings of the ModR/M and SIB bytes.
 	
-Immediate
-    Immediate data of 1, 2, or 4 bytes or none
+----> Displacement and Immediate Bytes
+Some addressing forms include a displacement immediately following the ModR/M byte (-
+or the SIB byte if one is present). If a displacement is required; it be 1, 2, or 4 -
+bytes. If an instruction specifies an immediate operand, the operand always follows -
+any displacement bytes. An immediate operand can be 1, 2 or 4 bytes.
+	
 	
 	
 imm是立即数的意思，而imm8就是指8个比特大小的立即数，
@@ -36,10 +73,40 @@ r/m：寄存器或内存
 ib：代表OpCode后面跟着一个byte型数值
 iw：代表OpCode后面跟着一个word型数值
 id：代表OpCode后面跟着一个dword型数值
-/digit：代表此OpCode存在ModR/M结构，且ModR/M结构的reg/opcode域为opcode：opcode的补充操作码
+/digit：该指令存在ModR/M结构，且ModR/M结构的reg/opcode域为opcode：opcode的补充操作码
 /r：代表此OpCode存在ModR/M结构，且ModR/M结构的reg/opcode域为reg，表示第二个操作码寄存器
+
+
+83C0 01   add EAX,1
+----> add 
+Opcode    Instruction      Op/En  64-bit Mode  Compat/Leg Mode  Description
+83 /0 ib  ADD r/m32, imm8  MI     Valid        Valid            Add sign-extended imm8 to r/m32
+
+1 Opcode is 83
+2 /0 表示存在ModR/M结构，查表 Table 2-2. 32-Bit Addressing Forms with the ModR/M Byte
+  可知ModR/M结构为：
+  /digit REG  Mod  R/M  
+  0      000  11   000 = 000011000 = C0h (h表示C0是16进制)
+
+
+01048E   ADD DWORD PTR DS:[ESI+ECX*4], EAX
+
+Opcode    Instruction      Op/En  64-bit Mode  Compat/Leg Mode  Description
+01 /r     ADD r/m32, r32   MR     Valid        Valid            Add r32 to r/m32.
+
+1 Opcode is 01 
+2 /r 表示存在ModR/M结构，查表 Table 2-2. 32-Bit Addressing Forms with the ModR/M Byte
+  /r   REG  Mod  R/M  
+  0    000  00   100 = 000000100 = 04h
+3 根据“Effective Address”的“[--][--]”可知此OpCode还存在“SIB”结构,Table 2-3.
+  SS  Index  Base
+  10  001    110  = 10001110 = 8Eh
 
 -------------------------------------------------------------------------------------
 intel手册分为三册，手册1是给汇编程序员用的，主要指导你怎么写汇编程序；手册2是给编译器
 设计者用的，主要指导你怎么给你的编译器写一个x86后端；手册3是给系统程序员用的，主要是
 指导操作系统编写者如何利用CPU。
+
+
+http://bbs.pediy.com/showthread.php?p=1291221  
+http://bbs.pediy.com/showthread.php?t=113402   通过例子一步步深入
