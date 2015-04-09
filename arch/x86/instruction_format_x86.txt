@@ -110,3 +110,5 @@ intel手册分为三册，手册1是给汇编程序员用的，主要指导你�
 
 http://bbs.pediy.com/showthread.php?p=1291221  
 http://bbs.pediy.com/showthread.php?t=113402   通过例子一步步深入
+
+http://wenku.baidu.com/view/e532c6ef102de2bd9605880e.html
