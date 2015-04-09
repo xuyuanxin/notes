@@ -1,0 +1,13 @@
+
+https://sourceware.org/binutils/docs-2.25/binutils/objdump.html#objdump
+
+
+-d
+--disassemble
+    Display the assembler mnemonics for the machine instructions from objfile. This -
+	option only disassembles those sections which are expected to contain instructio-
+	ns. for example: objdump -d code.o
+
+-M 
+    objdump -M intel -d program_name  # tell objdump to emit assembly in Intel Syntax 
+	                                  # rather than the default AT&T syntax 
