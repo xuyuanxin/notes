@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------------
+-c  3.2 Options Controlling the Kind of Output
+    Compile or assemble the source files, but do not link. The linking stage simply -
+	is not done. The ultimate output is in the form of an object file for each source 
+	file. By default, the object file name for a source file is made by replacing the 
+	suffix ‘.c’, ‘.i’, ‘.s’, etc., with ‘.o’. Unrecognized input files, not requiring 
+	compilation or assembly, are ignored.
+
+-S  3.2  
+    Stop after the stage of compilation proper; do not assemble. The output is in the 
+	form of an assembler code file for each non-assembler input file specified. By d-
+	efault, the assembler file name for a source file is made by replacing the suffix 
+	‘.c’, ‘.i’, etc., with ‘.s’. Input files that don’t require compilation are igno-
+	red.
+	
+In general , increasing the level of optimization makes the final program run faster, 
+but at  a risk of increased compilation time and difficulties running debugging tools 
+on the code. As we will also see, invoking higher levels of optimization can generate 
+code that is so heavily transformed that the relationship between the generated mach-
+ine code and the original source code is difficult to understand. 	
+	
+-O1 3.10 Options That Control Optimization
+    apply level-one optimizations. 
+	
+
+-masm=dialect 3.17.17 Intel 386 and AMD x86-64 Options
+    Output assembly instructions using selected dialect.Supported choices are ‘intel’ 
+	or ‘att’ (the default). Darwin does not support ‘intel’.	
