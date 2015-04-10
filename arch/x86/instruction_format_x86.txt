@@ -112,3 +112,96 @@ http://bbs.pediy.com/showthread.php?p=1291221
 http://bbs.pediy.com/showthread.php?t=113402   通过例子一步步深入
 
 http://wenku.baidu.com/view/e532c6ef102de2bd9605880e.html
+
+
+
+-------------------------------------------------------------------------------------|
+http://www.luocong.com/learningopcode/doc/4._Prefixes_-_Part_II.htm                  |
+
+----> Prefix 67  改变默认的地址大小。
+8A 00       MOV AL, [EAX] # intel, AL = *EAX
+现在把它的OpCode改成以67开头的：
+67 8A 00    MOV AL, [BX+SI]
+我们可以看到：地址由原来的32位的[EAX]变成了16位的[BX+SI]。
+
+----> Repeat Prefixes (F2, F3)                                                       |
+Repeat Prefixes作为一个串操作指令的前缀，它重复执行其后的串操作指令。每一次重复都先判|
+断(E)CX是否为0，如为0就结束重复，否则(E)CX的值减1，然后再重复其后的串操作指令。所以当|
+(E)CX的值为0时，就不再执行其后的操作指令。                                           |
+                                                                                     |
+----> Segment Override Prefixes (2E, 36, 3E, 26, 64, 65)                             |
+Prefix	Explanation                                                                  |
+2E	    CS segment override prefix                                                   |
+36	    SS segment override prefix                                                   |
+3E	    DS segment override prefix                                                   |
+26	    ES segment override prefix                                                   |
+64	    FS segment override prefix                                                   |
+65	    GS segment override prefix                                                   |
+再来看一个例子：                                                                     |
+                                                                                     |
+   8B 03    MOV EAX, [DWORD DS:EBX]                                                  |
+65 8B 03    MOV EAX, [DWORD GS:EBX]                                                  |
+65就是一个Segment override prefix，用来改变默认的段，从上表中我们可以看出：65代表的是|
+段GS。注意！这里也是用默认的概念。怎么知道当前默认的是哪个段呢？以及为什么要用默认的 |
+概念呢？在使用内存中的数据时，处理器必须首先知道它的段地址(Segment)和偏移量(Offset)，|
+但是如果在每个地方都要显式地直接指出段地址，那么在OpCode格式中就必须增加一个新的域， |
+这将会比现有的OpCode体系多占用大量的字节，而且处理器也必须多花费额外的时钟周期来进行 |
+解码——无论在空间还是时间上，都不值得！因此，为了解决这个问题，一个方案诞生了：指令由 |
+不同的定义被划分为不同的组，每个组各自有一个默认的段：                               |
+CS: for EIP pointer                                                                  |
+ES: 目的操作数是内存单元的串指令（movs, cmps等），在这里源操作数是储存在段DS里面。   |
+SS: 堆栈操作（push, pop等）                                                          |
+DS: 剩下的数据操作指令。                                                             |
+有了这个规则，处理器识别当前应该用哪个段将会变得非常简单而直接：                     |
+                                                                                     |
+如果有“Segment override prefix”，那么就使用这个prefix所指定的段，否则就使用默认的段。|
+看看：                                                                               |
+   AC     LODS [BYTE DS:ESI]                                                         |
+3E AC     LODS [BYTE DS:ESI]                                                         |
+从上面的表中可以查出，3E是表示段DS，但是实际上在这里即使不直接指明3E，处理器也是会使 |
+用DS的，因为DS是指令LODS的默认段。                                                   |
+最后值得一提的是64，它表示的是段FS，也许读者会对FS不太熟悉，平时好像很少会用到。没关 |
+系，我们来简单介绍一下：FS一般是由SEH（结构化异常处理）所使用,但是由于SEH不属于OpCode|
+格式的范畴，所以我们在这里不必深究，知道有这个概念就行了。                           |
+
+
+
+----> ModR/M
+
+举个例子看看ModR/M到底是怎么来看的：
+mov edi, ecx	8B F9 # 8B和2B就是Code
+sub edi, ecx	2B F9 # F9是ModR/M
+
+       Mod: 11
+Reg/Opcode: 111
+       R/M: 001
+                                                                                     |	   
+Mod总共分为00、01、10、11四种情况，每种情况又分别有8种情况。现在Mod是11，所以我们应该|
+看Mod为11的那一栏(Table 2-2)。                                                       |
+                                                                                     |
+Reg/Opcode，反斜杠“/”代表或者的意思，也就是3个bit可能用来编码一个寄存器操作对象，但同|
+时也可能联合前面的Opcode一起编码指令。当编码寄存器是，指的是8个通用寄存器中的一个。具|
+体指的哪个，查表吧(Table 2-2)。                                                      |
+                                                                                     |
+R/M。这一栏要与Mod结合起来。我们来看Mod为11的那一栏——R/M为001对应的寄存器是ECX。     |
+
+       Mod: 11  表示应该查看Mod为11的那一栏
+Reg/Opcode: 111 表示的是寄存器EDI
+       R/M: 001 表示的是ECX
+	   
+	   
+	   
+	   
+http://download.csdn.net/download/yzyangzheng/2474580
+
+
+
+
+
+
+
+
+
+
+
+
