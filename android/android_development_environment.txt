@@ -1,0 +1,7 @@
+1 安装java
+  language\java\java_development_environment.txt
+2 安装eclipse
+  http://www.eclipse.org/downloads/   Eclipse IDE for Java Developers
+  其实eclipse也算不上是安装，仅仅是解压缩可以了，eclipse.exe 就可以打开eclipse了。
+3 Android SDK安装
+  下载 android-sdk_r24.0.2-windows.zip     
