@@ -1,0 +1,39 @@
+/etc/init.d/network start
+
+终止和启动一个网卡:ifdown eth0 , ifup eth0
+
+ifconfig -a 显示ip配置。
+
+route add default gw 9.111.66.1
+
+1、设置ip地址
+vi /etc/sysconfig/network/ifcfg-eth0   
+BOOTPROTO='static'   #静态IP
+BROADCAST='192.168.21.255'   #广播地址
+IPADDR='192.168.21.172'   #IP地址
+NETMASK='255.255.255.0'   #子网掩码
+NETWORK='192.168.21.0'  #网络地址
+STARTMODE='auto'    #开机启动网络
+
+2、设置网关
+vi /etc/sysconfig/network/routes 
+default 192.168.21.2 - -
+
+
+3、设置dns
+vi /etc/resolv.conf
+nameserver=8.8.8.8
+nameserver=8.8.4.4
+
+
+rcnetwork restart  #重启网络
+service network restart #重启网络
+/etc/init.d/network restart #重启网络
+
+
+----> suse ssh
+YAST->Firewall， 选择”Disable Firewall Atuomatic Starting”和”Stop Firewall Now”
+YAST->SSHD Configuration，跳出如下图窗口，点击“Finish”即可完成SUSE LINUX服务器端
+的SSH服务设置。
+
+

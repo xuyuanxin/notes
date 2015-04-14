@@ -1,9 +1,5 @@
 awk
-
-
 Shellcoder's Programming Uncovered
-
-
 虚拟化技术原理与实现
 qemu
 qemu-img
@@ -15,9 +11,3 @@ virsh net-start default
 
 strdup
 bcopy
-http://bbs.pediy.com/showthread.php?p=1291221
-http://bbs.pediy.com/showthread.php?t=191802
-http://bbs.pediy.com/showthread.php?t=133565
-
-https://code.google.com/p/libdasm/
-http://www.oschina.net/p/libdasm

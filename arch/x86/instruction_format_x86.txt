@@ -7,7 +7,7 @@ SIB (Scale-Index-Base)
 +-------------------------------------+
 | Scale(7~6) | Index(5~3) | Base(2~0) |
 +-------------------------------------+
-
+    
 +-------------------------------------------------------------------------+
 | Instruction Prefixes | Opcode | ModR/M | SIB | Displacement | Immediate |
 +-------------------------------------------------------------------------+
@@ -24,48 +24,337 @@ register encoding, condition codes, or sign extension. Encoding fields used by a
 code vary depending on the class of operation.
 
 Two-byte opcode formats for general-purpose and SIMD instructions consist of:
-• An escape opcode byte 0FH as the primary opcode and a second opcode byte, or
-• A mandatory prefix (66H, F2H, or F3H), an escape opcode byte, and a second opcode b-
+? An escape opcode byte 0FH as the primary opcode and a second opcode byte, or
+? A mandatory prefix (66H, F2H, or F3H), an escape opcode byte, and a second opcode b-
   yte
 For example, CVTDQ2PD consists of the following sequence: F3 0F E6. The first byte is 
 a mandatory prefix (it is not considered as a repeat prefix).
 
 Three-byte opcode formats for general-purpose and SIMD instructions consist of:
-• An escape opcode byte 0FH as the primary opcode, plus two additional opcode bytes, or
-• A mandatory prefix (66H, F2H, or F3H), an escape opcode byte, plus two additional -
+? An escape opcode byte 0FH as the primary opcode, plus two additional opcode bytes, or
+? A mandatory prefix (66H, F2H, or F3H), an escape opcode byte, plus two additional -
   opcode bytes 
 For example, PHADDW for XMM registers consists of the following sequence:66 0F 38 01. 
 The first byte is the mandatory prefix.
-	
+    
 ----> ModR/M  addressing-form specifier byte
 Many instructions that refer to an operand in memory have an addressing-form specifi-
 er byte (called the ModR/M byte) following the primary opcode. The ModR/M byte conta-
 ins three fields of information:
-• The mod field combines with the r/m field to form 32 possible values: eight regist-
+? The mod field combines with the r/m field to form 32 possible values: eight regist-
   ers and 24 addressing modes.
-• The reg/opcode field specifies either a register number or three more bits of opco-
+? The reg/opcode field specifies either a register number or three more bits of opco-
   de information. The purpose of the reg/opcode field is specified in the primary op-
   code.
-• The r/m field can specify a register as an operand or it can be combined with the -
+? The r/m field can specify a register as an operand or it can be combined with the -
   mod field to encode an addressing mode . Sometimes, certain combinations of the mod 
   field and the r/m field is used to express opcode information for some instructions.
 
 Certain encodings of the ModR/M byte require a second addressing byte (the SIB byte). 
 The base-plus-index and scale-plus-index forms of 32-bit addressing require the SIB -
 byte. The SIB byte includes the following fields:
-• The scale field specifies the scale factor.
-• The index field specifies the register number of the index register.
-• The base field specifies the register number of the base register.
+? The scale field specifies the scale factor.
+? The index field specifies the register number of the index register.
+? The base field specifies the register number of the base register.
 See Section 2.1.5 for the encodings of the ModR/M and SIB bytes.
-	
+    
 ----> Displacement and Immediate Bytes
 Some addressing forms include a displacement immediately following the ModR/M byte (-
 or the SIB byte if one is present). If a displacement is required; it be 1, 2, or 4 -
 bytes. If an instruction specifies an immediate operand, the operand always follows -
 any displacement bytes. An immediate operand can be 1, 2 or 4 bytes.
-	
-	
-	
+-------------------------------------------------------------------------------------|
+----> 总揽                                                                           |       
+有6个域是opcode可能会用到的,重要的不仅仅是它们的名字和意义,还有它们的排列顺序.       |
+它们是:                                                                              |
+1.    指令前缀（Prefixes）                                                           |
+2.    操作码（Code）                                                                 |
+3.    ModR/M字节（byte Modr/m）                                                      |
+4.    SIB字节（byte SIB）                                                            |
+5.    偏移量（Offset in command）                                                    |
+6.    立即操作数（imm. Operand）                                                     |
+并不是这所有的6个域都会被用到,但是有一项却是一定会有的,那就是第2项 Code,有些指令甚至 |
+只用到这一项.虽然并不是6个域都是必要的,但是,它们的排列顺序绝对不能乱,必须严格按照上面|
+的顺序进行.有些域或许不会出现,但只要出现了,编号小的域就绝对不允许出现在编号大的域的后|
+面,反之亦然.                                                                         |       
+-------------------------------------------------------------------------------------|
+----> Prefix 66                                                                      |  
+切换默认的操作数大小。如果默认的操作数大小是WORD（16位），那么切换后就是DWORD（32位）|
+；反之，如果默认的操作数大小是DWORD（32位），那么切换后就是WORD（16位）。            |
+8A 00       MOV AL, [EAX] # intel, AL = *EAX
+现在把它的OpCode改成以67开头的：
+67 8A 00    MOV AL, [BX+SI]
+我们可以看到：地址由原来的32位的[EAX]变成了16位的[BX+SI]。
+                                                                                     |
+如果Prefixes不能对随它之后的OpCode起作用，那么它就会被忽略。                         |
+我们再来看一个特例：
+B0 FF    MOV AL, 0FF
+8A C1    MOV AL, CL
+现在的操作数是AL和CL，加上prefix 66后会如何？
+66 B0 FF    MOV AL, 0FF
+66 8A C1    MOV AL, CL
+Faint！没有任何变化！
+
+一个OpCode中可以有多个Prefixes。如果有多个Prefixes，那么它们的顺序可以打乱，不会有任 |
+何问题。
+下面的指令：
+REP LODSW
+它的OpCode将会是：
+66 F3 AD
+解释如下：
+66 AD：LODSW
+F3： REP
+为什么要把66放在第一位，把F3放在第二位呢？把它们的位置调换一下行不行？答案是：行！事 |
+实上它也可以写成：
+F3 66 AD
+效果是一样的！
+                                                                                     |
+----> Prefix 67                                                                      |
+改变默认的地址大小。                                                                 |                             
+8A 00    MOV AL, [EAX]                                                               |
+现在把它的OpCode改成以67开头的：                                                     |
+67 8A 00    MOV AL, [BX+SI]                                                          |
+我们可以看到：地址由原来的32位的[EAX]变成了16位的[BX+SI]。疑问来了：为什么不是[AX]， |
+而是[BX+SI]呢？第2个问题我们将会在以后的{ModR/M}和{SIB}的格式讲解中回答。现在我们可以|
+暂时认为，在16位的地址模式中无法完全使用32位中的对应的地址模式，两种模式中的寄存器有 |
+着一定的区别。强调一点：Prefix 67同样也是一个“触发器”，它起的作用是“切换”，而不是“指 |
+定”。                                                                                |
+                                                                                     |
+----> Repeat Prefixes (F2, F3)                                                       |
+Repeat Prefixes作为一个串操作指令的前缀，它重复执行其后的串操作指令。每一次重复都先判|
+断(E)CX是否为0，如为0就结束重复，否则(E)CX的值减1，然后再重复其后的串操作指令。所以当|
+(E)CX的值为0时，就不再执行其后的操作指令。Repeat Prefixes通常是与movs、scas、cmps等串|
+指令搭配使用的，它们有：                                                             |
+F2: REPNE                                                                            |
+F3: REP/REPE                                                                         |
+                                                                                     |
+----> Segment Override Prefixes (2E, 36, 3E, 26, 64, 65)                             |
+Prefix    Explanation                                                                |
+2E        CS segment override prefix                                                 |
+36        SS segment override prefix                                                 |
+3E        DS segment override prefix                                                 |
+26        ES segment override prefix                                                 |
+64        FS segment override prefix                                                 |
+65        GS segment override prefix                                                 |
+再来看一个例子：                                                                     |
+   8B 03    MOV EAX, [DWORD DS:EBX]                                                  |
+65 8B 03    MOV EAX, [DWORD GS:EBX]                                                  |
+65就是一个Segment override prefix，用来改变默认的段，从上表中我们可以看出：65代表的是|
+段GS。注意！这里也是用默认的概念。怎么知道当前默认的是哪个段呢？以及为什么要用默认的 |
+概念呢？在使用内存中的数据时，处理器必须首先知道它的段地址(Segment)和偏移量(Offset)，|
+但是如果在每个地方都要显式地直接指出段地址，那么在OpCode格式中就必须增加一个新的域， |
+这将会比现有的OpCode体系多占用大量的字节，而且处理器也必须多花费额外的时钟周期来进行 |
+解码——无论在空间还是时间上，都不值得！因此，为了解决这个问题，一个方案诞生了：指令由 |
+不同的定义被划分为不同的组，每个组各自有一个默认的段：                               |
+CS: for EIP pointer                                                                  |
+ES: 目的操作数是内存单元的串指令（movs, cmps等），在这里源操作数是储存在段DS里面。   |
+SS: 堆栈操作（push, pop等）                                                          |
+DS: 剩下的数据操作指令。                                                             |
+有了这个规则，处理器识别当前应该用哪个段将会变得非常简单而直接：                     |
+                                                                                     |
+如果有“Segment override prefix”，那么就使用这个prefix所指定的段，否则就使用默认的段。|
+看看：                                                                               |
+   AC     LODS [BYTE DS:ESI]                                                         |
+3E AC     LODS [BYTE DS:ESI]                                                         |
+从上面的表中可以查出，3E是表示段DS，但是实际上在这里即使不直接指明3E，处理器也是会使 |
+用DS的，因为DS是指令LODS的默认段。                                                   |
+最后值得一提的是64，它表示的是段FS，也许读者会对FS不太熟悉，平时好像很少会用到。没关 |
+系，我们来简单介绍一下：FS一般是由SEH（结构化异常处理）所使用,但是由于SEH不属于OpCode|
+格式的范畴，所以我们在这里不必深究，知道有这个概念就行了。                           |
+                                                                                     |
+----> LOCK Prefix (F0)                                                               |
+-------------------------------------------------------------------------------------|
+----> Opcode                                                                         |
+ACh就是所谓的opcode(操作码),"lodsb"则是指令助记符(mnemonic).助记符"lodsb"对汇编器说,"|
+给我用字节ACh替换lodsb".处理器并不知道lodsb是什么.仅当寄存器EIP指向该ACh字节时,处理器|
+解码器对字节ACh解码,通过这个字节处理器就知道程序要将寄存器ESI指向的一个字节的内容送入|
+AL寄存器.opcode就是如此简单。opcode和助记符的关系如下:不同的opcode可能有同样的助记符 |
+；一个opcode可能对应几个助记符。                                                     |
+待补充: 从Opcode的值是否能看出后面有没有ModR/M，如何看?                              |
+-------------------------------------------------------------------------------------|
+----> ModR/M                                                                         |
+Opcode中有时候也用3个bit来编码寄存器，当指令只有这样一个寄存器操作对象，或者指令的操 |
+作对象默认已知的时候，那么指令只需要Opcode部分就行了（Prefix可能也存在）。当指令中存 |
+在内存操作对象的时候，就需要ModR/M甚至后面的SIB来编码了。ModR/M一般是用来对内存操作对|
+象进行编码的。当指令中出现了两个寄存器操作对象，或者一个寄存器一个内存操作对象的时候 |
+，ModR/M字节一般都会存在的。ModR/M的长度是固定的1个字节，这个字节8个bit被分成了3个部 |
+分，Mod(6-7bit)，Reg/Opcode(3-5bit)，R/M(0-2bit)                                     | 
+                +---------------------------------------+                            |
+                | Mod(7~6) | Reg/Opcode(5~3) | R/M(2~0) |                            |
+                +---------------------------------------+                            |
+Mod (2bits)：                                                                        |
+Mod共两个bit能编码4种对象，这4种对象对应着4种不同的操作对象，后面的3个bit的R/M部分到 |
+底是寄存器操作对象还是内存操作对象，如果是内存操作对象，内存寻址模式是什么。4种对象中|
+必需有一个用来定义R/M部分是寄存器，那么剩下的3种就编码内存的寻址方式。所以Mod = 1寄存|
+器 + 3寻址模式。                                                                     |
+Reg/Opcode (3bits)                                                                   |
+反斜杠"/"代表或者的意思，也就是3个bit可能用来编码一个寄存器操作对象，但同时也可能联合|
+前面的Opcode一起编码指令(具体哪种功能由前面的Mod决定)。当编码寄存器时，指的是8个通用 |
+寄存器中的一个。具体指的哪个，查表吧(Table 2-2)。                                    |
+R/M (3bits)：                                                                        |
+“R”是指Register寄存器，“M”是指Memory内存。这3个bit的涵义很明显，寄存器或者内存，具体 |
+这3个bit用来编码什么就要看Mod的值了。                                                |
+                                                                                     |
+举个例子看看ModR/M到底是怎么回事：                                                   |
+8B F9   mov edi,ecx     # 8B 和 2B 就是 Opcode                                       |
+2B F9   sub edi, ecx    # F9 是 ModR/M                                               |
+Mod       : 11          # F9 = 1111 1001 = 11 111 001                                |
+Reg/Opcode: 111                                                                      |
+R/M       : 001                                                                      |
+                                                                                     |       
+Mod总共分为00、01、10、11四种情况，每种情况又分别有8种情况。现在Mod是11，所以我们应该|
+看Mod为11的那一栏(Table 2-2)。                                                       |
+Reg/Opcode，反斜杠“/”代表或者的意思，也就是3个bit可能用来编码一个寄存器操作对象，但同|
+时也可能联合前面的Opcode一起编码指令。当编码寄存器是，指的是8个通用寄存器中的一个。具|
+体指的哪个，查表吧(Table 2-2)。                                                      |                                                                                    |
+R/M。这一栏要与Mod结合起来。我们来看Mod为11的那一栏——R/M为001对应的寄存器是ECX。     |
+Mod       : 11  表示应该查看Mod为11的那一栏                                          |
+Reg/Opcode: 111 表示的是寄存器EDI                                                    |
+R/M       : 001 表示的是ECX                                                          |
+-------------------------------------------------------------------------------------|
+----> SIB (Scale-Index-Base) (Table 2-3. 32-Bit Addressing Forms with the SIB Byte)  |
+是否有这个域，由ModR/M决定。当ModR/M中的R/M为100且Mod为00或01或10时，存在SIB。       |
+SIB的长度是固定的，只有一个字节，共8bit。我们从SIB寻址方式的定义中就可以大致推测出SIB|
+的结构。                                                                             |
+    [base + index * n + displacement]   # n = 2, 4, 8，displacement是后续字节        |
+base和index分别为8个通用寄存器的一种，则各需要3个bit来进行编码，剩余的只有2个bit，显 |
+然用来编码n的值。2个bit也只能编码4个值，这恐怕就是为什么n只能取(1), 2, 4, 8的原因了。|
+    +-------------------------------------+                                          |
+    | Scale(7~6) | Index(5~3) | Base(2~0) |                                          |
+    +-------------------------------------+                                             | 
+-------------------------------------------------------------------------------------|    
+----> Displacement                                                                   |
+ModR/M中的Mod决定了结果中displacement是否出现。Mod为00的时候，是没有displacement的（ |
+或者整条指令中只有一个displacement），Mod为01时dispacement为8位，通过符号扩展的方式加|
+到前面的寄存器上，Mod为10时，偏移地址为16位/32位，取决于CPU当前工作模式。            |
+-------------------------------------------------------------------------------------|    
+----> Immediate                                                                      |
+立即数是Intel指令的中操作对象的一种（加上寄存器、内存共三种）。作为指令的一部分，立即|
+数必须是直接可用的数字，这是立即数跟其他两种操作对象的主要区别（寄存器操作对象，CPU需|
+要首先定位到寄存器，然后再读或写该寄存器中的对象。CPU指令的执行过程可粗分为：取指令，|
+指令解码，取操作对象， ALU运算，存结果，取下一条指令……，立即数跟其他两种操作对象的区 |
+别体现在“取操作对象”这一步。立即数需要０个时钟周期，解码之后，立即数就可以使用了，立 |
+即立即，这就是立即的涵义所在；寄存器操作对象需要１个时钟周期；内存操作对象根据寻址方 |
+式的不同可能需要２-３或更多个时钟周期）。                                            |
+立即数的解析只需要知道需要解析的立即数的大小就可以了，是几个字节读几个字节就行了。这 |
+里需要注意的一个重要的问题就是立即数需不需要进行符号为扩展的问题，或者更简单点来说， |
+就是立即数是signed类型的还是unsigned的类型的。这就需要对指令的另外一个特殊的位进行解 |
+析了，那就是s位。                                                                    |
+先来看看下面的一组指令：                                                             |
+00401000    80C0 F8           add al, 0F8                                            |
+00401003    81C0 78563412     add eax, 12345678                                      |
+00401009    82C0 F8           add al, -8            # 实际为： add al, F8            |
+0040100C    83C0 F8           add eax, -8           # 实际为： add eax, FFFFFFF8     |
+看看80，81，82，83指令的定义：（括号中表示ModR/M中的Reg/Opcode辅助编码部分）         |
+80（0）  add  r/m8,    imm8                                                          |
+81（0）  add  r/m16/32/64,  imm16/32                                                 |
+82（0）  add  r/m8,    imm8                                                          |
+83（0）  add  r/m16/32/64,  imm8                                                     |
+16/32位的立即数不存在扩展之分，这里主要的区别在8位的立即数。很明显，82中的立即数是   |
+signed类型的，而80的是unsigned类型的，83实际为add eax, FFFFFFF8（因为指令的操作对象必|
+须大小一致），需要把8位的立即数进行符号位扩展成32位。我们看看他们的编码区别：        |
+                                                                                     |
+指令   编码          非立即数操作对象大小    立即数                                  |
+80    1000 00[0]0    8位                     8位(unsigned)                           |   
+81    1000 00[0]1    16/32位                 16/32位                                 |
+82    1000 00[1]0    8位                     8位(signed)                             | 
+83    1000 00[1]1    16/32位                 8位(signed extern to 32)                |
+                                                                                     |
+这里我们首先能很明显地看到w位的存在，w位决定了内存编码的操作对象的大小。我们可以看到 |
+，立即数需不需要进行符号位扩展，跟指令的第二位密切相关，上面已经用方括号标记出来了。 |
+当指令的第二位为1的时候，指令中的立即数需要进行符号位扩展（扩展到多少位，就看另外一个|
+操作数的大小了，比如上面82，另外一个操作数就8位，立即数需要作0位扩展，不变，但是最高 |
+位就是符号位，此时的立即数变成了一个8位的符号数。83，另外一个操作数为32位，那么8位的 |
+立即数就需要符号扩展成32位，即FFFFFFF8），否则就不进行符号位扩展。这个位就是s位。    |
+这里我们看到，81和83实际上进行的是相同的操作，例如：                                 |
+0040100F      81C0 F8FFFFFF       add     eax, -8                                    |
+由于32位的无所谓扩展问题，83只是81的子集，然而83有着更短的指令编码。                 |
+一般来说，当指令中存在立即数，而且立即数作为运算对象的时候，s位才有定义。            |
+比如：                                                                               |
+0040101E      CA 12FF             retf    0FF12                                      |
+CA  rentf  imm16                                                                     |
+s位 = 1但是并无扩展之说。                                                            |
+-------------------------------------------------------------------------------------|
+----> s w b                                                                          |
+----> w 位                                                                           |
+Intel通过操作码大小指令改写前缀来对操作对象在16位和32位之间进行转换，而使用这里要说的|
+w位进行8位和上述两种长度的区分。还是先看例子：                                       |
+0040100A    8918       mov  dword ptr [eax],ebx                                      |
+0040100C    66:8918    mov  word ptr [eax], bx                                       |
+0040100F    8818       mov  byte ptr [eax], bl                                       |
+注意这里操作对象大小的变化（注意只有32位寻址模式和16位寻址模式，而没有8位寻址模式，所|
+以是不可能出现[al]之类的情况的），内存对象由dword变成word再变成byte，而对应当寄存器的|
+大小也有相应的变化（Intel指令中的操作对象的大小是必须一致的，否则就需要进行扩展，前面|
+说到的disp8需要进行符号扩展就是这个原因）。16位和32位的操作对象用66H来区分，那么8位跟|
+上面两位的区别是什么呢？把Opcode的二进制写出来：                                     |
+16/32位：  89  1000 100[1]                                                           |
+8位    ：  88  1000 100[0]                                                           |
+二者之间的不同就在于最后一位，Opcode中的这一个bit位一般被称为w位，w位的set还是clear指|
+示着指令在8位与16/32位之间转换。大家可以随便测试一些指令，比如：                     |
+00401012   03C3   add  eax, ebx                                                      |      
+把Opcode的最后一位设为零，在od中看一下效果。也可以在指令前加上66H的改写指令前缀，看看|
+它们之间的区别。w = 0的时候，66H改写指令前缀是不起任何作用的。                       |
+并不是每一条指令的Opcode的最后一位都代表着w位，大家可能也能猜测出含有w位的指令类型—— |
+指令的操作对象中至少有一个由ModR/M编码。所以在解析ModR/M前都需要提取Opcode中的w位来决|
+定指令操作对象的大小。                                                               |
+----> d 位                                                                           |
+前面我们在翻译指令的时候，我武断地提出，mov eax, ebx这条指令中ebx对应着Reg/Opcode，而|
+eax对应着R/M。但为什么不是eax编码Reg/Opcode，ebx编码R/M？ 是因为第一个操作数就一定对 |
+应着R/M，而第二个操作数一定对应着Reg/Opcode吗？如果是，那么我想编码 mov ebx, [eax]又 |
+该怎么办？新增一条指令规定第一个操作数对应着Reg/Opcode而第二个数对应着R/M？Intel的确 |
+就是这么做的，它使用了两种不同的Opcode来分别进行这两类编码，而这两种Opcode的编码方式 |
+之间有着密切的关系，它们的区别只有一个bit，这个bit就是d位。先看看例子：              |
+00401019    89D9    mov ecx, ebx                                                     |
+0040101B    8BD9    mov ebx, ecx                                                     |
+                                                                                     |  
+0040101D    890B    mov dword ptr [ebx], ecx                                         |
+0040101F    8B0B    mov ecx, dword ptr [ebx]                                         |
+每组的两个指令之间的区别仅仅在于指令的两个操作对象的顺序不同。看看他们编码之间的区别 |
+89  1000 10[0]1                                                                      |
+8B  1000 10[1]1                                                                      |
+他们之间的唯一的不同在于bit1，Opcode中的这个位一般被称为d位，d位可以在有着相同操作和 |
+操作对象的两条指令之间区分操作对象的顺序。（前面和一些朋友讨论过，Intel汇编格式      |
+Instruction arg1, arg2中，arg1代表着目的操作数，而arg2代表着源操作数。例如，         |
+mov arg1, arg2就是要把arg2存放到arg1中去，这个规定是无法改变的，而这里的d位只是用于在|
+两条指令之间进行区分，也就是你读了Opcode的这一位，不用看指令说明书，就知道ModR/M编码 |
+的两个操作对象，哪个是源操作数，哪个是目的操作数。）d位只是在机器码识别中很有用的一个|
+标志而已，一般一条指令r/m和reg的位置都是在指令说明书中明确规定了的。                 |
+d位值的涵义是很明显的，当d = 1时，源操作数为R/M目的操作数为Reg/Opcode；当d = 0时，源 |
+操作数为Reg/Opcode而目的操作数为R/M。可以用d位来进行区分的指令范围也很明显——指令的操 |
+作对象中必须有ModR/M编码的两个操作对象。d位在指令识别过程中的作用跟第四部分中提到过的|
+“规律”没有任何的区别，在switch...case式的Opcode识别方式中，d位是必须要考虑的。在用翻 |
+译表的方式设计的实现方式中，由于操作对象的顺序可以预先存储在表格中，所以d位的解析一般|
+是没有什么意义的（当然，如果把d位信息也编码到翻译表中，减少翻译表的信息冗余也是可以的|
+）。只要是用ModR/M编码的指令，大家可以在od中看看，d位是不是能像上面说的那样，区分R/M |
+和Reg/Opcode的顺序。                                                                 |
+-------------------------------------------------------------------------------------|
+    
+    
+----> 主要参考资料
+1 Intel手册卷二
+2 打造自己的反汇编引擎
+    http://bbs.pediy.com/showthread.php?t=75094
+    http://bbs.pediy.com/showthread.php?t=75119
+    http://bbs.pediy.com/showthread.php?t=75226
+    http://bbs.pediy.com/showthread.php?t=75473
+    http://bbs.pediy.com/showthread.php?t=75557
+    http://bbs.pediy.com/showthread.php?t=75712
+    http://bbs.pediy.com/showthread.php?t=75997
+    http://bbs.pediy.com/showthread.php?t=77879
+3 【翻译】The Svin 的OpCode教程
+    http://www.pediy.com/kssd/pediy10/66501.html
+4 luocong 学习OpCode
+    http://www.luocong.com/learningopcode/index.htm  
+
+----> 其它一些资料
+http://bbs.pediy.com/showthread.php?p=1291221  
+http://bbs.pediy.com/showthread.php?t=113402   通过例子一步步深入
+http://wenku.baidu.com/view/e532c6ef102de2bd9605880e.html
+
+
+
+    
+    
 imm是立即数的意思，而imm8就是指8个比特大小的立即数，
 r：寄存器，如r16就代表ax、cx等，r32就代表eax、ebx等
 m：内存地址，如[01]、[123]、[0FFFF]等
@@ -106,102 +395,4 @@ Opcode    Instruction      Op/En  64-bit Mode  Compat/Leg Mode  Description
 intel手册分为三册，手册1是给汇编程序员用的，主要指导你怎么写汇编程序；手册2是给编译器
 设计者用的，主要指导你怎么给你的编译器写一个x86后端；手册3是给系统程序员用的，主要是
 指导操作系统编写者如何利用CPU。
-
-
-http://bbs.pediy.com/showthread.php?p=1291221  
-http://bbs.pediy.com/showthread.php?t=113402   通过例子一步步深入
-
-http://wenku.baidu.com/view/e532c6ef102de2bd9605880e.html
-
-
-
--------------------------------------------------------------------------------------|
-http://www.luocong.com/learningopcode/doc/4._Prefixes_-_Part_II.htm                  |
-
-----> Prefix 67  改变默认的地址大小。
-8A 00       MOV AL, [EAX] # intel, AL = *EAX
-现在把它的OpCode改成以67开头的：
-67 8A 00    MOV AL, [BX+SI]
-我们可以看到：地址由原来的32位的[EAX]变成了16位的[BX+SI]。
-
-----> Repeat Prefixes (F2, F3)                                                       |
-Repeat Prefixes作为一个串操作指令的前缀，它重复执行其后的串操作指令。每一次重复都先判|
-断(E)CX是否为0，如为0就结束重复，否则(E)CX的值减1，然后再重复其后的串操作指令。所以当|
-(E)CX的值为0时，就不再执行其后的操作指令。                                           |
-                                                                                     |
-----> Segment Override Prefixes (2E, 36, 3E, 26, 64, 65)                             |
-Prefix	Explanation                                                                  |
-2E	    CS segment override prefix                                                   |
-36	    SS segment override prefix                                                   |
-3E	    DS segment override prefix                                                   |
-26	    ES segment override prefix                                                   |
-64	    FS segment override prefix                                                   |
-65	    GS segment override prefix                                                   |
-再来看一个例子：                                                                     |
-                                                                                     |
-   8B 03    MOV EAX, [DWORD DS:EBX]                                                  |
-65 8B 03    MOV EAX, [DWORD GS:EBX]                                                  |
-65就是一个Segment override prefix，用来改变默认的段，从上表中我们可以看出：65代表的是|
-段GS。注意！这里也是用默认的概念。怎么知道当前默认的是哪个段呢？以及为什么要用默认的 |
-概念呢？在使用内存中的数据时，处理器必须首先知道它的段地址(Segment)和偏移量(Offset)，|
-但是如果在每个地方都要显式地直接指出段地址，那么在OpCode格式中就必须增加一个新的域， |
-这将会比现有的OpCode体系多占用大量的字节，而且处理器也必须多花费额外的时钟周期来进行 |
-解码——无论在空间还是时间上，都不值得！因此，为了解决这个问题，一个方案诞生了：指令由 |
-不同的定义被划分为不同的组，每个组各自有一个默认的段：                               |
-CS: for EIP pointer                                                                  |
-ES: 目的操作数是内存单元的串指令（movs, cmps等），在这里源操作数是储存在段DS里面。   |
-SS: 堆栈操作（push, pop等）                                                          |
-DS: 剩下的数据操作指令。                                                             |
-有了这个规则，处理器识别当前应该用哪个段将会变得非常简单而直接：                     |
-                                                                                     |
-如果有“Segment override prefix”，那么就使用这个prefix所指定的段，否则就使用默认的段。|
-看看：                                                                               |
-   AC     LODS [BYTE DS:ESI]                                                         |
-3E AC     LODS [BYTE DS:ESI]                                                         |
-从上面的表中可以查出，3E是表示段DS，但是实际上在这里即使不直接指明3E，处理器也是会使 |
-用DS的，因为DS是指令LODS的默认段。                                                   |
-最后值得一提的是64，它表示的是段FS，也许读者会对FS不太熟悉，平时好像很少会用到。没关 |
-系，我们来简单介绍一下：FS一般是由SEH（结构化异常处理）所使用,但是由于SEH不属于OpCode|
-格式的范畴，所以我们在这里不必深究，知道有这个概念就行了。                           |
-
-
-
-----> ModR/M
-
-举个例子看看ModR/M到底是怎么来看的：
-mov edi, ecx	8B F9 # 8B和2B就是Code
-sub edi, ecx	2B F9 # F9是ModR/M
-
-       Mod: 11
-Reg/Opcode: 111
-       R/M: 001
-                                                                                     |	   
-Mod总共分为00、01、10、11四种情况，每种情况又分别有8种情况。现在Mod是11，所以我们应该|
-看Mod为11的那一栏(Table 2-2)。                                                       |
-                                                                                     |
-Reg/Opcode，反斜杠“/”代表或者的意思，也就是3个bit可能用来编码一个寄存器操作对象，但同|
-时也可能联合前面的Opcode一起编码指令。当编码寄存器是，指的是8个通用寄存器中的一个。具|
-体指的哪个，查表吧(Table 2-2)。                                                      |
-                                                                                     |
-R/M。这一栏要与Mod结合起来。我们来看Mod为11的那一栏——R/M为001对应的寄存器是ECX。     |
-
-       Mod: 11  表示应该查看Mod为11的那一栏
-Reg/Opcode: 111 表示的是寄存器EDI
-       R/M: 001 表示的是ECX
-	   
-	   
-	   
-	   
-http://download.csdn.net/download/yzyangzheng/2474580
-
-
-
-
-
-
-
-
-
-
-
 

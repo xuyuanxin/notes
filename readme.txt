@@ -1,41 +1,94 @@
-arch                 体系结构相关 architecture
-  mips               mips
-  ppc                ppc
-  x86                x86
-  asm                嵌入式汇编 ambedded assembly
-docs                 比较系统的知识整理
-example              语言知识点的示例程序,一些接口的使用示例。
-  c                  c
-  cpp                cpp
-  incredibuild       incredibuild
-  linux              linux 
-  makefile           makefile
-  python             python
-  tcpdump            tcpdump  
-gittest              git测试，合代码删代码等
-hardware             硬件相关
-language             计算机语言知识点总结,主要是一些零碎知识,系统的总结放入docs。
-  algorithm          algorithm
-  c                  c
-  makefile           makefile
-  python             python
-  regexp             Regular Expression 正则表达式
-  shell              shell
-mcore                多核相关
-linux                linux源码、命令行、用户空间编程
-  cmd                cmd
-  kernel             kernel
-  users              users
-network              网络相关
-opensource           开源软件学习总结,源代码总结,接口使用方法。
-  tcpdump            tcpdump
-  clib               clib
-others               暂未分类的知识
-project              基础代码(树图排序等),常用算法的实现
-public               公共基础知识
-tools                软件工具
-  git                git
-  svn                svn
-  sourceinsight      sourceinsight
-  binutils           binutils
-  gdb                gdb
+|--algocoding
+|  |--breadth_first_search
+|  |--depth_first_search
+|  |--divide_and_conquer
+|  |--dynamic_programming
+|  |--greedy
+|  |--leetcode
+|--android
+|--arch                  
+|  |--asm                  
+|  |--mips               
+|  |--ppc                
+|  |--x86                
+|--docs                 
+|--example              
+|  |--assemble
+|  |--c                  
+|  |--cpp                
+|  |--incredibuild       
+|  |--java
+|  |--libev
+|  |--linux               
+|  |--linux_shell
+|  |--makefile           
+|  |--python             
+|  |--security
+|  |--tcpdump              
+|--gittest              
+|--hardware             
+|--language             
+|  |--algorithm          
+|  |--c                  
+|  |--compile
+|  |--cpp
+|  |--cstdlib
+|  |--gcc
+|  |--java
+|  |--makefile           
+|  |--public
+|  |--python             
+|  |--regexp               
+|  |--shell              
+|--linux                
+|  |--linux_admin                
+|  |--linux_cmd             
+|  |--linux_kernel          
+|  |--linux_user
+|--mcore                
+|--network              
+|  |--ethernet
+|  |--bgp
+|  |--http
+|  |--icmp
+|  |--ip
+|  |--netflow
+|  |--protocol
+|  |--tcp
+|--opensource           
+|  |--clib
+|  |--libev
+|  |--tcpdump            
+|--osrc
+|  |--libemu
+|--others               
+|--project              
+|  |--arch
+|  |--build
+|  |--game
+|  |--graph
+|  |--libev
+|  |--main
+|  |--mylib
+|  |--queue
+|  |--quiz
+|  |--sort
+|  |--stack
+|  |--string
+|  |--tinyhttpd
+|  |--tree
+|--public               
+|--security
+|--tools                
+|  |--binutils
+|  |--cygwin
+|  |--gdb
+|  |--git                
+|  |--opengork
+|  |--sourceinsight      
+|  |--svn                
+|  |--vim
+|  |--wireshark
+
+
+
