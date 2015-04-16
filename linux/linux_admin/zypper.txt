@@ -1,7 +1,4 @@
-#####################################################################################
 .....................................................................................
-
-
 列出配置的软件源，显示详情（优先级、网址等等）：
 zypper repos -d
 
@@ -17,3 +14,17 @@ zypper remove package_name
 
 升级某个软件包
 zypper update package_name
+
+mkdir /mnt/iso
+mount -o loop /data/suse11sp1/64-GM-DVD1.iso /mnt/iso #isomount
+zypper addrepo /mnt/iso/ suse11sp1iso
+
+zypper repos
+# | Alias            | Name            | Enabled | Refresh
+--+------------------+-----------------+---------+--------
+2 | suse11sp1iso     | suse11sp1iso    | Yes     | No
+
+zypper install mysql 2
+service mysql status
+service mysql start
+chkconfig mysql on

@@ -31,4 +31,5 @@ Path: 追加 %JAVA_HOME%\bin;
   应用程序）。其中，Java  Application必须通过Java解释器来解释执行其字节码文件，Java Applet
   必须使用支持它的浏览器（IE浏览器）运行。
   
-  
+CLASSPATH是编译或运行Java程序时用来告诉Java编译器或虚拟机到哪里查找Java类文件的
+PATH变量用来告诉操作系统到哪里去查找一个命令。

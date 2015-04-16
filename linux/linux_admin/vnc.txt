@@ -1,6 +1,6 @@
-#####################################################################################
 .....................................................................................
 http://xjsunjie.blog.51cto.com/999372/548595
+
 ----> linux
 1 
 Yast-> remote administration -> Allow Remote Administration 
@@ -53,6 +53,8 @@ vncpasswd
 
 经过几次连接后，如果想回到1，可以删除/tmp/.X11-unix/X1 X2等 (共有0-99个桌面）
 和 /root/.vnc下的其他PID、LOG文件
+
+https://www.suse.com/support/kb/doc.php?id=7016151
 
 http://www.cnblogs.com/leetom/archive/2010/04/29/2845848.html
 终于明白vnc登录后could not acquire name on session bus错误的原因了 
