@@ -1,21 +1,20 @@
-/*******************************************************************************
+/*-----------------------------------------------------------------------------------
                std::vector (class template )   <vector>
- *******************************************************************************              
- Vectors are sequence containers representing arrays that can change in size.
- Just like arrays, vectors use contiguous storage locations for their elements, 
- which means that their elements can also be accessed using offsets on regular 
- pointers to its elements, and just as efficiently as in arrays. But unlike arrays, 
- their size can change dynamically, with their storage being handled automatically 
- by the container.              
- ******************************************************************************/
+-------------------------------------------------------------------------------------            
+Vectors are sequence containers representing arrays that can change in size. Just li-
+ke arrays, vectors use contiguous storage locations for their elements, which means -
+that their elements can also be accessed using offsets on regular pointers to its el-
+ements, and just as efficiently as in arrays. But unlike arrays, their size can chan-
+ge dynamically, with their storage being handled automatically by the container.              
+-----------------------------------------------------------------------------------*/
 template < class T, class Alloc = allocator<T> > class vector; // generic template
 
 
-/*******************************************************************************
+/*-----------------------------------------------------------------------------------
            std::vector::vector (public member function ) constructor
- *******************************************************************************
- @alloc  Allocator object.
-    The container keeps and uses an internal copy of this allocator.Member type 
+-------------------------------------------------------------------------------------
+@alloc  Allocator object.
+   The container keeps and uses an internal copy of this allocator. Member type 
     allocator_type is the internal allocator type used by the container, defined 
     in vector as an alias of its second template parameter(Alloc).If allocator_type 
     is an instantiation of the default allocator (which has no state), this is 
@@ -47,11 +46,14 @@ template < class T, class Alloc = allocator<T> > class vector; // generic templa
    same order.
  4 copy constructor
    Constructs a container with a copy of each of the elements in x, in the same 
-   order.    
- ******************************************************************************/
+   order. 
+   
+example: vector_constructor   
+-----------------------------------------------------------------------------------*/
 explicit vector (const allocator_type& alloc = allocator_type());
 explicit vector (size_type n, const value_type& val = value_type(),
-                 const allocator_type& alloc = allocator_type());
+                  const allocator_type& alloc = allocator_type());
+
 template <class InputIterator>
 vector (InputIterator first, InputIterator last,
          const allocator_type& alloc = allocator_type());

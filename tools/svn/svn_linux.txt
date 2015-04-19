@@ -1,0 +1,4 @@
+http://blog.chinaunix.net/uid-22976768-id-1640924.html
+----> linux svn 
+svn checkout path //  
+svn co path // ºÚ–¥

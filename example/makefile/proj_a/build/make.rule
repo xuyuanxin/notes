@@ -1,0 +1,111 @@
+#------------------------------------------------------------------------------------
+.PHONY: all clean dbginfo
+
+RM = rm          # rm命令删除目录及文件。#-r, -R, --recursive 递归删除目录及其内容
+RMFLAGS = -fr    # -f, --force 强制删除。忽略不存在的文件，不提示确认
+CC = gcc         # gcc
+AR = ar          # ar:管理静态库。
+ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连接效率; 
+
+SRCS = $(wildcard *.c)
+
+# 依赖关系文件
+DEPS_DIR=$(ROOT)/build/deps
+DEPS = $(SRCS:.c=.dep)
+DEPS := $(addprefix $(DEPS_DIR)/, $(DEPS))
+
+# 中间文件
+OBJS_DIR=$(ROOT)/build/objs
+OBJS = $(SRCS:.c=.o)
+OBJS := $(addprefix $(OBJS_DIR)/, $(OBJS)) # 带目录
+
+# 静态库文件，借用objs目录生成库，然后移动到libs
+LIBS_DIR = $(ROOT)/build/objs
+RLIBS_DIR = $(ROOT)/build/libs
+ifneq ("$(LIB)", "")
+LIB := $(addprefix $(LIBS_DIR)/, $(LIB))
+LIBOBJS = $(wildcard *.o)
+endif
+
+# 可执行文件
+EXES_DIR = $(ROOT)/build/exes
+ifneq ("$(EXE)", "")
+EXE := $(addprefix $(EXES_DIR)/, $(EXE))
+endif
+
+# 添加-I参数
+ifneq ("$(INCLUDE_DIRS)", "")
+INCLUDE_DIRS := $(strip $(INCLUDE_DIRS))
+INCLUDE_DIRS := $(addprefix -I,$(INCLUDE_DIRS))
+endif
+
+#notdir:去掉目录，取出文件名。%:通配符
+#addsuffix:加后缀; addprefix:加前缀
+ifneq ("$(LINK_LIBS)", "")                                     # 假设传入 bar.a     foo.a
+LINK_LIBS := $(strip $(LINK_LIBS))                             # strip:去掉多余空格 bar.a foo.a
+LIB_ALL := $(notdir $(wildcard $(RLIBS_DIR)/*))                # RLIBS_DIR目录里的.a文件, 假设有 libfoo.a libbar.a a.a
+LIB_FILTERED := $(addsuffix %, $(addprefix lib, $(LINK_LIBS))) # libbar% libfoo%
+$(eval DEP_LIBS = $(filter $(LIB_FILTERED), $(LIB_ALL)))       # 过滤出 libbar.a libfoo.a
+DEP_LIBS := $(addprefix $(RLIBS_DIR)/, $(DEP_LIBS))            # 给两个.a文件加上路径
+LINK_LIBS := $(addprefix -l,$(LINK_LIBS))                      # -lfoo -lbar
+endif
+
+
+#all的依赖，注意顺序。
+all: $(OBJS) $(LIB) $(EXE)
+
+# 包含依赖关系
+ifneq ($(MAKECMDGOALS), clean)
+include $(DEPS)
+endif
+
+#-I:指定头文件的目录 HIJ
+#-L:指定库文件目录   KLM
+#-l:连接的库名       klm
+
+# 生成文件间的依赖关系
+$(DEPS_DIR)/%.dep: %.c
+	@echo "Making $@ ..."
+	@set -e; \
+	$(RM) $(RMFLAGS) $@.tmp ; \
+	$(CC) $(INCLUDE_DIRS) -E -MM $(filter %.c, $^) > $@.tmp ; \
+	sed 's,\(.*\)\.o[ :]*,$(ROOT)/build/objs/\1.o $@: ,g' < $@.tmp > $@ ; \
+	#$(RM) $(RMFLAGS) $@.tmp
+
+# 生成目标文件	
+$(OBJS_DIR)/%.o: %.c
+	$(CC) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
+
+# 生成库	
+$(LIB):
+	@echo "lib_objs:"$(LIBOBJS)
+	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
+	mv $@ $(RLIBS_DIR)
+
+# 可执行文件
+$(EXE): $(OBJS)
+	$(CC) -L$(RLIBS_DIR) -o $@ $(filter %.o, $^) $(LINK_LIBS)
+
+clean:
+	@echo done
+	
+dbginfo:
+	@echo "----> $@ run beg"
+	@echo "ROOT     : "$(ROOT)
+	@echo "OBJS_DIR : "$(OBJS_DIR)
+	@echo "OBJS     : "$(OBJS)
+	@echo "DEPS_DIR : "$(DEPS_DIR)
+	@echo "DEPS     : "$(DEPS)
+	@echo "LIBS_DIR : "$(LIBS_DIR)	
+	@echo "LIB      : "$(LIB)
+	@echo "----> $@ run end"	
+
+
+	
+	
+	
+	
+	
+	
+	
+	

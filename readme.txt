@@ -33,7 +33,6 @@
 |  |--compile
 |  |--cpp
 |  |--cstdlib
-|  |--gcc
 |  |--java
 |  |--makefile           
 |  |--public
@@ -82,6 +81,7 @@
 |--tools                
 |  |--binutils
 |  |--cygwin
+|  |--gcc
 |  |--gdb
 |  |--git                
 |  |--opengork

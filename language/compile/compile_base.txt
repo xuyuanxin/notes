@@ -1,0 +1,19 @@
+----> 预处理 preprocessing
+输入: main.c
+工具: cpp
+输出: main.pre.c
+
+----> 编译 compilation
+输入: main.pre.c
+工具: cc
+输出: main.s
+
+----> 汇编 assembly
+输入: main.s
+工具: as
+输出: main.o
+
+----> 链接 linking
+输入: main.o lib
+工具: ld
+输出: main.exe

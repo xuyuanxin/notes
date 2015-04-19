@@ -1,0 +1,2 @@
+GCC: GNU Complier Collection
+gcc: 小写的gcc特指C语言编译器

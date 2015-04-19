@@ -98,10 +98,10 @@ int vector_base( )
 }
 
 
-/*
- Output:
- The contents of fifth are: 16 2 77 29
- */
+/*-----------------------------------------------------------------------------------
+Output:
+The contents of fifth are: 16 2 77 29
+-----------------------------------------------------------------------------------*/
 int vector_constructor()
 {
     std::vector<int> first; // empty vector of ints

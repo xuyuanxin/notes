@@ -15,4 +15,16 @@ r 将文件增加到创建的档案文件中
 s 生成库索引提高链接效率
   
 
+  
+  
+  
+.a 文件的结构和.tar文件就没有什么区别。 x 命令解出来， a 命令添加， t命令列表
+假设A.a, B.a C.a 在/usr/local/lib目录下
+mkdir /tmp/libABC
+cd /tmp/libABC
+ar x /usr/local/lib/A.a
+ar x /usr/local/lib/B.a
+ar x /usr/local/lib/C.a
+ar cru libABC.a *.o
+ranlib libABC.a
    
