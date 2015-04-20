@@ -38,12 +38,12 @@ all dbginfo:
 	done
 	
 	@echo ""
+	@echo ""
 	@echo ":-) Completed"
 	@echo ""
 	
 clean:
 	$(RM) $(RMFLAGS) $(ROOT)/build/objs/*.o 
-	$(RM) $(RMFLAGS) $(ROOT)/build/objs/*.a
 	$(RM) $(RMFLAGS) $(ROOT)/build/deps/*.dep
 	$(RM) $(RMFLAGS) $(ROOT)/build/deps/*.tmp
 	$(RM) $(RMFLAGS) $(ROOT)/build/libs/*.a

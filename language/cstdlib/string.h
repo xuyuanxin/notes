@@ -1,3 +1,10 @@
+/*
+http://baike.baidu.com/link?url=MgMV10yNWGeHr7g2BISO1HYk-P_3EwKXqIUSyUx_tWY2ug5MrRnNfdFOzbiuJqAFfzrKfAU5Uzalb3e4EZtiia#5_9
+https://en.wikipedia.org/wiki/C_string_handling
+
+
+*/
+
 /*-----------------------------------------------------------------------------------
 功能：把src所指由NULL结束的字符串的前n个字节复制到dst所指的数组中。
 返回：返回指向dst的指针（该指向dst的最后一个元素）
@@ -123,4 +130,13 @@ void * memmove ( void * destination, const void * source, size_t num );
 
 
 void *memcpy(void *dest, const void *src, size_t n);
+
+
+/*-----------------------------------------------------------------------------------
+http://pubs.opengroup.org/onlinepubs/009695399/functions/strdup.html
+The strdup() function shall return a pointer to a new string, which is a duplicate of 
+the string pointed to by s1. The returned pointer can be passed to free(). A null po-
+inter is returned if the new string cannot be created.
+-----------------------------------------------------------------------------------*/
+char *strdup(const char *s1);
 

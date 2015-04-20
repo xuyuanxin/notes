@@ -17,7 +17,7 @@ DEPS := $(addprefix $(DEPS_DIR)/, $(DEPS))
 # 中间文件
 OBJS_DIR=$(ROOT)/build/objs
 OBJS = $(SRCS:.c=.o)
-OBJS := $(addprefix $(OBJS_DIR)/, $(OBJS)) # 带目录
+OBJS := $(addprefix $(OBJS_DIR)/, $(OBJS))
 
 # 静态库文件，借用objs目录生成库，然后移动到libs
 LIBS_DIR = $(ROOT)/build/objs
@@ -39,13 +39,11 @@ INCLUDE_DIRS := $(strip $(INCLUDE_DIRS))
 INCLUDE_DIRS := $(addprefix -I,$(INCLUDE_DIRS))
 endif
 
-#notdir:去掉目录，取出文件名。%:通配符
-#addsuffix:加后缀; addprefix:加前缀
 ifneq ("$(LINK_LIBS)", "")                                     # 假设传入 bar.a     foo.a
 LINK_LIBS := $(strip $(LINK_LIBS))                             # strip:去掉多余空格 bar.a foo.a
 LIB_ALL := $(notdir $(wildcard $(RLIBS_DIR)/*))                # RLIBS_DIR目录里的.a文件, 假设有 libfoo.a libbar.a a.a
 LIB_FILTERED := $(addsuffix %, $(addprefix lib, $(LINK_LIBS))) # libbar% libfoo%
-$(eval DEP_LIBS = $(filter $(LIB_FILTERED), $(LIB_ALL)))       # 过滤出 libbar.a libfoo.a
+$(eval DEP_LIBS = $(filter $(LIB_FILTERED), $(LIB_ALL)))       # 从所有的库文件中过滤出 libbar.a libfoo.a
 DEP_LIBS := $(addprefix $(RLIBS_DIR)/, $(DEP_LIBS))            # 给两个.a文件加上路径
 LINK_LIBS := $(addprefix -l,$(LINK_LIBS))                      # -lfoo -lbar
 endif
@@ -78,7 +76,7 @@ $(OBJS_DIR)/%.o: %.c
 
 # 生成库	
 $(LIB):
-	@echo "lib_objs:"$(LIBOBJS)
+	#@echo "lib_objs:"$(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
 	mv $@ $(RLIBS_DIR)
 
@@ -92,10 +90,10 @@ clean:
 dbginfo:
 	@echo "----> $@ run beg"
 	@echo "ROOT     : "$(ROOT)
+	@echo "DEPS_DIR : "$(DEPS_DIR)
+	@echo "DEPS     : "$(DEPS)	
 	@echo "OBJS_DIR : "$(OBJS_DIR)
 	@echo "OBJS     : "$(OBJS)
-	@echo "DEPS_DIR : "$(DEPS_DIR)
-	@echo "DEPS     : "$(DEPS)
 	@echo "LIBS_DIR : "$(LIBS_DIR)	
 	@echo "LIB      : "$(LIB)
 	@echo "----> $@ run end"	

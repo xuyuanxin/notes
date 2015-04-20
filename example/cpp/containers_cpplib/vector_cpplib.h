@@ -1,4 +1,28 @@
 /*-----------------------------------------------------------------------------------
+A vector is a class template.
+
+A vector is a collection of objects, all of which have the same type. Every object in
+the collection has an associated index, which gives access to that object.A vector is
+often referred to as a container because it "contains" other objects.
+
+We can define vectors to hold objects of most any type. Because references are not o-
+bjects, we cannot have a vector of references. However, we can have vectors of most -
+other (nonreference) built-in types and most class types . In particular, we can have 
+vectors whose elements are themselves vectors. It is worth noting that earlier versi-
+ons of C++ used a slightly different syntax to define a vector whose elements are th-
+emselves vectors (or another template type). In the past, we had to supply a space b-
+etween the closing angle bracket of the outer vector and its element type
+    vector<vector<int> > 
+rather than
+    vector<vector<int>>.
+
+Warning
+    Some compilers may require the old-style declarations for a vector of vectors, f-
+    or example, vector<vector<int> >.
+-----------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------
                std::vector (class template )   <vector>
 -------------------------------------------------------------------------------------            
 Vectors are sequence containers representing arrays that can change in size. Just li-

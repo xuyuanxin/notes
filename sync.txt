@@ -1,3 +1,21 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 awk
 Shellcoder's Programming Uncovered
 虚拟化技术原理与实现
@@ -8,6 +26,3 @@ virsh
 ---->virt
 virt-manage 
 virsh net-start default
-
-strdup
-bcopy

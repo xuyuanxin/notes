@@ -110,3 +110,21 @@ int main( )
     return 0;
 }
 
+
+/*-----------------------------------------------------------------------------------
+C++ has both class and function templates . Templates are not themselves functions or 
+classes. Instead, they can be thought of as instructions to the compiler for generat-
+ing classes or functions. The process that the compiler uses to create classes or fu-
+nctions from templates is called instantiation. When we use a template, we specify w-
+hat kind of class or function we want the compiler to instantiate.
+
+For a class template, we specify which class to instantiate by supplying additional -
+information, the nature of which depends on the template. How we specify the informa-
+tion is always the same: We supply it inside a pair of angle brackets following the -
+template's name. In the case of vector, the additional information we supply is the -
+type of the objects the vector will hold:
+    vector<int> ivec; // ivec holds objects of type int
+    vector<vector<string>> file; // vector whose elements are vectors
+In this example, the compiler generates two distinct types from the vector template : 
+vector<int>, and vector<vector<string>>.
+-----------------------------------------------------------------------------------*/
