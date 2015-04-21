@@ -1,0 +1,102 @@
+http://blog.csdn.net/wooin/article/details/1858917 把Vim改装成一个IDE编程环境        |
+http://blog.csdn.net/bokee/article/details/6633193 将Vim改造为强大的IDE              |
+-------------------------------------------------------------------------------------|
+----> vim ide                                                                        |
+文中说的一些路径, 比如:                                                              |
+  ~/.vim/plugin                                                                      |
+  ~/.vim/doc                                                                         |
+  ~/.vim/syntax                                                                      |
+如果你没有, 就自己创建.                                                              |
+-------------------------------------------------------------------------------------|
+这个开发环境除了基本的Vim外，还包括Ctags，Taglist，Cscope，SuperTab，OmniCppComplete,|
+Winmanager，NERDTree和MiniBufExplorer等组件。在开始操作前，先普及下基础概念，然后约定|
+一下表达规范。                                                                       |
+1 Vim存在多个配置文件vimrc，比如/etc/vimrc，此文件影响整个系统的Vim。还有~/.vimrc，此|
+  文件只影响本用户的Vim。而且~/.vimrc文件中的配置会覆盖/etc/vimrc中的配置。这里我们只|
+  修改~/.vimrc文件。如果没有~/.vimrc文件(一般首次运行vim会自动创建,但我自己搭建环境时|
+  root用户没有自动生成,其他用户可以自动生成),先从/etc/vimrc拷贝一份,然后再根据需要修 |
+  改.                                                                                |
+2 Vim的插件(plugin)安装在Vim的runtimepath目录下，你可以在Vim命令行下运行"set rtp"命令|
+  查看。这里我们选择安装在~/.vim目录，没有就创建一个。                               |
+3 当本文说"在Vim命令行下运行cmdxx命令"时，意思是指在Vim的命令行模式下运行cmdxx命令， |
+  即在Vim的正常模式下通过输入冒号"："进入命令行模式，然后紧接着输入命令cmdxx。在后文 |
+  描述中都会省略冒号"："输入。                                                       |
+4 如果没有说明“在Vim命令行下运行某命令”，则是在shell中执行该命令。                   |
+5 如果命令中间被空白符间隔或有与正文容易混淆的字符，我会用双引号将命令与正文区分。所 |
+  以在实际操作时，不要输入命令最前面和最后面引号。                                   |
+6 本文关于组合快捷键的描述，形如a-b形式的快捷键表示同时按下a键和b键，而形如"a-b c"形 |
+  式的快捷键，则表示先同时按下a键和b键，然后放开ab键，再按下c键。                    |
+-------------------------------------------------------------------------------------|
+1 setup ctags                                                                        |
+a) http://ctags.sourceforge.net/                                                     |
+b) tar                                                                               |
+c) ./configure                                                                       |
+d) make                                                                              |
+e) make install                                                                      |
+f) modify ~/.vimrc 默认的也可以,具体怎么修改后续补充.                                |
+在程序中跳来跳去: Ctags 的使用                                                       |
+如果你的源码是多层的目录, 就去最上层的目录, 在该目录下运行命令:ctags -R. 现在以vim71 |
+的源码目录做演示                                                                     |
+$ cd /home/wooin/vim71                                                               |
+$ ctags -R *  # -R表示递归创建,*表示所有文件。                                       |
+此时在/home/wooin/vim71目录下会生成一个tags文件, 现在用vim打开一个文件               |
+$ vim /home/wooin/vim71/src/main.c                                                   |
+再在vim中运行命令:                                                                   |
+:set tags=/home/wooin/vim71/tags                                                     |
+该命令将tags文件加入到vim中来, 你也可以将这句话放到~/.vimrc中去, 如果你经常在这个工程|
+编程的话.                                                                            |
+set tags=tags                                                                        |
+set tags+=./tags                  "表示在当前工作目录下搜索tags文件                  |
+set tags+=/home/wooin/vim71/tags  "表示在搜寻tags文件的时候，也要搜寻                |
+                                   /home/wooin/vim71/tags 文件夹下的tags文件。       |
+如果没有~/.vimrc文件(一般首次运行vim会自动创建,但我自己搭建环境时root用户没有自动生成|
+,其他用户可以自动生成),先从/etc/vimrc拷贝一份,然后再修改.                            |
+-------------------------------------------------------------------------------------|
+2 setup Taglist                                                                      |
+Taglist是vim的一个插件，提供源代码符号的结构化视图。                                 |
+a http://www.vim.org/scripts/script.php?script_id=273                                |
+b 进入~/.vim目录，将Taglist安装包解压，解压后会在~/.vim目录中生成几个新子目录，如    |
+  plugin和doc(安装其它插件时，可能还会新建autoload等其它目录)。                      |
+c 重新打开vim,执行(假若使用的目录是~/.vim/)                                          |
+:helptags ~/.vim/doc # 导入taglist的帮助文件                                         |
+:help taglist.txt    # 查看帮助手册                                                  |
+d 打开配置文件~/.vimrc，加入以下两行：                                               |
+let Tlist_Show_One_File=1                                                            |
+let Tlist_Exit_OnlyWindow=1                                                          | 
+到此安装已经完成。                                                                   | 
+此时用vim打开一个c源文件试试:                                                        | 
+$ vim ~/vim/src/main.c                                                               | 
+进入vim后用下面的命令打开taglist窗口                                                 | 
+:Tlist                                                                               | 
+再次运行Tlist则关闭                                                                  | 
+我们可以通过Ctrl-w快捷键或鼠标点击在Taglist窗口和编辑区之间切换焦点，在Taglist窗口用 |
+鼠标或键盘选择某个符号，然后点击或回车，就可以跳转到该符号定义的位置。更多功能可通过 |
+在Vim命令行下运行help taglist.txt查询。                                              |
+-------------------------------------------------------------------------------------|
+----> 有用的~/.vimrc设置
+
+" Force tabs to be displayed/expanded to 4 spaces (instead of default 8).
+:set tabstop=4
+
+" Make Vim treat <Tab> key as 4 spaces, but respect hard Tabs. 
+:set softtabstop=4 
+
+" Turn Tab keypresses into spaces. You can still insert real Tabs as [Ctrl]-V [Tab]
+:set expandtab " 
+
+You can still insert real Tabs as [Ctrl]-V [Tab]
+:set noexpandtab 
+
+" Leave Tab keys as real tabs (ASCII 9 character).
+:1,$retab! 
+" on lines 1_to_end-of-file.
+
+:set shiftwidth=4 " When auto-indenting, indent by this much.
+" (Use spaces/tabs per "expandtab".)
+
+:help tabstop " Find out more about this stuff.
+:help vimrc   " Find out more about .vimrc/_vimrc :-)
+
+
+
+

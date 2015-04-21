@@ -63,25 +63,60 @@ CR0~CR3
 CR3中含有页目录表物理内存基地址，因此该寄存器也被称为页目录基地址寄存器PDBR (Page Di-
 rectory Base address Register)。
 +-----------------------------------------------+
-| Page-Directory Base (31~12) | Reserved (11~0) |     CR3
+| Page-Directory Base (31~12) | Reserved (11~0) |  CR3
 +-----------------------------------------------+
 
 CR0中含有控制处理器操作模式和状态的系统控制标志
-+-------------------------------------------------------------------------------------------------------------+
-| PG(31) | Reserved (30~19) | AW(18) | Reserved(17) | WP(16) |  Reserved (15~6) | NE | ET | TS | EM | MP | PE |   CR0
-+-------------------------------------------------------------------------------------------------------------+
++----------------------------------------------------------------------------------+
+|PG(31)|Reserved(30~19)|AW(18)|Reserved(17)|WP(16)|Reserved(15~6)|NE|ET|TS|EM|MP|PE|   CR0
++----------------------------------------------------------------------------------+
 PG: Starting with the 80386, all 80x86 processors support paging; it is enabled by s-
     etting the PG flag. When PG = 0, linear addresses are interpreted as physical ad-
 	dresses. 开启分页时，必须同时开启PE标志。
 	
--------------------------------------------------------------------------------------
-----> 标志寄存器
-通常只允许操作系统代码有权修改这些标志。
-+-----------------------------------------------------------------------------------------------------------------------------+
-| Reserved (31~18) | VW(17) | RF(16) | 0(15) |  NT(14) | IOPL(13~12) | OF | DF | IF | TF | SF | ZF | 0 | AF | 0 | PF | 1 | CF |   EFLAGS
-+-----------------------------------------------------------------------------------------------------------------------------+
+-------------------------------------------------------------------------------------|
+----> 标志寄存器 EFLAGS                                                              |   
+"扩展标志"(EFLAGS)寄存器，它由不同的标志位组成，用于保存指令执行后的状态和控制指令执 |
+行流程的标志信息。通常只允许操作系统代码有权修改这些标志。                           |
++---------------------------------------------------------------------------------------+
+|Reserved(31~18)|VW(17)|RF(16)|0(15)|NT(14)|IOPL(13~12)|OF|DF|IF|TF|SF|ZF|0|AF|0|PF|1|CF|  
++---------------------------------------------------------------------------------------+
+---->----> indicate the results of arithmetic instructions
+CF (bit 0) 
+    Carry flag. Set if an arithmetic operation generates a carry or a borrow out of -
+	the mostsignificant bit of the result; cleared otherwise . This flag indicates an 
+	overflow condition for unsigned-integer arithmetic. It is also used in multiple -
+	precision arithmetic.
+PF (bit 2) 
+    Parity flag. Set if the least-significant byte of the result contains an even nu-
+	mber of 1 bits; cleared otherwise.
+AF (bit 4) 
+    Auxiliary Carry flag. Set if an arithmetic operation generates a carry or a borr-
+	ow out of bit 3 of the result; cleared otherwise. This flag is used in binary co-
+	ded decimal (BCD) arithmetic.
+ZF (bit 6) 
+    Zero flag. Set if the result is zero; cleared otherwise.
+SF (bit 7) 
+    Sign flag. Set equal to the most-significant bit of the result, which is the sig-
+	n bit of a signed integer. (0 indicates a positive value and 1 indicates a negat-
+	ive value.)
+OF (bit 11) 
+    Overflow flag. Set if the integer result is too large a positive number or too s-
+	mall a negative number (excluding the sign-bit) to fit in the destination operand; 
+	cleared otherwise. This flag indicates an overflow condition for signed-integer (
+	two’s complement) arithmetic.
 
+Of these status flags, only the CF flag can be modified directly, using the STC, CLC, 
+and CMC instructions. Also the bit instructions (BT, BTS, BTR, and BTC) copy a speci-
+fied bit into the CF flag.
 
+For example, suppose we used one of the add instructions to perform the equivalent of 
+the C assignment t=a+b, where variables a, b, and t are integers . Then the condition 
+codes would be set according to the following C expressions:
+CF: (unsigned) t < (unsigned)a               Unsigned overflow
+ZF: (t == 0)                                 Zero
+SF: (t < 0)                                  Negative
+OF: (a < 0 == b < 0) && (t < 0 != a < 0)     Signed overflow
 
 -------------------------------------------------------------------------------------
 ----> 其它寄存器
@@ -89,21 +124,9 @@ PG: Starting with the 80386, all 80x86 processors support paging; it is enabled 
 器，它由不同的标志位组成，用于保存指令执行后的状态和控制指令执行流程的标志信息。	
 
 
-----> condition code registers 
-In addition to the integer registers, the CPU maintains a set of single-bit condition
-code registers describing attributes of the most recent arithmetic or logical operat-
-ion. These registers can then be tested to perform conditional branches. The most us-
-eful condition codes are:
-CF: 
-    Carry Flag. The most recent operation generated a carry out of the most signifi-
-	cant bit. Used to detect overflow for unsigned operations.
-ZF: 
-    Zero Flag. The most recent operation yielded zero.
-SF: 
-    Sign Flag. The most recent operation yielded a negative value.
-OF:
-    Overflow Flag. The most recent operation caused a two's-complement overflow, eit-
-	her negative or positive.
+
+
+
 
 ----> Register Usage Conventions
 procedure Q is called by P
