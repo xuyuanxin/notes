@@ -5,9 +5,23 @@
 ，其中14位可以选择某个段，所以最多可有2^14即16384个段。段内偏移用32位的值来指定，即一 |
 个段最大长度可达4G。                                                                  |
                                                                                       |
-逻辑地址(虚拟地址)                                                                    |
+Logical address 逻辑地址(虚拟地址)                                                    |
 程序中由16位的段和32位的偏移构成的48位地址或长指针称为一个逻辑地址。                  |
-                                                                                      |
+Included in the machine language instructions to specify the address of an operand or 
+of an instruction. This type of address embodies the well-known 80 x 86 segmented architecture
+that forces MS-DOS and Windows programmers to divide their programs into segments .
+Each logical address consists of a segment and an offset (or displacement) that denotes the
+distance from the start of the segment to the actual address.
+
+Linear address (also known as virtual address)
+A single 32-bit unsigned integer that can be used to address up to 4 GB that is, up to
+4,294,967,296 memory cells. Linear addresses are usually represented in hexadecimal
+notation; their values range from 0x00000000 to 0xffffffff.
+
+Physical address
+Used to address memory cells in memory chips. They correspond to the electrical signals
+sent along the address pins of the microprocessor to the memory bus. Physical addresses
+are represented as 32-bit or 36-bit unsigned integers.
 物理地址                                                                              |
 计算机的物理内存是字节的线性数组，每个字节具有一个唯一的物理地址。物理地址空间定义为处|
 理器在其地址总线上能够产生的地址范围。                                                |
@@ -35,6 +49,26 @@ DS: 数据段寄存器。                                                       
 符。段描述符指明段的大小、访问权限、段得特权级、段类型、段的基地址等。逻辑地址的偏移量|
 部分加到段得基地址上就可以定位段中某个字节的位置。因此基地址加上偏移量就形成了处理器线|
 性地址空间中的地址。如果处理器中有多个任务在运行，每个任务可分配各自的一套段。        |
+
+----> Segment Selectors and Segmentation Registers
+A logical address consists of two parts: a segment identifier and an offset that spe-
+cifies the relative address within the segment. The segment identifier is a 16-bit f-
+ield called the Segment Selector, while the offset is a 32-bit field. 
+                 +------------------+
+Segment Selector | index | TI | RPL |
+                 +------------------+
+To make it easy to retrieve segment selectors quickly, the processor provides segmen-
+tation registers whose only purpose is to hold Segment Selectors; these registers are 
+called cs, ss, ds, es, fs, and gs. 
+----> Segment Descriptors
+Each segment is represented by an 8-byte Segment Descriptor that describes the segme-
+nt characteristics. Segment Descriptors are stored either in the Global Descriptor T-
+able (GDT ) or in the Local Descriptor Table(LDT).
+Usually only one GDT is defined , while each process is permitted to have its own LDT 
+if it needs to create additional segments besides those stored in the GDT. The addre-
+ss and size of the GDT in main memory are contained in the gdtr control register, wh-
+ile the address and size of the currently used LDT are contained in the  ldtr control 
+register.
                                                                                       |
 分页机制                                                                              |
 多任务系统通常定义的线性地址空间都要比其含有的物理内存容量大得多，所以需要使用某种"虚 |
@@ -89,8 +123,10 @@ The data structures that map linear to physical addresses are called page tables
 hey are stored in main memory and must be properly initialized by the kernel before -
 enabling the paging unit.
 
-      page table
-page -----------> page frame
++-----------------+  Segmentation   +----------------+ Paging  +------------------+
+| Logical address |---------------->| Linear address |-------->| Physical address |
++-----------------+    unit         +----------------+  unit   +------------------+
+
 
 ----> Regular Paging
 
@@ -122,7 +158,25 @@ D Dirty flag
     esets this flag; this must be done by the operating system.
 R/W(Read/Write) U/S(User/Supervisor)
 
-
-
-
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+|                               Regular Paging                                      |
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~							   
++------------------------------------------------+
+| Directory(31~22) | Table(21~12) | Offset(11~0) |  Linear Address
++---|--------------------|--------------------|--+
+    |                    |                    |
+    |                    |                    |
+    |                    |                    |     +------+
+	|                    |                    |     |      |
+	|                    |     page table     |     |      |
+	|                    |       +----+       +---->| page |
+	|                    |	     |    |       |     |      |
+    | page directory     |	     |----|       |     |      |
+    |     +----+         +------>|    |------------>+------+ 
+    |     |    |         |       |----|
+    |     |----|         |       |    |
+    +---->|    |---------------->+----+
+	|     |----|
+	|     |    |
+cr3------>+----+
+-------------------------------------------------------------------------------------

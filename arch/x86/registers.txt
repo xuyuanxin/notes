@@ -48,9 +48,19 @@ This causes no ambiguity, since floating point involves an entirely different se
 instructions and registers.
 
 ----> 段寄存器
+http://blog.csdn.net/michael2012zhao/article/details/5554023
+
 段寄存器是16位的(其它的寄存器是32位)。段寄存器CS、DS和SS一般用作段基址寄存器，向后兼
 容16位的应用程序。
-	
+CS——代码段寄存器(Code Segment Register)，其值为代码段的段值；
+DS——数据段寄存器(Data Segment Register)，其值为数据段的段值；
+ES——附加段寄存器(Extra Segment Register)，其值为附加数据段的段值；
+SS——堆栈段寄存器(Stack Segment Register)，其值为堆栈段的段值；
+FS——附加段寄存器(Extra Segment Register)，其值为附加数据段的段值；
+GS——附加段寄存器(Extra Segment Register)，其值为附加数据段的段值。
+FS Windows就把fs用在处理程序异常方面。
+GS windows把它们(fs gs)指向TEB,相当于一种接口
+
 ----> 控制寄存器
 eip	
 对于IA32来说，其中最重要的是"扩展指令指针"EIP(也称为"指令指针")，EIP中保存着下一条即

@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------------
-.PHONY: all clean dbginfo
+.PHONY: all clean forcerun dbginfo
 
 RM = rm          # rm命令删除目录及文件。#-r, -R, --recursive 递归删除目录及其内容
 RMFLAGS = -fr    # -f, --force 强制删除。忽略不存在的文件，不提示确认
@@ -75,17 +75,19 @@ $(OBJS_DIR)/%.o: %.c
 	$(CC) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
 
 # 生成库	
-$(LIB):
-	#@echo "lib_objs:"$(LIBOBJS)
+$(LIB): forcerun
+#	@echo "lib_objs:"$(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
 	mv $@ $(RLIBS_DIR)
 
 # 可执行文件
-$(EXE): $(OBJS)
+$(EXE): $(OBJS) forcerun
 	$(CC) -L$(RLIBS_DIR) -o $@ $(filter %.o, $^) $(LINK_LIBS)
 
 clean:
 	@echo done
+
+forcerun:
 	
 dbginfo:
 	@echo "----> $@ run beg"
