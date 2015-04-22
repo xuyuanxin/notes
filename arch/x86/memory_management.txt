@@ -89,12 +89,38 @@ The data structures that map linear to physical addresses are called page tables
 hey are stored in main memory and must be properly initialized by the kernel before -
 enabling the paging unit.
 
+      page table
+page -----------> page frame
+
 ----> Regular Paging
 
++-------------------------------------------------------------------------------+
+| Page Frame Address(31~12) | AVL(11~9) | 0 | 0 | D | A | 0 | 0 | U/S | R/W | P |
++-------------------------------------------------------------------------------+
 
-
-
-
+Page Frame Address                                                                   
+    Field containing the 20 most significant bits of a page frame physical address. -
+    Because each page frame has a 4-KB capacity, its physical address must be a mult-
+    iple of 4096, so the 12 least significant bits of the physical address are always 
+    equal to 0. If the field refers to a Page Directory, the page frame contains a P-
+    age Table; if it refers to a Page Table, the page frame contains a page of data.
+P Present flag
+    If it is set, the referred-to page (or Page Table) is contained in main memory; -
+    if the flag is 0, the page is not contained in main memory and the remaining ent-
+    ry bits may be used by the operating system for its own purposes. If the entry of 
+    a Page Table or Page Directory needed to perform an address translation has the -
+    Present flag cleared, the paging unit stores the linear address in a control reg-
+    ister named cr2 and generates exception 14: the Page Fault exception.
+A Accessed flag
+    Set each time the paging unit addresses the corresponding page frame. This flag -
+    may be used by the operating system when selecting pages to be swapped out. The -
+    paging unit never resets this flag; this must be done by the operating system.
+D Dirty flag
+    Applies only to the Page Table entries . It is set each time a write operation is 
+    performed on the page frame . As with the Accessed flag, Dirty may be used by the 
+    operating system when selecting pages to be swapped out. The paging unit never r-
+    esets this flag; this must be done by the operating system.
+R/W(Read/Write) U/S(User/Supervisor)
 
 
 
