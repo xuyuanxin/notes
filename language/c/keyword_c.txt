@@ -1,0 +1,50 @@
+关键字
+关键字又称为保留字，就是已被C语言本身使用，不能作其它用途使用的字。例如关键字不能用作变量名、函数名等标识符。由ISO标准定义的C语言关键字共32个：
+auto double int struct break else long switch
+case enum register typedef char extern return union
+const float short unsigned continue for signed void
+default goto sizeof volatile do if while static inline
+restrict _Bool _Complex _Imaginary _Generic
+    基本数据类型
+    void：声明函数无返回值或无参数，声明无类型指针，显示丢弃运算结果。
+    char：字符型类型数据，属于整型数据的一种。
+    int：整型数据，表示范围通常为编译器指定的内存字节长。
+    float：单精度浮点型数据，属于浮点数据的一种。
+    double：双精度浮点型数据，属于浮点数据的一种。
+    _Bool:布尔型（C99标准新增）
+    _Complex:复数的基本类型（C99标准新增）
+    _Imaginary:虚数，与复数基本类型相似，没有实部的纯虚数（C99标准新增）
+    _Generic:提供重载的接口入口（C11标准新增）
+    类型修饰关键字
+    short：修饰int，短整型数据，可省略被修饰的int。
+    long：修饰int，长整型数据，可省略被修饰的int。
+    long long：修饰int，超长整型数据，可省略被修饰的int。（C99标准新增）
+    signed：修饰整型数据，有符号数据类型。
+    unsigned：修饰整型数据，无符号数据类型。
+    restrict:用于限定和约束指针，并表明指针是访问一个数据对象的唯一且初始的方式。
+    复杂类型关键字
+    struct：结构体声明。
+    union：共用体声明。
+    enum：枚举声明。
+    typedef：声明类型别名。
+    sizeof：得到特定类型或特定类型变量的大小。
+    inline:内联函数用于取代宏定义，会在任何调用它的地方展开。（C99标准新增）
+    存储级别关键字
+    auto：指定为自动变量，由编译器自动分配及释放。通常在栈上分配。与static相反。当变量未指定时默认为auto。
+    static：指定为静态变量，分配在静态变量区，修饰函数时，指定函数作用域为文件内部。
+    register：指定为寄存器变量，建议编译器将变量存储到寄存器中使用，也可以修饰函数形参，建议编译器通过寄存器而不是堆栈传递参数。
+    extern：指定对应变量为外部变量，即标示变量或者函数的定义在别的文件中，提示编译器遇到此变量和函数时在其他模块中寻找其定义。
+    const：指定变量不可被当前线程改变（但有可能被系统或其他线程改变）。
+    volatile：指定变量的值有可能会被系统或其他线程改变，强制编译器每次从内存中取得该变量的值，阻止编译器把该变量优化成寄存器变量。
+    流程控制关键字
+    跳转结构
+    return：用在函数体中，返回特定值（如果是void类型，则不返回函数值）。
+    continue：结束当前循环，开始下一轮循环。
+    break：跳出当前循环或switch结构。
+    goto：无条件跳转语句。
+    分支结构
+    if：条件语句，后面不需要放分号。
+    else：条件语句否定分支（与if连用）。
+    switch：开关语句（多重分支语句）。
+    case：开关语句中的分支标记，与switch连用。
+    default：开关语句中的“其他”分支，可选。

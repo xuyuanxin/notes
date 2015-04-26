@@ -17,3 +17,11 @@ int strcasecmp (const char *s1, const char *s2);
 
 void bzero(void *, size_t); /* ÓÃmemsetÌæ´ú */
 
+/*-----------------------------------------------------------------------------------
+func:
+    copies @n bytes from @src to @dest. The result is correct, even when both areas -
+    overlap.This function is deprecated (marked as LEGACY in POSIX.1-2001):use memcpy 
+    or memmove in new programs.
+-----------------------------------------------------------------------------------*/
+void bcopy(const void *src, void *dest, size_t n);
+

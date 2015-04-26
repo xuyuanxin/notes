@@ -193,3 +193,7 @@ void realloc_eg01()
 -----------------------------------------------------------------------------------*/
 int system(const char *command);
 
+
+void* malloc (size_t size);
+
+

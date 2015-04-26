@@ -1,3 +1,12 @@
+|--etc
+|  |--issue       release version
+|--proc
+|  |--version     kernel version
+
+
+
+
+
 http://www.comptechdoc.org/os/linux/usersguide/linux_ugfilestruct.html
 .....................................................................................
 Parts of a Unix directory tree. See the FSSTND standard (Filesystem standard)

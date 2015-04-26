@@ -73,6 +73,40 @@ $ vim ~/vim/src/main.c                                                          
 鼠标或键盘选择某个符号，然后点击或回车，就可以跳转到该符号定义的位置。更多功能可通过 |
 在Vim命令行下运行help taglist.txt查询。                                              |
 -------------------------------------------------------------------------------------|
+-------------------------------------------------------------------------------------|
+3 安装使用Cscope                                                                     |
+Cscope提供交互式查询语言符号功能,如查询哪些地方使用某个变量或调用某个函数. Cscope已经|
+是Vim的标准特性, 默认都有支持, 官方网址为http://cscope.sourceforge.net/.             |
+a) 在Vim下运行version查看Vim支持哪些特性, 前面有前缀符号+的为支持. 如果支持Cscope,则 |
+   直接进入b), 否则下载Cscope源代码包编译安装. 步骤同Ctags安装.                      |
+b) 确定Vim已支持Cscope后, 将文件http://cscope.sourceforge.net/cscope_maps.vim下载到  |
+   ~/.vim/plugin目录. 到这里, 我们就可以开始使用Cscope了.                            |
+c) 使用Cscope需要生成cscope数据库文件。进入项目代码根目录运行命令：                  |
+       cscope -Rbq -f path/xxx.out                                                   |
+   命令运行后会生成xxx.out文件,即cscope数据库文件. 更多用法参考man cscope文档。      |
+d) 进入项目代码根目录, 在Vim下运行命令：                                             |
+       cs add path/xxx.out                                                           | 
+   此命令将cscope数据库载入Vim.                                                      |
+e) Cscope常用快捷键
+           Ctrl-\ s 查找所有当前光标所在符号出现过位置。
+           Ctrl-\ c 查找所有调用当前光标所在函数的函数。
+       按下快捷键查找结束后会在编辑区下方出现查找结果的列表，输入结果编号并回车，就能跳转到该查找结果在源代码中的相应位置。例如，我们将光标移到initial_pool_size变量定义的位置，即17行，然后按下"Ctrl-\ s"组合快捷键，得到示图如下：
+
+            然后我们输入2，并回车，就能跳转到第2个查找结果。         
+           为了界面更好看，可以把Cscope的查找结果输出到quickfix窗口，需要在~/.vimrc中加入下面这行：
+[plain] view plaincopy
+set cscopequickfix=s-,c-,d-,i-,t-,e-  
+            这样，通过快捷键查找某个符号后，会立即跳转到第一个找到的该符号出现的位置。如果你对这次默认跳转的位置不满意，在Vim命令行下运行cw命令，就能在编辑区下面quickfix窗口看到所有查找结果的列表，点击相应列表项就能跳转到相应位置。这个功能已经跟VS很接近了吧：）
+
+        更多功能可通过命令man cscope或在Vim命令行下运行help cscope查询。
+
+
+
+
+
+
+
+
 ----> 有用的~/.vimrc设置
 
 " Force tabs to be displayed/expanded to 4 spaces (instead of default 8).
