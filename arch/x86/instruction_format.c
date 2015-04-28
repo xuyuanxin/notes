@@ -1,3 +1,5 @@
+
+#if 0
 unsigned long assamble(void) {
    __asm__(
    "movl %esp,%eax\n\t"
@@ -7,9 +9,26 @@ unsigned long assamble(void) {
    "addl 0x12345678(%ecx,%edx,2),%eax\n\t"
    "addl 0x1234(%ecx,%edx,2),%eax\n\t"
    "addl 0x12345678,%eax\n\t"
+   "addl %eax,1\n\t"
    "leal 9(%eax,%ecx,2), %edx");
    return 0;
 }
+#else
+//".set noreorder\n\t"
+
+unsigned long assamble(void) {
+   __asm__(
+   "add %eax,1\n\t"
+   "add %eax,0x11223344\n\t"
+   ".byte 0x83\n\t" // 0x83c001
+   ".byte 0xc0\n\t"
+   ".byte 0x01\n\t"
+   //".word 0x100c\n\t"
+   );
+   return 0;
+}
+
+#endif
 
 int accum = 0;
 
@@ -21,6 +40,10 @@ int sum(int x, int y)
     return t;
 }
 
+int main()
+{
+    return 0;
+}
 
 /*
 gcc -O1 -S -masm=intel code.c
@@ -46,51 +69,6 @@ objdump -d instruction_format.o
 
 
 
-  
-03 84 51 78 56 34 12    add    0x12345678(%ecx,%edx,2),%eax
--------------------------------------------------------------------------------------
-a) 03 /r    ADD r32, r/m32    Add r/m32 to r32.
-   03 是Opcode
-   
-b) /r 表示存在ModR/M结构，查表 Table 2-2. 32-Bit Addressing Forms with the ModR/M Byte 
-   10    000      100     84h  
-   mod    10  : 间接寻址
-   reg/op 000 : %eax
-   r/m    100 : [--][--]+disp32  表示后面还有 SIB
-   
-c) 首先mod为10，寻址方式为  [scaled index] + disp32 + [EBP]
-   01  010  001        52 
-   Scale : 01 
-   Index : 010 [EDX*2]
-   Base  : 001 %ECX
-   
-d) disp32 因为b)中的mod为10
-   
-   
-   
-03 05 78 56 34 12       add    0x12345678,%eax  # %eax = %eax+0x12345678
--------------------------------------------------------------------------------------
-a) 03 /r    ADD r32, r/m32    Add r/m32 to r32.
-   03 是Opcode
-
-b) /r 表示存在ModR/M结构，查表 Table 2-2. 32-Bit Addressing Forms with the ModR/M Byte 
-   00 000 101     05h  
-   mod    00  : 间接寻址
-   reg/op 000 : %eax
-   r/m    101 : disp32   denotes a 32-bit displacement that follows the ModR/M byte
-
-c) 78 56 34 12   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
    
    
    
@@ -100,3 +78,4 @@ c) 78 56 34 12
    
    
 */
+
