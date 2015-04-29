@@ -1,0 +1,11 @@
+---->
+CMPS/CMPSB/CMPSW/CMPSD/CMPSQ¡ªCompare String Operands
+Compares the byte, word, doubleword, or quadword specified with the first source ope-
+rand with the byte, word, doubleword, or quadword specified with the second source o-
+perand and sets the status flags in the EFLAGS register according to the results.
+Both source operands are located in memory. The address of the first source operand -
+is read from DS:SI, DS:ESI or RSI (depending on the address-size attribute of the in-
+struction is 16, 32, or 64, respectively). The address of the second source operand -
+is read from ES:DI, ES:EDI or RDI (again depending on the address-size attribute of -
+the instruction is 16, 32, or 64). The DS segment may be overridden with a segment o-
+verride prefix, but the ES segment cannot be overridden.

@@ -1,0 +1,4 @@
+前向声明
+函数声明
+warning: ‘struct xxx’ declared inside parameter list
+warning: its scope is only this definition or declaration, which is probably not what you want

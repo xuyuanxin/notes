@@ -24,4 +24,13 @@ mount
 #mkdir /mnt/vcdrom  # 创建一个目录用作挂接点(mount point)
 #mount -o loop -t iso9660 /home/sunky/mydisk.iso /mnt/vcdrom
 # 使用目录/mnt/vcdrom，即可访问盘镜像文件mydisk.iso中的所有文件。
-
+                                                                                     |
+3 挂接Windows文件共享                                                                |
+Windows网络共享的核心是SMB/CIFS, 在linux下要挂接(mount)windows的磁盘共享, 就必须安装 |
+和使用samba软件包. 现在流行的linux发行版绝大多数已经包含了samba软件包, 如果安装linux |
+系统时未安装samba请首先安装samba. 当然也可以到 www.samba.org网站下载......新的版本是 |
+3.0.10版. 当windows系统共享设置好以后, 就可以在linux客户端挂接(mount)了, 具体操作如下|
+# mkdir –p /mnt/samba   //建立一个目录用来作挂接点(mount point) 
+# mount -t smbfs -o username=admin,password=pldy123 //10.140.133.23/c$ /mnt/samba    |
+admin和pldy123是ip地址为10.140.133.23 windows计算机的一个用户名和密码, c$是这台计算机|
+的一个磁盘共享, 如此就可以在linux系统上通过/mnt/samba来访问windows系统磁盘上的文件了.| 
