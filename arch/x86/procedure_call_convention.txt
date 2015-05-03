@@ -5,11 +5,11 @@ stack frame
 	stack allocated for a single procedure call is called a stack frame. 
 
 	       stack "bottom"
-		  +------------------+  
+		  +------------------+ higher memory addresses
 		  |         .        |
 		  |         .        |  Earlier frames
 		  |         .        |		  
-		  +------------------+ <-------------------
+		  +------------------+ <------------------- caller's frame begin
 		  |         .        |
 		  |         .        |
 		  |         .        |	
@@ -17,7 +17,7 @@ stack frame
 		  |       argn       | 
 		  +------------------+
 		  |         .        |
-		  |         .        |   caller'sframe
+		  |         .        |   caller's frame
 		  |         .        |	
 		  +------------------+ 
 		  |      arg1        |
@@ -25,7 +25,7 @@ stack frame
 		  |   return addr    |
 		  +------------------+ 
  %ebp---->|     save %ebp    |    
-		  +------------------+ <--------------------
+		  +------------------+ <-------------------- caller's frame end
 		  | save registers,  |
 		  | local variables, |
 		  | and temporaies   |
@@ -75,9 +75,9 @@ caller 09:  movl %eax, (%esp)        Store on stack
 		  +----------+ 
 		  | old %ebp |
 		  +----------+ <---- %ebp (begin stack of caller)
-		  |   arg1   | <---- (movl $534, -4(%ebp))
+		  |   arg1   | <---- local variables (movl $534, -4(%ebp))
 		  +----------+
-		  |   arg2   | <---- (movl $1057, -8(%ebp))
+		  |   arg2   | <---- local variables (movl $1057, -8(%ebp))
 		  +----------+ 
 		  |          |
 		  +----------+
@@ -85,7 +85,7 @@ caller 09:  movl %eax, (%esp)        Store on stack
 		  +----------+ <---- leal -8(%ebp), %eax
 		  |   @arg2  |       movl %eax, 4(%esp)
 		  +----------+
-		  |   @arg1  |
+		  |   @arg1  | 
 		  +----------+ <---- %esp ( subl $24, %esp )  
 
 caller 10:  call swap_add            Call the swap_add function

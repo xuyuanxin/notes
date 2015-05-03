@@ -73,6 +73,7 @@ $ vim ~/vim/src/main.c                                                          
 鼠标或键盘选择某个符号，然后点击或回车，就可以跳转到该符号定义的位置。更多功能可通过 |
 在Vim命令行下运行help taglist.txt查询。                                              |
 -------------------------------------------------------------------------------------|
+
 -------------------------------------------------------------------------------------|
 3 安装使用Cscope                                                                     |
 Cscope提供交互式查询语言符号功能,如查询哪些地方使用某个变量或调用某个函数. Cscope已经|
@@ -85,20 +86,32 @@ c) 使用Cscope需要生成cscope数据库文件。进入项目代码根目录运行命令：             
        cscope -Rbq -f path/xxx.out                                                   |
    命令运行后会生成xxx.out文件,即cscope数据库文件. 更多用法参考man cscope文档。      |
 d) 进入项目代码根目录, 在Vim下运行命令：                                             |
-       cs add path/xxx.out                                                           | 
-   此命令将cscope数据库载入Vim.                                                      |
-e) Cscope常用快捷键
-           Ctrl-\ s 查找所有当前光标所在符号出现过位置。
-           Ctrl-\ c 查找所有调用当前光标所在函数的函数。
-       按下快捷键查找结束后会在编辑区下方出现查找结果的列表，输入结果编号并回车，就能跳转到该查找结果在源代码中的相应位置。例如，我们将光标移到initial_pool_size变量定义的位置，即17行，然后按下"Ctrl-\ s"组合快捷键，得到示图如下：
-
-            然后我们输入2，并回车，就能跳转到第2个查找结果。         
-           为了界面更好看，可以把Cscope的查找结果输出到quickfix窗口，需要在~/.vimrc中加入下面这行：
-[plain] view plaincopy
-set cscopequickfix=s-,c-,d-,i-,t-,e-  
-            这样，通过快捷键查找某个符号后，会立即跳转到第一个找到的该符号出现的位置。如果你对这次默认跳转的位置不满意，在Vim命令行下运行cw命令，就能在编辑区下面quickfix窗口看到所有查找结果的列表，点击相应列表项就能跳转到相应位置。这个功能已经跟VS很接近了吧：）
-
-        更多功能可通过命令man cscope或在Vim命令行下运行help cscope查询。
+   :cs add /home/wooin/vim71/cscope.out /home/wooin/vim71                            |
+   此命令将cscope数据库载入Vim. 上面这条命令很重要, 必须写全, 不能只写前半句. 因为源 |
+   码是多级目录的, 如果这样写, cscope是无法在子目录中的源码中工作的, 当然, 如果你的源|
+   码都在同一级目录中就无所谓了. 如果你要经常用cscope的话, 可以把上面那句加到~/.vimrc|
+   中去.                                                                             |
+e) Cscope常用快捷键                                                                  |
+一些快捷键的用法, 下面是其中一组, 也是我用的, 将下面的内容添加到~/.vimrc中,并重启vim:|
+nmap <C-_>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>e :cs find e <C-R>=expand("<cword>")<CR><CR>
+nmap <C-_>f :cs find f <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-_>i :cs find i ^<C-R>=expand("<cfile>")<CR>$<CR>
+nmap <C-_>d :cs find d <C-R>=expand("<cword>")<CR><CR>                               |
+当光标停在某个你要查找的词上时, 按下<C-_>g, 就是查找该对象的定义, 其他的同理. 按这种 |
+组合键有一点技巧, 按了<C-_>后要马上按下一个键, 否则屏幕一闪就回到nomal状态了. <C-_>g |
+的按法是先按"Ctrl+Shift+-", 然后很快再按"g"                                          |
+为了界面更好看, 可以把Cscope的查找结果输出到quickfix窗口, 需要在~/.vimrc中加入下面这 |
+行:                                                                                  |
+:set cscopequickfix=s-,c-,d-,i-,t-,e-                                                |
+这样, 通过快捷键查找某个符号后, 会立即跳转到第一个找到的该符号出现的位置. 如果你对这 |
+次默认跳转的位置不满意, 在Vim命令行下运行cw命令,                                     |
+:cw                                                                                  |
+就能在编辑区下面quickfix窗口看到所有, 查找结果的列表, 点击相应列表项就能跳转到相应位 |
+置.                                                                                  |
 
 
 

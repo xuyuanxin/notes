@@ -101,6 +101,32 @@ int vector_base( )
 /*-----------------------------------------------------------------------------------
 Output:
 The contents of fifth are: 16 2 77 29
+
+vector<int> ivec; // initially empty
+vector<int> ivec2(ivec); // copy elements of ivec into ivec2
+vector<int> ivec3 = ivec; // copy elements of ivec into ivec3
+vector<string> svec(ivec2); // error: svec holds strings, not ints
+
+vector<string> articles = {"a", "an", "the"}; // has three elements
+vector<string> v2("a", "an", "the");          // error
+
+We can also initialize a vector from a count and an element value. The count determi-
+nes how many elements the vector will have ; the value provides the initial value for 
+each of those elements:
+    vector<int> ivec(10, -1); // ten int elements, each initialized to -1
+    vector<string> svec(10, "hi!"); // ten strings; each element is "hi!"
+
+Value Initialization
+We can usually omit the value and supply only a size. In this case the library creat-
+es a value-initialized element initializer for us. This library-generated value is u-
+sed to initialize each element in the container. The value of the element initializer
+depends on the type of the elements stored in the vector. If the vector holds elemen-
+ts of a built-in type, such as int, then the element initializer has a value of 0. If 
+the elements are of a class type, such as string, then the element initializer is it-
+self default initialized:
+    vector<int> ivec(10); // ten elements, each initialized to 0
+    vector<string> svec(10); // ten elements, each an empty string
+
 -----------------------------------------------------------------------------------*/
 int vector_constructor()
 {

@@ -1,3 +1,99 @@
+-------------------------------------------------------------------------------------|
+http://www.oschina.net/question/54100_32476 Linux下动态库的生成和使用                |
+一 动态库的基本概念                                                                  |
+1 动态链接库是程序运行时加载的库，当动态链接库正确安装后, 所有的程序都可以使用动态库 |
+  来运行程序. 动态链接库是目标文件的集合, 目标文件在动态链接库中的组织方式是按照特殊 |
+  方式形成的. 库中函数和变量的地址是相对地址, 不是绝对地址, 其真实地址在调用动态库的 |
+  程序加载时形成.                                                                    |
+2 动态链接库的名称有别名(soname), 真名(realname)和链接名(linker name). 别名由一个前缀|
+  lib, 然后是库的名字, 再加上一个后缀".so"构成. 真名是动态链接库真实名称, 一般总是在 |
+  别名的基础加上一个小版本号, 发布版本等构成. 除此之外, 还有一个链接名, 即程序链接时 |
+  使用的库的名字.                                                                    |
+3 在动态链接库安装的时候, 总是复制文件到某个目录下, 然后用一个软连接生成别名, 在库文 |
+  件进行更新的时候, 仅仅更新软链接即可.                                              |
+二 生成和使用动态库                                                                  |
+1 看一个实例来了解如何自己生成静态库和使用静态库                                     |
+创建程序文件                                                                         |
+1> 在test文件夹下有三个文件: main.c ,add.c,sub.c,tiger.h
+2> main.c文件中的内容
+#include<stdio.h>
+#include”tiger.h”
+  
+int  main(void)
+{
+    printf("sum =%d\n",add(5,3));
+    printf("sub= %d\n",sub(5,3));
+  
+    return 0;     
+}
+
+3> tiger.h文件中的内容
+#ifndef __TIGER__
+#define __TIGER__
+  
+int add(int  a,int  b);
+int sub(int  a,int  b);
+  
+#endif
+
+4> add.c文件中的内容
+int  add(int a, int b)
+{
+    return a+b;
+}
+
+5> sub.c文件中的内容
+int  sub(int a, int b)
+{
+    return  a - b;
+}
+                                                                                     |
+动态库的生成
+1> 首先生成目标文件, 但是此时要加编译器选项-fpic和链接器选项-shared
+gcc -fpic  -c  add.c
+gcc -fpic  -c  sub.c
+生成中间文件add.o和sub.o
+
+2> 其次生成动态库
+gcc  -shared –o  libtiger.so  add.o sub.o
+
+以上两部也可以合成一步搞定
+gcc  -fpic   -shared add.c  sub.c  -o libtiger.so
+                                                                                     |
+libtiger.so就是我们生成的目标动态库. 我们以后使用动态库和main.c程序生成可执行程序.   |
+                                                                                     |
+2 使用动态链接库                                                                     |
+在编译程序时, 使用动态链接库和静态库是一致的, 使用"-l库名"的方式, 在生成可执行文件的 |
+时候会链接库文件.                                                                    |
+
+1> 使用命令
+gcc -o  main  main.c -L./ -ltiger
+                                                                                     |
+2> -L指定动态链接库的路径, -ldtiger链接库名字tiger. -ltiger是动态库的调用规则. Linux |
+   系统下的动态库命名方式是lib*.so, 而在链接时表示位-l*, *是自己命名的库名.          |
+
+3> 但是程序会提示如下错误
+error while loading shared libraries: libtiger.so: cannot open shared object file: No such file or direct
+这是因为程序运行时没有找到动态链接库造成的. 程序编译时链接动态库和运行时使用动态链接 |
+库的概念是不同的, 在运行时, 程序链接的动态链接库需要在系统目录下才行.                |
+                                                                                     |
+4> 使用以下方法可以解决此问题                                                        |
+a 在linux下最方便的解决方案是拷贝libtiger.so到绝对目录/lib下(但是,要是超级用户才可以,|
+  因此要使用sudo哦,亲). 就可以生成可执行程序了.                                      |
+b 第二种方法是:将动态链接库的目录放到程序搜索路径中, 可以将库的路径加到环境变量      |
+  LD_LIBRARY_PATH中实现                                                              |
+  export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH                                      |
+  执行此命令后也可以生成可执行程序                                                   |
+
+
+
+
+
+
+
+
+
+
 http://www.cnblogs.com/feisky/archive/2010/03/09/1681996.html
 http://www.tuicool.com/articles/Q3q2Mv GCC实现多文件编译,静态库,动态库
 -------------------------------------------------------------------------------------
