@@ -194,6 +194,9 @@ struct addr_instr dup_data[] =
 	{ 0x0012fc90, "success"}
 };
 
+int hasttest_main()
+{
+}
 
 int main()
 {

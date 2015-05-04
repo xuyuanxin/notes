@@ -112,6 +112,7 @@ struct emu_hashtable_item *emu_hashtable_search(struct emu_hashtable *eh, void *
 	return NULL;
 }
 
+/* hasttest_main */
 struct emu_hashtable_item *emu_hashtable_insert(struct emu_hashtable *eh, void *key, void *data)
 {
 	struct emu_hashtable_item *ehi;

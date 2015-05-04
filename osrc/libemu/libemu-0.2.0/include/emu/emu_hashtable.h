@@ -50,13 +50,36 @@ typedef uint32_t (*emu_hashtable_hash_cb)(void *key);
 typedef void (*emu_hashtable_destructor)(void *data);
 
 
+
+#if 0
 header_list_typedefs(emu_hashtable_bucket_item_root,emu_hashtable_bucket_item,emu_hashtable_bucket_link);
+#else
+									
+struct emu_hashtable_bucket_link 
+{ 
+    struct emu_hashtable_bucket_item *next;
+    struct emu_hashtable_bucket_item *prev; 	
+};	
+
+struct emu_hashtable_bucket_item_root 
+{ 
+    struct emu_hashtable_bucket_link  head; 
+	struct emu_hashtable_bucket_link  tail;
+};			
+
+typedef struct emu_hashtable_bucket_item_root emu_hashtable_bucket_item_root;						
+typedef struct emu_hashtable_bucket_item emu_hashtable_bucket_item;						
+typedef struct emu_hashtable_bucket_link emu_hashtable_bucket_link;						
+#endif
+
+
 
 struct emu_hashtable_bucket_item
 {
 	struct emu_hashtable_item item;
 	emu_hashtable_bucket_link link;
 };
+
 header_list_functions(emu_hashtable_bucket_items,emu_hashtable_bucket_item_root, emu_hashtable_bucket_item, link);
 
 struct emu_hashtable_bucket_item *emu_hashtable_bucket_item_new(void *key, void *value);
@@ -71,7 +94,23 @@ struct emu_hashtable_bucket *emu_hashtable_bucket_new();
 void emu_hashtable_bucket_free(struct emu_hashtable_bucket *ehb);
 void emu_hashtable_bucket_item_add(struct emu_hashtable_bucket *ehb, struct emu_hashtable_bucket_item *ehbi);
 
-
+/*-----------------------------------------------------------------------------------
+ emu_hashtable
++------------+
+|     size   |
+|------------|
+| item_count |   
+|------------|
+|   buckets  |------> +--------------------------+
++------------+        | 0 emu_hashtable_bucket * | emu_hashtable_bucket_item
+                      |--------------------------|
+                      | 1 emu_hashtable_bucket * |
+                      |--------------------------|
+                      |           ...            |
+                      |--------------------------|
+                      | size-1                   |
+                      +--------------------------+
+-----------------------------------------------------------------------------------*/
 /**
  * the hashtable
  * 
