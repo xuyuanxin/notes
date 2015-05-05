@@ -24,7 +24,7 @@
 #include <stdlib.h>   
 #include <string.h>   
   
-extern void quick_sort(int a[], int p, int q);/* not necessary */  
+extern void sort_quick(int a[], int p, int q);/* not necessary */  
   
 struct barrel {   
     int node[10];   
@@ -58,7 +58,7 @@ void bucket_sort(int data[], int size)
        
     pos = 0;   
     for (i = 0; i < num; i++) {   
-        quick_sort((pBarrel+i)->node, 0, (pBarrel+i)->count);/* sort node in every barrel */  
+        sort_quick((pBarrel+i)->node, 0, (pBarrel+i)->count);/* sort node in every barrel */  
   
         for (j = 0; j < (pBarrel+i)->count; j++) {   
             data[pos++] = (pBarrel+i)->node[j];   

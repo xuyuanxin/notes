@@ -183,6 +183,8 @@ void sort_test_heap()
 void sort_test_quick()
 {
     array_init();
+	//g_array[2]=2; g_array[3]=1;g_array[4]=3; g_array[5]=1;
+	//g_array[6]=3; g_array[7]=5;g_array[8]=6; g_array[9]=4;
 	sort_quick(g_array + 2,0,array_length - 1);
     sort_check("quick");
 }
