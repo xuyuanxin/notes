@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------------
-A vector is a class template.
+A vector is a class template. C++ has both class and function templates.
 
 A vector is a collection of objects, all of which have the same type. Every object in
 the collection has an associated index, which gives access to that object.A vector is
@@ -12,13 +12,17 @@ vectors whose elements are themselves vectors. It is worth noting that earlier v
 ons of C++ used a slightly different syntax to define a vector whose elements are th-
 emselves vectors (or another template type). In the past, we had to supply a space b-
 etween the closing angle bracket of the outer vector and its element type
-    vector<vector<int> > 
+        vector<vector<int> > 
 rather than
-    vector<vector<int>>.
+        vector<vector<int>>.
 
 Warning
     Some compilers may require the old-style declarations for a vector of vectors, f-
     or example, vector<vector<int> >.
+
+we cannot use a range for if the body of the loop adds elements to the vector. The b-
+ody of a range for must not change the size of the sequence over which it is iterati-
+ng.
 -----------------------------------------------------------------------------------*/
 
 
@@ -130,4 +134,21 @@ const_iterator end() const;          /* c++98 */
       iterator end() noexcept;         /* c++11 */
 const_iterator end() const noexcept;   /* c++11 */
 
+
+/*-----------------------------------------------------------------------------------
+                            std::vector::push_back
+ -----------------------------------------------------------------------------------
+ Adds a new element at the end of the vector, after its current last element. 
+ ----------------------------------------------------------------------------------*/
+ void push_back (const value_type& val); /* c++98 */
+ void push_back (const value_type& val); /* c++11 */
+ void push_back (value_type&& val); /* c++11 */
+
+
+/*-----------------------------------------------------------------------------------
+                            std::vector::size
+ -----------------------------------------------------------------------------------
+ Returns the number of elements in the vector. 
+ ----------------------------------------------------------------------------------*/
+ size_type size() const;
 

@@ -123,7 +123,7 @@ information, the nature of which depends on the template. How we specify the inf
 tion is always the same: We supply it inside a pair of angle brackets following the -
 template's name. In the case of vector, the additional information we supply is the -
 type of the objects the vector will hold:
-    vector<int> ivec; // ivec holds objects of type int
+    vector<int> ivec;            // ivec holds objects of type int
     vector<vector<string>> file; // vector whose elements are vectors
 In this example, the compiler generates two distinct types from the vector template : 
 vector<int>, and vector<vector<string>>.
