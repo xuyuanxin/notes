@@ -331,6 +331,9 @@ PIC»¹ÓÃÓÚÈ±ÉÙÄÚ´æ¹ÜÀíµ¥ÔªµÄ¼ÆËã»úÏµÍ³ÖÐ, Ê¹µÃ²Ù×÷ÏµÍ³ÄÜ¹»ÔÚµ¥Ò»µÄµØÖ·¿Õ¼äÖÐ½«²»Í
 È»ºó¼ä½ÓÑ°Ö·. ÓÉÓÚºÜ¶àº¯ÊýÔÚ³ÌÐòÖ´ÐÐ¹ý³ÌÖÐ²»Ò»¶¨±»ÓÃµ½(´íÎó´¦Àíº¯Êý, ÌØÊâ¹¦ÄÜÄ£¿é),  |
 ELF²ÉÓÃÁËÒ»ÖÖ½ÐÑÓ³Ù°ó¶¨(Lazy Binding)µÄ×ö·¨, »ù±¾Ë¼Ïë¾ÍÊÇµ±º¯ÊýµÚÒ»´Î±»ÓÃµ½Ê±²Å½øÐÐ°ó|
 ¶¨.                                                                                  |
+http://man7.org/linux/man-pages/man8/ld.so.8.html                                    |
+http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html                    |
+http://www.tuicool.com/articles/BJZRBbf
 ----> linux¹²Ïí¿âµÄ×éÖ¯                                                              |
 ¹²Ïí°æ±¾¿âÃüÃû                                                                       |
 ÎªÁË½â¾ö¹²Ïí¿âµÄ¼æÈÝÐÔÎÊÌâ, LinuxÓÐÒ»Ì×¹æÔòÀ´ÃüÃûÏµÍ³ÖÐµÄÃ¿Ò»¸ö¹²Ïí¿â, Ëü¹æ¶¨¹²Ïí¿âµÄ|
@@ -341,7 +344,132 @@ ELF²ÉÓÃÁËÒ»ÖÖ½ÐÑÓ³Ù°ó¶¨(Lazy Binding)µÄ×ö·¨, »ù±¾Ë¼Ïë¾ÍÊÇµ±º¯ÊýµÚÒ»´Î±»ÓÃµ½Ê±²Å½
 ²»Í¬µÄÖ÷°æ±¾ºÅÖ®¼ä²»¼æÈÝ. ´Î°æ±¾ºÅ±íÊ¾¿âµÄÔöÁ¿Éý¼¶, ¼´Ôö¼ÓÒ»Ð©ÐÂµÄ½Ó¿Ú·ûºÅ, ÇÒ±£³ÖÔ­ |
 À´µÄ·ûºÅ²»±ä. ÔÚÖ÷°æ±¾ºÅÏàÍ¬µÄÇé¿öÏÂ, ¸ßµÄ´Î°æ±¾ºÅ¼æÈÝµÍµÄ´Î°æ±¾ºÅµÄ¿â. ·¢²¼°æ±¾ºÅ±í |
 Ê¾¿âµÄÒ»Ð©´íÎóÐÞÕý, ÐÔÄÜµÄ¸Ä½øµÈ, ²¢²»Ìí¼ÓÈÎºÎÐÂµÄ½Ó¿Ú, Ò²²»¶Ô½Ó¿Ú½øÐÐ¸ü¸Ä.          |
+----> SO-NAME                                                                        |
+Ã¿¸ö¹²Ïí¿â¶¼ÓÐÒ»¸ö¶ÔÓ¦µÄ"SO-NAME", Õâ¸öSO-NAME¼´¹²Ïí¿âµÄÎÄ¼þÃûÈ¥µô´Î°æ±¾ºÅºÍ·¢²¼°æ±¾ |
+ºÅ, Ö»±£ÁôÖ÷°æ±¾ºÅ. ÔÚLinuxÏµÍ³ÖÐ,ÏµÍ³»áÎªÃ¿¸ö¹²Ïí¿âÔÚËüËùÔÚµÄÄ¿Â¼´´½¨Ò»¸ö¸ú"SO-NAME"|
+ÏàÍ¬µÄ²¢ÇÒÖ¸ÏòËüµÄÈíÁ¬½Ó(Symbol Link). Õâ¸öÈíÁ¬½ÓÒ»°ãÖ¸Ïò×îÐÂ°æ±¾µÄ¶¯Ì¬¿â. °ÑELFÒÀÀµ |
+µÄ¹²Ïí¿âµÄSO-NAME±£´æµ½".dynamic"ÖÐ, ÕâÑù¾Í»á×Ô¶¯Á¬½Ó×îÐÂµÄ°æ±¾. LinuxÖÐÌá¹©ÁËÒ»¸ö¹¤ |
+¾ß½Ð×ö"ldconfig", µ±ÏµÍ³°²×°»òÕß¸üÐÂÒ»¸ö¹²Ïí¿âÊ±, ¾ÍÔËÐÐÕâ¸ö¹¤¾ß, Ëü»á¸üÐÂÈíÁ¬½ÓÊ¹Æä |
+Ö¸Ïò×îÐÂµÄ¶¯Ì¬¿â, Èç¹ûÊÇÐÂ°²×°Ôò»á½¨Á¢ÏàÓ¦µÄÈíÁ¬½Ó.                                  |
+----> Á´½ÓÃû Link Name                                                               |
+¿âlibxxx.so.2.6.1µÄÁ´½ÓÃûÊÇxxx. µ±ÎÒÃÇÔÚ±àÒëÆ÷ÀïÃæÊ¹ÓÃ¹²Ïí¿âµÄÊ±ºò(±ÈÈçÊ¹ÓÃGCCµÄ"-l" |
+²ÎÊýÁ´½ÓÄ³¸ö¹²Ïí¿â), ÎªÁË¼ò½à·½±ãÎÒÃÇÖ»ÐèÒªÖ¸Ãû¹²Ïí¿âÃû(Á´½ÓÃû), ¶ø²»ÐèÒª¸ø³ö¹²Ïí¿âµÄ|
+È«Ãû(Èç:libname.so.2.6.1). ±àÒëÆ÷»á¸ù¾Ýµ±Ç°»·¾³, ÔÚÏµÍ³ÖÐÏà¹ØÂ·¾¶(ÍùÍùÓÉ-L²ÎÊýÖ¸¶¨)²é|
+ÕÒ×îÐÂ°æ±¾µÄname¿â. ²»Í¬ÀàÐÍµÄ¿â¿ÉÄÜÓÐÍ¬ÑùµÄÁ´½ÓÃû, ±ÈÈçCÓïÑÔµÄÔËÐÐ¿â¶¼ÓÐ¾²Ì¬°æ±¾    |
+(libc.a)ºÍ¶¯Ì¬°æ±¾(libc.so.x.y.x). Èç¹ûÔÚÁ´½ÓÊ±Ê¹ÓÃ²ÎÊý"-lc", ÄÇÃ´Á´½ÓÆ÷»á¸ù¾ÝÊä³öÎÄ |
+¼þµÄÇé¿ö(¶¯Ì¬/¾²Ì¬)À´Ñ¡ÔñÊÊºÏ°æ±¾µÄ¿â. ±ÈÈçldÊ¹ÓÃ-static²ÎÊýÊ±, "-lc"»á²éÕÒlibc.a, Èç|
+¹ûÊ¹ÓÃ-Bdynamic(Ä¬ÈÏÇé¿ö), Ëü»á²éÕÒ×îÐÂ°æ±¾µÄlibc.so.x.y.z.                          |
 
+http://blog.sina.com.cn/s/blog_76fbd24d010142ob.html
+³ÌÐòÔ±µÄ×ÔÎÒÐÞÑø - ·ûºÅ°æ±¾  ´Ë²©ÎÄ°üº¬Í¼Æ¬	(2011-12-27 22:20:25)
+·ÖÀà£º ³ÌÐòÔ±µÄ×ÔÎÒÐÞÑø
+³ÌÐòÔ±µÄ×ÔÎÒÐÞÑø <wbr>- <wbr>·ûºÅ°æ±¾ 
+1. ¾²Ì¬Á´½ÓÆ÷»á°Ñ³ÌÐòËùÒÀÀµµÄËùÓÐ¹²Ïí¿âµÄÃû×Ö¡¢Ö÷°æ±¾ºÅºÍ´Î°æ±¾ºÅ¶¼¼ÇÂ¼µ½×îÖÕµÄÓ¦ÓÃ³ÌÐò¶þ½øÖÆÊä³öÎÄ¼þÖÐ¡£
+ 
+2. ³ÌÐòÈç¹ûÓÃµ½ÁË¸ß´Î°æ±¾ºÅÖÐÐÂÌí¼ÓµÄ½Ó¿Ú¶øÄ¿Ç°ÏµÍ³ÖÐµÄµÍ´Î°æ±¾ºÅµÄ¹²Ïí¿âÖÐ²»´æÔÚ£¬ÄÇÃ´¾Í»á·¢ÉúÖØ¶¨Î»´íÎó¡£
+ 
+3. ´Î°æ±¾ºÅ½»»áÎÊÌâ£º
+ÔÚ±£ÊØ²ßÂÔµÄÏµÍ³ÖÐ£¬Èç¹ûÏµÍ³ÖÐÖ»ÓÐµÍ´Î°æ±¾ºÅµÄ¹²Ïí¿â£¬ÄÇÃ´ÕâÐ©³ÌÐò¾Í²»ÄÜÔËÐÐ¡£
+ 
+4. ´Î°æ±¾ºÅ½»»áÎÊÌâ²¢Ã»ÓÐÒòÎªSO-NAME¶ø½â¾ö£¬¶¯Ì¬Á´½ÓÆ÷ÔÚ½øÐÐ¶¯Ì¬Á´½ÓÊ±£¬Ö»½øÐÐÖ÷°æ±¾ºÅµÄÅÐ¶Ï£¬¼´Ö»ÅÐ¶ÏSO-NAME£¬Èç¹ûÄ³¸ö±»ÒÀÀµµÄ¹²Ïí¿âSO-NAMEÓëÏµÍ³ÖÐ´æÔÚµÄÊµ¼Ê¹²Ïí¿âSO-NAMEÒ»ÖÂ£¬ÄÇÃ´ÏµÍ³¾ÍÈÏÎª½Ó¿Ú¼æÈÝ£¬¶ø²»ÔÙ½øÐÐ¼æÈÝÐÔ¼ì²é¡£
+ 
+5. »ùÓÚ·ûºÅµÄ°æ±¾»úÖÆ£º
+ÈÃÃ¿¸öµ¼³öºÍµ¼ÈëµÄ·ûºÅ¶¼ÓÐÒ»¸öÏà¹ØÁªµÄ°æ±¾ºÅ¡£
+ 
+6. ¹²Ïí¿âµÄÃ¿Ò»´Î´Î°æ±¾ºÅÉý¼¶£¬¶¼¸øÄÇÐ©ÐÂµÄ´Î°æ±¾ºÅÖÐÌí¼ÓµÄÈ«¾Ö·ûºÅ´òÉÏÏàÓ¦µÄ±ê¼Ç£¬¾Í¿ÉÒÔÇå³þµØ¿´µ½¹²Ïí¿âÖÐµÄÃ¿¸ö·ûºÅ¶¼ÓµÓÐÏàÓ¦µÄ±êÇ©£¬Èç£º¡°VERS_1.1¡±¡¢¡°VERS_1.2¡±
+ 
+7. SolarisÖÐµÄ°æ±¾»úÖÆ£º
+¶¨ÒåÒ»Ð©·ûºÅµÄ¼¯ºÏ£¬ÕâÐ©¼¯ºÏ±¾Éí¶¼ÓÐÃû×Ö£¬±ÈÈç½Ð¡°VERS_1.1¡±£¬Ã¿¸ö¼¯ºÏ¶¼°üº¬Ò»Ð©Ö¸¶¨µÄ·ûºÅ£¬³öÁË¿ÉÒÔÓµÓÐ·ûºÅÒÔÍâ£¬»¹¿ÉÒÔ°üº¬ÁíÍâÒ»¸ö¼¯ºÏ¡£
+ 
+8. ÔÚSolarisÖÐ£¬³ÌÐòÔ±¿ÉÒÔÔÚÁ´½Ó¹²Ïí¿âÊ±±àÐ´Ò»ÖÖ½Ð×ö·ûºÅ°æ±¾½Å±¾µÄÎÄ¼þ£¬ÔÚÕâ¸öÎÄ¼þÖÐÖ¸¶¨ÕâÐ©·ûºÅÓë¼¯ºÏÖ®¼ä¼°¼¯ºÏÓë¼¯ºÏÖ®¼äµÄ¼Ì³ÐÒÀÀµ¹ØÏµ¡£Á´½ÓÆ÷ÔÚÁ´½ÓÊ±¸ù¾Ý·ûºÅ°æ±¾½Å±¾ÖÐÖ¸¶¨µÄ¹ØÏµÀ´²úÉú¹²Ïí¿â£¬²¢ÇÒÉèÖÃ·ûºÅµÄ¼¯ºÏÓëËüÃÇÖ®¼äµÄ¹ØÏµ¡£
+ 
+9. ÔÚSolarisÏµÍ³ÖÐ£º
+·ûºÅµÄ¼¯ºÏÃûÍ¨³£ÓÉ¡°SUNW¡±¿ªÍ·£»
+global£ºÈ«¾ÖµÄ·ûºÅ£»
+local£º¾Ö²¿·ûºÅ£»
+ 
+10. ·¶Î§»úÖÆ£º
+Ê¹ÓÃlocal±£»¤¹²Ïí¿âµÄÊ¹ÓÃÕßÓÐÒâ»òÕßÎÞÒâµØ·ÃÎÊÕâÐ©º¯Êý¡£
+ 
+11. Éý¼¶¹²Ïí¿â£¬ÔÚÔ­ÓÐµÄ»ù´¡ÉÏÌí¼ÓÁËÒ»¸öÈ«¾Öº¯Êý¡°swap¡±£¬ÄÇÃ´ÐÂµÄ·ûºÅ°æ±¾½Å±¾ÎÄ¼þ¿ÉÒÔÔÚÔ­ÓÐµÄ»ù´¡ÉÏÌí¼ÓÈçÏÂÄÚÈÝ£º
+SUNW_1.2 {
+ global:
+ swap;
+} SUNW_1.1;
+ 
+12. ÔÚGlibcµÄ¿âÖÐ»¹¿ÉÒÔ¿´µ½ÀàËÆÓÚ¡°GCC_¡±ÎªÇ°×º¼°¡°GLIBC_PRIVATE¡±ÕâÑùµÄ·ûºÅ°æ±¾±ê¼Ç·Ö±ðÓÃÓÚGCC±àÒëÆ÷ºÍGLIBCÄÚ²¿£¬ËüÌáÐÑ¹²Ïí¿âµÄÊ¹ÓÃÕß£º×îºÃ²»ÒªÊ¹ÓÃÕâÐ©·ûºÅ£¬ÒòÎªËü²¢²»ÊÇ¶ÔÍâ¹«¿ªµÄ£¬ÓÐ¿ÉÄÜËæ×Å¹²Ïí¿âµÄ°æ±¾ÑÝ»¯¶ù±»É¾³ý»ò¸Ä±ä¡£
+ 
+13. GCCÔÊÐíÊ¹ÓÃÒ»¸ö½Ð×ö¡°.symver¡±µÄ»ã±àºêÖ¸ÁîÀ´Ö¸¶¨·ûºÅµÄ°æ±¾£¬¿ÉÒÔÔÚGCCµÄC/C++Ô´´úÂëÖÐÇ¶Èë»ã±àÖ¸ÁîµÄÄ£Ê½Ê¹ÓÃ£º
+asm(".symver add, add@VERS_1.1");
+int add(int a, int b)
+{
+ return a + b;
+}
+ÕâÑù¾Í¿ÉÒÔ°Ñ·ûºÅ¡°add¡±Ö¸¶¨Îª·ûºÅ±êÇ©¡°VERS_1.1¡±¡£
+ 
+14. GCCÌá¹©µÄÁ½¸öÀ©Õ¹£º
+£¨1£©¡°.symver¡±µÄ»ã±àºêÖ¸Áî¡£
+£¨2£©·ûºÅ¶à°æ±¾ÖØÔØ»úÖÆ¡£
+ 
+15. ·ûºÅ¶à°æ±¾ÖØÔØ»úÖÆµÄÒâÒå£º
+Èç¹û½ö½öÎªÁËÒ»¸ö·ûºÅµÄ¸ü¸Ä¶øÉý¼¶Ö÷°æ±¾ºÅ£¬ÄÇÃ´½«»á¶ÔÏµÍ³´øÀ´ºÜ´óµÄÓ°Ïì¡£
+ 
+16. ÔÚLinuxÏÂÁ´½ÓÒ»¸ö¹²Ïí¿â£º
+Ê¹ÓÃld£ºÊ¹ÓÃ¡°--version-script¡±²ÎÊý£»
+Ê¹ÓÃgcc£ºÊ¹ÓÃ¡°-Xlinker¡±²ÎÊý¼Ó¡°--version-script¡±£»
+·ûºÅ°æ±¾½Å±¾ÎÄ¼þÎª¡°lib.ver¡±£¬±àÒëÔ´´úÂë¡°lib.c¡±£º
+gcc -shared -fPIC lib.c -Xlinker --version-script lib.ver -o lib.so
+lib.verÄÚÈÝÈçÏÂ£º
+VERS_1.2 {
+ global:
+  foo;
+ local:
+  *;
+};
+½«main.c±àÒë²¢ÇÒÁ¬½Óµ½µ±Ç°°æ±¾µÄlib.so£º
+gcc main.c ./lib.so -o main                                                          |
+----> ¹²Ïí¿âÏµÍ³Â·¾¶                                                                 |
+1 FHS (File Hierarchy Standard)±ê×¼:                                                 |
+´ó¶àÊý°üÀ¨LinuxÔÚÄÚµÄ¿ªÔ´²Ù×÷ÏµÍ³¶¼×ñÊØµÄ±ê×¼, Õâ¸ö±ê×¼¹æ¶¨ÁËÒ»¸öÏµÍ³ÖÐµÄÏµÍ³ÎÄ¼þÓ¦¸Ã|
+ÈçºÎ´æ·Å, °üÀ¨¸÷¸öÄ¿Â¼µÄ½á¹¹, ×éÖ¯ºÍ×÷ÓÃ.                                            | 
+2 FHS¹æ¶¨µÄ¹²Ïí¿â´æ·ÅÎ»ÖÃ:                                                           |
+  /lib´æ·ÅÏµÍ³×î¹Ø¼üºÍ»ù´¡µÄ¹²Ïí¿â, ÕâÐ©¿âÖ÷ÒªÊÇ/binºÍ/sbinÏÂµÄ³ÌÐòËùÐèÒªÓÃµ½µÄ¿â, »¹|
+ÓÐÏµÍ³Æô¶¯Ê±ÐèÒªµÄ¿â.                                                                |
+  /usr/lib, ±£´æÒ»Ð©·ÇÏµÍ³ÔËÐÐÊ±ËùÐèÒªµÄ¹Ø¼üÐÔµÄ¹²Ïí¿â, Ö÷ÒªÊÇÒ»Ð©¿ª·¢Ê±ÓÃµ½µÄ¹²Ïí¿â,|
+»¹ÓÐ¿ª·¢Ê±¿ÉÄÜ»áÓÃµ½µÄ¾²Ì¬¿â,Ä¿±êÎÄ¼þµÈ.                                             |
+  /usr/local/lib, ·ÅÖÃÒ»Ð©¸ú²Ù×÷ÏµÍ³±¾Éí²¢²»Ê®·ÖÏà¹ØµÄ¿â, Ö÷ÒªÊÇÒ»Ð©µÚÈý·½µÄÓ¦ÓÃ³ÌÐò |
+µÄ¿â. ±ÈÈçÔÚÏµÍ³ÖÐ°²×°ÁËpythonÓïÑÔµÄ½âÊÍÆ÷, ÄÇÃ´ÓëËüÏà¹ØµÄ¹²Ïí¿â¿ÉÄÜ»á±»·Åµ½         |
+/usr/local/lib/python, ¶øËüµÄ¿ÉÖ´ÐÐÎÄ¼þ¿ÉÄÜ±»·Åµ½/usr/local/binÏÂ. GNUµÄ±ê×¼ÍÆ¼öµÚÈý |
+·½µÄ³ÌÐòÓ¦¸ÃÄ¬ÈÏ½«¿â°²×°µ½/usr/local/libÏÂ.                                          |
+  /libºÍ/usr/libÒ»Ð©ºÜ³£ÓÃµÄ¡¢³ÉÊìµÄ£¬Ò»°ãÊÇÏµÍ³±¾ÉíËùÐèÒªµÄ¿â; /usr/local/lib·ÇÏµÍ³ |
+ËùÐèµÄµÚÈý·½³ÌÐòµÄ¹²Ïí¿â.                                                            |
+----> ¹²Ïí¿â²éÕÒÂ·¾¶                                                                 |
+1 ¶¯Ì¬Á´½ÓµÄELF¿ÉÖ´ÐÐÎÄ¼þÔÚÆô¶¯Ê±Í¬Ê±»áÆô¶¯¶¯Ì¬Á´½ÓÆ÷, ÔÚLinuxÏµÍ³ÖÐ, ¶¯Ì¬Á´½ÓÆ÷ÊÇ   |
+  /lib/ld-linux.so.X(XÊÇ°æ±¾ºÅ),³ÌÐòËùÒÀÀµµÄ¹²Ïí¶ÔÏóÈ«²¿ÓÉ¶¯Ì¬Á´½ÓÆ÷¸ºÔð×°ÔØºÍ³õÊ¼»¯.|
+2 ¶¯Ì¬Á´½ÓÆ÷¶ÔÓÚÄ£¿éµÄ²éÕÒ¹æÔòÒ»                                                     |
+  Èç¹ûDT_NEEDÀïÃæ±£´æµÄÊÇ¾ø¶ÔÂ·¾¶, ÄÇÃ´¶¯Ì¬Á´½ÓÆ÷¾Í°´ÕÕÕâ¸öÂ·¾¶È¥²éÕÒ;               |
+  Èç¹ûDT_NEEDÀïÃæ±£´æµÄÊÇÏà¶ÔÂ·¾¶, ÄÇÃ´¶¯Ì¬Á´½ÓÆ÷»áÔÚ/lib /usr/lib ÓÉ/etc/ld.so.conf |
+  ÅäÖÃÎÄ¼þÖ¸¶¨µÄÄ¿Â¼ÖÐ²éÕÒ¹²Ïí¿â.                                                    |
+3 ld.so.conf                                                                         |
+  Ò»¸öÎÄ±¾ÅäÖÃÎÄ¼þ, ¿ÉÄÜ°üº¬ÆäËûµÄÅäÖÃÎÄ¼þ, ÕâÐ©ÅäÖÃÎÄ¼þÖÐ´æ·Å×ÅÄ¿Â¼ÐÅÏ¢.            |
+4 ldconfig                                                                           |
+  Îª¹²Ïí¿âÄ¿Â¼ÏÂµÄ¸÷¸ö¹²Ïí¿â´´½¨, É¾³ý, ¸üÐÂÏàÓ¦µÄSO-NAME(¼´ÏàÓ¦µÄ·ûºÅÁ´½Ó); ½«ÕâÐ©  |
+  SO-NAMEÊÕ¼¯ÆðÀ´, ¼¯ÖÐ´æ·Åµ½/etc/ld.so.cacheÎÄ¼þÀïÃæ, ²¢½¨Á¢Ò»¸öSO-NAMEµÄ»º´æ, µ±¶¯ |
+  Ì¬Á´½ÓÆ÷Òª²éÕÒ¹²Ïí¿âÊ±, Ëü¿ÉÒÔÖ±½Ó´Ó/etc/ld.so.cacheÀïÃæ²éÕÒ. ¶ø/etc/ld.so.cacheµÄ |
+  ½á¹¹Ê½¾­¹ýÌØÊâÉè¼ÆµÄ, ·Ç³£ÊÊºÏ²éÕÒ.                                                |
+5 ¶¯Ì¬Á´½ÓÆ÷¶ÔÓÚÄ£¿éµÄ²éÕÒ¹æÔò¶þ                                                     |
+  Èç¹û¶¯Ì¬Á´½ÓÆ÷ÔÚ/etc/ld.so.cacheÀïÃæÃ»ÓÐÕÒµ½ËùÐèÒªµÄ¹²Ïí¿â, ÄÇÃ´Ëü»¹»á±éÀú/libºÍ   |
+  /usr/libÕâÁ½¸öÄ¿Â¼, Èç¹û»¹ÊÇÃ»ÕÒµ½, ¾ÍÐû¸æÊ§°Ü.                                    |
+6 Èç¹ûÔÚÏµÍ³Ö¸¶¨µÄ¹²Ïí¿âÄ¿Â¼ÏÂÌí¼Ó,É¾³ý,¸üÐÂÈÎºÎÒ»¸ö¹²Ïí¿â, »òÕß¸ü¸ÄÁË/etc/ld.so.conf|
+  µÄÅäÖÃ, ¶¼Ó¦¸ÃÔËÐÐldconfig³ÌÐò, ÒÔ±ãµ÷ÕûSO-NAMEºÍ/etc/ld.so.cache.                 | 
+7 ²»Í¬LinuxÏµÍ³ÖÐSO-NAME»º´æÎÄ¼þÃû×Ö²»Í¬, Í¨¹ý²é¿´ldconfigµÄmanÊÖ²áÀ´µÃÖªÕâÐ©ÐÅÏ¢.   |
+----> LD_LIBRARY_PATH                                                                |
+    ÔÚlinuxÏµÍ³ÖÐ, LD_LIBRARY_PATHÊÇÒ»¸öÓÉÈô¸ÉÂ·¾¶×é³ÉµÄ»·¾³±äÁ¿, Â·¾¶¼äÓÃÃ°ºÅ¸ô¿ª.  |
+Ä¬ÈÏÇé¿öÏÂ, LD_LIBRARY_PATHÎª¿Õ. Èç¹ûÎªÄ³¸ö½ø³ÌÉèÖÃÁËLD_LIBRARY_PATH, ÄÇÃ´½ø³ÌÆô¶¯Ê±,|
+¶¯Ì¬Á¬½ÓÆ÷ÔÚ²éÕÒ¹²Ïí¿âÊ±, »áÊ×ÏÈ²éÕÒÓÉLD_LIBRARY_PATHÖ¸¶¨µÄÄ¿Â¼. LD_LIBRARY_PATHÒ²»á |
+Ó°ÏìGCC±àÒëÊ±²éÕÒ¿âµÄÂ·¾¶, ËüÀïÃæ°üº¬µÄÄ¿Â¼Ïàµ±ÓÚÁ¬½ÓÊ±GCCµÄ"-L"²ÎÊý. ×ÜÌåÉÏ, ¶¯Ì¬Á´ |
+½ÓÆ÷°´ÕÕÏÂÁÐË³ÐòÒÀ´Î×°ÔØ»ò²éÕÒ¹²Ïí¶ÔÏó: ÓÉ»·¾³±äÁ¿LD_LIBRARY_PATHÖ¸¶¨µÄÂ·¾¶; ÓÉÂ·¾¶»º|
+´æÎÄ¼þ/etc/ld.so.cacheÖ¸¶¨µÄÂ·¾¶; Ä¬ÈÏ¹²Ïí¿âÄ¿Â¼, ÏÈ/usr/lib, È»ºó/lib               |
 
 
 
