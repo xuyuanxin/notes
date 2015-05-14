@@ -7,7 +7,7 @@ public class FirstSample
    }
 }
 
-/*
+/*-----------------------------------------------------------------------------------
 1 First and foremost, Java is case sensitive. 
 2 The keyword class reminds you that everything in a Java program lives inside a cla-
   ss. Following the keyword class is the name of the class. 
@@ -51,5 +51,4 @@ class name
     eserved word (such as public or class) for a class name. If a name consists of m-
     ultiple words, use an initial uppercase letter in each of the words. (This use of 
     uppercase letters in the middle of a word is sometimes called "camel case".)
-
-*/
+-----------------------------------------------------------------------------------*/

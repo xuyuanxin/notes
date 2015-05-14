@@ -217,7 +217,10 @@ traversal:
 							struct emu_source_and_track_instr_info *current_pos_satii = (struct emu_source_and_track_instr_info *)current_pos_v->data;
 
 							if (current_pos_v->color == red)
+							{
+							    emu_tracking_info_free( current_pos_ti_diff);
 								continue;
+							}
 
 							current_pos_v->color = red;
 
@@ -407,7 +410,11 @@ int32_t emu_shellcode_test(struct emu *e, uint8_t *data, uint16_t size)
 			struct emu_list_item *next = emu_list_next(eli);
 			if (!emu_list_attail(next) &&
             	((struct emu_stats *)eli->data)->eip == ((struct emu_stats *)next->data)->eip )
+            {
 				emu_list_remove(next);
+				free(next->data);/* libemudbg */
+				free(next);/* libemudbg */
+			}
 		}
 	}
 
