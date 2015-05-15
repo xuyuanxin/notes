@@ -1,57 +1,186 @@
-http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html  ×Ö·û¼¯ºÍ×Ö·û±àÂë£¨Charset & Encoding£©
-http://www.freebuf.com/articles/others-articles/25623.html     Ñ§µã±àÂëÖªÊ¶ÓÖ²»»áËÀ£ºUnicodeµÄÁ÷ÑÔÖÕ½áÕßºÍ±àÂë´ó½ÒÃØ
-http://www.cnblogs.com/hongfei/p/3648794.html                  È¤Ì¸unicode£¬ansi£¬utf-8£¬unicode big endianÕâÐ©±àÂëÓÐÊ²Ã´Çø±ð
--------------------------------------------------------------------------------------
-DBCS  Double Byte Charecter Set Ë«×Ö½Ú×Ö·û¼¯ 
-Ascii American Standard Code for Information Interchange£¬ÃÀ¹úÐÅÏ¢»¥»»±ê×¼´úÂë
-UCS   Universal Multiple-Octet Coded Character Set£¬¼ò³Æ UCS, Ë×³Æ "UNICODE"¡£ 
-BOM   byte-order mark ×Ö½ÚÐò±ê¼Ç
+http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html  å­—ç¬¦é›†å’Œå­—ç¬¦ç¼–ç ï¼ˆCharset & Encodingï¼‰
+http://www.freebuf.com/articles/others-articles/25623.html     å­¦ç‚¹ç¼–ç çŸ¥è¯†åˆä¸ä¼šæ­»ï¼šUnicodeçš„æµè¨€ç»ˆç»“è€…å’Œç¼–ç å¤§æ­ç§˜
+http://www.cnblogs.com/hongfei/p/3648794.html                  è¶£è°ˆunicodeï¼Œansiï¼Œutf-8ï¼Œunicode big endianè¿™äº›ç¼–ç æœ‰ä»€ä¹ˆåŒºåˆ«
+-------------------------------------------------------------------------------------|
+DBCS  Double Byte Charecter Set åŒå­—èŠ‚å­—ç¬¦é›† 
+Ascii American Standard Code for Information Interchangeï¼Œç¾Žå›½ä¿¡æ¯äº’æ¢æ ‡å‡†ä»£ç 
+UCS   Universal Multiple-Octet Coded Character Setï¼Œç®€ç§° UCS, ä¿—ç§° "UNICODE"ã€‚ 
+BOM   byte-order mark å­—èŠ‚åºæ ‡è®°
+BMP   Basic Multilingual Plane                                                       |
+åŽŸå§‹çš„ASCIIæ ‡å‡†å®šä¹‰äº†ä»Ž0åˆ°127çš„å­—ç¬¦, 128åˆ°255çš„ç¼–ç å¹¶æ²¡æœ‰è¢«åˆ¶å®šASCIIæ ‡å‡†çš„äººæ‰€è§„å®š,å…¶|
+å®ƒå›½å®¶çš„äººè¶è¿™ä¸ªæœºä¼šå¼€å§‹ä½¿ç”¨128åˆ°255èŒƒå›´å†…çš„ç¼–ç æ¥è¡¨è¾¾è‡ªå·±è¯­è¨€ä¸­çš„å­—ç¬¦. ASCIIç çš„é—®é¢˜|
+åœ¨äºŽå°½ç®¡æ‰€æœ‰äººéƒ½åœ¨0-127å·å­—ç¬¦çš„ä½¿ç”¨ä¸Šè¾¾æˆäº†ä¸€è‡´, ä½†å¯¹äºŽ128-255å·å­—ç¬¦å´æœ‰å¾ˆå¤šå¾ˆå¤šä¸åŒ |
+çš„è§£é‡Š. ä¸Žæ­¤åŒæ—¶, åœ¨äºšæ´²æœ‰æ›´è®©äººå¤´ç–¼çš„é—®é¢˜. äºšæ´²è¯­è¨€æœ‰æ›´å¤šçš„å­—ç¬¦å’Œå­—å½¢éœ€è¦è¢«å­˜å‚¨, ä¸€ |
+ä¸ªå­—èŠ‚å·²ç»ä¸å¤Ÿç”¨äº†. æ‰€ä»¥ä»–ä»¬å¼€å§‹ä½¿ç”¨ä¸¤ä¸ªå­—èŠ‚æ¥å­˜å‚¨å­—ç¬¦, è¿™è¢«ç§°ä½œDBCS(åŒå­—èŠ‚ç¼–ç æ–¹æ¡ˆ).|
+                                                                                     |
+åº”è¯¥æå‡ºä¸€ç§æ ‡å‡†æ–¹æ¡ˆæ¥å±•ç¤ºä¸–ç•Œä¸Šæ‰€æœ‰è¯­è¨€ä¸­çš„æ‰€æœ‰å­—ç¬¦, å‡ºäºŽè¿™ä¸ªç›®çš„, Unicodeè¯žç”Ÿäº†.   |
+Unicodeå°±åƒä¸€ä¸ªç”µè¯æœ¬, æ ‡è®°ç€å­—ç¬¦å’Œæ•°å­—ä¹‹é—´çš„æ˜ å°„å…³ç³». ç†è®ºä¸Šæ¯ç§è¯­è¨€ä¸­çš„æ¯ç§å­—ç¬¦éƒ½è¢«|
+Unicodeåä¼šæŒ‡å®šäº†ä¸€ä¸ªæ•°å­—. Unicodeåªæ˜¯ä¸€ä¸ªç”¨æ¥æ˜ å°„å­—ç¬¦å’Œæ•°å­—çš„æ ‡å‡†. å®ƒå¯¹æ”¯æŒå­—ç¬¦çš„æ•° |
+é‡æ²¡æœ‰é™åˆ¶, ä¹Ÿä¸è¦æ±‚å­—ç¬¦å¿…é¡»å ä¸¤ä¸ª,ä¸‰ä¸ªæˆ–è€…å…¶å®ƒä»»æ„æ•°é‡çš„å­—èŠ‚. Unicodeå­—ç¬¦æ˜¯æ€Žæ ·è¢«ç¼– |
+ç æˆå†…å­˜ä¸­çš„å­—èŠ‚è¿™æ˜¯å¦å¤–çš„è¯é¢˜, å®ƒæ˜¯è¢«UTF(Unicode Transformation Formats)å®šä¹‰çš„.     |
+                                                                                     |
+ä¸¤ä¸ªæœ€æµè¡Œçš„Unicodeç¼–ç æ–¹æ¡ˆæ˜¯UTF-8å’ŒUTF-16ã€‚                                         |
+åœ¨UTF-8ä¸­, 0-127å·çš„å­—ç¬¦ç”¨1ä¸ªå­—èŠ‚æ¥è¡¨ç¤º, ä½¿ç”¨å’ŒUS-ASCIIç›¸åŒçš„ç¼–ç . è¿™æ„å‘³ç€1980å¹´ä»£å†™|
+çš„æ–‡æ¡£ç”¨UTF-8æ‰“å¼€ä¸€ç‚¹é—®é¢˜éƒ½æ²¡æœ‰. åªæœ‰128å·åŠä»¥ä¸Šçš„å­—ç¬¦æ‰ç”¨2ä¸ª,3ä¸ªæˆ–è€…4ä¸ªå­—èŠ‚æ¥è¡¨ç¤º.å› |
+æ­¤, UTF-8è¢«ç§°ä½œå¯å˜é•¿åº¦ç¼–ç . UTF-16å®ƒä½¿ç”¨2ä¸ªæˆ–è€…4ä¸ªå­—èŠ‚æ¥å­˜å‚¨å­—ç¬¦.                   |
+                                                                                     |
+å­—èŠ‚åºæ ‡è®°(BOM)                                                                      |
+å¦‚æžœä½ ç»å¸¸è¦åœ¨é«˜ä½Žå­—èŠ‚åºçš„ç³»ç»Ÿé—´è½¬æ¢æ–‡æ¡£, å¹¶ä¸”å¸Œæœ›åŒºåˆ†å­—èŠ‚åº, è¿˜æœ‰ä¸€ç§å¥‡æ€ªçš„çº¦å®š, è¢« |
+ç§°ä½œBOM. BOMæ˜¯ä¸€ä¸ªè®¾è®¡å¾—å¾ˆå·§å¦™çš„å­—ç¬¦, ç”¨æ¥æ”¾åœ¨æ–‡æ¡£çš„å¼€å¤´å‘Šè¯‰é˜…è¯»å™¨è¯¥æ–‡æ¡£çš„å­—èŠ‚åº. åœ¨ |
+UTF-16ä¸­, å®ƒæ˜¯é€šè¿‡åœ¨ç¬¬ä¸€ä¸ªå­—èŠ‚æ”¾ç½®FE FFæ¥å®žçŽ°çš„. åœ¨ä¸åŒå­—èŠ‚åºçš„æ–‡æ¡£ä¸­, å®ƒä¼šè¢«æ˜¾ç¤ºæˆ  |
+FF FEæˆ–è€…FE FF, æ¸…æ¥šçš„æŠŠè¿™ç¯‡æ–‡æ¡£çš„å­—èŠ‚åºå‘Šè¯‰äº†è§£é‡Šå™¨.                                |
+                                                                                     |
+äºŒè¿›åˆ¶æµåˆ°å±å¹•å­—ç¬¦çš„è¿‡ç¨‹                                                             |
+äºŒè¿›åˆ¶æµ->æ ¹æ®ç¼–ç æ–¹å¼è§£ç å‡ºç ç‚¹->æ ¹æ®unicodeç ç‚¹è§£é‡Šå‡ºå­—ç¬¦->ç³»ç»Ÿæ¸²æŸ“ç»˜å‡ºè¿™ä¸ªå­—ç¬¦    |
+æ–‡æœ¬å­—ç¬¦ä¿å­˜åˆ°è®¡ç®—æœºä¸Šçš„è¿‡ç¨‹                                                         |
+è¾“å…¥å­—ç¬¦->æ ¹æ®å­—ç¬¦æ‰¾åˆ°å¯¹åº”ç ç‚¹->æ ¹æ®ç¼–ç æ–¹å¼æŠŠç ç‚¹ç¼–ç æˆäºŒè¿›åˆ¶æµ->ä¿å­˜äºŒè¿›åˆ¶æµåˆ°ç¡¬ç›˜ |
+                                                                                     |
+é€šç”¨å­—ç¬¦é›†(Universal Character Set, UCS)æ˜¯ç”±ISOåˆ¶å®šçš„ISO 10646(æˆ–ç§°ISO/IEC 10646)æ ‡å‡†|
+æ‰€å®šä¹‰çš„æ ‡å‡†å­—ç¬¦é›†. UCS-2ç”¨ä¸¤ä¸ªå­—èŠ‚ç¼–ç , UCS-4ç”¨4ä¸ªå­—èŠ‚ç¼–ç .                         |
+UCS-4æ ¹æ®æœ€é«˜ä½ä¸º0çš„æœ€é«˜å­—èŠ‚åˆ†æˆ2^7=128ä¸ªgroup. æ¯ä¸ªgroupå†æ ¹æ®æ¬¡é«˜å­—èŠ‚åˆ†ä¸º256ä¸ªå¹³é¢ |
+(plane). æ¯ä¸ªå¹³é¢æ ¹æ®ç¬¬3ä¸ªå­—èŠ‚åˆ†ä¸º256è¡Œ(row), æ¯è¡Œæœ‰256ä¸ªç ä½(cell). group 0çš„å¹³é¢0è¢«|
+ç§°ä½œBMP(Basic Multilingual Plane). å¦‚æžœUCS-4çš„å‰ä¸¤ä¸ªå­—èŠ‚ä¸ºå…¨é›¶ï¼Œé‚£ä¹ˆå°†UCS-4çš„BMPåŽ»æŽ‰ |
+å‰é¢çš„ä¸¤ä¸ªé›¶å­—èŠ‚å°±å¾—åˆ°äº†UCS-2. æ¯ä¸ªå¹³é¢æœ‰2^16=65536ä¸ªç ä½. Unicodeè®¡åˆ’ä½¿ç”¨äº†17ä¸ªå¹³é¢,|
+ä¸€å…±æœ‰17Ã—65536=1114112ä¸ªç ä½. åœ¨Unicode 5.0.0ç‰ˆæœ¬ä¸­, å·²å®šä¹‰çš„ç ä½åªæœ‰238605ä¸ª, åˆ†å¸ƒåœ¨|
+å¹³é¢0,å¹³é¢1,å¹³é¢2,å¹³é¢14,å¹³é¢15,å¹³é¢16. å…¶ä¸­å¹³é¢15å’Œå¹³é¢16ä¸Šåªæ˜¯å®šä¹‰äº†ä¸¤ä¸ªå„å 65534ä¸ª|
+ç ä½çš„ä¸“ç”¨åŒº(Private Use Area), åˆ†åˆ«æ˜¯0xF0000-0xFFFFDå’Œ0x100000-0x10FFFD. æ‰€è°“ä¸“ç”¨åŒº,|
+å°±æ˜¯ä¿ç•™ç»™å¤§å®¶æ”¾è‡ªå®šä¹‰å­—ç¬¦çš„åŒºåŸŸ, å¯ä»¥ç®€å†™ä¸ºPUA.                                     |
+                                                                                     |
+----> ç ä½ ç¼–ç ä½ç½® code point or code position 
+http://en.wikipedia.org/wiki/Code_point                          
+In character encoding terminology, a code point or code position is any of the numer-
+ical values that make up the code space. Many code points represent single characters 
+but they can also have other meanings, such as for formatting.
+For example, the character encoding scheme ASCII comprises 128 code points in the ra-
+nge 0x0 to 0x7F, Extended ASCII comprises 256 code points in the range 0x0 to 0xFF, -
+and Unicode comprises 1,114,112 code points in the range 0x0 to 0x10FFFF. The Unicode 
+code space is divided into seventeen planes (the basic multilingual plane, and 16 su-
+pplementary planes), each with 65,536 (= 2^16) code points. Thus the total size of t-
+he Unicode code space is 17 Ã— 65,536 = 1,114,112.
 
-Ô­Ê¼µÄASCII±ê×¼¶¨ÒåÁË´Ó0µ½127 µÄ×Ö·û£¬128µ½255µÄ±àÂë²¢Ã»ÓÐ±»ÖÆ¶¨ASCII±ê×¼µÄÈËËù¹æ¶¨£¬
-ÆäËü¹ú¼ÒµÄÈË³ÃÕâ¸ö»ú»á¿ªÊ¼Ê¹ÓÃ128µ½255·¶Î§ÄÚµÄ±àÂëÀ´±í´ï×Ô¼ºÓïÑÔÖÐµÄ×Ö·û¡£ASCIIÂëµÄÎÊ
-ÌâÔÚÓÚ¾¡¹ÜËùÓÐÈË¶¼ÔÚ0-127ºÅ×Ö·ûµÄÊ¹ÓÃÉÏ´ï³ÉÁËÒ»ÖÂ£¬µ«¶ÔÓÚ128-255ºÅ×Ö·ûÈ´ÓÐºÜ¶àºÜ¶à²»
-Í¬µÄ½âÊÍ¡£Óë´ËÍ¬Ê±£¬ÔÚÑÇÖÞÓÐ¸üÈÃÈËÍ·ÌÛµÄÎÊÌâ¡£ÑÇÖÞÓïÑÔÓÐ¸ü¶àµÄ×Ö·ûºÍ×ÖÐÎÐèÒª±»´æ´¢£¬
-Ò»¸ö×Ö½ÚÒÑ¾­²»¹»ÓÃÁË¡£ËùÒÔËûÃÇ¿ªÊ¼Ê¹ÓÃÁ½¸ö×Ö½ÚÀ´´æ´¢×Ö·û£¬Õâ±»³Æ×÷DBCS£¨Ë«×Ö½Ú±àÂë·½
-°¸£©¡£
-
-Ó¦¸ÃÌá³öÒ»ÖÖ±ê×¼·½°¸À´Õ¹Ê¾ÊÀ½çÉÏËùÓÐÓïÑÔÖÐµÄËùÓÐ×Ö·û£¬³öÓÚÕâ¸öÄ¿µÄ£¬Unicodeµ®ÉúÁË¡£
-Unicode¾ÍÏñÒ»¸öµç»°±¾£¬±ê¼Ç×Å×Ö·ûºÍÊý×ÖÖ®¼äµÄÓ³Éä¹ØÏµ¡£ÀíÂÛÉÏÃ¿ÖÖÓïÑÔÖÐµÄÃ¿ÖÖ×Ö·û¶¼
-±»UnicodeÐ­»áÖ¸¶¨ÁËÒ»¸öÊý×Ö¡£UnicodeÖ»ÊÇÒ»¸öÓÃÀ´Ó³Éä×Ö·ûºÍÊý×ÖµÄ±ê×¼¡£Ëü¶ÔÖ§³Ö×Ö·ûµÄ
-ÊýÁ¿Ã»ÓÐÏÞÖÆ£¬Ò²²»ÒªÇó×Ö·û±ØÐëÕ¼Á½¸ö¡¢Èý¸ö»òÕßÆäËüÈÎÒâÊýÁ¿µÄ×Ö½Ú¡£Unicode×Ö·ûÊÇÔõÑù
-±»±àÂë³ÉÄÚ´æÖÐµÄ×Ö½ÚÕâÊÇÁíÍâµÄ»°Ìâ£¬ËüÊÇ±»UTF(Unicode Transformation Formats)¶¨ÒåµÄ¡£
-
-Á½¸ö×îÁ÷ÐÐµÄUnicode±àÂë·½°¸ÊÇUTF-8ºÍUTF-16¡£
-
-ÔÚUTF-8ÖÐ£¬0-127ºÅµÄ×Ö·ûÓÃ1¸ö×Ö½ÚÀ´±íÊ¾£¬Ê¹ÓÃºÍUS-ASCIIÏàÍ¬µÄ±àÂë¡£ÕâÒâÎ¶×Å1980Äê´ú
-Ð´µÄÎÄµµÓÃUTF-8´ò¿ªÒ»µãÎÊÌâ¶¼Ã»ÓÐ¡£Ö»ÓÐ128ºÅ¼°ÒÔÉÏµÄ×Ö·û²ÅÓÃ2¸ö£¬3¸ö»òÕß4¸ö×Ö½ÚÀ´±í
-Ê¾¡£Òò´Ë£¬UTF-8±»³Æ×÷¿É±ä³¤¶È±àÂë¡£
-
-UTF-16ËüÊ¹ÓÃ2¸ö»òÕß4¸ö×Ö½ÚÀ´´æ´¢×Ö·û¡£
-
-×Ö½ÚÐò±ê¼Ç(BOM)
-Èç¹ûÄã¾­³£ÒªÔÚ¸ßµÍ×Ö½ÚÐòµÄÏµÍ³¼ä×ª»»ÎÄµµ£¬²¢ÇÒÏ£ÍûÇø·Ö×Ö½ÚÐò£¬»¹ÓÐÒ»ÖÖÆæ¹ÖµÄÔ¼¶¨£¬±»
-³Æ×÷BOM¡£BOMÊÇÒ»¸öÉè¼ÆµÃºÜÇÉÃîµÄ×Ö·û£¬ÓÃÀ´·ÅÔÚÎÄµµµÄ¿ªÍ·¸æËßÔÄ¶ÁÆ÷¸ÃÎÄµµµÄ×Ö½ÚÐò¡£ÔÚ
-UTF-16ÖÐ£¬ËüÊÇÍ¨¹ýÔÚµÚÒ»¸ö×Ö½Ú·ÅÖÃFE FFÀ´ÊµÏÖµÄ¡£ÔÚ²»Í¬×Ö½ÚÐòµÄÎÄµµÖÐ£¬Ëü»á±»ÏÔÊ¾³É
-FF FE»òÕßFE FF£¬Çå³þµÄ°ÑÕâÆªÎÄµµµÄ×Ö½ÚÐò¸æËßÁË½âÊÍÆ÷¡£
-
-¶þ½øÖÆÁ÷µ½ÆÁÄ»×Ö·ûµÄ¹ý³Ì:
-¶þ½øÖÆÁ÷->¸ù¾Ý±àÂë·½Ê½½âÂë³öÂëµã->¸ù¾ÝunicodeÂëµã½âÊÍ³ö×Ö·û->ÏµÍ³äÖÈ¾»æ³öÕâ¸ö×Ö·û
-
-ÎÄ±¾×Ö·û±£´æµ½¼ÆËã»úÉÏµÄ¹ý³Ì£º
-ÊäÈë×Ö·û->¸ù¾Ý×Ö·ûÕÒµ½¶ÔÓ¦Âëµã->¸ù¾Ý±àÂë·½Ê½°ÑÂëµã±àÂë³É¶þ½øÖÆÁ÷->±£´æ¶þ½øÖÆÁ÷µ½Ó²ÅÌÉÏ
+----> types_java.java
+In the Unicode standard, code points are written in hexadecimal and prefixed with U+, 
+such as U+0041 for the code point of the Latin letter A. Unicode has code points that 
+are grouped into 17 code planes. The first code plane , called the basic multilingual 
+plane, consists of the "classic" Unicode characters with code points U+0000 to U+FFFF
+. Sixteen additional planes, with code points U+10000 to U+10FFFF, hold the suppleme-
+ntary characters.
+The UTF-16 encoding represents all Unicode code points in a variable-length code. The
+characters in the basic multilingual plane are represented as 16-bit values, called -
+code units. The supplementary characters are encoded as consecutive pairs of code un-
+its. Each of the values in such an encoding pair falls into a range of 2048 unused v-
+alues of the basic multilingual plane, called the surrogates area (U+D800 to U+DBFF -
+for the first code unit, U+DC00 to U+DFFF for the second code unit). This is rather -
+clever, because you can immediately tell whether a code unit encodes a single charac-
+ter or it is the first or second part of a supplementary character. For example , the 
+mathematical symbol for the set of integers  ZZ has code point U+1D56B and is encoded 
+by the two code units U+D835 and U+DD6B. (See http://en.wikipedia.org/wiki/UTF-16 for 
+a description of the encoding algorithm.)
+In Java, the char type describes a code unit in the UTF-16 encoding. Our strong reco-
+mmendation is not to use the char type in your programs unless you are actually mani-
+pulating UTF-16 code units. You are almost always better off treating strings as abs-
+tract data types.
 
 
-Í¨ÓÃ×Ö·û¼¯£¨Universal Character Set, UCS£©ÊÇÓÉISOÖÆ¶¨µÄISO 10646£¨»ò³ÆISO/IEC 10646£©
-±ê×¼Ëù¶¨ÒåµÄ±ê×¼×Ö·û¼¯¡£UCS-2ÓÃÁ½¸ö×Ö½Ú±àÂë£¬UCS-4ÓÃ4¸ö×Ö½Ú±àÂë¡£
 
-UCS-4¸ù¾Ý×î¸ßÎ»Îª0µÄ×î¸ß×Ö½Ú·Ö³É2^7=128¸ögroup¡£Ã¿¸ögroupÔÙ¸ù¾Ý´Î¸ß×Ö½Ú·ÖÎª256¸öÆ½Ãæ
-£¨plane£©¡£Ã¿¸öÆ½Ãæ¸ù¾ÝµÚ3¸ö×Ö½Ú·ÖÎª256ÐÐ £¨row£©£¬Ã¿ÐÐÓÐ256¸öÂëÎ»£¨cell£©¡£group 0µÄ
-Æ½Ãæ0±»³Æ×÷BMP£¨Basic Multilingual Plane£©¡£Èç¹ûUCS-4µÄÇ°Á½¸ö×Ö½ÚÎªÈ«Áã£¬ÄÇÃ´½«UCS-4µÄ
-BMPÈ¥µôÇ°ÃæµÄÁ½¸öÁã×Ö½Ú¾ÍµÃµ½ÁËUCS-2¡£Ã¿¸öÆ½ÃæÓÐ216=65536¸öÂëÎ»¡£Unicode¼Æ»®Ê¹ÓÃÁË17¸ö
-Æ½Ãæ£¬Ò»¹²ÓÐ17¡Á65536=1114112¸öÂëÎ»¡£ÔÚUnicode 5.0.0°æ±¾ÖÐ£¬ÒÑ¶¨ÒåµÄÂëÎ»Ö»ÓÐ238605¸ö£¬·Ö
-²¼ÔÚÆ½Ãæ0¡¢Æ½Ãæ1¡¢Æ½Ãæ2¡¢Æ½Ãæ14¡¢Æ½Ãæ15¡¢Æ½Ãæ16¡£ÆäÖÐÆ½Ãæ15ºÍÆ½Ãæ16ÉÏÖ»ÊÇ¶¨ÒåÁËÁ½¸ö¸÷Õ¼
-65534¸öÂëÎ»µÄ×¨ÓÃÇø£¨Private Use Area£©£¬·Ö±ðÊÇ0xF0000-0xFFFFDºÍ0x100000-0x10FFFD¡£ËùÎ½
-×¨ÓÃÇø£¬¾ÍÊÇ±£Áô¸ø´ó¼Ò·Å×Ô¶¨Òå×Ö·ûµÄÇøÓò£¬¿ÉÒÔ¼òÐ´ÎªPUA¡£
+----> Variables
+In Java, every variable has a type. You declare a variable by placing the type first, 
+followed by the name of the variable. Here are some examples:
+double salary;
+int vacationDays;
+long earthPopulation;
+boolean done;
+Notice the semicolon at the end of each declaration. The semicolon is necessary beca-
+use a declaration is a complete Java statement.
+
+----> variable name
+A variable name must begin with a letter and must be a sequence of letters or digits. 
+Note that the terms "letter" and "digit" are much broader in Java than in most langu-
+ages. A letter is defined as 'A'â€“'Z', 'a'â€“'z', '_', '$',or any Unicode character that 
+denotes a letter in a language. For example, Greek speakers could use a Ï€. Similarly, 
+digits are '0'â€“'9' and any Unicode characters that denote a digit in a language. Sym-
+bols like '+' cannot be used inside variable names, nor can spaces. All characters in 
+the name of a variable are significant and case is also significant. The length of  a 
+variable name is essentially unlimited.
+
+If you are really curious as to what Unicode characters are "letters" as far as  Java 
+is concerned , you can use the isJavaIdentifierStart and isJavaIdentifierPart methods 
+in the Character class to check. Even though $ is a valid Java letter, you should not 
+use it in your own code. It is intended for names that are generated by the Java com-
+piler and other tools. You also cannot use a Java reserved word for a variable name. 
+
+You can have multiple declarations on a single line:
+int i, j; // both are integers
+However, we donâ€™t recommend this style. If you declare each variable separately, your
+programs are easier to read.
+
+----> Initializing Variables
+After you declare a variable, you must explicitly initialize it by means of an assig-
+nment statement. For example, the Java compiler flags the following sequence of stat-
+ements as an error:
+int vacationDays;
+System.out.println(vacationDays); // ERROR--variable not initialized
+
+You assign to a previously declared variable by using the variable name on the left, 
+an equal sign (=), and then some Java expression with an appropriate value on the ri-
+ght.
+int vacationDays;
+vacationDays = 12;
+You can both declare and initialize a variable on the same line. For example:
+int vacationDays = 12;
+Finally, in Java you can put declarations anywhere in your code. For example, the fo-
+llowing is valid code in Java:
+double salary = 65000.0;
+System.out.println(salary);
+int vacationDays = 12; // OK to declare a variable here
+In Java, it is considered good style to declare variables as closely as possible to -
+the point where they are first used.
+
+C and C++ distinguish between the declaration and definition of a variable. For exam-
+ple,
+int i = 10;
+is a definition, whereas
+extern int i;
+is a declaration. In Java, no declarations are separate from definitions.
+
+----> Constants
+In Java, you use the keyword final to denote a constant . The keyword final indicates 
+that you can assign to the variable once, and then its value is set once and for all. 
+It is customary to name constants in all uppercase. It is probably more common in Ja-
+va to create a constant  so itâ€™s available to multiple methods inside a single class. 
+These are usually called class constants. Set up a class constant with the keywords -
+static final. Here is an example of using a class constant:
+
+public class Constants2
+{
+    public static final double CM_PER_INCH = 2.54;
+    public static void main(String[] args)
+    {
+        double paperWidth = 8.5;
+        double paperHeight = 11;
+        System.out.println("Paper size in centimeters: "
+        + paperWidth * CM_PER_INCH + " by " + paperHeight * CM_PER_INCH);
+    }
+}
+
+Note that the definition of the class constant appears outside the main method. Thus, 
+the constant can also be used in other methods of the same class. Furthermore, if the 
+constant is declared, as in our example, public, methods of other classes can also u-
+se it. in our example, as Constants2.CM_PER_INCH.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
