@@ -1,6 +1,7 @@
-/*
+/*-----------------------------------------------------------------------------------
+----> Introduction to Object-Oriented Programming
 A class is the template or blueprint from which objects are made . When you construct
-an objectfrom a class, you are said to have created an instance of the class.The bits 
+an object from a class,you are said to have created an instance of the class.The bits 
 of data in an object are called its instance fields , and the procedures that operate 
 on the data are called its methods. 
 
@@ -19,7 +20,7 @@ Inheritance ("is¨Ca")
 
 ----> Objects and Object Variables
 The standard Java library contains a Data class. Its objects describe points in time, 
-such as "December 31, 1999, 23:59:59 GMT".
+such as "December 31, 1999, 23:59:59 GMT" .
     Date birthday = new Date();
     Date deadline; // deadline doesn't refer to any object
 deadline, that can refer to objects of type Date. It is important to realize that the 
@@ -35,9 +36,9 @@ Or you can set the variable to refer to an existing object:
 Now both variables refer to the same object.
 
                     +------+
-    deadline ---->  | data |
+    deadline ---->  | data |  <---- birthday
                     |------|
-    birthday ---->  |      |
+                    |      |
                     +------+
 
 It is important to realize that an object variable doesn't actually contain an object. 
@@ -52,7 +53,7 @@ currently refers to no object.
     deadline = null;
     . . .
     if (deadline != null)
-    System.out.println(deadline);
+        System.out.println(deadline);
 If you apply a method to a variable that holds null, a runtime error occurs.
     birthday = null;
     String s = birthday.toString(); // runtime error!

@@ -1,3 +1,6 @@
 UNIX AND LINUX  SYSTEM ADMINISTRATION  HANDBOOK
 
 http://ptgmedia.pearsoncmg.com/images/9780735619678/samplepages/9780735619678.pdf
+
+
+大规模分布式存储系统:原理解析与架构实战
