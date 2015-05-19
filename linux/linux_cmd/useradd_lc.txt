@@ -1,0 +1,172 @@
+useradd                                                                              |
+useradd [-u UID] [-g 初始群组] [-G 次要群组] [-mM] [-c 说明栏] [-d 家目录绝对路径] [-s shell] 使用者账号名
+                                                                                     |
+-u 后面接的是UID, 是一组数字. 直接指定一个特定的UID给这个账号.
+-g 后面接的那个组名就是initial group. 该群组的GID会被放置到/etc/passwd的第四个字段内. 
+-G 这个选项与参数会修改/etc/group内的相关数据.
+-M 强制! 不要创建用户家目录. (系统账号默认值)
+-m 强制! 要创建用户家目录. (一般账号默认值)
+-c 这个就是/etc/passwd的第五栏的说明内容, 可以随便我们配置.
+-d 指定某个目录成为家目录, 而不要使用默认值. 务必使用绝对路径!
+-r 创建一个系统的账号, 这个账号的UID会有限制(参考/etc/login.defs)
+-s 后面接一个shell, 若没有指定则默认是/bin/bash
+-e 后面接一个日期, 格式为YYYY-MM-DD此项目可写入shadow第八字段, 亦即账号失效日的配置项目.
+-f 后面接shadow的第七字段项目, 指定口令是否会失效. 0为立刻失效, -1为永远不失效(口令只会过期而强制于登陆时重新配置而已.)
+
+范例一 完全参考默认值创建一个用户, 名称为vbird1
+[root@www ~]# useradd vbird1
+[root@www ~]# ll -d /home/vbird1
+drwx------ 4 vbird1 vbird1 4096 Feb 25 09:38 /home/vbird1
+# 默认会创建用户家目录, 且权限为700, 这是重点.
+[root@www ~]# grep vbird1 /etc/passwd /etc/shadow /etc/group
+/etc/passwd:vbird1:x:504:505::/home/vbird1:/bin/bash
+/etc/shadow:vbird1:!!:14300:0:99999:7:::
+/etc/group:vbird1:x:505:    <==默认会创建一个与账号一模一样的群组名
+                                                                                     |
+其实系统已经帮我们规定好非常多的默认值了, 所以我们可以简单的使用"useradd 账号"来创建 |
+使用者即可. CentOS这些默认值主要会帮我们处理几个项目:                                |
+在/etc/passwd里面创建一行与账号相关的数据, 包括创建 UID/GID/家目录等.                |
+在/etc/shadow里面将此账号的口令相关参数填入, 但是尚未有口令.                         |
+在/etc/group里面加入一个与账号名称一模一样的组名.                                    |
+在/home底下创建一个与账号同名的目录作为用户家目录, 且权限为700                       |
+由于在/etc/shadow内仅会有口令参数而不会有加密过的口令数据, 因此我们在创建使用者账号时|
+, 还需要使用"passwd 账号"来给予口令才算是完成了用户创建的流程. 如果由于特殊需求而需要|
+改变使用者相关参数时, 就得要透过上述表格中的选项来进行创建了, 参考底下的案例:        |
+                                                                                     |
+范例二: 假设我已知道我的系统当中有个组名为users, 且UID 700并不存在,请用users为初始群 |
+组, 以及uid为700来创建一个名为vbird2的账号.                                          |
+[root@www ~]# useradd -u 700 -g users vbird2
+[root@www ~]# ll -d /home/vbird2
+drwx------ 4 vbird2 users 4096 Feb 25 09:59 /home/vbird2
+
+[root@www ~]# grep vbird2 /etc/passwd /etc/shadow /etc/group
+/etc/passwd:vbird2:x:700:100::/home/vbird2:/bin/bash
+/etc/shadow:vbird2:!!:14300:0:99999:7:::                                             |
+# 看一下, UID与initial group确实改变成我们需要的了.                                  |
+在这个范例中, 我们创建的是指定一个已经存在的群组作为使用者的初始群组, 因为群组已经存 |
+在, 所以在/etc/group里面就不会主动的创建与账号同名的群组了. 此外, 我们也指定了特殊的 |
+UID来作为使用者的专属UID. 了解了一般账号后, 我们来瞧瞧那啥是系统账号(system account) |
+吧.                                                                                  |
+                                                                                     |
+范例三: 创建一个系统账号, 名称为vbird3                                               |
+[root@www ~]# useradd -r vbird3
+[root@www ~]# ll -d /home/vbird3
+ls: /home/vbird3: No such file or directory  <==不会主动创建家目录
+
+[root@www ~]# grep vbird3 /etc/passwd /etc/shadow /etc/group
+/etc/passwd:vbird3:x:100:103::/home/vbird3:/bin/bash
+/etc/shadow:vbird3:!!:14300::::::
+/etc/group:vbird3:x:103:                                                             |
+我们在谈到UID的时候曾经说过一般账号应该是500号以后, 那用户自己创建的系统账号则一般是 |
+由100号以后起算的. 所以在这里我们加上-r这个选项以后, 系统就会主动将账号与账号同名群组|
+的UID/GID都指定小于500以下, 在本案例中则是使用100(UID)与103(GID). 此外, 由于系统账号 |
+主要是用来进行运行系统所需服务的权限配置, 所以系统账号默认都不会主动创建家目录.      |
+                                                                                     |
+由这几个范例我们也会知道, 使用useradd创建使用者账号时, 其实会更改不少地方, 至少我们就|
+知道底下几个文件:                                                                    |
+用户账号与口令参数方面的文件: /etc/passwd, /etc/shadow
+使用者群组相关方面的文件: /etc/group, /etc/gshadow
+用户的家目录: /home/账号名称
+                                                                                     |
+为何useradd vbird1会主动在/home/vbird1创建起用户的家目录? 家目录内有什么数据且来自哪 |
+里? 为何默认使用的是/bin/bash这个shell? 为何口令字段已经都规范好了(0:99999:7 那一串)?|
+呵呵, 这就得要说明一下useradd所使用的参考文件.                                       |
+                                                                                     |
+useradd 参考档                                                                       |
+其实useradd的默认值可以使用底下的方法呼叫出来:                                       |
+[root@www ~]# useradd -D
+GROUP=100		 <==默认的群组
+HOME=/home		 <==默认的家目录所在目录
+INACTIVE=-1		 <==口令失效日, 在 shadow 内的第 7 栏
+EXPIRE=			 <==账号失效日, 在 shadow 内的第 8 栏
+SHELL=/bin/bash  <==默认的 shell
+SKEL=/etc/skel	 <==用户家目录的内容数据参考目录
+CREATE_MAIL_SPOOL=yes   <==是否主动帮使用者创建邮件信箱(mailbox)
+这个数据其实是由/etc/default/useradd呼叫出来的.
+                                                                                     |
+GROUP=100:                                                                           |
+新建账号的初始群组使用GID为100. 系统上面GID为100者即是users这个群组, 此配置项目指的就|
+是让新设使用者账号的初始群组为users这一个的意思. 但是我们知道CentOS上面并不是这样的, |
+在CentOS上面默认的群组为与账号名相同的群组. 举例来说, vbird1的初始群组为vbird1. 怎么 |
+会这样啊? 这是因为针对群组的角度有两种不同的机制所致, 这两种机制分别是:              |
+私有群组机制: 系统会创建一个与账号一样的群组给使用者作为初始群组. 这种群组的配置机制 |
+会比较有保密性, 这是因为使用者都有自己的群组, 而且家目录权限将会配置为700(仅有自己可 |
+进入自己的家目录)之故. 使用这种机制将不会参考GROUP=100这个配置值. 代表性的distributi-|
+ons有RHEL, Fedora, CentOS等.                                                         |
+公共群组机制: 就是以GROUP=100这个配置值作为新建账号的初始群组,因此每个账号都属于users|
+这个群组, 且默认家目录通常的权限会是"drwxr-xr-x ... username users ... ", 由于每个账 |
+号都属于users群组,因此大家都可以互相分享家目录内的数据之故.代表distributions如SuSE等.|
+                                                                                     |
+HOME=/home                                                                           |
+用户家目录的基准目录(basedir). 用户的家目录通常是与账号同名的目录, 这个目录将会摆放在|
+此配置值的目录后. 所以vbird1的家目录就会在/home/vbird1/了.                           |
+                                                                                     |
+INACTIVE=-1                                                                          |
+口令过期后是否会失效的配置值. 我们在shadow文件结构当中谈过, 第七个字段的配置值将会影 |
+响到口令过期后, 在多久时间内还可使用旧口令登陆. 这个项目就是在指定该日数, 如果是0代表|
+口令过期立刻失效, 如果是-1则是代表口令永远不会失效, 如果是数字如30, 则代表过期30天后 |
+才失效.                                                                              |
+                                                                                     |
+EXPIRE=                                                                              |
+账号失效的日期, 就是shadow内的第八字段, 你可以直接配置账号在哪个日期后就直接失效, 而 |
+不理会口令的问题. 通常不会配置此项目, 但如果是付费的会员制系统, 或许这个字段可以配置.|
+                                                                                     |
+SHELL=/bin/bash                                                                      |
+默认使用的shell程序文件名, 系统默认的shell就写在这里. 假如你的系统为mail server, 你希|
+望每个账号都只能使用email的收发信件功能, 而不许用户登陆系统取得shell, 那么可以将这里 |
+配置为/sbin/nologin, 如此一来, 新建的使用者默认就无法登陆. 也免去后续使用usermod进行 |
+修改的手续.                                                                          |
+                                                                                     |
+SKEL=/etc/skel                                                                       |
+用户家目录参考基准目录. 举我们的范例一为例, vbird1家目录/home/vbird1内的各项数据, 都 |
+是由/etc/skel所复制过去. 未来如果我想要让新增使用者时, 该用户的环境变量~/.bashrc就配 |
+置妥当的话, 您可以到/etc/skel/.bashrc去编辑一下, 也可以创建/etc/skel/www这个目录, 那 |
+么未来新增使用者后, 在他的家目录下就会有www那个目录了.                               |
+                                                                                     |
+CREATE_MAIL_SPOOL=yes                                                                |
+创建使用者的mailbox, 你可以使用"ll /var/spool/mail/vbird1"看一下, 会发现有这个文件的 |
+存在喔, 这就是使用者的邮件信箱. 除了这些基本的账号配置值之外, UID/GID还有口令参数又是|
+在哪里参考的呢? 那就得要看一下/etc/login.defs. 这个文件的内容有点像底下这样:         |
+MAIL_DIR        /var/spool/mail	<==用户默认邮件信箱放置目录
+PASS_MAX_DAYS   99999	<==/etc/shadow 内的第 5 栏, 多久需变更口令日数
+PASS_MIN_DAYS   0	<==/etc/shadow 内的第 4 栏, 多久不可重新配置口令日数
+PASS_MIN_LEN    5	<==口令最短的字符长度, 已被 pam 模块取代, 失去效用！
+PASS_WARN_AGE   7	<==/etc/shadow 内的第 6 栏, 过期前会警告的日数
+
+UID_MIN         500	<==使用者最小的 UID, 意即小于 500 的 UID 为系统保留
+UID_MAX       60000	<==使用者能够用的最大 UID
+GID_MIN         500	<==使用者自定义组的最小 GID, 小于 500 为系统保留
+GID_MAX       60000	<==使用者自定义组的最大 GID
+
+CREATE_HOME     yes	<==在不加 -M 及 -m 时, 是否主动创建用户家目录？
+UMASK           077     <==用户家目录创建的 umask , 因此权限会是 700
+USERGROUPS_ENAB yes     <==使用 userdel 删除时, 是否会删除初始群组
+MD5_CRYPT_ENAB yes      <==口令是否经过 MD5 的加密机制处理
+这个文件规范的数据则是如下所示：
+
+mailbox 所在目录：
+用户的默认 mailbox 文件放置的目录在 /var/spool/mail, 所以 vbird1 的 mailbox 就是在 /var/spool/mail/vbird1 啰！
+
+shadow 口令第 4, 5, 6 字段内容：
+透过 PASS_MAX_DAYS 等等配置值来指定的！所以你知道为何默认的 /etc/shadow 内每一行都会有『 0:99999:7 』的存在了吗？^_^！不过要注意的是, 由于目前我们登陆时改用 PAM 模块来进行口令检验, 所以那个 PASS_MIN_LEN 是失效的！
+
+UID/GID 指定数值：
+虽然 Linux 核心支持的账号可高达 232 这么多个, 不过一部主机要作出这么多账号在管理上也是很麻烦的！ 所以在这里就针对 UID/GID 的范围进行规范就是了。上表中的 UID_MIN 指的就是可登陆系统的一般账号的最小 UID , 至于 UID_MAX 则是最大 UID 之意。
+
+要注意的是, 系统给予一个账号 UID 时, 他是 (1)先参考 UID_MIN 配置值取得最小数值； (2)由 /etc/passwd 搜寻最大的 UID 数值,  将 (1) 与 (2) 相比, 找出最大的那个再加一就是新账号的 UID 了。我们上面已经作出 UID 为 700 的 vbird2 ,  如果再使用『 useradd vbird4 』时, 你猜 vbird4 的 UID 会是多少？答案是： 701 。 所以中间的 505~699 的号码就空下来啦！
+
+而如果我是想要创建系统用的账号, 所以使用 useradd -r sysaccount 这个 -r 的选项时, 就会找『比 500 小的最大的那个 UID + 1 』就是了。 ^_^
+
+用户家目录配置值：
+为何我们系统默认会帮用户创建家目录？就是这个『CREATE_HOME = yes』的配置值啦！这个配置值会让你在使用 useradd 时,  主动加入『 -m 』这个产生家目录的选项啊！如果不想要创建用户家目录, 就只能强制加上『 -M 』的选项在 useradd 命令运行时啦！至于创建家目录的权限配置呢？就透过 umask 这个配置值啊！因为是 077 的默认配置, 因此用户家目录默认权限才会是『 drwx------ 』哩！
+
+用户删除与口令配置值：
+使用『USERGROUPS_ENAB yes』这个配置值的功能是： 如果使用 userdel 去删除一个账号时, 且该账号所属的初始群组已经没有人隶属于该群组了,  那么就删除掉该群组, 举例来说, 我们刚刚有创建 vbird4 这个账号, 他会主动创建 vbird4 这个群组。 若 vbird4 这个群组并没有其他账号将他加入支持的情况下, 若使用 userdel vbird4 时, 该群组也会被删除的意思。 至于『MD5_CRYPT_ENAB yes』则表示使用 MD5 来加密口令明文, 而不使用旧式的 DES(注2) 。
+现在你知道啦, 使用 useradd 这支程序在创建 Linux 上的账号时, 至少会参考：
+
+/etc/default/useradd
+/etc/login.defs
+/etc/skel/*
+这些文件, 不过, 最重要的其实是创建 /etc/passwd, /etc/shadow, /etc/group, /etc/gshadow 还有用户家目录就是了～所以, 如果你了解整个系统运行的状态, 也是可以手动直接修改这几个文件就是了。 OK！账号创建了, 接下来处理一下用户的口令吧！
+
+

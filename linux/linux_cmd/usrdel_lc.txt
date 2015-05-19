@@ -1,0 +1,17 @@
+userdel
+这个功能就太简单了，目的在删除用户的相关数据，而用户的数据有：
+
+用户账号/口令相关参数：/etc/passwd, /etc/shadow
+使用者群组相关参数：/etc/group, /etc/gshadow
+用户个人文件数据： /home/username, /var/spool/mail/username..
+整个命令的语法非常简单：
+
+[root@www ~]# userdel [-r] username
+选项与参数：
+-r  ：连同用户的家目录也一起删除
+
+范例一：删除 vbird2 ，连同家目录一起删除
+[root@www ~]# userdel -r vbird2
+这个命令下达的时候要小心了！通常我们要移除一个账号的时候，你可以手动的将 /etc/passwd 与 /etc/shadow 里头的该账号取消即可！一般而言，如果该账号只是『暂时不激活』的话，那么将 /etc/shadow 里头账号失效日期 (第八字段) 配置为 0 就可以让该账号无法使用，但是所有跟该账号相关的数据都会留下来！ 使用 userdel 的时机通常是『你真的确定不要让该用户在主机上面使用任何数据了！』
+
+另外，其实用户如果在系统上面操作过一阵子了，那么该用户其实在系统内可能会含有其他文件的。 举例来说，他的邮件信箱 (mailbox) 或者是例行性工作排程 (crontab, 十六章) 之类的文件。 所以，如果想要完整的将某个账号完整的移除，最好可以在下达 userdel -r username 之前， 先以『 find / -user username 』查出整个系统内属于 username 的文件，然后再加以删除吧！

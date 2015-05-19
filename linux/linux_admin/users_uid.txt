@@ -1,22 +1,155 @@
-#####################################################################################
-Linux 系统上面的用户如果需要登陆主机以取得 shell 的环境来工作时，他需要如何进行呢? 
-首先，他必须要在计算机前面利用 tty1~tty7 的终端机提供的 login 接口，并输入账号与口令
-后才能够登陆。 如果是透过网络的话，那至少使用者就得要学习 ssh 这个功能了 (服务器篇再
-来谈)。 那么你输入账号口令后，系统帮你处理了什么呢？
-1 先找寻 /etc/passwd 里面是否有你输入的账号？如果没有则跳出，如果有的话则将该账号对应
-  的 UID 与 GID (在 /etc/group 中) 读出来，另外，该账号的家目录与 shell 配置也一并读出；
-2 再来则是核对口令表啦！这时 Linux 会进入 /etc/shadow 里面找出对应的账号与 UID，然后核
-  对一下你刚刚输入的口令与里头的口令是否相符？
-3 如果一切都 OK 的话，就进入 Shell 控管的阶段啰！
+-------------------------------------------------------------------------------------|
+----> 使用者账号                                                                     |
+Linux系统上面的用户如果需要登陆主机以取得shell的环境来工作时, 他需要如何进行呢? 首先,|
+他必须要在计算机前面利用tty1~tty7的终端机提供的login接口, 并输入账号与口令后才能够登 |
+陆. 如果是透过网络的话, 那至少使用者就得要学习ssh这个功能了(服务器篇再来谈). 那么你输|
+入账号口令后, 系统帮你处理了什么呢.                                                  |
+1 先找寻/etc/passwd里面是否有你输入的账号? 如果没有则跳出, 如果有的话则将该账号对应的|
+  UID与GID(在/etc/group中)读出来, 另外, 该账号的家目录与shell配置也一并读出;         |
+2 再来则是核对口令表啦! 这时Linux会进入/etc/shadow里面找出对应的账号与UID，然后核对一|
+  下你刚刚输入的口令与里头的口令是否相符?                                            |
+3 如果一切都OK的话, 就进入Shell控管的阶段啰!                                         |
+                                                                                     |
+----> /etc/passwd 文件结构                                                           |
+passwd文件中每一行对应一个用户, 描述了用户的一些信息. root用户的信息如下, 每个信息用 |
+冒号:分割. 例如 root:x:0:0:root:/root:/bin/bash                                      |
+1 账号名称 root                                                                      |
+2 口令 这个字段的口令数据给他改放到/etc/shadow中了. 所以这里你会看到一个x            |
+3 UID  root用户的UID是零, 1~499是系统账号, 500~65535给一般的用户使用.                |
+4 GID  组ID                                                                          |
+5 用户信息说明   解释这个账号的意义                                                  |
+6 家目录  root 的家目录在/root, 所以当root登陆之后, 就会立刻跑到/root目录            |
+7 shell 当用户登陆系统后就会取得一个Shell来与系统的内核沟通                          |
+                                                                                     |
+----> /etc/shadow 文件结构                                                           |
+[root@www ~]# head -n 4 /etc/shadow
+root:$1$/30QpE5e$y9N/D0bh6rAACBEz.hqo00:14126:0:99999:7:::  <==底下说明用
+bin:*:14126:0:99999:7:::
+daemon:*:14126:0:99999:7:::
+adm:*:14126:0:99999:7:::
+1 账号名称
+2 口令
+3 最近更动口令的日期
+4 口令不可被更动的天数(与第 3 字段相比)
+5 口令需要重新变更的天数(与第 3 字段相比)
+6 口令需要变更期限前的警告天数(与第 5 字段相比)
+7 口令过期后的账号宽限时间(口令失效日)(与第 5 字段相比)
+8 账号失效日期
+9 保留
+                                                                                     |
+----> 关于群组: 有效与初始群组 groups, newgrp                                        |
+----> /etc/group 文件结构                                                            |
+[root@www ~]# head -n 4 /etc/group
+root:x:0:root
+bin:x:1:root,bin,daemon
+daemon:x:2:root,bin,daemon
+sys:x:3:root,bin,adm
+                                                                                     |
+这个文件每一行代表一个群组, 也是以冒号:作为字段的分隔符, 共分为四栏, 每一字段的意义是|
+1 组名                                                                               |
+2 群组口令                                                                           |
+  通常不需要配置, 这个配置通常是给群组管理员使用的, 目前很少有这个机会配置群组管理员 |
+  啦. 同样的, 口令已经移动到/etc/gshadow去, 因此这个字段只会存在一个x而已.           |
+3 GID                                                                                |
+  /etc/passwd第四个字段使用的GID对应的群组名, 就是由这里对应出来的.                  |
+4 此群组支持的账号名称                                                               |
+  我们知道一个账号可以加入多个群组, 那某个账号想要加入此群组时, 将该账号填入这个字段 |
+  即可. 举例来说, 如果我想要让dmtsai也加入root这个群组,那么在第一行的最后面加上dmtsai|
+  注意不要有空格, 使成为root:x:0:root,dmtsai就可以了.                                |
+                                                                                     |  
+----> 有效群组(effective group)与初始群组(initial group)                             |
+/etc/passwd里面的第四栏的GID, 就是所谓的初始群组(initial group). 也就是说, 当用户一登|
+陆系统, 立刻就拥有这个群组的相关权限的意思. 举例来说, 我们上面提到dmtsai这个使用者的 |
+/etc/passwd与/etc/group还有/etc/gshadow相关的内容如下                                |
+[root@www ~]# usermod -G users dmtsai  <==先配置好次要群组
+[root@www ~]# grep dmtsai /etc/passwd /etc/group /etc/gshadow
+/etc/passwd:dmtsai:x:503:504::/home/dmtsai:/bin/bash
+/etc/group:users:x:100:dmtsai  <==次要群组的配置
+/etc/group:dmtsai:x:504:       <==因为是初始群组, 所以第四字段不需要填入账号
+/etc/gshadow:users:::dmtsai    <==次要群组的配置
+/etc/gshadow:dmtsai:!::                                                              |
+仔细看到上面这个表格, 在/etc/passwd里面, dmtsai这个使用者所属的群组为GID=504, 搜寻一 |
+下/etc/group得到504是那个名为dmtsai的群组, 这就是initial group. 因为是初始群组, 使用 |
+者一登陆就会主动取得, 不需要在/etc/group的第四个字段写入该账号. 但是非initial group的|
+其他群组可就不同了. 举上面这个例子来说, 我将dmtsai加入users这个群组当中, 由于users这 |
+个群组并非是dmtsai的初始群组, 因此, 我必须要在/etc/group这个文件中, 找到users那一行, |
+并且将dmtsai这个账号加入第四栏, 这样dmtsai才能够加入users这个群组.                   |
+那么在这个例子当中, 因为我的dmtsai账号同时支持dmtsai与users这两个群组, 因此, 在读取/ |
+写入/运行文件时, 针对群组部分, 只要是users与dmtsai这两个群组拥有的功能, 我dmtsai这个 |
+使用者都能够拥有. 不过, 这是针对已经存在的文件而言, 如果今天我要创建一个新的文件或者 |
+是新的目录, 请问一下, 新文件的群组是dmtsai还是users? 这就得要检查一下当时的有效群组了|
+(effective group).                                                                   |
+----> groups 有效与支持群组的观察                                                    |
+如果我以dmtsai这个使用者的身份登陆后, 该如何知道我所有支持的群组呢? 很简单啊, 直接输 |
+入groups就可以了.                                                                    |
+[dmtsai@www ~]$ groups
+dmtsai users                                                                         |
+在这个输出的信息中, 可知道dmtsai这个用户同时属于dmtsai及users这个两个群组, 而且, 第一|
+个输出的群组即为有效群组(effective group). 如果我以touch去创建一个新档,例如touch test|
+, 那么这个文件的拥有者为dmtsai, 而且群组也是dmtsai.                                  |
+[dmtsai@www ~]$ touch test
+[dmtsai@www ~]$ ll
+-rw-rw-r-- 1 dmtsai dmtsai 0 Feb 24 17:26 test
+                                                                                     |
+----> newgrp 有效群组的切换                                                          |
+newgrp可以变更有效群组. 不过使用newgrp是有限制的, 那就是你想要切换的群组必须是你已经 |
+有支持的群组. 举例来说, dmtsai可以在dmtsai/users这两个群组间切换有效群组, 但是dmtsai |
+无法切换有效群组成为sshd.                                                            |
+[dmtsai@www ~]$ newgrp users
+[dmtsai@www ~]$ groups
+users dmtsai
+[dmtsai@www ~]$ touch test2
+[dmtsai@www ~]$ ll
+-rw-rw-r-- 1 dmtsai dmtsai 0 Feb 24 17:26 test
+-rw-r--r-- 1 dmtsai users  0 Feb 24 17:33 test2                                      |
+此时, dmtsai的有效群组就成为users. 我们额外的来讨论一下newgrp这个命令, 这个命令可以变|
+更目前用户的有效群组, 而且是另外以一个shell来提供这个功能, 所以, 以上面的例子来说    |
+dmtsai这个使用者目前是以另一个shell登陆的, 而且新的shell给予dmtsai有效GID为users就是 |
+了. 虽然用户的环境配置(例如环境变量等等其他数据)不会有影响, 但是使用者的群组权限将会 |
+重新被计算. 但是需要注意, 由于是新取得一个shell, 因此如果你想要回到原本的环境中, 请输|
+入exit回到原本的shell.                                                               | 
+要加入一个群组有两个方式, 一个是透过系统管理员(root)利用usermod加入, 如果root太忙了而|
+且你的系统有配置群组管理员, 那么你可以透过群组管理员以gpasswd帮你加入他所管理的群组中|
+.详细的作法留待下一小节再来介绍.                                                     |
+                                                                                     |
+----> /etc/gshadow                                                                   |
+[root@www ~]# head -n 4 /etc/gshadow
+root:::root
+bin:::root,bin,daemon
+daemon:::root,bin,daemon
+sys:::root,bin,adm
+                                                                                     |
+这个文件内同样还是使用冒号:来作为字段的分隔字符, 要注意第二个字段是口令栏, 如果口令栏|
+上面是!时, 表示该群组不具有群组管理员!                                               |
+1 组名
+2 口令栏 开头为!表示无合法口令, 所以无群组管理员
+3 群组管理员的账号 (相关信息在 gpasswd 中介绍)
+4 该群组的所属账号 (与 /etc/group 内容相同！)
+                                                                                     |
+以系统管理员的角度来说, 这个gshadow最大的功能就是创建群组管理员. 那么什么是群组管理员|
+呢? 由于系统上面的账号可能会很多, 但是我们root可能平时太忙碌, 所以当有使用者想要加入 |
+某些群组时, root或许会没有空管理. 此时如果能够创建群组管理员的话, 那么该群组管理员就 |
+能够将那个账号加入自己管理的群组中! 可以免去root的忙碌. 不过, 由于目前有类似sudo之类 |
+的工具, 所以这个群组管理员的功能已经很少使用了. 我们会在后续的gpasswd中介绍这个实作. |
 
-/etc/passwd 文件结构
-    passwd 文件中每一行对应一个用户，描述了用户的一些信息。root 用户的信息如下，每个
-	信息用冒号:分割。
-    root:x:0:0:root:/root:/bin/bash
-    1 账号名称  root
-    2 口令 这个字段的口令数据给他改放到 /etc/shadow 中了。所以这里你会看到一个 x
-    3 UID  root用户的UID是零，1~499是系统账号，500~65535给一般的用户使用。
-    4 GID  组ID
-    5 用户信息说明   解释这个账号的意义
-    6 家目录  root 的家目录在 /root ，所以当 root 登陆之后，就会立刻跑到 /root 目录
-    7 shell 当用户登陆系统后就会取得一个 Shell 来与系统的内核沟通。
+---->
+useradd 添加用户
+passwd  修改密码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

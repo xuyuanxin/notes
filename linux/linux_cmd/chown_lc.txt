@@ -1,0 +1,49 @@
+http://blog.csdn.net/hudashi/article/details/7797393
+
+使用chown命令更改文件拥有者
+在 shell 中，可以使用chown命令来改变文件所有者。chown命令是change owner（改变拥有者）的缩写。需要要注意的是，用户必须是已经存在系统中的，也就是只能改变为在 /etc/passwd这个文件中有记录的用户名称才可以。
+chown命令的用途很多，还可以顺便直接修改用户组的名称。此外，如果要连目录下的所有子目录或文件同时更改文件拥有者的话，直接加上 -R的参数即可。
+基本语法：
+chown [-R] 账号名称 文件或目录
+chown [-R] 账号名称:用户组名称 文件或目录
+参数：
+-R : 进行递归( recursive )的持续更改，即连同子目录下的所有文件、目录
+都更新成为这个用户组。常常用在更改某一目录的情况。
+示例1：
+[root@localhost home]# touch testfile //由 root 用户创建文件 
+[root@localhost home]# ls testfile –l 
+-rw--w--w- 1 root root 0 Jun 7 19:35 testfile //文件的拥有者及拥有者级均为 root 
+[root@localhost home]# chown yangzongde testfile //修改文件拥有者为 yangzongde 
+[root@localhost home]# ls testfile -l 
+-rw--w--w- 1 yangzongde root 0 Jun 7 19:35 testfile //查看文件拥有者为 yangzongde，但组仍为 root 
+示例2：
+chown bin install.log
+ls -l
+-rw-r--r--  1 bin  users 68495 Jun 25 08:53 install.log
+chown root:root install.log
+ls -l
+-rw-r--r--  1 root root 68495 Jun 25 08:53 install.log
+三、使用chgrp命令更改文件所属用户组
+在shell中，可以使用chgrp命令来改变文件所属用户组，该命令就是change group（改变用户组）的缩写。需要注意的是要改变成为的用户组名称，必须在 /etc/group里存在，否则就会显示错误。
+基本语法：
+chgrp [-R] 用户组名称 dirname/filename ...
+参数：
+-R : 进行递归( recursive )的持续更改，即连同子目录下的所有文件、目录
+都更新成为这个用户组。常常用在更改某一目录的情况。
+示例3
+[root@localhost home]# ls testfile -l 
+-rw--w--w- 1 yangzongde root 0 Jun 7 19:35 testfile //查看文件拥有者为 yangzongde，但组为 root 
+[root@localhost home]# chgrp yangzongde testfile //修改拥有者组为 yangzongde 
+[root@localhost home]# ls testfile -l 
+-rw--w--w- 1 yangzongde yangzongde 0 Jun 7 19:35 testfile 
+[root@localhost home]# chown root:root testfile // 使用 chown 一次性修改拥有者及组 
+[root@localhost home]# ls testfile -l 
+-rw--w--w- 1 root root 0 Jun 7 19:35 testfile 
+示例4
+[root@linux ~]# chgrp users install.log
+[root@linux ~]# ls -l
+-rw-r--r--  1 root users 68495 Jun 25 08:53 install.log
+示例5
+更改为一个 /etc/group里不存在的用户组
+[root@linux ~]# chgrp testing install.log
+chgrp: invalid group name `testing' <== 出现错误信息～找不到这个用户组名～

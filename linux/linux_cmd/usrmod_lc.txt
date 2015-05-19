@@ -1,0 +1,45 @@
+usermod
+所谓这『人有失手，马有乱蹄』，您说是吧？所以啰，当然有的时候会『不小心』在 useradd 的时候加入了错误的配置数据。或者是，在使用 useradd 后，发现某些地方还可以进行细部修改。 此时，当然我们可以直接到 /etc/passwd 或 /etc/shadow 去修改相对应字段的数据， 不过，Linux 也有提供相关的命令让大家来进行账号相关数据的微调呢～那就是 usermod 啰～
+
+[root@www ~]# usermod [-cdegGlsuLU] username
+选项与参数：
+-c  ：后面接账号的说明，即 /etc/passwd 第五栏的说明栏，可以加入一些账号的说明。
+-d  ：后面接账号的家目录，即修改 /etc/passwd 的第六栏；
+-e  ：后面接日期，格式是 YYYY-MM-DD 也就是在 /etc/shadow 内的第八个字段数据啦！
+-f  ：后面接天数，为 shadow 的第七字段。
+-g  ：后面接初始群组，修改 /etc/passwd 的第四个字段，亦即是 GID 的字段！
+-G  ：后面接次要群组，修改这个使用者能够支持的群组，修改的是 /etc/group 啰～
+-a  ：与 -G 合用，可『添加次要群组的支持』而非『配置』喔！
+-l  ：后面接账号名称。亦即是修改账号名称， /etc/passwd 的第一栏！
+-s  ：后面接 Shell 的实际文件，例如 /bin/bash 或 /bin/csh 等等。
+-u  ：后面接 UID 数字啦！即 /etc/passwd 第三栏的数据；
+-L  ：暂时将用户的口令冻结，让他无法登陆。其实仅改 /etc/shadow 的口令栏。
+-U  ：将 /etc/shadow 口令栏的 ! 拿掉，解冻啦！
+如果你仔细的比对，会发现 usermod 的选项与 useradd 非常类似！ 这是因为 usermod 也是用来微调 useradd 添加的使用者参数嘛！不过 usermod 还是有新增的选项， 那就是 -L 与 -U ，不过这两个选项其实与 passwd 的 -l, -u 是相同的！而且也不见得会存在所有的 distribution 当中！接下来，让我们谈谈一些变更参数的实例吧！
+
+范例一：修改使用者 vbird2 的说明栏，加上『VBird's test』的说明。
+[root@www ~]# usermod -c "VBird's test" vbird2
+[root@www ~]# grep vbird2 /etc/passwd
+vbird2:x:700:100:VBird's test:/home/vbird2:/bin/bash
+
+范例二：用户 vbird2 口令在 2009/12/31 失效。
+[root@www ~]# usermod -e "2009-12-31" vbird2
+[root@www ~]# grep vbird2 /etc/shadow
+vbird2:$1$50MnwNFq$oChX.0TPanCq7ecE4HYEi.:14301:0:60:7:10:14609:
+
+范例三：我们创建 vbird3 这个系统账号时并没有给予家目录，请创建他的家目录
+[root@www ~]# ll -d ~vbird3
+ls: /home/vbird3: No such file or directory  <==确认一下，确实没有家目录的存在！
+[root@www ~]# cp -a /etc/skel /home/vbird3
+[root@www ~]# chown -R vbird3:vbird3 /home/vbird3
+[root@www ~]# chmod 700 /home/vbird3
+[root@www ~]# ll -a ~vbird3
+drwx------  4 vbird3 vbird3 4096 Sep  4 18:15 .  <==用户家目录权限
+drwxr-xr-x 11 root   root   4096 Feb 26 11:45 ..
+-rw-r--r--  1 vbird3 vbird3   33 May 25  2008 .bash_logout
+-rw-r--r--  1 vbird3 vbird3  176 May 25  2008 .bash_profile
+-rw-r--r--  1 vbird3 vbird3  124 May 25  2008 .bashrc
+drwxr-xr-x  3 vbird3 vbird3 4096 Sep  4 18:11 .kde
+drwxr-xr-x  4 vbird3 vbird3 4096 Sep  4 18:15 .mozilla
+# 使用 chown -R 是为了连同家目录底下的用户/群组属性都一起变更的意思；
+# 使用 chmod 没有 -R ，是因为我们仅要修改目录的权限而非内部文件的权限！

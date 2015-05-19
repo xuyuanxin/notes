@@ -1,0 +1,11 @@
+                                                                                     |
+使用useradd创建了账号之后, 在默认的情况下, 该账号是暂时被封锁的, 因此我们在创建使用者|
+账号时, 还需要使用"passwd 账号"来给予口令才算是完成了用户创建的流程.                 | 
+
+范例一：请 root 给予 vbird2 口令
+[root@www ~]# passwd vbird2
+Changing password for user vbird2.
+New UNIX password: <==这里直接输入新的口令，屏幕不会有任何反应
+BAD PASSWORD: it is WAY too short <==口令太简单或过短的错误！
+Retype new UNIX password:  <==再输入一次同样的口令
+passwd: all authentication tokens updated successfully.  <==竟然还是成功修改了！
