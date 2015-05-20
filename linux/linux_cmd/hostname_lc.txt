@@ -1,0 +1,4 @@
+hostname
+/etc/hosts
+/etc/sysconfig/network
+/etc/HOSTNAME  suse

@@ -10,6 +10,8 @@ INCLUDE_DIRS = $(ROOT)/inc
 # 本次构建所依赖的库 			   
 LINK_LIBS = pja
 
+#export LD_LIBRARY_PATH=$(ROOT)/build/libs:$LD_LIBRARY_PATH
+#export LD_RUN_PATH=$(ROOT)/build/libs:$LD_RUN_PATH
 # now begin
 include $(ROOT)/build/make.rule
 

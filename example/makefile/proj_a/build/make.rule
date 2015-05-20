@@ -6,6 +6,8 @@ RMFLAGS = -fr    # -f, --force 强制删除。忽略不存在的文件，不提�
 CC = gcc         # gcc
 AR = ar          # ar:管理静态库。
 ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连接效率; 
+CCFLAGS = -Wall 
+LD = ld
 
 SRCS = $(wildcard *.c)
 
@@ -19,12 +21,23 @@ OBJS_DIR=$(ROOT)/build/objs
 OBJS = $(SRCS:.c=.o)
 OBJS := $(addprefix $(OBJS_DIR)/, $(OBJS))
 
-# 静态库文件，借用objs目录生成库，然后移动到libs
+# 中间文件(动态库)
+OBJS_DIR2=$(ROOT)/build/objs_dyn
+OBJS2 = $(SRCS:.c=.o)
+OBJS2 := $(addprefix $(OBJS_DIR2)/, $(OBJS2))
+
+# 静态库文件, 借用objs目录生成库, 然后移动到libs
 LIBS_DIR = $(ROOT)/build/objs
 RLIBS_DIR = $(ROOT)/build/libs
 ifneq ("$(LIB)", "")
 LIB := $(addprefix $(LIBS_DIR)/, $(LIB))
 LIBOBJS = $(wildcard *.o)
+endif
+
+LIBS_DIR2 = $(ROOT)/build/libs
+ifneq ("$(LIBDYN)", "")
+LIBDYN := $(addprefix $(OBJS_DIR2)/, $(LIBDYN))
+LIBOBJS2 = $(wildcard *.o)
 endif
 
 # 可执行文件
@@ -50,7 +63,7 @@ endif
 
 
 #all的依赖，注意顺序。
-all: $(OBJS) $(LIB) $(EXE)
+all: $(OBJS) $(OBJS2) $(LIB) $(LIBDYN) $(EXE)
 
 # 包含依赖关系
 ifneq ($(MAKECMDGOALS), clean)
@@ -72,18 +85,28 @@ $(DEPS_DIR)/%.dep: %.c
 
 # 生成目标文件	
 $(OBJS_DIR)/%.o: %.c
-	$(CC) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
-
+	$(CC) $(CCFLAGS) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
+	
+# 生成目标文件(动态库)	
+$(OBJS_DIR2)/%.o: %.c
+	$(CC) -fPIC $(CCFLAGS) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
+	
 # 生成库	
 $(LIB): forcerun
 #	@echo "lib_objs:"$(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
 	mv $@ $(RLIBS_DIR)
 
+# 生成动态库	
+$(LIBDYN): forcerun
+#	$(CC) -shared $(CCFLAGS) -Wl,-soname,$(LIBSONAME) -o $@ $(LIBOBJS2)
+	$(CC) -shared $(CCFLAGS) -o $@ $(LIBOBJS2)
+	mv $@ $(LIBS_DIR2)	
+	
 # 可执行文件
 $(EXE): $(OBJS) forcerun
-	$(CC) -L$(RLIBS_DIR) -o $@ $(filter %.o, $^) $(LINK_LIBS)
-
+#	$(CC) -Bdynamic $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(RLIBS_DIR) $(LINK_LIBS)
+	$(CC) $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(RLIBS_DIR) $(LINK_LIBS)
 clean:
 	@echo done
 
@@ -98,6 +121,7 @@ dbginfo:
 	@echo "OBJS     : "$(OBJS)
 	@echo "LIBS_DIR : "$(LIBS_DIR)	
 	@echo "LIB      : "$(LIB)
+	@echo "LIBDYN   : "$(LIBDYN)
 	@echo "----> $@ run end"	
 
 

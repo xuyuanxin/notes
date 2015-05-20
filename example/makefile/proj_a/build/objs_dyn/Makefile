@@ -2,7 +2,8 @@
 EXE =
 
 # 本次构建要生成的lib
-LIB = libpja_.a
+LIBDYN = libpja.so.1.0.0
+LIBSONAME = libpja.so.1
 
 # 本次构建所依赖的头文件路径 
 INCLUDE_DIRS = 
