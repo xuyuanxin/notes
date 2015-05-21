@@ -1,4 +1,4 @@
-http://www.cnblogs.com/vamei/archive/2013/04/04/2998850.html
+http://www.cnblogs.com/vamei/archive/2013/04/04/2998850.html  C编译: 动态连接库 (.so文件)
 -------------------------------------------------------------------------------------|
 http://www.cnblogs.com/zhuyp1015/archive/2012/05/06/2486650.html                     |
 可执行文件的装载                                                                     |
@@ -470,6 +470,13 @@ gcc main.c ./lib.so -o main                                                     
 影响GCC编译时查找库的路径, 它里面包含的目录相当于连接时GCC的"-L"参数. 总体上, 动态链 |
 接器按照下列顺序依次装载或查找共享对象: 由环境变量LD_LIBRARY_PATH指定的路径; 由路径缓|
 存文件/etc/ld.so.cache指定的路径; 默认共享库目录, 先/usr/lib, 然后/lib               |
+                                                                                     |
+http://zrj.me/archives/1066                                                          |
+库分为静态库(Static Library)和共享库(Shared library)两类. 静态库文件的扩展名是.a, 共 |
+享库文件的扩展名是.so(在CYGWIN环境下, 分别叫做.o和.dll). 共享库现在常常被叫做动态库, |
+是由于很多人借用了MS Windows的DLL(Dynamic Linked Library)这个词. 当我们想知道gcc在链 |
+接的时候使用了什么库的时候, 可以使用这样的命令                                       |
+$ gcc --print-file-name=librt.so 
 
 
 

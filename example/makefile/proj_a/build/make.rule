@@ -6,8 +6,8 @@ RMFLAGS = -fr    # -f, --force 强制删除。忽略不存在的文件，不提�
 CC = gcc         # gcc
 AR = ar          # ar:管理静态库。
 ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连接效率; 
-CCFLAGS = -Wall 
-LD = ld
+#CCFLAGS = -shared -fPIC -Wall -Werror
+CCFLAGS = -shared -fPIC -Wall
 
 SRCS = $(wildcard *.c)
 
@@ -21,23 +21,16 @@ OBJS_DIR=$(ROOT)/build/objs
 OBJS = $(SRCS:.c=.o)
 OBJS := $(addprefix $(OBJS_DIR)/, $(OBJS))
 
-# 中间文件(动态库)
-OBJS_DIR2=$(ROOT)/build/objs_dyn
-OBJS2 = $(SRCS:.c=.o)
-OBJS2 := $(addprefix $(OBJS_DIR2)/, $(OBJS2))
-
-# 静态库文件, 借用objs目录生成库, 然后移动到libs
-LIBS_DIR = $(ROOT)/build/objs
-RLIBS_DIR = $(ROOT)/build/libs
+# 库文件, 借用objs目录生成库, 然后移动到libs
+LIBS_DIR = $(ROOT)/build/libs
 ifneq ("$(LIB)", "")
-LIB := $(addprefix $(LIBS_DIR)/, $(LIB))
+LIB := $(addprefix $(OBJS_DIR)/, $(LIB))
 LIBOBJS = $(wildcard *.o)
 endif
 
-LIBS_DIR2 = $(ROOT)/build/libs
 ifneq ("$(LIBDYN)", "")
-LIBDYN := $(addprefix $(OBJS_DIR2)/, $(LIBDYN))
-LIBOBJS2 = $(wildcard *.o)
+LIBDYN := $(addprefix $(OBJS_DIR)/, $(LIBDYN))
+LIBOBJS = $(wildcard *.o)
 endif
 
 # 可执行文件
@@ -54,16 +47,15 @@ endif
 
 ifneq ("$(LINK_LIBS)", "")                                     # 假设传入 bar.a     foo.a
 LINK_LIBS := $(strip $(LINK_LIBS))                             # strip:去掉多余空格 bar.a foo.a
-LIB_ALL := $(notdir $(wildcard $(RLIBS_DIR)/*))                # RLIBS_DIR目录里的.a文件, 假设有 libfoo.a libbar.a a.a
+LIB_ALL := $(notdir $(wildcard $(LIBS_DIR)/*))                 # LIBS_DIR目录里的.a文件, 假设有 libfoo.a libbar.a a.a
 LIB_FILTERED := $(addsuffix %, $(addprefix lib, $(LINK_LIBS))) # libbar% libfoo%
 $(eval DEP_LIBS = $(filter $(LIB_FILTERED), $(LIB_ALL)))       # 从所有的库文件中过滤出 libbar.a libfoo.a
-DEP_LIBS := $(addprefix $(RLIBS_DIR)/, $(DEP_LIBS))            # 给两个.a文件加上路径
+DEP_LIBS := $(addprefix $(LIBS_DIR)/, $(DEP_LIBS))             # 给两个.a文件加上路径
 LINK_LIBS := $(addprefix -l,$(LINK_LIBS))                      # -lfoo -lbar
 endif
 
-
-#all的依赖，注意顺序。
-all: $(OBJS) $(OBJS2) $(LIB) $(LIBDYN) $(EXE)
+#all的依赖, 注意顺序.
+all: $(OBJS) $(LIB) $(LIBDYN) $(EXE)
 
 # 包含依赖关系
 ifneq ($(MAKECMDGOALS), clean)
@@ -87,26 +79,22 @@ $(DEPS_DIR)/%.dep: %.c
 $(OBJS_DIR)/%.o: %.c
 	$(CC) $(CCFLAGS) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
 	
-# 生成目标文件(动态库)	
-$(OBJS_DIR2)/%.o: %.c
-	$(CC) -fPIC $(CCFLAGS) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
-	
 # 生成库	
 $(LIB): forcerun
 #	@echo "lib_objs:"$(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
-	mv $@ $(RLIBS_DIR)
+	mv $@ $(LIBS_DIR)
 
 # 生成动态库	
 $(LIBDYN): forcerun
 #	$(CC) -shared $(CCFLAGS) -Wl,-soname,$(LIBSONAME) -o $@ $(LIBOBJS2)
-	$(CC) -shared $(CCFLAGS) -o $@ $(LIBOBJS2)
-	mv $@ $(LIBS_DIR2)	
+	$(CC) -shared -o $@ $(LIBOBJS)
+	mv $@ $(LIBS_DIR)	
 	
 # 可执行文件
 $(EXE): $(OBJS) forcerun
-#	$(CC) -Bdynamic $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(RLIBS_DIR) $(LINK_LIBS)
-	$(CC) $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(RLIBS_DIR) $(LINK_LIBS)
+#	$(CC) -Bdynamic $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
+	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
 clean:
 	@echo done
 

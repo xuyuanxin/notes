@@ -12,7 +12,6 @@ DIRS += $(ROOT)/src
 
 #默认目录
 DIRS+=$(ROOT)/build/objs
-DIRS+=$(ROOT)/build/objs_dyn
 DIRS+=$(ROOT)/src/main
 
 #单元测试目录
@@ -43,12 +42,13 @@ all dbginfo:
 	@echo ""
 	
 clean:
-	$(RM) $(RMFLAGS) $(ROOT)/build/objs/*.o 
-	$(RM) $(RMFLAGS) $(ROOT)/build/objs_dyn/*.o
+	$(RM) $(RMFLAGS) $(ROOT)/build/objs/*.o
+	$(RM) $(RMFLAGS) $(ROOT)/build/libs/*.a	
+	$(RM) $(RMFLAGS) $(ROOT)/build/libs/*.so*
+	$(RM) $(RMFLAGS) $(ROOT)/build/libs/*.dll
 	$(RM) $(RMFLAGS) $(ROOT)/build/deps/*.dep
 	$(RM) $(RMFLAGS) $(ROOT)/build/deps/*.tmp
-	$(RM) $(RMFLAGS) $(ROOT)/build/libs/*.a
-	$(RM) $(RMFLAGS) $(ROOT)/build/libs/*.so*
+	$(RM) $(RMFLAGS) $(ROOT)/build/exes/*.exe
 	
 # 更改所有文件的时间戳	
 touch:

@@ -41,6 +41,11 @@ ine code and the original source code is difficult to understand.
     Output assembly instructions using selected dialect.Supported choices are ‘intel’ 
 	or ‘att’ (the default). Darwin does not support ‘intel’.	
 
+3.11 Options Controlling the Preprocessor	
+-Werror 
+    Make all warnings into hard errors. Source code which triggers warnings will be -
+	rejected.	
+	
 3.13 Options for Linking
 -shared 
     Produce a shared object whichemitemit can then be linked with other objects to form an e-
@@ -51,6 +56,6 @@ ine code and the original source code is difficult to understand.
     If supported for the target machine, emit position-independent code, suitable fo-
 	r dynamic linking and avoiding any limit on the size of the global offset table.	
 	
-	
+
 	
 	
