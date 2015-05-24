@@ -1,3 +1,16 @@
+/*-----------------------------------------------------------------------------------
+ To place classes inside a package, you must put the name of the package at the top -
+ of your source file, before the code that defines the classes in the package. For e-
+ xample, the file Employee.java starts out like this:
+     package com.horstmann.corejava;
+ If you don't put a package statement in the source file, then the classes in that s-
+ ource file belong to the default package. The default package has no package name. 
+
+ Place source files into a subdirectory that matches the full package name. For exam-
+ ple, all source files in the package com.horstmann.corejava package should be in a -
+ subdirectory com/horstmann/corejava (com\horstmann\corejava on Windows).The compiler 
+ places the class files into the same directory structure. 
+ ----------------------------------------------------------------------------------*/
 package com.horstmann.corejava;
 
 // the classes in this file are part of this package

@@ -3,13 +3,13 @@
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class Employee
+public class EmployeeJi /* Java Inheritance */
 {
    private String name;
    private double salary;
    private Date hireDay;
 
-   public Employee(String n, double s, int year, int month, int day)
+   public EmployeeJi(String n, double s, int year, int month, int day)
    {
       name = n;
       salary = s;

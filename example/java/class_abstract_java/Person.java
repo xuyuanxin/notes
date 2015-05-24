@@ -1,32 +1,4 @@
-package abstractClasses;
-
-/*
- you could implement Person.getDescription() to return an empty string . But there is 
- a better way. If you use the abstract keyword, you do not need to implement the met-
- hod at all. For added clarity, a class with one or more abstract methods must itself 
- be declared abstract. In addition to abstract methods, abstract classes can have fi-
- elds and concrete methods. For example, the Person class stores the name of the per-
- son and has a concrete method that returns it.
-
- When you extend an abstract class, you have two choices. You can leave some or all -
- of the abstract methods undefined; then you must tag the subclass as abstract as we-
- ll. Or you can define all methods, and the subclass is no longer abstract. For exam-
- ple, we will define a Student class that extends the abstract Person class and impl-
- ements the getDescription method. None of the methods of the Student class are abst-
- ract, so it does not need to be declared as an abstract class.
-
- A class can even be declared as abstract even though it has no abstract methods. Ab-
- stract classes cannot be instantiated. That is , if a class is declared as abstract,
- no objects of that class can be created. For example, the expression
-     new Person("Vince Vu") //error
- Note that you can still create object variables of an abstract class, but such a va-
- riable must refer to an object of a nonabstract subclass. For example:
-     Person p = new Student("Vince Vu", "Economics");
- Here p is a variable of the abstract type Person that refers to an instance of the -
- nonabstract subclass Student.
-
-
-*/
+//package abstractClasses;
 
 public abstract class Person
 {
@@ -43,3 +15,93 @@ public abstract class Person
       return name;
    }
 }
+
+
+
+/*-----------------------------------------------------------------------------------
+              +--------+
+              | Person |
+              +--------+
+                  /|\
+                   |
+          +-----------------+
+          |                 |
+     +----------+       +---------+
+     | Employee |       | Student |
+     +----------+       +---------+
+
+ As you move up the inheritance hierarchy, classes become more general and probably -
+ more abstract. for example, an extension of our Employee class hierarchy. An employ-
+ ee is a person, and so is a student. Let us extend our class hierarchy to include c-
+ lasses Person and Student.
+
+ The Person class knows nothing about the person except the name. Of course, you cou-
+ ld implement Person.getDescription() to return an empty string. But there is a bett-
+ er way. If you use the abstract keyword, you do not need to implement the method  at 
+ all.
+     public abstract String getDescription(); // no implementation required
+ For added clarity, a class with one or more abstract methods must itself be declared 
+ abstract.
+     abstract class Person
+     { 
+         . . .
+         public abstract String getDescription();
+     }
+ In addition to abstract methods, abstract classes can have fields and concrete meth-
+ ods. For example, the Person class stores the name of the person and has a  concrete 
+ method that returns it.
+
+ When you extend an abstract class, you have two choices. You can leave some or all -
+ of the abstract methods undefined ; then you must tag the subclass as abstract as w-
+ ell. Or you can define all methods, and the subclass is no longer abstract. For exa-
+ mple, we will define a Student class that extends the abstract Person class and imp-
+ lements the getDescription method. None of the methods of the Student class are abs-
+ tract, so it does not need to be declared as an abstract class. 
+
+ A class can even  be declared as abstract even though it has no abstract methods. A-
+ bstract classes cannot be instantiated. That is, if a class is declared as abstract,
+ no objects of that class can be created. For example, the expression
+     new Person("Vince Vu")
+ is an error. However, you can create objects of concrete subclasses. Note that you -
+ can still create object variables of an abstract class, but such a variable must re-
+ fer to an object of a nonabstract subclass. For example:
+     Person p = new Student("Vince Vu", "Economics");
+ Here p is a variable of the abstract type Person that refers to an instance of the -
+ nonabstract subclass Student.
+
+ ----> Protected Access
+ Any features declared private won't be visible to other classes. this is also true -
+ for subclasses: A subclass cannot access the private fields of its superclass. There 
+ are times, however, when you want to restrict a method to subclasses only or, less -
+ commonly, to allow subclass methods to access a superclass field. In that case , you 
+ declare a class feature as protected.
+ 
+ In practice, use protected fields with caution. Suppose your class is used  by other
+ programmers and you designed it with protected fields. Unknown to you, other progra-
+ mmers may inherit classes from your class and start accessing your protected fields. 
+ In this case, you can no longer change the implementation of your class without ups-
+ etting the other programmers. That is against the spirit of OOP, which encourages d-
+ ata encapsulation.
+
+ ----> Object: The Cosmic Superclass
+ The Object class is the ultimate ancestor, every class in Java extends Object. Howe-
+ ver, you never have to write
+     class Employee extends Object
+ The ultimate superclass Object is taken for granted if no superclass is explicitly -
+ mentioned. You can use a variable of type Object to refer to objects of any type:
+     Object obj = new Employee("Harry Hacker", 35000);
+ Of course, a variable of type  Object is only useful as a generic holder for arbitr-
+ ary values. To do anything specific with the value , you need to have some knowledge 
+ about the original type and apply a cast:
+     Employee e = (Employee) obj;
+     
+ In Java, only the primitive types ( numbers, characters, and boolean values) are not 
+ objects.
+ 
+ All array types, no matter whether they are arrays of objects or arrays of primitive 
+ types, are class types that extend the Object class.
+     Employee[] staff = new Employee[10];
+     obj = staff; // OK
+     obj = new int[10]; // OK
+ -----------------------------------------------------------------------------------*/
+

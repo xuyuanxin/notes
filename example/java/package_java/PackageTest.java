@@ -1,19 +1,8 @@
 /*-----------------------------------------------------------------------------------
- To place classes inside a package,you must put the name of the package at the top of 
- your source file, before the code that defines the classes in the package. If you d-
- on't put a package statement in the source file,then the classes in that source file 
- belong to the default package. The default package has no package name. 
-
- Place source files into a subdirectory that matches the full package name. For exam-
- ple, all source files in the package com.horstmann.corejava package should be in a -
- subdirectory com/horstmann/corejava (com\horstmann\corejava on Windows).The compiler 
- places the class files into the same directory structure.
-
  To compile this program, simply change to the base directory and run the command
-         javac PackageTest.java
+     javac PackageTest.java
  The compiler automatically finds the file com/horstmann/corejava/Employee.java and -
  compiles it.
-
 
  The compiler does not check the directory structure when it compiles source files. -
  For example, suppose you have a source file that starts with the directive package -
@@ -24,15 +13,16 @@
 
  classes are stored in subdirectories of the file system. The path to  the class must 
  match the package name.
------------------------------------------------------------------------------------*/
+
+ A form of the import statement permits the importing of static methods and fields, -
+ not just classes. For example, if you add the directive
+     import static java.lang.System.*;
+ to the top of your source file, then you can use the static methods and fields of t-
+ he System class without the class name prefix.
+ ----------------------------------------------------------------------------------*/
 import com.horstmann.corejava.*; // the Employee class is defined in that package
 import static java.lang.System.*;
 
-/**
- * This program demonstrates the use of packages.
- * @version 1.11 2004-02-19
- * @author Cay Horstmann
- */
 public class PackageTest
 {
    public static void main(String[] args)
@@ -48,7 +38,7 @@ public class PackageTest
 }
 
 
-/*
+/*-----------------------------------------------------------------------------------
  Java allows you to group classes in a collection called a package. Packages are con-
  venient for organizing your work and for separating your work from code libraries p-
  rovided by others. The standard Java library is distributed over a number of packag-
@@ -60,19 +50,45 @@ public class PackageTest
  A class can use all classes from its own package and all public classes from other -
  packages. You can access the public classes in another package in two ways. The fir-
  st is simply to add the full package name in front of every class name. For example:
-         java.util. Date today = new java.util. Date();
+     java.util.Date today = new java.util.Date();
  The simpler, and more common, approach is to use the import statement . For example, 
  you can import all classes in the java.util package with the statement
-         import java.util.*;
+     import java.util.*;
  Then you can use
-         Date today = new Date();
+     Date today = new Date();
  without a package prefix. You can also import a specific class inside a package:
-         import java.util.Date;
+     import java.util.Date;
  The java.util.* syntax is less tedious. It has no negative effect on code size. How-
  ever, if you import classes explicitly , the reader of your code knows exactly which
  classes you use. However, note that you can only use the * notation to import a sin-
  gle package. You cannot use import java.* or import java.*.* to import  all packages 
  with the java prefix.
+
+ ----> name conflict
+ For example, both the java.util and java.sql packages have a Date class. Suppose you 
+ write a program that imports both packages.
+     import java.util.*;
+     import java.sql.*;
+ If you now use the Date class, you get a compile-time error:
+     Date today; // ERROR--java.util.Date or java.sql.Date?
+ The compiler cannot figure out which Date class you want. You can solve this problem
+ by adding a specific import statement:
+     import java.util.*;
+     import java.sql.*;
+     import java.util.Date;
+ What if you really need both Date classes? Then you need to use the full package na-
+ me with every class name.
+     java.util.Date deadline = new java.util.Date();
+     java.sql.Date today = new java.sql.Date(...);
+ Locating classes in packages is an activity of the compiler . The bytecodes in class 
+ files always use full package names to refer to other classes.
+
+ ----> Package Scope
+ Features tagged as public can be used by any class. Private features can be used on-
+ ly by the class that defines them. If you don't specify either public or private, t-
+ he feature (that is, the class, method , or variable) can be accessed by all methods 
+ in the same package.
+
 
 ----> The Class Path
 

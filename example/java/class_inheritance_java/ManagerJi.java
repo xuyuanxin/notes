@@ -2,22 +2,20 @@
 
 
 /*-----------------------------------------------------------------------------------
-----> keyword extends
+ ----> keyword extends
  The keyword extends indicates that you are making a new class that derives from an -
  existing class. The existing class is called the superclass, base class, or parent -
  class. The new class is called the subclass, derived class, or child class. The ter-
  ms superclass and subclass are those most commonly used by Java programmers.
 
-
-----> Manager
+ ----> Manager
  you can use methods such as getName and getHireDay with Manager objects. Even though 
  these methods are not explicitly defined in the Manager class, they are automatical-
  ly inherited from the Employee superclass. Similarly, the fields name, salary, and -
  hireDay are taken from the superclass. Every Manager object has four fields: name, -
  salary, hireDay, and bonus.
 -----------------------------------------------------------------------------------*/
-
-public class Manager extends Employee
+public class ManagerJi extends EmployeeJi
 {
    private double bonus;
 
@@ -28,7 +26,7 @@ public class Manager extends Employee
     * @param month the hire month
     * @param day the hire day
     */
-   public Manager(String n, double s, int year, int month, int day)
+   public ManagerJi(String n, double s, int year, int month, int day)
    {
       super(n, s, year, month, day);
       bonus = 0;
@@ -80,12 +78,11 @@ public class Manager extends Employee
    }
 }
 
-/*
-
+/*-----------------------------------------------------------------------------------
  a subclass can add fields, and it can add methods or override the methods of the su-
  perclass. However, inheritance can never take away any fields or methods.
 
-----> super
+ ----> super
  Some people think of @super as being analogous to the @this reference. However, that 
  analogy is not quite accurate: super is not a reference to an object. For example, -
  you cannot assign the value super to another object variable. Instead, super is a s-
@@ -109,7 +106,7 @@ public class Manager extends Employee
  the subclass constructor does not call another superclass constructor explicitly,the 
  Java compiler reports an error.
 
-----> this super
+ ----> this super
  Recall that the @this keyword has two meanings: to denote a reference to the implic-
  it parameter and to call another constructor of the same class. Likewise, the @super 
  keyword has two meanings: to invoke a superclass method and to invoke a superclass -
@@ -117,7 +114,8 @@ public class Manager extends Employee
  osely related. The constructor calls can only occur as the first statement in anoth-
  er constructor. The constructor parameters are either passed  to another constructor 
  of the same class (this) or a constructor of the superclass (super).
-
+ 
+ ---->
  We make a new manager and set the manager's bonus:
      Manager boss = new Manager("Carl Cracker", 80000, 1987, 12, 15);
      boss.setBonus(5000);
@@ -149,17 +147,15 @@ public class Manager extends Employee
  thod at runtime is called dynamic binding. We discuss both topics in more detail  in 
  this chapter.
 
-
  Java does not support multiple inheritance.
 
-----> Polymorphism
+ ----> Polymorphism
  For example, you can assign a subclass object to a superclass variable. Employee e;
      e = new Employee(. . .);  // Employee object expected
      e = new Manager(. . .); // OK, Manager can be used as well
  In the Java programming language, object variables are polymorphic. A variable of t-
  ype Employee can refer to an object of type Employee or to an object of any subclass 
  of the Employee class (such as Manager, Executive, Secretary, and so on).
-
      Manager boss = new Manager(. . .);
      Employee[] staff = new Employee[3];
      staff[0] = boss;
@@ -177,6 +173,7 @@ public class Manager extends Employee
  ceed and m were to refer to an Employee object that is not a manager , then it would 
  later be possible to call m.setBonus(...) and a runtime error would occur. 
 
+ Caution:
  In Java, arrays of subclass references can be converted to arrays of superclass ref-
  erences without a cast. For example, consider this array of managers:
      Manager[] managers = new Manager[10];
@@ -216,7 +213,7 @@ public class Manager extends Employee
  mit the public specifier for the subclass method. The compiler then complains that -
  you try to supply a weaker access privilege.
 
-----> Dynamic Binding
+ ----> Dynamic Binding
  It is important to understand what happens when a method call is applied to an obje-
  ct. Here are the details:
  1 The compiler looks at the declared type of the object and the method name. Let's -
@@ -258,8 +255,7 @@ public class Manager extends Employee
  lass of D. There is one twist to this scenario. If the call is super.f(param) , then 
  the compiler consults the method table of the superclass of the implicit parameter.
 
-
----->  final modifier
+ ---->  final modifier
  Classes that cannot be extended are called final classes, and you use the final mod-
  ifier in the definition of the class to indicate this. For example, let us suppose -
  we want to prevent others from subclassing the Executive class. Simply declare the -
@@ -275,8 +271,13 @@ public class Manager extends Employee
  fter the object has been constructed. However, if a class is declared final, only t-
  he methods, not the fields, are automatically final.
 
-----> Casting
+ ----> Casting
  1 You can cast only within an inheritance hierarchy.
+   If you assign a subclass reference to a superclass variable, you are promising le-
+   ss, and the compiler will simply let you do it. If you assign a super-class refer-
+   ence to a subclass variable, you are promising more. Then you must use a cast so -
+   that your promise can be checked at runtime . What happens if you try to cast down 
+   an inheritance chain and you are "lying" about what an object contains?
        Manager boss = (Manager) staff[1]; // ERROR staff[1] is Employee
    When the program runs, the Java runtime system notices the broken promise and gen-
    erates a ClassCastException.
@@ -290,6 +291,4 @@ public class Manager extends Employee
    ucceed. For example, the cast
        Date c = (Date) staff[1];
    is a compile-time error because Date is not a subclass of Employee.
-
-
-*/
+ ----------------------------------------------------------------------------------*/

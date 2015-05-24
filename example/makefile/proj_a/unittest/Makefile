@@ -71,7 +71,9 @@ $(DIRS):
 
 $(OBJS_DIR)/%.o: $(DEP_DIR_OBJS) %.c
 	$(CC) $(CCFLAGS) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
-	
+
+#多个dir之间用冒号分隔: 
+#-Wl,-rpath,dir1:dir2:...:dirN  	
 $(EXE): $(OBJS) forcerun
 #	$(CC) -Bdynamic  -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
 	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
