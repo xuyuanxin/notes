@@ -1,0 +1,9 @@
+CLASSPATH
+设置Classpath的目的，在于告诉Java执行环境，在哪些目录下可以找到您所要执行的Java程序所需要的类或者包。
+
+Java执行环境本身就是一个平台，执行于这个平台上的程序是已编译完成的Java程序(后面会介绍到Java程序编译完成之后，会以.class文件存在)。如果将Java执行环境比喻为操作系统，如果设置Path变量是为了让操作系统找到指定的工具程序(以Windows来说就是找到.exe文件)，则设置Classpath的目的就是让Java执行环境找到指定的Java程序(也就是.class文件)。
+有几个方法可以设置Classpath，最简单的方法是在系统变量中新增Classpath环境变量。在图2-9中的“系统变量”下单击“新建”按钮，在“变量名”文本框中输入Classpath，在“变量值”文本框中输入Java类文件的位置。例如可以输入“.;C:\Program Files\Java\jdk1.5.0_06\lib\tools.jar; C:\Program Files\Java\jdk1.5.0_06\lib\rt.jar”(jar文件是zip压缩格式，其中包括.class文件和jar中的Classpath设置)，每一路径中间必须以;作为分隔。
+事实上JDK 5.0默认就会到当前工作目录(上面的.设置)，以及JDK的lib目录(这里假设是C:\Program Files\Java\jdk1.5.0_06\lib)中寻找Java程序。所以如果Java程序是在这两个目录中，则不必设置Classpath变量也可以找得到，将来如果Java程序不是放置在这两个目录时，则可以按上述设置Classpath。
+如果所使用的JDK工具程序具有Classpath命令选项，则可以在执行工具程序时一并指定Classpath。例如：
+javac -classpath classpath1;classpath2...其中classpath1、classpath 2是实际要指定的路径。也可以在命令符模式下执行以下的命令，直接设置环境变量，包括Classpath变量(这个设置在下次重新打开命令符模式时就不再有效)：
+set CLASSPATH=%CLASSPATH%;classpath1;classpath2...总而言之，设置Classpath的目的，在于告诉Java执行环境，在哪些目录下可以找到您所要执行的Java程序(.class文件)。

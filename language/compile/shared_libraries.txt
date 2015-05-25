@@ -428,8 +428,11 @@ http://www.tuicool.com/articles/BJZRBbf
   -rpath (gcc -Wl,-rpath=dir1:dir2), 程序执行时首先在rpath中查找动态库.              |
   Linux中提供了一个工具叫做"ldconfig", 当系统安装或者更新一个共享库时, 就运行这个工具|
 , 它会更新软连接使其指向最新的动态库, 如果是新安装则会建立相应的软连接.              |
-$ldconfig -n shared_library_directory  
 
+$ldconfig -n dir                                                                     |
+建立目录dir里所有动态库的soname.libxxx.so.1.0.0的soname,其实是一个指向libxxx.so.1.0.0|
+的软连接, 这个软连接一般命名为libxxx.so.1 . 库的soname, 在编译时通过参数             |
+-Wl,-soname,my_soname指定. 可以通过readelf -d 来查看每个动态库的SONAME.              |
 
 
 

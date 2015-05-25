@@ -23,6 +23,10 @@
 -g
     Produce debugging information in the operating system’s native format(stabs,COFF, 
 	XCOFF, or DWARF 2). GDB can work with this debugging information.
+-ggdb 
+    Produce debugging information for use by GDB. This means to use the most express-
+	ive format available (DWARF 2, stabs, or the native format if neither of those a-
+	re supported), including GDB extensions if at all possible.
 -print-search-dirs
     Print the name of the configured installation directory and a list of program an-
 	d library directories gcc searches—and don’t do anything else.

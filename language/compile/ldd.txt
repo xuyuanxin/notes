@@ -1,0 +1,245 @@
+http://www.cnblogs.com/wanghetao/p/3779611.html
+http://blog.csdn.net/cyberrusher/article/details/7250824
+
+ldd的作用是打印可执行档依赖的共享库文件。它是glibc的一部分，由Roland McGrath和Ulrich Drepper维护：
+$ ldd --version
+ldd (GNU libc) 2.9
+Copyright (C) 2008 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+Written by Roland McGrath and Ulrich Drepper.
+
+但是ldd本身不是一个程序，而仅是一个shell脚本：
+$ which ldd
+/usr/bin/ldd
+$ file /usr/bin/ldd 
+/usr/bin/ldd: Bourne-Again shell script text executable
+
+ldd命令其实是依靠设置一些环境变量而实现的(也就是说ldd的作用只是设置一些环境变量的值)
+如:LD_TRACE_LOADED_OBJECTS
+只要设置其值非空即可。
+$ export LD_TRACE_LOADED_OBJECTS=1
+$ ls /usr
+linux-gate.so.1 =>  (0xb7fac000)
+librt.so.1 => /lib/tls/i686/cmov/librt.so.1 (0xb7f93000)
+libselinux.so.1 => /lib/libselinux.so.1 (0xb7f79000)
+libacl.so.1 => /lib/libacl.so.1 (0xb7f70000)
+libc.so.6 => /lib/tls/i686/cmov/libc.so.6 (0xb7e0d000)
+libpthread.so.0 => /lib/tls/i686/cmov/libpthread.so.0 (0xb7df4000)
+/lib/ld-linux.so.2 (0xb7fad000)
+libdl.so.2 => /lib/tls/i686/cmov/libdl.so.2 (0xb7df0000)
+libattr.so.1 => /lib/libattr.so.1 (0xb7dea000)
+
+撤销该环境变量，ls即又可以恢复正常使用：
+$ unset LD_TRACE_LOADED_OBJECTS
+$ ls  /usr/
+bin  games  include  lib  lib32  lib64  local  sbin  share  src  X11R6
+
+更多的环境变量：
+1、LD_TRACE_LOADED_OBJECTS
+2、LD_WARN
+3、LD_BIND_NOW
+4、LD_LIBRARY_VERSION
+5、LD_VERBOSE
+6、LD_DEBUG
+
+ldd默认开启的环境变量是：LD_TRACE_LOADED_OBJECTS=1
+其他的变量(和值)分别对应一些选项：
+-d, --data-relocs -> LD_WARN=yes
+-r, --function-relocs ->LD_WARN和LD_BIND_NOW=yes
+-u, --unused -> LD_DEBUG="unused"
+-v, --verbose -> LD_VERBOSE=yes
+LD_TRACE_LOADED_OBJECTS为必要环境变量，其他视具体情况。
+
+更为详细的命令选项(或者参看man、info)：
+$ ldd --help
+Usage: ldd [OPTION]... FILE...
+--help              print this help and exit
+--version           print version information and exit
+-d, --data-relocs       process data relocations
+-r, --function-relocs   process data and function relocations
+-u, --unused            print unused direct dependencies
+-v, --verbose           print all information
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/libc/bugs.html>.
+
+但是ldd命令的本质是执行了:/lib/ld-linux.so.* 
+我们可以从以上的内容中(ls /usr中)发现：/lib/ld-linux.so.2 (0xb7fad000)。
+$ ls -l /lib/ld-linux.so.* 
+lrwxrwxrwx 1 root root 9 2009-09-05 22:54 /lib/ld-linux.so.2 -> ld-2.9.so
+刚编译后的文件可能是:/lib/ld.so。如果是libc5则是/lib/ld-linux.so.1, 而glibc2应该是/lib/ld-linux.so.2。
+
+$ /lib/ld-linux.so.2  --list /bin/ls
+linux-gate.so.1 =>  (0xb8050000)
+librt.so.1 => /lib/tls/i686/cmov/librt.so.1 (0xb8037000)
+libselinux.so.1 => /lib/libselinux.so.1 (0xb801d000)
+libacl.so.1 => /lib/libacl.so.1 (0xb8014000)
+libc.so.6 => /lib/tls/i686/cmov/libc.so.6 (0xb7eb1000)
+libpthread.so.0 => /lib/tls/i686/cmov/libpthread.so.0 (0xb7e98000)
+/lib/ld-linux.so.2 (0xb8051000)
+libdl.so.2 => /lib/tls/i686/cmov/libdl.so.2 (0xb7e94000)
+libattr.so.1 => /lib/libattr.so.1 (0xb7e8e000)
+我们可以看到以上等同于ldd ls。/lib/ld-linux.so.2还有其他一些选项：
+1、--verify 
+2、--library-path PATH
+3、--inhibit-rpath LIST
+
+ldd可以获得的共享库文件，其实是通过读取ldconfig命令组建起来的文件(/etc/ld.so.cache)。
+默认的共享库文件搜索/lib优先于/usr/lib，而且也只有这个2个目录。如果想要加入其他路径，则需要通过ldconfig命令配置相关文件。
+一般ld-linux.so会按照以下顺序搜索共享库:
+1、DT_RPATH或DT_RUNPATH段
+2、环境变量LD_LIBRARY_PATH
+3、/etc/ld.so.cache文件中的路径，但如果可执行程序在连接时候添加了-z nodeflib选项，则跳过。
+4、默认路径/lib和/usr/lib，但如果添加了-z nodeflib，则跳过。
+
+还有一些额外的环境变量可以参看man ld.so。
+
+
+
+
+ldd命令
+ldd命令用于判断某个可执行的 binary 档案含有什么动态函式库。
+
+　　参数说明：
+
+　　--version 打印ldd的版本号
+
+　　-v --verbose 打印所有信息，例如包括符号的版本信息
+
+　　-d --data-relocs 执行符号重部署，并报告缺少的目标对象(只对ELF格式适用)
+
+　　-r --function-relocs 对目标对象和函数执行重新部署，并报告缺少的目标对象和函数(只对ELF格式适用)
+
+　　--help 用法信息
+
+　　如果命令行中给定的库名字包含'/',这个程序的libc5版本将使用它作为库名字;否则它将在标准位置搜索库。运行一个当前目录下的共享库，加前缀"./".
+
+　　错误：
+
+　　ldd不能工作在a.out格式的共享库上。
+
+　　ldd不能工作在一些非常老的a.out程序上，这些程序在支持ldd的编译器发行前已经创建。如果你在这种类型的程序上使用ldd,程序将尝试argc = 0的运行方式，其结果不可预知。
+
+　　例如：
+
+　　ldd /bin/bash
+
+　　但是ldd本身不是一个程序，而仅是一个shell脚本：
+
+　　$ which ldd
+
+　　/usr/bin/ldd
+
+　　$ file /usr/bin/ldd
+
+　　/usr/bin/ldd: Bourne-Again shell script text executable
+
+　　ldd命令其实是依靠设置一些环境变量而实现的(也就是说ldd的作用只是设置一些环境变量的值)
+
+　　如：LD_TRACE_LOADED_OBJECTS
+
+　　只要设置其值非空即可。
+
+　　$ export LD_TRACE_LOADED_OBJECTS=1
+
+　　$ ls /usr
+
+　　linux-gate.so.1 => (0xb7fac000)
+
+　　librt.so.1 => /lib/tls/i686/cmov/librt.so.1 (0xb7f93000)
+
+　　libselinux.so.1 => /lib/libselinux.so.1 (0xb7f79000)
+
+　　libacl.so.1 => /lib/libacl.so.1 (0xb7f70000)
+
+　　libc.so.6 => /lib/tls/i686/cmov/libc.so.6 (0xb7e0d000)
+
+　　libpthread.so.0 => /lib/tls/i686/cmov/libpthread.so.0 (0xb7df4000)
+
+　　/lib/ld-linux.so.2 (0xb7fad000)
+
+　　libdl.so.2 => /lib/tls/i686/cmov/libdl.so.2 (0xb7df0000)
+
+　　libattr.so.1 => /lib/libattr.so.1 (0xb7dea000)
+
+　　撤销该环境变量，ls即又可以恢复正常使用：
+
+　　$ unset LD_TRACE_LOADED_OBJECTS
+
+　　$ ls /usr/
+
+　　bin games include lib lib32 lib64 local sbin share src X11R6
+
+　　更多的环境变量：
+
+　　1、LD_TRACE_LOADED_OBJECTS
+
+　　2、LD_WARN
+
+　　3、LD_BIND_NOW
+
+　　4、LD_LIBRARY_VERSION
+
+　　5、LD_VERBOSE
+
+　　6、LD_DEBUG
+
+　　ldd默认开启的环境变量是：LD_TRACE_LOADED_OBJECTS=1
+
+　　其他的变量(和值)分别对应一些选项：
+
+　　-d, --data-relocs -> LD_WARN=yes
+
+　　-r, --function-relocs ->LD_WARN和LD_BIND_NOW=yes
+
+　　-u, --unused -> LD_DEBUG="unused"
+
+　　-v, --verbose -> LD_VERBOSE=yes
+
+　　LD_TRACE_LOADED_OBJECTS为必要环境变量，其他视具体情况。
+
+　　ldd命令的本质是执行了：/lib/ld-linux.so.*
+
+　　我们可以从以上的内容中(ls /usr中)发现：/lib/ld-linux.so.2 (0xb7fad000)。
+
+　　$ ls -l /lib/ld-linux.so.*
+
+　　lrwxrwxrwx 1 root root 9 2009-09-05 22:54 /lib/ld-linux.so.2 -> ld-2.9.so
+
+　　刚编译后的文件可能是：/lib/ld.so.如果是libc5则是/lib/ld-linux.so.1, 而glibc2应该是/lib/ld-linux.so.2.
+
+　　$ /lib/ld-linux.so.2 --list /bin/ls
+
+　　linux-gate.so.1 => (0xb8050000)
+
+　　librt.so.1 => /lib/tls/i686/cmov/librt.so.1 (0xb8037000)
+
+　　libselinux.so.1 => /lib/libselinux.so.1 (0xb801d000)
+
+　　libacl.so.1 => /lib/libacl.so.1 (0xb8014000)
+
+　　libc.so.6 => /lib/tls/i686/cmov/libc.so.6 (0xb7eb1000)
+
+　　libpthread.so.0 => /lib/tls/i686/cmov/libpthread.so.0 (0xb7e98000)
+
+　　/lib/ld-linux.so.2 (0xb8051000)
+
+　　libdl.so.2 => /lib/tls/i686/cmov/libdl.so.2 (0xb7e94000)
+
+　　libattr.so.1 => /lib/libattr.so.1 (0xb7e8e000)
+
+　　我们可以看到以上等同于ldd ls.
+
+　　ldd可以获得的共享库文件，其实是通过读取ldconfig命令组建起来的文件(/etc/ld.so.cache)。
+
+　　默认的共享库文件搜索/lib优先于/usr/lib,而且也只有这个2个目录。如果想要加入其他路径，则需要通过ldconfig命令配置相关文件。
+
+　　一般ld-linux.so会按照以下顺序搜索共享库：
+
+　　1、DT_RPATH或DT_RUNPATH段
+
+　　2、环境变量LD_LIBRARY_PATH
+
+　　3、/etc/ld.so.cache文件中的路径，但如果可执行程序在连接时候添加了-z nodeflib选项，则跳过。
+
+　　4、默认路径/lib和/usr/lib,但如果添加了-z nodeflib,则跳过。
