@@ -1,0 +1,4 @@
+MapReduce is a programming model for data processing. Hadoop can run MapReduce progr-
+ams written in various languages; Most importantly, MapReduce programs are inherently 
+parallel, thus putting very large-scale data analysis into the hands of anyone with -
+enough machines at their disposal. 

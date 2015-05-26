@@ -7,12 +7,16 @@ strings.hÍ·ÎÄ¼şÊÇ´ÓBSDÏµUNIXÏµÍ³¼Ì³Ğ¶øÀ´£¬ÀïÃæ¶¨ÒåÁËÒ»Ğ©×Ö·û´®º¯Êı£¬ÈçbzeroµÈ¡£Õ
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
- @func
-    ±È½Ï²ÎÊıs1ºÍs2×Ö·û´®£¬±È½ÏÊ±»á×Ô¶¯ºöÂÔ´óĞ¡Ğ´µÄ²îÒì¡£
- @ret
-    Èô²ÎÊıs1ºÍs2×Ö·û´®ÏàµÈÔò·µ»Ø0¡£s1´óÓÚs2Ôò·µ»Ø´óÓÚ0 µÄÖµ£¬s1 Ğ¡ÓÚs2 Ôò·µ»ØĞ¡ÓÚ0µÄÖµ¡£
+ The strcasecmp() function performs a byte-by-byte comparison of the strings s1 and -
+ s2, ignoring the case of the characters. It returns an integer less than , equal to, 
+ or greater than zero if s1 is found, respectively, to be less than , to match, or be 
+ greater than s2. The strncasecmp() function is similar , except it compares only the
+ first n bytes of s1.
+
+ http://man7.org/linux/man-pages/man3/strncasecmp.3.html
 -----------------------------------------------------------------------------------*/
 int strcasecmp (const char *s1, const char *s2);
+int strncasecmp(const char *s1, const char *s2, size_t n);
 
 
 void bzero(void *, size_t); /* ÓÃmemsetÌæ´ú */
