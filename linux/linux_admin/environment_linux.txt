@@ -1,0 +1,166 @@
+Linux 的变量可分为两类：环境变量和本地变量
+
+环境变量，或者称为全局变量，存在与所有的shell 中，在你登陆系统的时候就已经有了相应的系统定义的环境变量了。Linux 的环境变量具有继承性，即子shell 会继承父shell 的环境变量。
+
+本地变量，当前shell 中的变量，很显然本地变量中肯定包含环境变量。Linux 的本地变量的非环境变量不具备继承性。
+
+Linux 中环境变量的文件
+
+    当你进入系统的时候，linux 就会为你读入系统的环境变量，这些环境变量存放在什么地方，那就是环境变量的文件中。Linux 中有很多记载环境变量的文件，它们被系统读入是按照一定的顺序的。
+
+1.    /etc/profile ：
+
+此文件为系统的环境变量，它为每个用户设置环境信息，当用户第一次登录时，该文件被执行。并从/etc/profile.d 目录的配置文件中搜集shell 的设置。
+
+    这个文件，是任何用户登陆操作系统以后都会读取的文件（如果用户的shell 是csh 、tcsh 、zsh ，则不会读取此文件），用于获取系统的环境变量，只在登陆的时候读取一次。
+
+    假设用户使用的是BASH ，那么
+
+2.    /etc/bashrc ：
+
+在执行完/etc/profile 内容之后，如果用户的SHELL 运行的是bash ，那么接着就会执行此文件。另外，当每次一个新的bash shell 被打开时, 该文件被读取。
+
+    每个使用bash 的用户在登陆以后执行完/etc/profile 中内容以后都会执行此文件，在新开一个bash 的时候也会执行此文件。因此，如果你想让每个使用bash 的用户每新开一个bash 和每次登陆都执行某些操作，或者给他们定义一些新的环境变量，就可以在这个里面设置。
+
+3.    ~/.bash_profile ：
+
+每个用户都可使用该文件输入专用于自己使用的shell 信息。当用户登录时，该文件仅仅执行一次，默认情况下，它设置一些环境变量，执行用户的.bashrc 文件。
+
+    单个用户此文件的修改只会影响到他以后的每一次登陆系统。因此，可以在这里设置单个用户的特殊的环境变量或者特殊的操作，那么它在每次登陆的时候都会去获取这些新的环境变量或者做某些特殊的操作，但是仅仅在登陆时。
+
+4.    ~/.bashrc ：
+
+该文件包含专用于单个人的bash shell 的bash 信息，当登录时以及每次打开一个新的shell 时, 该该文件被读取。
+
+    单个用户此文件的修改会影响到他以后的每一次登陆系统和每一次新开一个bash 。因此，可以在这里设置单个用户的特殊的环境变量或者特殊的操作，那么每次它新登陆系统或者新开一个bash ，都会去获取相应的特殊的环境变量和特殊操作。
+
+~/.bash_logout ：
+
+当每次退出系统( 退出bash shell) 时, 执行该文件。
+
+几个命令
+
+    env 和printenv
+
+    这两个变量用于打印所有的环境 变量：
+
+set
+
+用于显示与设置当前本地 变量。单独一个set 就显示了当前环境的所有的变量，它肯定包括环境变量和一些非环境变量
+
+unset
+
+用于清除变量。不管这个变量是环境变量还是本地变量，它都可以清除。
+
+-- 下面是清除本地变量
+
+[oracle@devdb1 oracle]$ set|grep myname
+
+myname=ilonng
+
+[oracle@devdb1 oracle]$ unset myname
+
+[oracle@devdb1 oracle]$ set|grep myname
+
+-- 下面是清除环境变量
+
+[oracle@devdb1 oracle]$ env|grep myname
+
+myname=ilonng
+
+[oracle@devdb1 oracle]$ unset myname
+
+[oracle@devdb1 oracle]$ env|grep myname
+
+    export
+
+用于把变量变成当前shell 和其子shell 的环境变量，存活期是当前的shell 及其子shell ，因此重新登陆以后，它所设定的环境变量就消失了。如何将环境变量永久化？修改上面介绍的那几个环境变量的配置文件
+
+source
+
+当直接执行一个脚本的时候，其实是在一个子shell 环境运行的，即开启了一个子shell 来执行这个脚本，脚本执行完后该子shell 自动退出。
+
+有没有办法在当前shell 中执行一个脚本呢？使用source 命令就可以让脚本在当前shell 中执行。如：
+
+[oracle@dbamonitor NBU]$ cat test.sh    -- 查看脚本内容，显示变量内容
+
+echo $myname
+
+[oracle@dbamonitor NBU]$ echo $myname -- 变量存在，内容是ilonng
+
+ilonng
+
+[oracle@dbamonitor NBU]$ set |grep myname -- 变量是本地变量
+
+myname=ilonng
+
+[oracle@dbamonitor NBU]$ env |grep myname -- 变量不是环境变量
+
+[oracle@dbamonitor NBU]$ sh test.sh -- 直接执行，新开子shell ，非环境变量的本地变量不具备继承性，在子shell 中不可见
+
+-- 这里什么都没有输出
+
+一、Shell变量分为本地变量和环境变量。 
+1、本地变量 －－ 在用户现有运行的脚本中使用 
+1) 定义本地变量 格式： variable-name=value 
+例子：[root@jike1 /root]# LOCALTEST="test" 
+[root@jike1 /root]# echo $LOCALTEST test 
+2) 显示本地变量 格式： set 
+例子：[root@chinaitlab root]# set 
+3) 清除本地变量 格式：unset variable-name 
+例如：[root@jike1 /root]# unset LOCALTEST 
+此时再执行echo $LOCALTEST将看不到变量LOCALTEST的输出。 
+2、环境变量 －－ 在所有的子进程中使用 
+1) 定义环境变量 格式： export variable-name=value （与本地变量的定义相比，多了一个export关键字） 
+例子：[root@chinaitlab /root]# export DOMAIN="chinaitlab.com" 
+[root@ chinaitlab shell]# vi testenv.sh 
+#!/bin/bash 
+echo $DOMAIN 
+[root@chinaitlab shell]# chmod +x testenv.sh 
+[root@chinaitlab shell]# ./testenv.sh 
+chinaitlab.com 
+2) 显示环境变量 格式： env （本地变量的显示使用set，环境变量的显示使用env） 
+例子： [root@chinaitlab test]# env 
+3) 清除环境变量 格式：unset variable-name （用法与本地变量相同，都使用unset） 
+例子： [root@chinaitlab shell]# unset DOMAIN 
+此时再执行./testenv.sh将看不到变量DOMAIN的输出。
+
+---------------------------------------------------------------------------------------------------------------------
+
+用户登录后加载profile和bashrc的流程如下: 
+1)/etc/profile-------->/etc/profile.d/*.sh 
+2)$HOME/.bash_profile-------->$HOME/.bashrc---------->/etc/bashrc 
+说明: 
+bash首先执行/etc/profile脚本,/etc/profile脚本先依次执行/etc/profile.d/*.sh 
+随后bash会执行用户主目录下的.bash_profile脚本,.bash_profile脚本会执行用户主目录下的.bashrc脚本, 
+而.bashrc脚本会执行/etc/bashrc脚本 
+至此,所有的环境变量和初始化设定都已经加载完成. 
+bash随后调用terminfo和inputrc，完成终端属性和键盘映射的设定. 
+其中PATH这个变量特殊说明一下: 
+如果是超级用户登录,在没有执行/etc/profile之前,PATH已经设定了下面的路径: 
+/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin 
+如果是普通用户,PATH在/etc/profile执行之前设定了以下的路径: 
+/usr/local/bin:/bin:/usr/bin 
+这里要注意的是:在用户切换并加载变量,例如su -,这时，如果用户自己切换自己,比如root用户再用su - root切换的话,加载的PATH和上面的不一样. 
+准确的说，是不总是一样.所以，在/etc/profile脚本中，做了如下的配置: 
+if [ `id -u` = 0 ]; then 
+pathmunge /sbin 
+pathmunge /usr/sbin 
+pathmunge /usr/local/sbin 
+fi 
+如果是超级用户登录,在/etc/profile.d/krb5.sh脚本中,在PATH变量搜索路径的最前面增加/usr/kerberos/sbin:/usr/kerberos/bin 
+如果是普通用户登录,在/etc/profile.d/krb5.sh脚本中,在PATH变量搜索路径的最前面增加/usr/kerberos/bin 
+在/etc/profile脚本中,会在PATH变量的最后增加/usr/X11R6/bin目录 
+在$HOME/.bash_profile中,会在PATH变量的最后增加$HOME/bin目录 
+以root用户为例,最终的PATH会是这样(没有其它自定义的基础上) 
+/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin:/root/bin 
+以alice用户(普通用户)为例 
+/usr/kerberos/bin:/usr/bin:/bin:/usr/X11R6/bin:/home/alice/bin
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+~/.bash_profile  用户登录时被读取，其中包含的命令被执行
+
+~/.bashrc  启动新的shell时被读取，并执行
+
+~/.bash_logout  shell 登录退出时被读取

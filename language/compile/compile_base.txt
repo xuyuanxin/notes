@@ -17,3 +17,38 @@
 输入: main.o lib
 工具: ld
 输出: main.exe
+
+
+
+----> 头文件及库路径
+下面是使用#include时的一些规则：
+1）使用<>包含的头文件一般会先搜索-I选项后的路径（即用gcc编译时的-I选项），之后就是标准的系统头文件路径。
+2）而用""号包含的头文件会首先搜索当前的工作目录，之后的搜索路径才是和<>号包含的头文件所搜索的路径一
+样的路径。
+3）在unix系统中，一般标准的头文件路径为：
+/usr/local/include
+/usr/lib/gcc-lib/target/version/include
+/usr/target/include
+/usr/include
+
+那如何指定默认的GCC头文件路径呢？
+
+$cd ~
+$vim .profile
+
+
+利用系统的环境变量。
+对于头文件的搜索路径:
+
+C_INCLUDE_PATH=<your include path>
+export C_INCLUDE_PATH
+
+对于库文件的搜索路径:
+
+LIBRARY_PATH=<your lib path>
+export LIBRARY_PATH
+
+对于链接程序ld使用的库文件搜索路径：
+
+LD_LIBRARY_PATH=<your ldlib path>
+export LD_LIBRARY_PATH
