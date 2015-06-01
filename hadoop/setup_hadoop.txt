@@ -1,3 +1,18 @@
+http://SparkMaster:50070  HDFS集群的状况
+http://SparkMaster:50075  不确定
+http://SparkMaster:8088   ResourceManager运行状态
+http://SparkWorker1:8042  NodeManager运行状态
+http://SparkMaster:19888  JobHistory中的任务执行历史信息
+
+jps
+xxxx DataNode             <-- slave  sbin/start-hdfs.sh(在master上执行)
+xxxx NodeManager          <-- slave  sbin/start-yarn.sh(在master上执行)
+xxxx NameNode             <-- master sbin/start-hdfs.sh stop-hdfs.sh
+xxxx SecondaryNameNode    <-- master sbin/start-hdfs.sh stop-hdfs.sh
+xxxx ResourceManager      <-- master sbin/start-yarn.sh stop-yarn.sh
+xxxx JobHistory(不确定)   <-- master sbin/mr-jobhistory-daemon.sh start historyserver
+                          <-- master sbin/mr-jobhistory-daemon.sh stop  historyserver
+
 http://www.powerxing.com/install-hadoop/    Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04
 
 
@@ -49,7 +64,8 @@ sudo chown -R hadoop:hadoop ./hadoop        # 修改文件权限
     </property>
 </configuration>
 
-修改配置文件 hdfs-site.xml：
+修改配置文件 hdfs-site.xml 
+(最好提前建立/usr/local/hadoop/tmp, 重新初始化时如果失败, 尝试删除/dfs/data再初始化)
 
 <configuration>
     <property>

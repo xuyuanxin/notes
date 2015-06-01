@@ -1,0 +1,17 @@
+                                                                                     |
+C中可以通过#include<stdio.h>和#include"stidio.h"包含头文件, 区别是:#include<stdio.h> |
+直接到系统指定目录去查找头文件, #include"stidio.h", 会先到当前目录查找头文件, 如果没 |
+找到在到系统指定目录查找. gcc编译时查找头文件, 按照以下路径顺序查找:                 |
+1 gcc编译时, 可以设置-I选项以指定头文件的搜索路径, 如果指定多个路径, 则按照顺序依次查|
+找, 比如,
+    gcc -I /usr/local/include/node a.c  
+2 gcc会查找环境变量C_INCLUDE_PATH, CPLUS_INCLUDE_PATH中指定的路径.
+3. 系统默认的路径, 分别是(众说纷纭,不确定)
+/usr/include
+/usr/local/include
+/usr/target/include   (可能)
+/usr/lib/gcc-lib/i386-linux/2.95.2/include (gcc库文件的路径, 各个系统不一致).
+                                                                                     |
+同时, include也可以采用相对路径, 比如, a.c需要包含/usr/local/include/node/v8.h, 由于 |
+/usr/local/include是系统的默认搜索路径, 所以在a.c中可以用相对路径包含,               |
+#include<node/v8.h>                                                                  |

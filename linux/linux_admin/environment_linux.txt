@@ -1,30 +1,140 @@
-Linux 的变量可分为两类：环境变量和本地变量
+The Linux Command Line chapter 11
+----> How Is The Environment Established?
+When we log on to the system, the bash program starts, and reads a series of configu-
+ration scripts called startup files, which define the default environment shared by -
+all users.
 
-环境变量，或者称为全局变量，存在与所有的shell 中，在你登陆系统的时候就已经有了相应的系统定义的环境变量了。Linux 的环境变量具有继承性，即子shell 会继承父shell 的环境变量。
+This is followed by more startup files in our home directory that define our persona-
+l environment. The exact sequence depends on the type of shell session being started. 
+There are two kinds: a login shell session and a non-login shell session.
 
-本地变量，当前shell 中的变量，很显然本地变量中肯定包含环境变量。Linux 的本地变量的非环境变量不具备继承性。
+A login shell session is one in which we are prompted for our username and  password;
+when we start a virtual console session, for example. A non-login shell session typi-
+cally occurs when we launch a terminal session in the GUI.
 
-Linux 中环境变量的文件
+Login shells read one or more startup files as shown in Table 11-2:
+Table 11-2: Startup Files For Login Shell Sessions
+File              Contents
+/etc/profile      A global configuration script that applies to all users.
+~/.bash_profile   A user's personal startup file. Can be used to extend or override -
+                  settings in the global configuration script.
+~/.bash_login     If ~/.bash_profile is not found, bash attempts to read this script.
+~/.profile        If neither ~/.bash_profile nor ~/.bash_login is found, bash attemp-
+                  ts to read this file. This is the default in Debian-based distribu-
+				  tions, such as Ubuntu.
+				  
+Non-login shell sessions read the following startup files:
+Table 11-3: Startup Files For Non-Login Shell Sessions
+File               Contents
+/etc/bash.bashrc   A global configuration script that applies to all users.
+~/.bashrc          A user's personal startup file. Can be used to extend or  override 
+                   settings in the global configuration script.
+				   
+The ~/.bashrc file is probably the most important startup file from the ordinary use-
+r’s point of view, since it is almost always read. Non-login shells read it by defau-
+lt and most startup files for login shells are written in such a way as to read the -
+~/.bashrc file as well. If we take a look inside a typical .bash_profile ( taken from 
+a CentOS 4 system), it looks something like this:
+# .bash_profile
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+. ~/.bashrc
+fi
+# User specific environment and startup programs
+PATH=$PATH:$HOME/bin
+export PATH 
 
-    当你进入系统的时候，linux 就会为你读入系统的环境变量，这些环境变量存放在什么地方，那就是环境变量的文件中。Linux 中有很多记载环境变量的文件，它们被系统读入是按照一定的顺序的。
 
-1.    /etc/profile ：
+printenv – Print part or all of the environment
+set      – Set shell options
+export   – Export environment to subsequently executed programs
+alias    – Create an alias for a command
 
-此文件为系统的环境变量，它为每个用户设置环境信息，当用户第一次登录时，该文件被执行。并从/etc/profile.d 目录的配置文件中搜集shell 的设置。
+----> linux中export和source的作用和区别
+shell与export命令
+用户登录到Linux系统后，系统将启动一个用户shell。在这个shell中，可以使用shell命令或声明变量，也可以创建并运行shell脚本程序。运行shell脚本程序时，系统将创建一个子shell。此时，系统中将有两个shell，一个是登录时系统启动的shell，另一个是系统为运行脚本程序创建的shell。当一个脚本程序运行完毕，它的脚本shell将终止，可以返回到执行该脚本之前的shell。从这种意义上来说，用户可以有许多 shell，每个shell都是由某个shell（称为父shell）派生的。
+在子 shell中定义的变量只在该子shell内有效。如果在一个shell脚本程序中定义了一个变量，当该脚本程序运行时，这个定义的变量只是该脚本程序内的一个局部变量，其他的shell不能引用它，要使某个变量的值可以在其他shell中被改变，可以使用export命令对已定义的变量进行输出。 export命令将使系统在创建每一个新的shell时定义这个变量的一个拷贝。这个过程称之为变量输出。
+［例］在本例中，变量myfile是在dispfile脚本程序中定义的。然后用export命令将变量myfile输出至任何子shell，例如当执行printfile脚本程序时产生的子shell。
+dispfile脚本程序清单：
+/**************begin dispfile**************/
+myfile=”List”
+export myfile
+echo “Displaying $myfile”
+pr –t –n $myfile
+printfile
+/**************end dispfile***************/
+　
+printfile脚本程序清单：
+/**************begin printfile**************/
+echo “Printing $myfile”
+lpr $myfile&
+/**************end printfile**************/
+$dispfile
+Displaying List
+1 screen
+2 modem
+3 paper
+Printing List
+$
+而source执行脚本就可以再父sh生效是由于这个命令其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。
 
-    这个文件，是任何用户登陆操作系统以后都会读取的文件（如果用户的shell 是csh 、tcsh 、zsh ，则不会读取此文件），用于获取系统的环境变量，只在登陆的时候读取一次。
+ 
 
-    假设用户使用的是BASH ，那么
+ 
 
-2.    /etc/bashrc ：
+ 
 
-在执行完/etc/profile 内容之后，如果用户的SHELL 运行的是bash ，那么接着就会执行此文件。另外，当每次一个新的bash shell 被打开时, 该文件被读取。
+【转载】Linux Source命令及脚本的执行方式解析
 
-    每个使用bash 的用户在登陆以后执行完/etc/profile 中内容以后都会执行此文件，在新开一个bash 的时候也会执行此文件。因此，如果你想让每个使用bash 的用户每新开一个bash 和每次登陆都执行某些操作，或者给他们定义一些新的环境变量，就可以在这个里面设置。
+ 
 
-3.    ~/.bash_profile ：
+当我修改了/etc/profile文件，我想让它立刻生效，而不用重新登录；这时就想到用source命令，如:source /etc/profile
+对source进行了学习，并且用它与sh 执行脚本进行了对比，现在总结一下。
 
-每个用户都可使用该文件输入专用于自己使用的shell 信息。当用户登录时，该文件仅仅执行一次，默认情况下，它设置一些环境变量，执行用户的.bashrc 文件。
+source命令：
+source命令也称为“点命令”，也就是一个点符号（.）,是bash的内部命令。
+功能：使Shell读入指定的Shell程序文件并依次执行文件中的所有语句
+source命令通常用于重新执行刚修改的初始化文件，使之立即生效，而不必注销并重新登录。
+用法：
+source filename 或 . filename
+source命令(从 C Shell 而来)是bash shell的内置命令;点命令(.)，就是个点符号(从Bourne Shell而来)是source的另一名称。
+
+source filename 与 sh filename 及./filename执行脚本的区别在那里呢？
+1.当shell脚本具有可执行权限时，用sh filename与./filename执行脚本是没有区别得。./filename是因为当前目录没有在PATH中，所有"."是用来表示当前目录的。
+2.sh filename 重新建立一个子shell，在子shell中执行脚本里面的语句，该子shell继承父shell的环境变量，但子shell新建的、改变的变量不会被带回父shell，除非使用export。
+3.source filename：这个命令其实只是简单地读取脚本里面的语句依次在当前shell里面执行，没有建立新的子shell。那么脚本里面所有新建、改变变量的语句都会保存在当前shell里面。
+
+
+举例说明：
+1.新建一个test.sh脚本，内容为:A=1
+2.然后使其可执行chmod +x test.sh
+3.运行sh test.sh后，echo $A，显示为空，因为A=1并未传回给当前shell
+4.运行./test.sh后，也是一样的效果
+5.运行source test.sh 或者 . test.sh，然后echo $A，则会显示1，说明A=1的变量在当前shell中
+
+ |
+Linux的变量可分为两类:环境变量和本地变量                                             |
+环境变量, 或者称为全局变量, 存在与所有的shell中, 在你登陆系统的时候就已经有了相应的系|
+统定义的环境变量了. Linux的环境变量具有继承性, 即子shell会继承父shell的环境变量.     |
+                                                                                     |
+本地变量, 当前shell中的变量, 很显然本地变量中肯定包含环境变量. Linux的本地变量的非环 |
+境变量不具备继承性.                                                                  |
+                                                                                     |
+----> Linux中环境变量的文件                                                          |
+当你进入系统的时候, linux就会为你读入系统的环境变量, 这些环境变量存放在什么地方, 那就|
+是环境变量的文件中. Linux中有很多记载环境变量的文件,它们被系统读入是按照一定的顺序的.|
+1 /etc/profile                                                                       |
+此文件为系统的环境变量, 它为每个用户设置环境信息, 当用户第一次登录时, 该文件被执行.并|
+从/etc/profile.d目录的配置文件中搜集shell的设置. 这个文件, 是任何用户登陆操作系统以后|
+都会读取的文件(如果用户的shell是csh, tcsh, zsh, 则不会读取此文件), 用于获取系统的环境|
+变量, 只在登陆的时候读取一次.                                                        |
+2 /etc/bashrc                                                                        |
+每个使用bash的用户在登陆以后执行完/etc/profile中内容以后都会执行此文件, 在新开一个   |
+bash的时候也会执行此文件. 因此, 如果你想让每个使用bash的用户每新开一个bash和每次登陆 |
+都执行某些操作, 或者给他们定义一些新的环境变量, 就可以在这个里面设置.                |
+3 ~/.bash_profile                                                                    |
+每个用户都可使用该文件输入专用于自己使用的shell信息. 当用户登录时, 该文件仅仅执行一次|
+, 默认情况下, 它设置一些环境变量, 执行用户的.bashrc文件
 
     单个用户此文件的修改只会影响到他以后的每一次登陆系统。因此，可以在这里设置单个用户的特殊的环境变量或者特殊的操作，那么它在每次登陆的时候都会去获取这些新的环境变量或者做某些特殊的操作，但是仅仅在登陆时。
 
