@@ -1,4 +1,20 @@
-/*******************************************************************************
+/*-----------------------------------------------------------------------------------
+ ----> standard I/O library
+ This library is specified by the ISO C standard because it has been implemented on -
+ many operating systems other than the UNIX System. Additional interfaces are defined 
+ as extensions to the ISO C standard by the Single UNIX Specification. The standard -
+ I/O library handles such details as buffer allocation and performing I/O in optimal-
+ sized chunks, obviating our need to worry about using the correct block size. This -
+ makes the library easy to use, but at the same time introduces another set of probl-
+ ems if we're not cognizant of what's going on.
+
+ In Chapter 3, all the I/O routines centered on file descriptors. When a file is ope-
+ ned, a file descriptor is returned, and that descriptor is then used for all subseq-
+ uent I/O operations. With the standard I/O library, the discussion centers on strea-
+ ms. When we open or create a file with the standard I/O library, we say that we have 
+ associated a stream with the file.
+
+
 ---->FILE
 When we open a stream, the standard I/O function @fopen returns a pointer to a 
 FILE object. This object is normally a structure that contains all the information

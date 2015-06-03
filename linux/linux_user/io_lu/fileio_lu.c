@@ -1,39 +1,52 @@
 
 #include <fcntl.h>
-/*******************************************************************************
+/*-----------------------------------------------------------------------------------
  @path: 
-    要打开或创建文件的名字
- @oflag: O_RDWR
- @mode:  S_IEXEC
-    创建时才会用到，用于指定文件的访问权限位（access permission bits）
- @function:
-    打开一个文件(也可用于创建文件)
+     the name of the file to open or create. NAME_MAX
+ @oflag: 
+     this function has a multitude of options, which are specified by the @oflag arg-
+     ument. This argument is formed by ORing together one or more of the following c-
+     onstants from the <fcntl.h> header. O_RDONLY
+ @...: 
+     the last argument is used only when a new file is being created. S_IEXEC
+ @function: 
+     A file is opened or created by calling either the @open function or the openat -
+     function.
  @return: 
-    file descriptor if OK,-1 on error
-
- 1 open返回的文件描述符一定是最小的未用描述符数值。
- 2 @path文件名最大字符个数是 NAME_MAX
-*******************************************************************************/
+     file descriptor if OK, -1 on error. The file descriptor returned by @open and  -
+     @openat is guaranteed to be the lowestnumbered unused descriptor.  
+ ----------------------------------------------------------------------------------*/
 int open(const char *path,int oflag,... /* mode_t mode*/ );
 int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
 
-/*******************************************************************************
-Returns: file descriptor opened for write-only if OK,-1 on error
+/*-----------------------------------------------------------------------------------
+ @func:
+     A new file can also be created by calling the creat function.
+ @returns: 
+     file descriptor opened for write-only if OK, -1 on error.
 
-1 Note that this function is equivalent to open(path,O_WRONLY | O_CREAT | O_TRUNC,mode);
-2 One deficiency with creat is that the file is opened only for writing. 
-*******************************************************************************/
+ 1 this function is equivalent to 
+     open(path,O_WRONLY | O_CREAT | O_TRUNC, mode);
+ 2 One deficiency with creat is that the file is opened only for writing. Before  the
+   new version of open was provided, if we were creating a temporary file that we wa-
+   nted to write and then read back, we had to call creat, close, and then open. A b-
+   etter way is to use the open function, as in
+     open(path, O_RDWR | O_CREAT | O_TRUNC, mode);
+ ----------------------------------------------------------------------------------*/
 int creat(const char *path,mode_t mode);
 
 #include <unistd.h>
-/*******************************************************************************
-function: An open file is closed by calling the close function.
-Returns : 0 if OK,-1 on error
+/*-----------------------------------------------------------------------------------
+ @function: 
+     An open file is closed by calling the close function.
+ @returns : 
+     0 if OK, -1 on error.
 
-1 When a process terminates, all of its open files are closed automatically by 
-  the kernel.  
-*******************************************************************************/
+ 1 When a process terminates, all of its open files are closed automatically by the -
+   kernel.  
+ ----------------------------------------------------------------------------------*/
 int close(int fd);
+
 
 #include <unistd.h>
 #define SEEK_SET (0)
@@ -55,54 +68,79 @@ any I/O to take place. This offset is then used by the next read or write operat
 *******************************************************************************/
 off_t lseek(int fd,off_t offset,int whence);
 
-#include <unistd.h>
-/******************************************************************************
-@fd :读哪个文件(已经打开了)
-@buf:把读的数据放入这个buf中
-@nbytes:希望读取数据的长度
+/*-----------------------------------------------------------------------------------
+ @fd :
+     The read() reads data from the open file referred to by the descriptor @fd.
+ @buf:
+     The @buf argument supplies the address of the memory buffer into which the input 
+     data is to be placed. This buffer must be at least @nbytes bytes long.
+ @nbytes:
+     The @nbytes argument specifies the maximum number of bytes to read.
+ @func
+     Data is read from an open file with the read function.
+ @returns: 
+    If the read is successful, the number of bytes read is returned. If the end of f-
+    ile is encountered, 0 is returned, -1 on error.
 
-function:Data is read from an open file with the @read function.
-Returns: number of bytes read, 0 if end of file,-1 on error
+ The read operation starts at the file's current offset. Before a successful  return, 
+ the offset is incremented by the number of bytes actually read.
 
-1 参数count是请求读取的字节数，读上来的数据保存在缓冲区buf中，同时文件的当前读
-  写位置向后移。
-2 读常规文件时，在读到count个字节之前已到达文件末尾。例如，距文件末尾还有30个字
-  节而请求读100个字节，则read返回30，下次read将返回0。
-3 面向文本的套接字读操作中,一次read不能保证读入完整的一行或整行,读完整的一行可
-  能需要对此调用read,并检查其中是否出现了换行符
-4 服务器收到FIN时,递送一个EOF给进程阻塞中的read,收到后read返回EOF
-5 POSIX.1 requires that read return -1 with errno set to EAGAIN if there is no 
-  data to read from a nonblocking descriptor. 
-******************************************************************************/
+ There are several cases in which the number of bytes actually read is less than  the
+ amount requested:
+ 1 When reading from a regular file, if the end of file is reached before the reques-
+   ted number of bytes has been read. For example, if 30 bytes remain until the end -
+   of file and we try to read 100 bytes, read returns 30. The next time we call read, 
+   it will return 0 (end of file).
+ 2 When reading from a terminal device. Normally, up to one line is read at a time.
+ 3 When reading from a network. Buffering within the network may cause less than  the 
+   requested amount to be returned.
+ 4 When reading from a pipe or FIFO. If the pipe contains fewer bytes than requested, 
+   read will return only what is available. 
+ 5 When reading from a record-oriented device. Some record-oriented devices, such  as 
+   magnetic tape, can return up to a single record at a time.  
+ 6 When interrupted by a signal and a partial amount of data has already been read.
+   
+ a 服务器收到FIN时,递送一个EOF给进程阻塞中的read,收到后read返回EOF
+ b POSIX.1 requires that read return -1 with errno set to EAGAIN if there is no 
+   data to read from a nonblocking descriptor. 
+ ----------------------------------------------------------------------------------*/
 ssize_t read(int fd,void *buf,size_t nbytes);
 
-/******************************************************************************
- @fd    : 写哪个文件(已经打开了)
- @buf   : buf中是要写的数据
- @nbytes: 写入数据的长度
- funtion: Data is written to an open file with the @write function.
- Returns: number of bytes written if OK,-1 on error
+/*----------------------------------------------------------------------------------
+ @fd:
+     @fd is a file descriptor referring to the file to which data is to be written.
+ @buf   : 
+     @buf is the address of the data to be written; 
+ @nbytes: 
+     @nbytes is the number of bytes to write from @buf;
+ @funtion: 
+     Data is written to an open file with the @write function.
+ @returns: 
+     On success, write() returns the number of bytes actually written; this may be l-
+     ess than @nbytes. The return value is usually equal to the @nbytes argument; ot-
+     herwise, an error has occurred. A common cause for a write error is either fill-
+     ing up a disk or exceeding the file size limit for a given process.
 
- For a regular file, the write operation starts at the file's current offset. If 
- the O_APPEND option was specified when the file was opened, the file's offset 
- is set to the current end of file before each write operation. After a successful
- write, the file's offset is incremented by the number of bytes actually written.
+ For a regular file, the write operation starts at the file's current offset. If  the 
+ O_APPEND option was specified when the file was opened, the file's offset is set  to 
+ the current end of file before each write operation. After a successful write, the -
+ file's offset is incremented by the number of bytes actually written.
 
- It is okay to write to a socket that has received a FIN, but it is an error to 
- write to a socket that has received an RST.
+ It is okay to write to a socket that has received a FIN, but it is an error to write 
+ to a socket that has received an RST.
 
- What happens if the client ignores the error return from read and writes more 
- data to the server? This can happen, for example, if the client needs to perform 
- two writes to the server before reading anything back, with the first write 
- eliciting the RST.
+ What happens if the client ignores the error return from read and writes more data -
+ to the server? This can happen, for example, if the client needs to perform two wri-
+ tes to the server before reading anything back, with the first write eliciting the -
+ RST.
  
- When a process writes to a socket that has received an RST, the SIGPIPE signal 
- is sent to the process. The default action of this signal is to terminate the 
- process, so the process must catch the signal to avoid being involuntarily 
- terminated.If the process either catches the signal and returns from the signal 
- handler, or ignores the signal, the write operation returns EPIPE.
- *****************************************************************************/
-ssize_t write(int fd,const void *buf,size_t nbytes);
+ When a process writes to a socket that has received an RST, the SIGPIPE signal is s-
+ ent to the process. The default action of this signal is to terminate the process, -
+ so the process must catch the signal to avoid being involuntarily terminated. If the 
+ process either catches the signal and returns from the signal handler, or ignores t-
+ he signal, the write operation returns EPIPE.
+ ----------------------------------------------------------------------------------*/
+ssize_t write(int fd,const void *buf, size_t nbytes);
 
 #include <unistd.h>
 /******************************************************************************

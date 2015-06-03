@@ -80,9 +80,9 @@ to obtain the access-mode bits and then compare the result against any of the fi
 /*If the file exists and if it is successfully opened for either write-only or
 read–write, truncate its length to 0.*/
 
-/************************************************************************************
+/*-----------------------------------------------------------------------------------
            File status flags used for open() and fcntl() are as follows:
-*************************************************************************************
+ ------------------------------------------------------------------------------------
  O_RDONLY
     Open for reading only
  O_WRONLY
@@ -101,13 +101,16 @@ read–write, truncate its length to 0.*/
     constants are optional:
  O_CREAT  
     Create the file if it doesn't exist. This option requires a third argument to the 
-    open function (a fourth argument to the openat function)— the mode,which specifies 
-    the access permission bits of the new file.
+    @open function (a fourth argument to the @openat function), the mode, which spec-
+    ifies the access permission bits of the new file. S_IEXEC
  O_NONBLOCK
     If path refers to a FIFO, a block special file, or a character special file,this 
     option sets the nonblocking mode for both the opening of the file and subsequent 
     I/O.
-************************************************************************************/
+ O_TRUNC 
+     If the file exists and if it is successfully opened for either write-only or re
+     ad-write, truncate its length to 0.
+ ----------------------------------------------------------------------------------*/
 #define O_RDONLY  0
 #define O_WRONLY  1 
 #define O_RDWR    2
@@ -183,12 +186,20 @@ O_SYNCflag.  Linux 3.2.0  supports	theO_DSYNCflag,  but  treats  theO_RSYNCflag
 the same asO_SYNC
 */
 
-/*---->文件描述符
-A file descriptor is a non-negative integer. To the kernel, all open files are 
-referred to by file descriptors. 
-file descriptor 0 STDIN_FILENO  with the standard input of a process, 
-file descriptor 1 STDOUT_FILENO with the standard output 
-file descriptor 2 STDERR_FILENO with the standard error.*/
+/*-----------------------------------------------------------------------------------
+ file descriptor 0 STDIN_FILENO  with the standard input of a process, 
+ file descriptor 1 STDOUT_FILENO with the standard output 
+ file descriptor 2 STDERR_FILENO with the standard error.
+
+ By convention, UNIX System shells associate file descriptor 0 with the standard inp-
+ ut of a process, file descriptor 1 with the standard output, and file descriptor 2 -
+ with the standard error. This convention is used by the shells and many applications
+ ; it is not a feature of the UNIX kernel. Nevertheless, many applications would bre-
+ ak if these associations weren't followed. Although their values are standardized by 
+ POSIX.1, the magic numbers 0, 1, and 2 should be replaced in POSIX-compliant applic-
+ ations with the symbolic constants STDIN_FILENO, STDOUT_FILENO, and STDERR_FILENO to 
+ improve readability. These constants are defined in the <unistd.h> header. 
+ ----------------------------------------------------------------------------------*/
 #define STDIN_FILENO   0
 #define STDOUT_FILENO  1
 #define STDERR_FILENO  2
@@ -394,11 +405,26 @@ I_xxx
 
 
 
-/*
----->不带缓冲I/O unbuffered I/O
-与标准I/O相对照,术语不带缓冲指每个read和write都调用内核中的一个系统调用.
-这些不带缓冲的I/O不是ISO C的组成部分,但它们是POSIX.1的组成部分.
+/*-----------------------------------------------------------------------------------
+ ----> unbuffered I/O
+ The functions(open, read, write, lseek, close) are often referred to as unbuffered -
+ I/O, in contrast to the standard I/O routines. The term unbuffered means that each -
+ read or write invokes a system call in the kernel. These unbuffered I/O functions a-
+ re not part of ISO C, but are part of POSIX.1 and the Single UNIX Specification.
 
+ ----> File Descriptors
+ To the kernel, all open files are referred to by file descriptors. A file descripto-
+ r is a non-negative integer. When we open an existing file or create a new file, the 
+ kernel returns a file descriptor to the process. When we want to read or write a fi-
+ le, we identify the file with the file descriptor that was returned by open or creat 
+ as an argument to either read or write.
+
+ File descriptors range from 0 through OPEN_MAX-1. Early historical implementations -
+ of the UNIX System had an upper limit of 19, allowing a maximum of 20 open files per 
+ process, but many systems subsequently increased this limit to 63. (With FreeBSD 8.0
+ , Linux 3.2.0, Mac OS X 10.6.8, and Solaris 10, the limit is essentially infinite, -
+ bounded by the amount of memory on the system, the size of an integer, and any  hard 
+ and soft limits configured by the system administrator.
 
 
 ---->当前文件偏移量 current file offset
