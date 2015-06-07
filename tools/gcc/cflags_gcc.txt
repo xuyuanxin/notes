@@ -13,6 +13,10 @@
 	‘.c’, ‘.i’, etc., with ‘.s’. Input files that don’t require compilation are igno-
 	red.
 
+3.4 Options Controlling C Dialect	
+-std= 
+    Determine the language standard. -std=c99 -std=gnu99
+	
 3.8 Options to Request or Suppress Warnings
 -Wall 
     This enables all the warnings about constructions that some users consider quest-

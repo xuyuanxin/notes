@@ -3,11 +3,6 @@
 import java.util.*;
 import java.lang.reflect.*;
 
-/**
- * This program uses reflection to print all features of a class.
- * @version 1.1 2004-02-21
- * @author Cay Horstmann
- */
 public class ReflectionJava
 {
    public static void main(String[] args)
@@ -139,4 +134,40 @@ public class ReflectionJava
    es such as C++.
  Reflection is a powerful and complex mechanism; however, it is of interest mainly t-
  o tool builders, not application programmers. 
+
+
+ java.lang.reflect.Field 1.1
+ java.lang.reflect.Method 1.1
+ java.lang.reflect.Constructor 1.1
+ ? Class getDeclaringClass()
+ returns the Class object for the class that defines this constructor, method, or field.
+ ? Class[] getExceptionTypes() (in Constructor and Method classes)
+ returns an array of Class objects that represent the types of the exceptions thrown by the
+ method.
+ ? int getModifiers()
+ returns an integer that describes the modifiers of this constructor, method, or field. Use the
+ methods in the Modifier class to analyze the return value.
+ ? String getName()
+ returns a string that is the name of the constructor, method, or field.
+ ? Class[] getParameterTypes() (in Constructor and Method classes)
+ returns an array of Class objects that represent the types of the parameters.
+ ? Class getReturnType() (in Method classes)
+ returns a Class object that represents the return type.
+ java.lang.reflect.Modifier 1.1
+ ? static String toString(int modifiers)
+ returns a string with the modifiers that correspond to the bits set in modifiers.
+ ? static boolean isAbstract(int modifiers)
+ ? static boolean isFinal(int modifiers)
+ ? static boolean isInterface(int modifiers)
+ ? static boolean isNative(int modifiers)
+ ? static boolean isPrivate(int modifiers)
+ ? static boolean isProtected(int modifiers)
+ ? static boolean isPublic(int modifiers)
+ ? static boolean isStatic(int modifiers)
+ ? static boolean isStrict(int modifiers)
+ ? static boolean isSynchronized(int modifiers)
+ ? static boolean isVolatile(int modifiers)
+ tests the bit in the modifiers value that corresponds to the modifier in the method name.
+
+ 
  ----------------------------------------------------------------------------------*/

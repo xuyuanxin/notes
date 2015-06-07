@@ -47,25 +47,37 @@ int creat(const char *path,mode_t mode);
  ----------------------------------------------------------------------------------*/
 int close(int fd);
 
+/*-----------------------------------------------------------------------------------
+ @fd 
+ @offset @whence
+     The interpretation of the offset depends on the value of the whence argument. If 
+     @whence is SEEK_SET,the file's offset is set to @offset bytes from the beginning 
+     of the file. If @whence is SEEK_CUR, the file's @offset is set to its current v-
+     alue plus the offset. The @offset can be positive or negative. If @whence is   -
+     SEEK_END, the file's offset is set to the size of the file plus the @offset. The 
+     offset can be positive or negative.
+ @function: 
+     An open file's offset can be set explicitly by calling lseek.
+ @returns : 
+     new file offset if OK,-1 on error
+ name    : lseek中的l表示长整型
 
-#include <unistd.h>
-#define SEEK_SET (0)
-#define SEEK_CUR (1)
-#define SEEK_END (2)
-/******************************************************************************
-@fd    :
-@offset:
-@whence:
-SEEK_SET(0),the file's offset is set to @offset bytes from the beginning of the file.
-SEEK_CUR(1),the file's offset is set to its current value plus the @offset. The @offset can be positive or negative.
-SEEK_END(2),the file's offset is set to the size of the file plus the @offset. The @offset can be positive or negative.
-function: 打开一个文件并设置其偏移量
-returns : new file offset if OK,-1 on error
-name    : lseek中的l表示长整型
+ @lseek only records the current file offset within the kernel, it does not cause an-
+ y I/O to take place. This offset is then used by the next read or write operation. -
+ Because a successful call to @lseek returns the new file offset, we can seek zero b-
+ ytes from the current position to determine the current offset:
+     off_t currpos;
+     currpos = lseek(fd, 0, SEEK_CUR);
+ This technique can also be used to determine if a file is capable of seeking. If th-
+ e file descriptor refers to a pipe, FIFO, or socket, lseek sets errno to ESPIPE  and 
+ returns -1.
 
-@lseek only records the current file offset within the kernel—it does not cause
-any I/O to take place. This offset is then used by the next read or write operation.
-*******************************************************************************/
+ Every open file has an associated "current file offset", normally a non-negative in-
+ teger that measures the number of bytes from the beginning of the file. Read and wr-
+ ite operations normally start at the current file offset and cause the offset to  be 
+ incremented by the number of bytes read or written. By default, this offset is init-
+ ialized to 0 when a file is opened, unless the O_APPEND option is specified.
+ -----------------------------------------------------------------------------------*/
 off_t lseek(int fd,off_t offset,int whence);
 
 /*-----------------------------------------------------------------------------------

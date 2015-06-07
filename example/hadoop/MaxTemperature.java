@@ -16,42 +16,37 @@
 
  To visualize the way the map works, consider the following sample lines of input da-
  ta(some unused columns have been dropped to fit the page, indicated by ellipses):
- 0067011990999991950051507004...9999999N9+00001+99999999999...
- 0043011990999991950051512004...9999999N9+00221+99999999999...
- 0043011990999991950051518004...9999999N9-00111+99999999999...
- 0043012650999991949032412004...0500001N9+01111+99999999999...
- 0043012650999991949032418004...0500001N9+00781+99999999999...
+     0067011990999991950051507004...9999999N9+00001+99999999999...
+     0043011990999991950051512004...9999999N9+00221+99999999999...
+     0043011990999991950051518004...9999999N9-00111+99999999999...
+     0043012650999991949032412004...0500001N9+01111+99999999999...
+     0043012650999991949032418004...0500001N9+00781+99999999999...
  These lines are presented to the map function as the key-value pairs:
- (0, 0067011990999991950051507004бн9999999N9+00001+99999999999бн)
- (106, 0043011990999991950051512004бн9999999N9+00221+99999999999бн)
- (212, 0043011990999991950051518004бн9999999N9-00111+99999999999бн)
- (318, 0043012650999991949032412004бн0500001N9+01111+99999999999бн)
- (424, 0043012650999991949032418004бн0500001N9+00781+99999999999бн)
+     (0, 0067011990999991950051507004бн9999999N9+00001+99999999999бн)
+     (106, 0043011990999991950051512004бн9999999N9+00221+99999999999бн)
+     (212, 0043011990999991950051518004бн9999999N9-00111+99999999999бн)
+     (318, 0043012650999991949032412004бн0500001N9+01111+99999999999бн)
+     (424, 0043012650999991949032418004бн0500001N9+00781+99999999999бн)
  The keys are the line offsets within the file , which we ignore in our map function. 
  The map function merely extracts the year and the air temperature (indicated in bold 
  text), and emits them as its output (the temperature values have been interpreted as 
  integers):
- (1950, 0)
- (1950, 22)
- (1950, -11)
- (1949, 111)
- (1949, 78)
+     (1950, 0)
+     (1950, 22)
+     (1950, -11)
+     (1949, 111)
+     (1949, 78)
  The output from the map function is processed by the MapReduce framework before bei-
  ng sent to the reduce function. This processing sorts and groups the key-value pairs 
  by key. So, continuing the example, our reduce function sees the following input:
- (1949, [111, 78])
- (1950, [0, 22, -11])
+     (1949, [111, 78])
+     (1950, [0, 22, -11])
  Each year appears with a list of all its air temperature readings. All the reduce f-
  unction has to do now is iterate through the list and pick up the maximum reading:
- (1949, 111)
- (1950, 22)
+     (1949, 111)
+     (1950, 22)
  This is the final output: the maximum global temperature recorded in each year.
  ----------------------------------------------------------------------------------*/
-
-
-
-
-
 import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
