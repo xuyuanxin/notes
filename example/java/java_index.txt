@@ -1,0 +1,5 @@
+---->JavaËõÂÔÓï
+
+---->Ë÷Òý
+Class    java.lang.Class
+reflect  import java.lang.reflect.*;
