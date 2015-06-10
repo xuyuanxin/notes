@@ -79,11 +79,10 @@ class TalkingClock
  mechanism involved in an inner class.
 
  When a TimePrinter object is constructed in the start method, the compiler passes t-
- he this reference to the current talking clock into the constructor:
+ he @this reference to the current talking clock into the constructor:
      ActionListener listener = new TimePrinter(this);// parameter automatically added
 -----------------------------------------------------------------------------------*/
-
-   public class TimePrinter implements ActionListener
+   public class TimePrinter implements ActionListener // an inner class
    {
       public void actionPerformed(ActionEvent event)
       {
@@ -97,6 +96,71 @@ class TalkingClock
 
 
 /*-----------------------------------------------------------------------------------
+ ----> Special Syntax Rules for Inner Classes
+ In the preceding section, we explained the outer class reference of an inner class -
+ by calling it @outer. Actually, the proper syntax for the outer reference is a bit -
+ more complex. The expression
+      OuterClass.this
+ denotes the outer class reference. For example, you can write the actionPerformed m-
+ ethod of the TimePrinter inner class as
+     public void actionPerformed(ActionEvent event)
+     {
+         . . .
+         if (TalkingClock.this.beep) Toolkit.getDefaultToolkit().beep();
+     }
+ Conversely, you can write the inner object constructor more explicitly, using the s-
+ yntax
+     outerObject.new InnerClass(construction parameters)
+ For example:
+     ActionListener listener = this.new TimePrinter();
+ Here, the outer class reference of the newly constructed TimePrinter object is set -
+ to the @this reference of the method that creates the inner class object. This is t-
+ he most common case. As always, the this. qualifier is redundant. However, it is al-
+ so possible to set the outer class reference to another object by explicitly  naming 
+ it. For example, since TimePrinter is a public inner class, you can construct a Tim-
+ ePrinter for any talking clock:
+     TalkingClock jabberer = new TalkingClock(1000, true);
+     TalkingClock.TimePrinter listener = jabberer.new TimePrinter();
+  Note that you refer to an inner class as
+      OuterClass.InnerClass
+ when it occurs outside the scope of the outer class.
+
+ ----> Local Inner Classes
+ If you look carefully at the code of the TalkingClock example, you will find that y-
+ ou need the name of the type TimePrinter only once: when you create an object of th-
+ at type in the start method.
+ In a situation like this, you can define the class locally in a single method.
+     public void start()
+     {
+         class TimePrinter implements ActionListener
+         {
+             public void actionPerformed(ActionEvent event)
+             {
+                 Date now = new Date();
+                 System.out.println("At the tone, the time is " + now);
+                 if (beep) Toolkit.getDefaultToolkit().beep();
+             }
+         }
+         ActionListener listener = new TimePrinter();
+         Timer t = new Timer(interval, listener);
+         t.start();
+     }
+ Local classes are never declared with an access specifier (that is, public or priva-
+ te). Their scope is always restricted to the block in which they are declared. Local 
+ classes have one great advantage: They are completely hidden from the outside  world
+ not even other code in the TalkingClock class can access them.No method except start 
+ has any knowledge of the TimePrinter class.
+
+
+
+
+
+
+
+
+
+
+
  The javax.swing package contains a @Timer class that is useful if you want to be no-
  tified whenever a time interval has elapsed . The timer requires that you specify an 
  object of a class that implements the ActionListener interface of the java.awt.event 
