@@ -6,11 +6,6 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.Timer;
 
-/**
- * This program demonstrates the use of inner classes.
- * @version 1.10 2004-02-27
- * @author Cay Horstmann
- */
 public class InnerClassTest
 {
    public static void main(String[] args)
@@ -108,6 +103,7 @@ class TalkingClock
          . . .
          if (TalkingClock.this.beep) Toolkit.getDefaultToolkit().beep();
      }
+     
  Conversely, you can write the inner object constructor more explicitly, using the s-
  yntax
      outerObject.new InnerClass(construction parameters)
@@ -151,16 +147,7 @@ class TalkingClock
  not even other code in the TalkingClock class can access them.No method except start 
  has any knowledge of the TimePrinter class.
 
-
-
-
-
-
-
-
-
-
-
+ ----> Timer
  The javax.swing package contains a @Timer class that is useful if you want to be no-
  tified whenever a time interval has elapsed . The timer requires that you specify an 
  object of a class that implements the ActionListener interface of the java.awt.event 
@@ -171,7 +158,7 @@ class TalkingClock
      }
  The timer calls the actionPerformed method when the time interval has expired.
 
- Suppose you want to print a message "At the tone, the time is . . ." , followed by 
+ Suppose you want to print a message "At the tone, the time is . . ." , followed by -
  a beep, once every 10 seconds. 
  1 You would define a class that implements the ActionListener interface.
      class TimePrinter implements ActionListener

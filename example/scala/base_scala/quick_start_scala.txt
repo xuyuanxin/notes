@@ -1,0 +1,299 @@
+The interactive shell for Scala is simply called scala. You use it by typing scala at
+a command prompt:
+$ scala
+scala>
+scala> 1 + 2
+res0: Int = 3
+scala> res0 * 3
+res1: Int = 9
+scala> println("Hello, world!")
+Hello, world!
+
+Scala has two kinds of variables, vals and vars. Once initialized, a val can never be 
+reassigned. A var can be reassigned throughout its lifetime. 
+
+scala> val msg = "Hello, world!"
+msg: java.lang.String = Hello, world!
+This example illustrates type inference, Scala¡¯s ability to figure out types you lea-
+ve off. In this case, because you initialized @msg with a string literal, Scala infe-
+rred the type of @msg to be String. You can, however, specify a type explicitly if y-
+ou wish, and sometimes you probably should. 
+scala> val msg2: java.lang.String = "Hello again, world!"
+msg2: java.lang.String = Hello again, world!
+Or, since java.lang types are visible with their simple names4 in Scala programs, si-
+mply:
+scala> val msg3: String = "Hello yet again, world!"
+msg3: String = Hello yet again, world!
+
+----> Define some functions
+scala> def max(x: Int, y: Int): Int = {
+if (x > y) x
+else y
+}
+max: (x: Int,y: Int)Int
+
+if a function consists of just one statement, you can optionally leave off the  curly 
+braces. Thus, you could alternatively write the max function like this:
+scala> def max2(x: Int, y: Int) = if (x > y) x else y
+max2: (x: Int,y: Int)Int
+
+Here¡¯s the definition of a function that takes no parameters and returns no interest-
+ing result:
+scala> def greet() = println("Hello, world!")
+greet: ()Unit
+And Unit is greet¡¯s result type. A result type of Unit indicates the function returns 
+no interesting value.
+
+If you wish to exit the interpreter, you can do so by entering :quit or :q.
+scala> :quit
+$
+
+----> Write some Scala scripts
+$ scala hello.scala
+
+Command line arguments to a Scala script are available via a Scala array named @args. 
+In Scala, arrays are zero based, and you access an element by specifying an index  in 
+parentheses. So the first element in a Scala array named steps is steps(0). To try t-
+his out, type the following into a new file named helloarg.scala:
+// Say hello to the first argument
+println("Hello, "+ args(0) +"!")
+then run:
+$ scala helloarg.scala planet
+In this command, "planet" is passed as a command line argument, which is accessed  in 
+the script as args(0). Thus, you should see:
+Hello, planet!
+
+----> Loop with while; decide with if
+To try out a while, type the following into a file named printargs.scala:
+var i = 0
+while (i < args.length) {
+    println(args(i))
+    i += 1
+}
+$ scala printargs.scala Scala is fun
+Scala
+is
+fun
+
+another way to print each command line argument is:
+args.foreach(arg => println(arg))
+In this code, you call the foreach method on args, and pass in a function. In this c-
+ase, you¡¯re passing in a function literal that takes one parameter named arg. The bo-
+dy of the function is println(arg). 
+
+If you¡¯d prefer to be more explicit, you can mention the type name
+args.foreach((arg: String) => println(arg))
+
+If you¡¯re in the mood for more conciseness instead of more explicitness, you can tak-
+e advantage of a special shorthand in Scala. If a function literal consists of one s-
+tatement that takes a single argument, you need not explicitly name and specify the -
+argument. Thus, the following code also works:
+args.foreach(println)
+
+
+To summarize, the syntax for a function literal is a list of named parameters, in pa-
+rentheses, a right arrow, and then the body of the function. 
+
+------------------------------------------
+function parameters in parentheses
+      |
+     \|/
+(x: Int, y: Int) => x + y
+                /|\    /|\  
+                 |      |
+      right arrow       function boby
+------------------------------------------
+The syntax of a function literal in Scala.	  
+
+----
+for (arg <- args)
+    println(arg)
+----	
+The parentheses after the "for" contain arg <- args. To the right of the <- symbol is 
+the familiar args array. To the left of <- is "arg", the name of a val, not a var.  -
+arg can¡¯t be reassigned inside the body of the for expression. Instead, for each ele-
+ment of the args array, a new arg val will be created and initialized to the  element 
+value, and the body of the for will be executed.
+
+----> Parameterize arrays with types
+----------------------------------------
+val greetStrings = new Array[String](3)
+//val greetStrings: Array[String] = new Array[String](3)
+greetStrings(0) = "Hello"
+greetStrings(1) = ", "
+greetStrings(2) = "world!\n"
+for (i <- 0 to 2)
+print(greetStrings(i))
+----------------------------------------
+Parameterizing an array with a type.
+
+val greetStrings: Array[String] = new Array[String](3)
+
+if a method takes only one parameter, you can call it without a dot or parentheses. -
+The @to in this example is actually a method that takes one Int argument. The code "0 
+to 2" is transformed into the method call (0).to(2). Note that this syntax only works 
+if you explicitly specify the receiver of the method call. You cannot write  "println 
+10", but you can write "Console println 10". 
+
+Scala doesn¡¯t technically have operator overloading, because it doesn¡¯t actually have 
+operators in the traditional sense. Instead, characters such as +, -, *, and / can be 
+used in method names. Thus, when you typed 1 + 2 into the Scala interpreter, you were 
+actually invoking a method named + on the Int object 1, passing in 2 as a  parameter. 
+you could alternatively have written 1 + 2 using traditional method invocation synta-
+x, (1).+(2) .
+
+-----------------------------------
+Int object with value 1
+       |
+      \|/
+      (1).+(2) <-- Passing the Int object 2 to the ¡®+¡¯ method
+	     /|\
+		  |
+invoking on 1 a method named ¡®+¡¯	  
+-----------------------------------
+
+when an assignment is made to a variable to which parentheses and one or more argume-
+nts have been applied, the compiler will transform that into an invocation of an @up-
+date method that takes the arguments in parentheses as well as the object to the rig-
+ht of the equals sign. For example:
+greetStrings(0) = "Hello"
+will be transformed into:
+greetStrings.update(0, "Hello")
+
+Thus, the following is semantically equivalent to the code in Listing 3.1:
+-----------------------------------
+val greetStrings = new Array[String](3)
+greetStrings.update(0, "Hello")
+greetStrings.update(1, ", ")
+greetStrings.update(2, "world!\n")
+for (i <- 0.to(2))
+print(greetStrings.apply(i))
+-----------------------------------
+
+Scala achieves a conceptual simplicity by treating everything, from arrays to expres-
+sions, as objects with methods. 
+
+val numNames = Array("zero", "one", "two")
+This code creates a new array of length three, initialized to the passed strings, "z-
+ero", "one", and "two".The compiler infers the type of the array to be Array[String], 
+because you passed strings to it. What you¡¯re actually doing is calling a factory me-
+thod, named apply, which creates and returns the new array. This apply method takes -
+a variable number of arguments and is defined on the Array companion object. A more -
+verbose way to call the same apply method is:
+val numNames2 = Array.apply("zero", "one", "two")
+
+
+----> list
+For an immutable sequence of objects that share the same type you can use Scala¡¯s   -
+@List class. As with arrays, a List[String] contains only strings. Creating a list is 
+easy. 
+    val oneTwoThree = List(1, 2, 3)
+establishes a new val named oneTwoThree, initialized with a new List[Int] with the i-
+nteger elements 1, 2, and 3.	
+
+List has a method named ¡¯:::' for list concatenation
+------------------------------------
+val oneTwo = List(1, 2)
+val threeFour = List(3, 4)
+val oneTwoThreeFour = oneTwo ::: threeFour
+println(oneTwo +" and "+ threeFour +" were not mutated.")
+println("Thus, "+ oneTwoThreeFour +" is a new list.")
+------------------------------------
+If you run this script, you¡¯ll see:
+List(1, 2) and List(3, 4) were not mutated.
+Thus, List(1, 2, 3, 4) is a new list.
+
+Perhaps the most common operator you¡¯ll use with lists is ¡®::¡¯, which is pronounced -
+"cons." Cons prepends a new element to the beginning of an existing list, and returns 
+the resulting list. For example, if you run this script:
+val twoThree = List(2, 3)
+val oneTwoThree = 1 :: twoThree
+println(oneTwoThree)
+You¡¯ll see:
+List(1, 2, 3)
+
+---->tuple
+Like lists, tuples are immutable, but unlike lists, tuples can contain different typ-
+es of elements. 
+
+Creating and using a tuple.
+--------
+val pair = (99, "Luftballons")
+println(pair._1)
+println(pair._2)
+--------
+create a new tuple that contains the integer 99, as its first element, and the strin-
+g, "Luftballons", as its second element. Scala infers the type of the tuple to be   -
+Tuple2[Int, String], and gives that type to the variable pair as well. In the  second 
+line, you access the _1 field, which will produce the first element, 99. The "." in -
+the second line is the same dot you¡¯d use to access a field or invoke a method. In t-
+his case you are accessing a field named _1. If you run this script, you¡¯ll see:
+99
+Luftballons
+
+The actual type of a tuple depends on the number of elements it contains and the typ-
+es of those elements. Thus, the type of (99, "Luftballons") is Tuple2[Int, String]. -
+The type of ('u', 'r', "the", 1, 4, "me") is Tuple6[Char, Char, String, Int, Int, String].
+
+
+----> set map
+The default way to create a set is 
+
+-------------- Listing 3.5
+var jetSet = Set("Boeing", "Airbus")
+jetSet += "Lear"
+println(jetSet.contains("Cessna"))
+--------------
+you define a new var named jetSet, and initialize it with an immutable set containing 
+the two strings, "Boeing" and "Airbus". you invoke @apply on the companion object for 
+scala.collection.immutable.Set, which returns an instance of a default,immutable Set. 
+The Scala compiler infers jetSet¡¯s type to be the immutable Set[String].
+
+To add a new element to a set, you call + on the set, passing in the new element. Bo-
+th mutable and immutable sets offer a + method, but their behavior differs. Whereas a 
+mutable set will add the element to itself, an immutable set will create and return a 
+new set with the element added. Thus, in the second line of Listing 3.5, you reassign 
+the jetSet var with a new set containing "Boeing", "Airbus", and "Lear". Finally, the 
+last line of Listing 3.5 prints out whether or not the set contains the string "Cess-
+na". (As you¡¯d expect, it prints false.)
+
+-------------- Listing 3.5
+import scala.collection.mutable.Set
+val movieSet = Set("Hitch", "Poltergeist")
+movieSet += "Shrek"
+println(movieSet)
+-------------- 
+
+import scala.collection.immutable.HashSet
+val hashSet = HashSet("Tomatoes", "Chilies")
+println(hashSet + "Coriander")
+
+
+-------------- Listing 3.7
+import scala.collection.mutable.Map
+val treasureMap = Map[Int, String]()
+treasureMap += (1 -> "Go to island.")
+treasureMap += (2 -> "Find big X on ground.")
+treasureMap += (3 -> "Dig.")
+println(treasureMap(2))
+-------------- 
+
+If you prefer an immutable map, no import is necessary, as immutable is the default -
+map. An example is shown in Listing 3.8:
+-------------- Listing 3.7
+val romanNumeral = Map(
+1 -> "I", 2 -> "II", 3 -> "III", 4 -> "IV", 5 -> "V"
+)
+println(romanNumeral(4))
+-------------- 
+
+----> Read lines from a file
+-------------- Listing 3.10
+import scala.io.Source
+if (args.length > 0) {
+    for (line <- Source.fromFile(args(0)).getLines())
+        println(line.length +" "+ line)
+}
+else
+    Console.err.println("Please enter filename")
+-------------- 

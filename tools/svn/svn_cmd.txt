@@ -1,3 +1,8 @@
+svn revert 
+svn revert -R .  # Recursively revert any locally-changed files
+
+
+
 http://www.cnblogs.com/jisheng/archive/2012/09/13/2683060.html
 
 SVNÃüÁîÏê½â¡¾×ª¡¿
