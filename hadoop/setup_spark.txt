@@ -1,3 +1,8 @@
+http://book.51cto.com/art/201408/448416.htm
+
+master的web UI(默认 http://localhost:8080  
+
+
 前提条件
 1 hadoop已经搭建完成
 2 master, slave01, slave02     
