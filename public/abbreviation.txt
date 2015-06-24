@@ -15,5 +15,5 @@ ISBN
     International Standard Book Number, a unique book identifier
 	
 	
-curly braces   {}
+curly braces   {} 大括号
 parentheses    ()	

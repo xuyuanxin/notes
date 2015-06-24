@@ -1,15 +1,23 @@
-svn revert 
+----> svn checkout (svn co)                                                          |
+svn checkout path  (path是服务器上的目录)                                            |
+例如: svn checkout svn://192.168.1.1/pro/domain                                      |
+                                                                                     |
+让svn在checkout时不含根目录, 使用图形模式时很方便, 使用命令行模式时需要注意. 不含根目|
+录的意思: 比如我要checkout  http://192.168.9.12:8443/svn/保卫萝卜/ 下面的所有文件, 但|
+是不包括保卫萝卜文件夹, 我们可以在路径文件夹后面打个空格, 再加个"."就O了. 示例:      |
+set svn_url=http://192.168.9.12:8443/svn/保卫萝卜/ .
+set svn_user=mojitu
+set svn_ps=123456
+svn checkout %svn_url% --username %svn_user% --password %svn_ps%
+
+----> svn revert 
 svn revert -R .  # Recursively revert any locally-changed files
-
-
 
 http://www.cnblogs.com/jisheng/archive/2012/09/13/2683060.html
 
 SVN命令详解【转】
        1、将文件checkout到本地目录
-svn checkout path（path是服务器上的目录）
-例如：svn checkout svn://192.168.1.1/pro/domain
-简写：svn co
+
        2、往版本库中添加新的文件
 svn add file
 例如：svn addtest.php(添加test.php)

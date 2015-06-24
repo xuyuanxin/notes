@@ -3,3 +3,4 @@
 ---->Ë÷Òý
 Class    java.lang.Class
 reflect  import java.lang.reflect.*;
+Scanner  java.util.Scanner

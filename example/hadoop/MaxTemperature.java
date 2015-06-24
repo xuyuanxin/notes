@@ -47,18 +47,13 @@
      (1950, 22)
  This is the final output: the maximum global temperature recorded in each year.
  ----------------------------------------------------------------------------------*/
+
+ 
 import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-
-public class MaxTemperatureMapper
-extends Mapper<LongWritable, Text, Text, IntWritable> 
-{
-private static final int MISSING = 9999;
-
-@Override
 
 /*-----------------------------------------------------------------------------------
  Mapper for the maximum temperature example
@@ -80,6 +75,12 @@ private static final int MISSING = 9999;
  to write the output to. In this case, we write the year as a Text object (since we -
  are just using it as a key), and the temperature is wrapped in an IntWritable.
  ----------------------------------------------------------------------------------*/
+public class MaxTemperatureMapper
+extends Mapper<LongWritable, Text, Text, IntWritable> 
+{
+private static final int MISSING = 9999;
+
+@Override
 public void map(LongWritable key, Text value, Context context)
 throws IOException, InterruptedException 
 {
@@ -106,11 +107,6 @@ import java.io.IOException;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
-
-public class MaxTemperatureReducer
-extends Reducer<Text, IntWritable, Text, IntWritable> 
-{
-
 /*-----------------------------------------------------------------------------------
  Reducer for the maximum temperature example
 
@@ -121,6 +117,10 @@ extends Reducer<Text, IntWritable, Text, IntWritable>
  ion: Text and IntWritable. And in this case, the output types of the reduce function 
  are Text and IntWritable, for a year and its maximum temperature,
  ----------------------------------------------------------------------------------*/
+public class MaxTemperatureReducer
+extends Reducer<Text, IntWritable, Text, IntWritable> 
+{
+
 @Override
 public void reduce(Text key, Iterable<IntWritable> values, Context context)
 throws IOException, InterruptedException 
@@ -142,9 +142,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
-public class MaxTemperature 
-{
 
 /*-----------------------------------------------------------------------------------
  A Job object forms the specification of the job and gives you control over how the -
@@ -184,6 +181,10 @@ public class MaxTemperature
  success (true) or failure (false), which we translate into the program's exit code -
  of 0 or 1.
  ----------------------------------------------------------------------------------*/
+
+public class MaxTemperature 
+{
+
 public static void main(String[] args) throws Exception 
 {
     if (args.length != 2) 
