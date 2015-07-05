@@ -19,17 +19,13 @@ import java.util.*;
 
 // import statements come after the package statement
 
-/**
- * @version 1.10 1999-12-18
- * @author Cay Horstmann
- */
-public class Employee
+public class EmployeeP
 {
    private String name;
    private double salary;
    private Date hireDay;
 
-   public Employee(String n, double s, int year, int month, int day)
+   public EmployeeP(String n, double s, int year, int month, int day)
    {
       name = n;
       salary = s;

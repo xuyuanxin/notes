@@ -1,31 +1,37 @@
+
+
+http://ip:8080   master的web UI(默认端口是8080) 
+http://ip:4040
+
+参考      
 http://book.51cto.com/art/201408/448416.htm
+http://www.open-open.com/lib/view/open1419490748562.html                                                                                |
 
-master的web UI(默认 http://localhost:8080  
-
-
-前提条件
-1 hadoop已经搭建完成
-2 master, slave01, slave02     
-                                                                                |
 1 安装Scala                                                                          |
+                                                                                     |
 2 安装spark                                                                          | 
   下载后"spark-1.0.2-bin-hadoop2.tgz"解压到"/usr/local/spark"目录之下.配置"~/.bashrc"|
   , 设置"SPARK_HOME"并把Spark的bin目录加入到PATH之中, 配置完成后使用source命令使配置 |
   生效.                                                                              |
+  export SPARK_HOME=/usr/local/spark                                                 |                                     
+  export PATH=$PATH:$SCALA_HOME/bin:$SPARK_HOME/bin                                  |
+                                                                                     |
 3 修改配置文件                                                                       |
 3.1 conf/slaves 
   slave01
   slave02                                                                            |
 3.2 conf/spark-env.sh                                                                |
   首先把spark-env.sh.template拷贝到spark-env.sh. 设置一些变量, 如                    |
-  export SCALA_HOME=/usr/lib/scala-2.9.3                                             |         
+  export SCALA_HOME=/usr/lib/scala-2.9.3                                             |
+                                                                                     |  
 4 在所有worker上安装并配置Spark                                                      |
   既然master上的这个文件件已经配置好了, 把它拷贝到所有的worker. 注意, 三台机器spark所|
   在目录必须一致, 因为master会登陆到worker上执行命令, master认为worker的spark路径与自|
-  己一样.
-  $ cd
-  $ scp -r spark-0.7.2 dev@slave01:~
+  己一样.                                                                            |
+  $ cd                                                                               |
+  $ scp -r spark-0.7.2 dev@slave01:~                                                 |
   $ scp -r spark-0.7.2 dev@slave02:~                                                 |
+  
 5 启动Spark集群                                                                      |
   在master上执行
   $ cd ~/spark-0.7.2
@@ -38,9 +44,9 @@ master的web UI(默认 http://localhost:8080
   2152 NameNode
   4822 Master                                                                        |
   浏览master的web UI(默认http://localhost:8080). 这是你应该可以看到所有的word节点, 以|
-  及他们的CPU个数和内存等信息
+  及他们的CPU个数和内存等信息.                                                       |
+  
 5.6 运行SparkPi例子
-
 $ cd ~/spark-0.7.2
 $ ./run spark.examples.SparkPi spark://master:7077
 （可选）运行自带的例子，SparkLR 和 SparkKMeans.
@@ -49,6 +55,7 @@ $ ./run spark.examples.SparkPi spark://master:7077
 #./run spark.examples.SparkLR spark://master:7077
 #kmeans
 $ ./run spark.examples.SparkKMeans spark://master:7077 ./kmeans_data.txt 2 1
+
 5.7 从HDFS读取文件并运行WordCount
 $ cd ~/spark-0.7.2
 $ hadoop fs -put README.md .
@@ -56,6 +63,28 @@ $ MASTER=spark://master:7077 ./spark-shell
 scala> val file = sc.textFile("hdfs://master:9000/user/dev/README.md")
 scala> val count = file.flatMap(line => line.split(" ")).map(word => (word, 1)).reduceByKey(_+_)
 scala> count.collect()
+
 5.8 停止 Spark 集群
 $ cd ~/spark-0.7.2
 $ bin/stop-all.sh  
+
+
+
+--------> spark cfg
+---->conf/spark-env.sh
+###jdk安装目录
+export JAVA_HOME=/usr/lib/java/jdk1.7.0_71
+###scala安装目录
+export SCALA_HOME=/usr/lib/scala/scala-2.11.4
+###spark集群的master节点的ip
+export SPARK_MASTER_IP=192.168.1.3
+###指定的worker节点能够最大分配给Excutors的内存大小
+export SPARK_WORKER_MEMORY=1g
+###hadoop集群的配置文件目录
+export HADOOP_CONF_DIR=/usr/local/hadoop/hadoop-2.5.2/etc/hadoop
+
+----> conf/slaves
+# A Spark Worker will be started on each of the machines listed below.
+master
+slave1
+slave2

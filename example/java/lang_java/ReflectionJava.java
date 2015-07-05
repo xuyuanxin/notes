@@ -3,7 +3,6 @@
 import java.util.*;
 import java.lang.reflect.*;
 
-
 /*-----------------------------------------------------------------------------------
  F:\mygit\notes\example\java\lang_java>javac ReflectionJava.java
  F:\mygit\notes\example\java\lang_java>java ReflectionJava
@@ -71,8 +70,25 @@ import java.lang.reflect.*;
    private static final [Ljava.lang.String; wtb;
    private static final [I ttb;
  }
+ 
+ ----> Using Reflection to Analyze the Capabilities of Classes 
+ Here is a brief overview of the most important parts of the reflection mechanism for 
+ letting you examine the structure of a class.
+ The three classes @Field, @Method, and @Constructor in the java.lang.reflect package 
+ describe the fields, methods, and constructors of a class, respectively. All three -
+ classes have a method called @getName that returns the name of the item. The  @Field 
+ class has a method @getType that returns an object, again of type @Class, that desc-
+ ribes the field type. The @Method and @Constructor classes have methods to report t-
+ he types of the parameters, and the @Method class also reports the return type.  All 
+ three of these classes also have a method called @getModifiers that returns an inte-
+ ger, with various bits turned on and off, that describes the modifiers used, such as 
+ public and static. You can then use the static methods in the @Modifier class in the 
+ java.lang.reflect package to analyze the integer that @getModifiers returns. Use me-
+ thods like @isPublic, @isPrivate, or @isFinal in the @Modifier class to tell whether 
+ a method or constructor was public, private, or final. All you have to do is have t-
+ he appropriate method in the @Modifier class work on the integer that  @getModifiers 
+ returns. You can also use the Modifier.toString method to print the modifiers.
  ----------------------------------------------------------------------------------*/
-
 public class ReflectionJava
 {
    public static void main(String[] args)
@@ -199,10 +215,9 @@ public class ReflectionJava
 
 /*-----------------------------------------------------------------------------------
  ----> reflection
- The reflection library gives you a very rich and elaborate toolset to write programs 
- that manipulate Java code dynamically. A program that can analyze the capabilities -
- of classes is called reflective. The reflection mechanism is extremely powerful.  As 
- the next sections show, you can use it to
+ A program that can analyze the capabilities of classes is called reflective. The re-
+ flection mechanism is extremely powerful.  As the next sections show, you can use it 
+ to
  > Analyze the capabilities of classes at runtime;
  > Inspect objects at runtime, for example, to write a single toString method that w-
    orks for all classes;
@@ -210,33 +225,28 @@ public class ReflectionJava
  > Take advantage of Method objects that work just like function pointers in languag-
    es such as C++.
  Reflection is a powerful and complex mechanism; however, it is of interest mainly t-
- o tool builders, not application programmers. 
-
+ o tool builders, not application programmers.
+ 
+ -----------------------------------------------------------------------------------
  java.lang.reflect.Field 1.1
  java.lang.reflect.Method 1.1
- 
  java.lang.reflect.Constructor 1.1
- ? Class getDeclaringClass()
- returns the Class object for the class that defines this constructor, method, or fi-
- eld.
- 
- ? Class[] getExceptionTypes() (in Constructor and Method classes)
+ ----> Class getDeclaringClass()
+ returns the @Class object for the class that defines this constructor, method, or f-
+ ield.
+ ----> Class[] getExceptionTypes() (in Constructor and Method classes)
  returns an array of Class objects that represent the types of the exceptions  thrown 
  by the method.
-
  ----> int getModifiers()
  returns an integer that describes the modifiers of this constructor, method, or fie-
  ld. Use the methods in the @Modifier class to analyze the return value.
- 
  ----> String getName()
  returns a string that is the name of the constructor, method, or field.
- 
  ----> Class[] getParameterTypes() (in Constructor and Method classes)
  returns an array of Class objects that represent the types of the parameters.
- 
  ----> Class getReturnType() (in Method classes)
  returns a Class object that represents the return type.
-
+ -----------------------------------------------------------------------------------
  java.lang.reflect.Modifier 1.1
  ----> static String toString(int modifiers)
  returns a string with the modifiers that correspond to the bits set in modifiers.
@@ -253,35 +263,4 @@ public class ReflectionJava
  ? static boolean isSynchronized(int modifiers)
  ? static boolean isVolatile(int modifiers)
  tests the bit in the modifiers value that corresponds to the modifier in the method name.
-
-
-
- ----> Using Reflection to Analyze the Capabilities of Classes 
- Here is a brief overview of the most important parts of the reflection mechanism for 
- letting you examine the structure of a class.
- The three classes @Field, @Method, and @Constructor in the java.lang.reflect package 
- describe the fields, methods, and constructors of a class, respectively. All three -
- classes have a method called @getName that returns the name of the item. The  @Field 
- class has a method @getType that returns an object, again of type @Class, that desc-
- ribes the field type. The @Method and @Constructor classes have methods to report t-
- he types of the parameters, and the @Method class also reports the return type.  All 
- three of these classes also have a method called @getModifiers that returns an inte-
- ger, with various bits turned on and off, that describes the modifiers used, such as 
- public and static. You can then use the static methods in the @Modifier class in the 
- java.lang.reflect package to analyze the integer that @getModifiers returns. Use me-
- thods like @isPublic, @isPrivate, or @isFinal in the @Modifier class to tell whether 
- a method or constructor was public, private, or final. All you have to do is have t-
- he appropriate method in the @Modifier class work on the integer that  @getModifiers 
- returns. You can also use the Modifier.toString method to print the modifiers.
-
- getFields  getMethods  getConstructors
- methods of the @Class class return arrays of the public fields, methods, and constr-
- uctors that the class supports. This includes public members of superclasses.
-
- getDeclaredFields getDeclaredMethods getDeclaredConstructors 
- methods of the @Class class return arrays consisting of all fields, methods, and co-
- nstructors that are declared in the class. This includes private, package, and prot-
- ected members, but not members of superclasses.
-
- 
  ----------------------------------------------------------------------------------*/

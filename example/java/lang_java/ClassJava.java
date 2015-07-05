@@ -16,8 +16,7 @@
  @Class object describes the properties of a particular class. 
 
  @getName
- Probably the most commonly used method of Class is getName. This returns the name of 
- the class. For example, the statement
+ This returns the name of the class. For example, the statement
      System.out.println(e.getClass().getName() + " " + e.getName());
  prints
      Employee Harry Hacker
@@ -27,7 +26,7 @@
  If the class is in a package, the package name is part of the class name:
      Date d = new Date();
      Class cl = d.getClass();
- String name = cl.getName(); // name is set to "java.util.Date"
+     String name = cl.getName(); // name is set to "java.util.Date"
 
  If T is any Java type, then T.class is the matching class object. For example:
      Class cl1 = Date.class; // if you import java.util.*;
@@ -39,50 +38,37 @@
  for array types:
      Double[].class.getName() //returns "[Ljava.lang.Double"; 
      int[].class.getName()    //returns "[I"
-
+ ------------------------------------------------------------------------------------
  java.lang.Class 1.0
 
  ----> static Class forName(String className)
- You can obtain a @Class object corresponding to a class name by using the static    
- @forName method.
+ returns the Class object representing the class with name className. You can  obtain 
+ a @Class object corresponding to a class name by using the static @forName method.
      String className = "java.util.Date";
      Class cl = Class.forName(className);
-
  The virtual machine manages a unique @Class object for each type. Therefore, you can 
  use the == operator to compare class objects. For example:
      if (e.getClass() == Employee.class) . . .
-
  ----> Object newInstance()
+ returns a new instance of this class.
      e.getClass().newInstance();
  creates a new instance of the same class type as e. The newInstance method calls the 
  no-argument constructor to initialize the newly created object. An exception is thr-
- own if the class does not have a noargument constructor.
-
- 
- static Class forName(String className)
- returns the Class object representing the class with name className.
- 
- Object newInstance()
- returns a new instance of this class.
-
- java.lang.Class 1.0
+ own if the class does not have a noargument constructor. 
  ----> Field[] getFields() 1.1
- ----> Field[] getDeclaredFields() 1.1
+       Field[] getDeclaredFields() 1.1
  @getFields returns an array containing Field objects for the public fields of this c-
  lass or its superclasses; @getDeclaredField returns an array of Field objects for all 
  fields of this class. The methods return an array of length 0 if there are no such f-
  ields or if the Class object represents a primitive or array type.
-
- ? Method[] getMethods() 1.1
- ? Method[] getDeclaredMethods() 1.1
- returns an array containing Method objects: getMethods returns public methods and includes
- inherited methods; getDeclaredMethods returns all methods of this class or interface but does
- not include inherited methods.
- ? Constructor[] getConstructors() 1.1
- Constructor[] getDeclaredConstructors() 1.1
- returns an array containing Constructor objects that give you all the public constructors (for
- getConstructors) or all constructors (for getDeclaredConstructors) of the class represented by
- this Class object.
-
-
+ ----> Method[] getMethods() 1.1
+       Method[] getDeclaredMethods() 1.1
+ returns an array containing Method objects: getMethods returns public methods and i-
+ ncludes inherited methods; getDeclaredMethods returns all methods of this class or -
+ interface but does not include inherited methods.
+ ----> Constructor[] getConstructors() 1.1
+       Constructor[] getDeclaredConstructors() 1.1
+ returns an array containing Constructor objects that give you all the public constr-
+ uctors (for getConstructors) or all constructors (for getDeclaredConstructors) of t-
+ he class represented by this Class object.
  ----------------------------------------------------------------------------------*/

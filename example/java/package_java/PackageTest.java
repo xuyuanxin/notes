@@ -1,24 +1,48 @@
 /*-----------------------------------------------------------------------------------
+ two packages: The PackageTest class belongs to the default package, and the Employee 
+ class belongs to the com.horstmann.corejava package. Therefore, the Employee.java f-
+ ile must be in a subdirectory com/horstmann/corejava.
+     .(base directory)
+     |-- PackageTest.java
+     |-- PackageTest.class
+     |-- com/
+         |-- horstmann/
+             |-- corejava/
+                 |-- Employee.java
+                 |-- Employee.class
  To compile this program, simply change to the base directory and run the command
      javac PackageTest.java
  The compiler automatically finds the file com/horstmann/corejava/Employee.java and -
  compiles it.
 
+     Let's look at a more realistic example, in which we don't use the default packa-
+ ge but have classes distributed over several packages (com.horstmann.corejava and  -
+ com.mycompany)
+     .(base directory)
+     |-- com/
+         |-- horstmann/
+         |   |-- corejava/
+         |   |   |-- Employee.java
+         |   |   |-- Employee.class 
+         |-- mycompany/
+             |-- PayrollApp.java
+             |-- PayrollApp.class
+ In this situation, you still must compile and run classes from the base directory, -
+ that is, the directory containing the com directory:
+     javac com/mycompany/PayrollApp.java
+     java com.mycompany.PayrollApp
+
+ ----> Caution 
  The compiler does not check the directory structure when it compiles source files. -
- For example, suppose you have a source file that starts with the directive package -
- com.mycompany; You can compile the file even if it is not contained in a subdirecto-
- ry com/mycompany. The source file will compile without errors if it doesn't depend -
- on other packages. However, the resulting program will not run . The virtual machine 
- won't find the resulting classes when you try to run the program.
+ For example, suppose you have a source file that starts with the directive 
+     package com.mycompany; 
+ You can compile the file even if it is not contained in a subdirectory com/mycompany. 
+ The source file will compile without errors if it doesn't depend on other  packages. 
+ However, the resulting program will not run . The virtual machine won't find the re-
+ sulting classes when you try to run the program.
 
  classes are stored in subdirectories of the file system. The path to  the class must 
  match the package name.
-
- A form of the import statement permits the importing of static methods and fields, -
- not just classes. For example, if you add the directive
-     import static java.lang.System.*;
- to the top of your source file, then you can use the static methods and fields of t-
- he System class without the class name prefix.
  ----------------------------------------------------------------------------------*/
 import com.horstmann.corejava.*; // the Employee class is defined in that package
 import static java.lang.System.*;
@@ -28,7 +52,7 @@ public class PackageTest
    public static void main(String[] args)
    {
       // because of the import statement, we don't have to use com.horstmann.corejava.Employee here
-      Employee harry = new Employee("Harry Hacker", 50000, 1989, 10, 1);
+      EmployeeP harry = new EmployeeP("Harry Hacker", 50000, 1989, 10, 1);
 
       harry.raiseSalary(5);
 
@@ -37,15 +61,21 @@ public class PackageTest
    }
 }
 
-
 /*-----------------------------------------------------------------------------------
  Java allows you to group classes in a collection called a package. Packages are con-
  venient for organizing your work and for separating your work from code libraries p-
  rovided by others. The standard Java library is distributed over a number of packag-
- es, including java.lang, java.util, java.net, and so on . The standard Java packages 
- are examples of hierarchical packages. Just as you have nested subdirectories on yo-
- ur hard disk, you can organize packages by using levels of nesting.All standard Java 
- packages are inside the java and javax package hierarchies.
+ es, including java.lang, java.util, java.net, and so on . All standard Java packages 
+ are inside the java and javax package hierarchies.
+
+ The main reason for using packages is to guarantee the uniqueness of class names. S-
+ uppose two programmers come up with the bright idea of supplying an Employee  class. 
+ As long as both of them place their class into different packages, there is no conf-
+ lict.
+
+ From the point of view of the compiler, there is absolutely no relationship  between
+ nested packages. For example, the packages java.util and java.util.jar have  nothing
+ to do with each other. Each is its own independent collection of classes.
 
  A class can use all classes from its own package and all public classes from other -
  packages. You can access the public classes in another package in two ways. The fir-
@@ -82,6 +112,22 @@ public class PackageTest
      java.sql.Date today = new java.sql.Date(...);
  Locating classes in packages is an activity of the compiler . The bytecodes in class 
  files always use full package names to refer to other classes.
+
+ ----> Static Imports
+ A form of the import statement permits the importing of static methods and fields, -
+ not just classes. For example, if you add the directive
+     import static java.lang.System.*;
+ to the top of your source file, then you can use the static methods and fields of t-
+ he System class without the class name prefix:
+     out.println("Goodbye, World!"); // i.e., System.out
+     exit(0); // i.e., System.exit
+ You can also import a specific method or field:
+     import static java.lang.System.out;
+ In practice, it seems doubtful that many programmers will want to abbreviate       -
+ System.out or System.exit. The resulting code seems less clear. On the other hand, -
+     sqrt(pow(x, 2) + pow(y, 2))
+ seems much clearer than
+     Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
 
  ----> Package Scope
  Features tagged as public can be used by any class. Private features can be used on-
@@ -120,9 +166,16 @@ public class PackageTest
  2 The current directory (.); and
  3 The JAR file /home/user/archives/archive.jar or c:\archives\archive.jar.
 
- The runtime library files (rt.jar and the other JAR files in the  jre/lib and jre/lib/ext 
- directories) are always searched for classes; don't include them explicitly in the -
- class path.
+ Starting with Java SE 6, you can specify a wildcard for a JAR file directory, like -
+ this:
+ /home/user/classdir:.:/home/user/archives/'*'
+ or
+ c:\classdir;.;c:\archives\*
+ In UNIX, the * must be escaped to prevent shell expansion.
+
+ The runtime library files (rt.jar and the other JAR files in the  jre/lib and      -
+ jre/lib/ext directories) are always searched for classes; don't include them explic-
+ itly in the class path.
 
  Caution
  The javac compiler always looks for files in the current directory, but the java vi-
@@ -184,8 +237,6 @@ public class PackageTest
      set CLASSPATH=c:\classdir;.;c:\archives\archive.jar
  The class path is set until the shell exits.
  
-
-
 ----> class base
  A class is the template or blueprint from which objects are made.Think about classes
  as cookie cutters. Objects are the cookies themselves . When you construct an object

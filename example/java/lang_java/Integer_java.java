@@ -57,7 +57,6 @@
      Integer n = 3;
      n++;
 
-
  As you know, the == operator, applied to wrapper objects, only tests whether the ob-
  jects have identical memory locations. The following comparison would therefore pro-
  bably fail:

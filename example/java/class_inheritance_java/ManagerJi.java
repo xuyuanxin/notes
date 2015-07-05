@@ -1,12 +1,15 @@
 //package inheritance;
 
-
 /*-----------------------------------------------------------------------------------
- ----> keyword extends
+ ----> Classes, Superclasses, and Subclasses
+ ----> keyword extends 
  The keyword extends indicates that you are making a new class that derives from an -
  existing class. The existing class is called the superclass, base class, or parent -
  class. The new class is called the subclass, derived class, or child class. The ter-
  ms superclass and subclass are those most commonly used by Java programmers.
+ 
+ a subclass can add fields, and it can add methods or override the methods of the su-
+ perclass. However, inheritance can never take away any fields or methods.
 
  ----> Manager
  you can use methods such as getName and getHireDay with Manager objects. Even though 
@@ -19,13 +22,20 @@ public class ManagerJi extends EmployeeJi
 {
    private double bonus;
 
-   /**
-    * @param n the employee's name
-    * @param s the salary
-    * @param year the hire year
-    * @param month the hire month
-    * @param day the hire day
-    */
+/*-----------------------------------------------------------------------------------
+ Here, the keyword super has a different meaning. The instruction
+     super(n, s, year, month, day);
+ is shorthand for "call the constructor of the Employee superclass with n, s, year, -
+ month, and day as parameters." Since the Manager constructor cannot access the priv-
+ ate fields of the Employee class, it must initialize them through a constructor. The 
+ constructor is invoked with the special super syntax. The call using super must be -
+ the first statement in the constructor for the subclass.
+
+ If the subclass constructor does not call a superclass constructor explicitly, the -
+ no-argument constructor of the superclass is invoked. If the superclass does not ha-
+ ve a no-argument constructor and the subclass constructor does not call another sup-
+ erclass constructor explicitly, the Java compiler reports an error.
+ ----------------------------------------------------------------------------------*/
    public ManagerJi(String n, double s, int year, int month, int day)
    {
       super(n, s, year, month, day);
@@ -65,48 +75,14 @@ public class ManagerJi extends EmployeeJi
          super.getSalary()
  calls the getSalary method of the Employee class. Here is the correct version of the 
  getSalary method for the Manager class:
------------------------------------------------------------------------------------*/
-   public double getSalary()
-   {
-      double baseSalary = super.getSalary();
-      return baseSalary + bonus;
-   }
 
-   public void setBonus(double b)
-   {
-      bonus = b;
-   }
-}
-
-/*-----------------------------------------------------------------------------------
- a subclass can add fields, and it can add methods or override the methods of the su-
- perclass. However, inheritance can never take away any fields or methods.
-
- ----> super
- Some people think of @super as being analogous to the @this reference. However, that 
+ Note
+ Some people think of super as being analogous to the this reference. However, that -
  analogy is not quite accurate: super is not a reference to an object. For example, -
  you cannot assign the value super to another object variable. Instead, super is a s-
- pecial keyword that directs the compiler to invoke the superclass method.
+ pecial keyword that directs the compiler to invoke the superclass method. 
 
- Finally, let us supply a constructor.
-		 public Manager(String n, double s, int year, int month, int day)
-		 {
-		    super(n, s, year, month, day);
-		    bonus = 0;
-		 }
- Here, the keyword super has a different meaning. The instruction
-         super(n, s, year, month, day);
- is shorthand for "call the constructor of the Employee superclass with n, s, year, -
- month, and day as parameters." Since the Manager constructor cannot access the priv-
- ate fields of the Employee class, it must initialize them through a constructor. The 
- constructor is invoked with the special super syntax. The call using super must be -
- the first statement in the constructor for the subclass. If the subclass constructor 
- does not call a superclass constructor explicitly,the no-argument constructor of the 
- superclass is invoked. If the superclass does not have a no-argument constructor and 
- the subclass constructor does not call another superclass constructor explicitly,the 
- Java compiler reports an error.
-
- ----> this super
+ Note
  Recall that the @this keyword has two meanings: to denote a reference to the implic-
  it parameter and to call another constructor of the same class. Likewise, the @super 
  keyword has two meanings: to invoke a superclass method and to invoke a superclass -
@@ -114,7 +90,43 @@ public class ManagerJi extends EmployeeJi
  osely related. The constructor calls can only occur as the first statement in anoth-
  er constructor. The constructor parameters are either passed  to another constructor 
  of the same class (this) or a constructor of the superclass (super).
- 
+ ----------------------------------------------------------------------------------*/
+   public double getSalary()
+   {
+      double baseSalary = super.getSalary();
+      return baseSalary + bonus;
+   }
+
+/*-----------------------------------------------------------------------------------
+ Our Manager class has a new field to store the bonus, and a new method to set it:
+ class Manager extends Employee
+ {
+     private double bonus;
+     . . .
+     public void setBonus(double b)
+     {
+        bonus = b;
+     }
+ }
+ There is nothing special about these methods and fields. If you have a Manager obje-
+ ct, you can simply apply the setBonus method.
+     Manager boss = . . .;
+     boss.setBonus(5000);
+ Of course, if you have an Employee object, you cannot apply the setBonus method,  it 
+ is not among the methods that are defined in the Employee class. However, you can u-
+ se methods such as getName and getHireDay with Manager objects. Even though these m-
+ ethods are not explicitly defined in the Manager class, they are automatically inhe-
+ rited from the Employee superclass. Similarly, the fields name, salary, and  hireDay 
+ are taken from the superclass. Every Manager object has four fields: name, salary, -
+ hireDay, and bonus.
+ ----------------------------------------------------------------------------------*/
+   public void setBonus(double b)
+   {
+      bonus = b;
+   }
+}
+
+/*-----------------------------------------------------------------------------------
  ---->
  We make a new manager and set the manager's bonus:
      Manager boss = new Manager("Carl Cracker", 80000, 1987, 12, 15);
@@ -150,7 +162,12 @@ public class ManagerJi extends EmployeeJi
  Java does not support multiple inheritance.
 
  ----> Polymorphism
- For example, you can assign a subclass object to a superclass variable. Employee e;
+ every object of the subclass is an object of the superclass. For example, every man-
+ ager is an employee. Thus, it makes sense for the Manager class to be a subclass  of 
+ the Employee class. 
+
+ For example, you can assign a subclass object to a superclass variable. 
+     Employee e;
      e = new Employee(. . .);  // Employee object expected
      e = new Manager(. . .); // OK, Manager can be used as well
  In the Java programming language, object variables are polymorphic. A variable of t-
@@ -178,20 +195,19 @@ public class ManagerJi extends EmployeeJi
  erences without a cast. For example, consider this array of managers:
      Manager[] managers = new Manager[10];
  It is legal to convert this array to an Employee[] array:
-     Employee[] staff = managers; // OK
- Sure, why not, you may think. After all, if managers[i] is a Manager , it is also an 
- Employee. But actually, something surprising is going on. Keep in mind that managers 
- and staff are references to the same array. Now consider the statement
+     Employee[] staff = managers; //no compiler error, but
+ The compiler will allow this assignment. But actually, something surprising is goin-
+ g on. Keep in mind that managers and staff are references to the same array. Now co-
+ nsider the statement
      staff[0] = new Employee("Harry Hacker", ...); 
- The compiler will cheerfully allow this assignment. But staff[0] and managers[0] are 
- the same reference, so it looks as if we managed to smuggle a mere employee into the 
- management ranks. That would be very bad, calling managers[0].setBonus(1000) would -
- try to access a nonexistent instance field and would corrupt neighboring  memory. To 
- make sure no such corruption can occur, all arrays remember the element type with w-
- hich they were created, and they monitor that only compatible  references are stored 
- into them. For example, the array created as new Manager[10] remembers that it is an 
- array of managers. Attempting to store an Employee reference causes an ArrayStore E-
- xception.
+ staff[0] and managers[0] are the same reference. That would be very bad, calling   -
+     managers[0].setBonus(1000) 
+ would try to access a nonexistent instance field and would corrupt neighboring memo-
+ ry. To make sure no such corruption can occur, all arrays remember the element  type 
+ with which they were created, and they monitor that only compatible  references  are 
+ stored into them. For example, the array created as new Manager[10] remembers that -
+ it is an array of managers. Attempting to store an Employee reference causes an    -
+ ArrayStore Exception.
 
 ----> override
  Recall that the name and parameter type list for a method is called the method's si-

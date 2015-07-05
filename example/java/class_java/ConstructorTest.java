@@ -142,9 +142,9 @@ class Employee
 
  4 Calling Another Constructor
  The keyword @this refers to the implicit parameter of a method. However, this keywo-
- rd has a second meaning. If the first statement of a constructor has the form this(. . .), 
- then the constructor calls another constructor of the same class . Here is a typical 
- example:
+ rd has a second meaning. If the first statement of a constructor has the form      -
+ this(. . .), then the constructor calls another constructor of the same class . Here 
+ is a typical example:
 	public Employee(double s)
 	{
 	   this("Employee #" + nextId, s); // calls Employee(String, double)
@@ -192,6 +192,34 @@ class Employee
     the second constructor is executed.
  4. The body of the constructor is executed.
 
+ ----> Parameter Names
+ When you write very trivial constructors (and you'll write a lot of them), it can be
+ somewhat frustrating to come up with parameter names. We have generally opted for  -
+ single-letter parameter names:
+ public Employee(String n, double s)
+     {
+         name = n;
+         salary = s;
+     }
+ However, the drawback is that you need to read the code to tell what the n and s pa-
+ rameters mean. Some programmers prefix each parameter with an "a":
+ public Employee(String aName, double aSalary)
+     {
+         name = aName;
+         salary = aSalary;
+     }
+ That is quite neat. Any reader can immediately figure out the meaning of the parame-
+ ters.
+ Another commonly used trick relies on the fact that parameter variables shadow inst-
+ ance fields with the same name. For example, if you call a parameter salary, then  -
+ salary refers to the parameter, not the instance field. But you can still access the
+ instance field as this.salary. Recall that this denotes the implicit parameter, that 
+ is, the object that is being constructed. Here is an example:
+ public Employee(String name, double salary)
+ {
+     this.name = name;
+     this.salary = salary;
+ }
 
  ----> Object Destruction and the finalize Method
  Since Java does automatic garbage collection, manual memory reclamation is not need-
@@ -202,4 +230,8 @@ class Employee
  ze method will be called before the garbage collector sweeps away the object. In pr-
  actice, do not rely on the finalize method for recycling any resources that are in -
  short supply you simply cannot know when this method will be called.
+     protected void finalize( )
+     {
+         // finalization code here
+     }
  ----------------------------------------------------------------------------------*/

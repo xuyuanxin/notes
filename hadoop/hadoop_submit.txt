@@ -13,6 +13,9 @@ jar -cvf WordCount.jar ./WordCount*.class
 /usr/local/hadoop/bin/hadoop jar WordCount.jar WordCount input output
 /usr/local/hadoop/bin/hadoop jar WordCount.jar org.apache.hadoop.examples.WordCount input output
 
+5
+bin/hdfs dfs -cat output/*
+bin/hdfs dfs -rm -r /user/hadoop/output     # 删除 output 文件夹
 
 WordCount.java 源码
 文件位于 hadoop-2.4.1-src\hadoop-mapreduce-project\hadoop-mapreduce-examples\src\main\java\org\apache\hadoop\examples 中:

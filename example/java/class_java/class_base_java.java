@@ -20,7 +20,13 @@ Inheritance ("is¨Ca")
 
 ----> Objects and Object Variables
 The standard Java library contains a Data class. Its objects describe points in time, 
-such as "December 31, 1999, 23:59:59 GMT" .
+such as "December 31, 1999, 23:59:59 GMT" . Constructors always have the same name a-
+s the class name. Thus, the constructor for the @Date class is called @Date. To cons-
+truct a Date object, you combine the constructor with the new operator, as follows:
+    new Date()
+This expression constructs a new object. The object is initialized to the current da-
+te and time.
+---->
     Date birthday = new Date();
     Date deadline; // deadline doesn't refer to any object
 deadline, that can refer to objects of type Date. It is important to realize that the 

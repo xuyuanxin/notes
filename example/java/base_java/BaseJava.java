@@ -27,7 +27,7 @@
      }
  Simply call the function like this:
      double m = max(3.1, 40.4, -5);
- The compiler passes a new double[] { 3.1, 40.4, -5 } to the max function.
+ The compiler passes a "new double[] { 3.1, 40.4, -5 }" to the max function.
 
  It is legal to pass an array as the last parameter of a method with variable parame-
  ters. For example:

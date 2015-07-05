@@ -1,0 +1,16 @@
+$SPARK_HOME/bin/spark-submit –class 应用程序的类名 \
+--master spark://master:7077 \
+--jars 依赖的库文件 \
+spark应用程序的jar包
+
+./bin/spark-submit \
+--class <main-class>
+--master <master-url> \
+... # other options
+<application-jar> \
+[application-arguments]
+参数解释：
+--class：Spark应用的类名
+--master：Spark用于所连接的master，如yarn-client，yarn-cluster等
+application-jar：Spark应用的jar包的路径
+application-arguments：提交Spark应用的所需要的参数（可以为空）。

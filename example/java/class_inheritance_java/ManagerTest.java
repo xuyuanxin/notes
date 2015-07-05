@@ -1,5 +1,43 @@
 //package inheritance;
 
+/*-----------------------------------------------------------------------------------
+ ---->
+ We make a new manager and set the manager's bonus:
+     Manager boss = new Manager("Carl Cracker", 80000, 1987, 12, 15);
+     boss.setBonus(5000);
+ We make an array of three employees:
+     Employee[] staff = new Employee[3];
+ We populate the array with a mix of managers and employees:
+     staff[0] = boss;
+     staff[1] = new Employee("Harry Hacker", 50000, 1989, 10, 1);
+     staff[2] = new Employee("Tony Tester", 40000, 1990, 3, 15); 
+
+ We print out everyone's salary:
+     for (Employee e : staff)
+         System.out.println(e.getName() + " " + e.getSalary());
+ This loop prints the following data:
+     Carl Cracker 85000.0
+     Harry Hacker 50000.0
+     Tommy Tester 40000.0
+ Now staff[1] and staff[2] each print their base salary because they are Employee ob-
+ jects. However, staff[0] is a Manager object whose getSalary method adds the bonus -
+ to the base salary. What is remarkable is that the call  e.getSalary() picks out the 
+ correct getSalary method. Note that the declared type of e is Employee, but the act-
+ ual type of the object to which e refers can be either Employee or Manager. When e -
+ refers to an Employee object, then the call e.getSalary() calls the getSalary method 
+ of the Employee class. However,when e refers to a Manager object, then the getSalary 
+ method of the Manager class is called instead. The virtual machine knows about the -
+ actual type of the object to which e refers, and therefore can invoke the correct m-
+ ethod. The fact that an object variable (such as the variable e) can refer to multi-
+ ple actual types is called polymorphism. Automatically selecting the appropriate me-
+ thod at runtime is called dynamic binding. We discuss both topics in more detail  in 
+ this chapter.
+
+ Java does not support multiple inheritance.
+ every manager is an employee. not every employee is a manager.
+ you can use a subclass object whenever the program expects a superclass object.
+ ----------------------------------------------------------------------------------*/
+
 public class ManagerTest
 {
    public static void main(String[] args)

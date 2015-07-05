@@ -106,7 +106,7 @@ class Employee
       return name;
    }
 
-   public double getSalary()
+   public double getSalary() /* field accessors */
    {
       return salary;
    }
@@ -138,13 +138,19 @@ class Employee
  As a rule of thumb, always use clone whenever you need to return a copy of a mutabl-
  e data field.
  ----------------------------------------------------------------------------------*/
-   public Date getHireDay()
+   public Date getHireDay() /* field accessors */
    {
       return hireDay;
    }
 
 /*-----------------------------------------------------------------------------------
- Implicit and Explicit Parameters
+ ----> Implicit and Explicit Parameters
+ Consider the call
+     number007.raiseSalary(5);
+ More specifically, the call executes the following instructions:
+     double raise = number007.salary * 5 / 100;
+     number007.salary += raise;
+     
  The raiseSalary method has two parameters . The first parameter, called the implicit 
  parameter, is the object of type Employee that appears before the method name. The -
  second parameter, the number inside the parentheses after the method name, is an ex-
@@ -185,7 +191,14 @@ class Employee
         . . .
     }
  The final modifier is particularly useful for fields whose type is primitive or an -
- immutable class.
+ immutable class. (A class is immutable if none of its methods ever mutate its objec-
+ ts. For example, the String class is immutable.) For mutable classes, the final mod-
+ ifier is likely to confuse the reader. For example,
+     private final Date hiredate;
+ merely means that the object reference stored in the hiredate variable doesn't get -
+ changed after the object is constructed. That does not mean that the hiredate object 
+ is constant. Any method is free to invoke the setTime mutator on the object to which
+ hiredate refers.
 
 ----> Use of Multiple Source Files
 The program in Listing 4.2 has two classes in a single source file . Many programmers
