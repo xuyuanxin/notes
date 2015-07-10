@@ -1,26 +1,86 @@
+/*-----------------------------------------------------------------------------------
+                   Datatypes required by the POSIX specification
+ -----------------------------------------------------------------------------------
+ Datatype    |                 Description                           |    Header   
+ ------------|-------------------------------------------------------|------
+ int8_t      | Signed 8-bit interger                                 | <sys/types.h>
+ uint8_t     | Unsigned 8-bit interger                               | <sys/types.h>
+ int16_t     | Signed 16-bit interger                                | <sys/types.h>
+ uint16_t    | Unsigned 16-bit interger                              | <sys/types.h>
+ int32_t     | Signed 32-bit interger                                | <sys/types.h>
+ uint32_t    | Unsigned 32-bit interger                              | <sys/types.h>
+ ------------|-------------------------------------------------------|--------------
+ sa_family_t | Address family of socket address structure            | <sys/socket.h>
+ socklet_t   | Length of socket address structure, normally uint32_t | <sys/socket.h>
+ ------------|-------------------------------------------------------|----------------
+ in_addr_t   | IPv4 address, normally uint32_t                       | <netinet/in.h>
+ in_port_t   | TCP or UDP port, normally uint16_t                    | <netinet/in.h>
+ ------------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------------*/
+
+
 
 /* socklent_t   uint32_t */
 
 #include<netinet/in.h>
 
-struct sockaddr {          /*通用套接字地址结构*/
+#define INET_ADDRSTRLEN       16       /* for IPv4 dotted-decimal */
+#define INET6_ADDRSTRLEN      46       /* for IPv6 hex string */
+
+
+/*-----------------------------------------------------------------------------------
+	  The generic socket address structure: sockaddr.  <sys/socket.h>
+ ------------------------------------------------------------------------------------  
+ ----------------------------------------------------------------------------------*/
+struct sockaddr 
+{
   uint8_t      sa_len;
   sa_family_t  sa_family;    /* address family: AF_xxx value */
   char         sa_data[14];  /* protocol-specific address */
 };
 
+/*-----------------------------------------------------------------------------------
+     The Internet (IPv4) socket address structure: sockaddr_in. <netinet/in.h>
+ ------------------------------------------------------------------------------------
+ @sin_len
+     The length member, sin_len, was added with 4.3BSD-Reno, when support for the OSI 
+     protocols was added (Figure 1.15). Before this release, the first member was   -
+     sin_family, which was historically an unsigned short. Not all vendors support  a 
+     length field for socket address structures and the POSIX specification does  not 
+     require this member.
+ @sin_family
+ @sin_port
+ @sin_addr
+     The POSIX specification requires only three members in the structure:sin_family, 
+     sin_addr, and sin_port. It is acceptable for a POSIX-compliant implementation to 
+     define additional structure members, and this is normal for an Internet socket -
+     address structure. Almost all implementations add the sin_zero member so that a-
+     ll socket address structures are at least 16 bytes in size.
+ @sin_zero
+     The sin_zero member is unused, but we always set it to 0 when filling in one  of 
+     these structures. Although most uses of the structure do not require that this -
+     member be 0, when binding a non-wildcard IPv4 address, this member must be 0   -
+     (pp. 731–732 of TCPv2).
 
-struct in_addr {
+ Socket address structures are used only on a given host: The structure itself is not 
+ communicated between different hosts, although certain fields (e.g., the IP  address 
+ and port) are used for communication.    
+ ----------------------------------------------------------------------------------*/
+struct in_addr 
+{
   in_addr_t   s_addr;           /* 32-bit IPv4 address network byte ordered */
 };
 
-struct sockaddr_in {         /*ipv4套接字地址结构*/
+struct sockaddr_in
+{
   uint8_t         sin_len;      /* length of structure (16) */
   sa_family_t     sin_family;   /* AF_INET */
   in_port_t       sin_port;     /* 16-bit TCP or UDP port number network byte ordered */
   struct in_addr  sin_addr;     /* 32-bit IPv4 address  network byte ordered */
   char            sin_zero[8];  /* unused */
 };
+
+
 
 /*
  Unix domain socket address structure, which is defined by including the <sys/un.h> 
@@ -106,7 +166,17 @@ struct linger {
     int l_linger; //linger time(延迟时间)
 };
 
-/*
+/*-----------------------------------------------------------------------------------
+                               Socket Options
+ -----------------------------------------------------------------------------------
+ SO_RCVTIMEO SO_SNDTIMEO 
+     These two socket options allow us to place a timeout on socket receives and sen-
+     ds. Notice that the argument to the two sockopt functions is a pointer to a tim-
+     eval structure. This lets us specify the timeouts in seconds and microseconds. -
+     We disable a timeout by setting its value to 0 seconds and 0 microseconds.  Both 
+     timeouts are disabled by default. The receive timeout affects the five input fu-
+     nctions: read, readv, recdv, recvfrom, and recvmsg. The send timeout affects the 
+     five output functions: write, writev, send, sendto, and sendmsg. 
  SO_ERROR
     When an error occurs on a socket, the protocol module in a Berkeley-derived kernel 
     sets a variable named @so_error for that socket to one of the standard Unix Exxx 
@@ -115,11 +185,69 @@ struct linger {
     returned by getsockopt is the pending error for the socket. The value of so_error 
     is then reset to 0 by the kernel
  SO_LINGER    struct linger
-*/
-#define SO_RCVTIMEO  /* 接收超时 struct timeval */
+ ----------------------------------------------------------------------------------*/
+#define SO_RCVTIMEO  /* struct timeval */
+#define SO_SNDTIMEO 
 #define SO_REUSEADDR /* 允许重用本地地址 tcp_udp_serv*/
 #define SO_LINGER
 #define SO_ERROR  /* eg:connect_nonb */
+
+/*-----------------------------------------------------------------------------------
+There are two basic types of options: binary options that enable or disable a certain 
+feature (flags), and options that fetch and return specific values that we can either 
+set or examine (values). The column labeled "Flag" specifies if the option is a flag 
+option. When calling getsockopt for these flag options, *optval is an integer. The 
+value returned in *optval is zero if the option is disabled, or nonzero if the option 
+is enabled. Similarly,setsockopt requires a nonzero *optval to turn the option on,and 
+a zero value to turn the option off. If the "Flag" column does not contain a "?," then 
+the option is used to pass a value of the specified datatype between the user process 
+and the system.
+
+选项名称　　　　　　　　说明　　　　　　　　　　　　　　　　　　数据类型 
+======================================================================== 
+　　　　　　　　　　　　SOL_SOCKET 
+------------------------------------------------------------------------ 
+SO_BROADCAST　　　　　　允许发送广播数据　　　　　　　　　　　　int 
+SO_DEBUG　　　　　　　　允许调试　　　　　　　　　　　　　　　　int 
+SO_DONTROUTE　　　　　　不查找路由　　　　　　　　　　　　　　　int 
+SO_ERROR　　　　　　　　获得套接字错误　　　　　　　　　　　　　int 
+SO_KEEPALIVE　　　　　　保持连接　　　　　　　　　　　　　　　　int 
+SO_LINGER　　　　　　　 延迟关闭连接　　　　　　　　　　　　　　struct linger 
+SO_OOBINLINE　　　　　　带外数据放入正常数据流　　　　　　　　　int 
+SO_RCVBUF　　　　　　　 接收缓冲区大小　　　　　　　　　　　　　int 
+SO_SNDBUF　　　　　　　 发送缓冲区大小　　　　　　　　　　　　　int 
+SO_RCVLOWAT　　　　　　 接收缓冲区下限　　　　　　　　　　　　　int 
+SO_SNDLOWAT　　　　　　 发送缓冲区下限　　　　　　　　　　　　　int 
+SO_RCVTIMEO　　　　　　 接收超时　　　　　　　　　　　　　　　　struct timeval 
+SO_SNDTIMEO　　　　　　 发送超时　　　　　　　　　　　　　　　　struct timeval 
+SO_REUSERADDR　　　　　 允许重用本地地址和端口　　　　　　　　　int 
+SO_TYPE　　　　　　　　 获得套接字类型　　　　　　　　　　　　　int 
+SO_BSDCOMPAT　　　　　　与BSD系统兼容　　　　　　　　　　　　　 int 
+========================================================================
+　　　　　　　　　　　　IPPROTO_IP 
+------------------------------------------------------------------------
+IP_HDRINCL　　　　　　　在数据包中包含IP首部　　　　　　　　　　int 
+IP_OPTINOS　　　　　　　IP首部选项　　　　　　　　　　　　　　　int 
+IP_TOS　　　　　　　　　服务类型 
+IP_TTL　　　　　　　　　生存时间　　　　　　　　　　　　　　　　int 
+========================================================================
+　　　　　　　　　　　　IPPRO_TCP 
+------------------------------------------------------------------------
+TCP_MAXSEG　　　　　　　TCP最大数据段的大小　　　　　　　　　　 int 
+TCP_NODELAY　　　　　　 不使用Nagle算法　　　　　　　　　　　　 int 
+========================================================================
+
+
+ ----------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+
 /*-----------------------------------------------------------------------------------
                      @send @recv @flags
 -------------------------------------------------------------------------------------
@@ -196,3 +324,92 @@ program that has associated the pathname with a Unix domain socket.
 #define INADDR_ANY
 
 #define SOMAXCONN /* @listen @backlog*/
+
+/*-----------------------------------------------------------------------------------
+                 Protocol family constants for socket function
+ ------------------------------------------------------------------------------------
+ AF_KEY
+    It provides support for cryptographic security. Similar to the way that a routing 
+    socket (AF_ROUTE) is an interface to the kernel's routing table,the key socket is 
+    an interface into the kernel's key table.
+ PF_INET
+    在Unix/Linux系统中，在不同的版本中这两者有微小差别.对于BSD,是AF,对于POSIX是PF.理论
+    上建立socket时是指定协议，应该用PF_xxxx，设置地址时应该用AF_xxxx。当然AF_INET和
+    PF_INET的值是相同的，混用也不会有太大的问题。
+ ----------------------------------------------------------------------------------*/
+#define AF_INET   /* ipv4 protocols */
+#define PF_INET   /* */
+#define AF_INET6  /* ipv6 protocols */
+#define AF_LOCAL  /* unix domain protocols */
+#define AF_ROUTE  /* routing sockets */
+#define AF_KEY	  /* Key socket*/
+
+/*-----------------------------------------------------------------------------------
+				 type of socket for socket function
+ ------------------------------------------------------------------------------------
+ @SOCK_STREAM
+     stream socket TCP 协议,这样会提供按顺序的,可靠,双向,面向连接的比特流. 
+ @SOCK_DGRAM
+     datagram socket UDP协议,这样只会提供定长的,不可靠,无连接的通信.
+ @SOCK_PACKET
+     Linux supports a new socket type, SOCK_PACKET, that provides access to the data-
+     link.
+ ----------------------------------------------------------------------------------*/
+#define SOCK_STREAM    /* */
+#define SOCK_DGRAM     /* */
+#define SOCK_SEQPACKET /* sequenced packet socket */
+#define SOCK_RAW       /* raw socket */
+#define SOCK_PACKET	   /* */
+
+/****************************** socket protocol *******************************/
+#define IPPROTO_TCP   /* TCP transport protocol */
+#define IPPROTO_UDP   /* UDP transport protocol */
+#define IPPROTO_SCTP  /* SCTP transport protocol */
+
+/**************************** @connect error type ****************************/
+#define ETIMEDOUT
+#define ECONNREFUSED
+#define EHOSTUNREACH
+#define ENETUNREACH 
+
+/********************************* @shutdown @howto *********************************/
+#define SHUT_RD /* The read half of the connection is closed— No more data can be 
+received on the socket and any data currently in the socket receive buffer is discarded. 
+The process can no longer issue any of the read functions on the socket.Any data received 
+after this call for a TCP socket is acknowledged and then silently discarded.*/
+#define SHUT_WR /* The write half of the connection is closed— In the case of TCP,
+this is called a half-close.Any data currently in the socket send buffer will be sent, 
+followed by TCP's normal connection termination sequence.As we mentioned earlier,this 
+closing of the write half is done regardless of whether or not the socket descriptor's 
+reference count is currently greater than 0. The process can no longer issue any of the 
+write functions on the socket.*/
+#define SHUT_RDWR /* The read half and the write half of the connection are both closed
+This is equivalent to calling shutdown twice: first with SHUT_RD and then with SHUT_WR.*/
+
+
+/*******************************************************************************
+                | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
+ ---------------|----------|----------|----------|----------|--------|
+ SOCK_STREAM    | tcp|sctp | tcp|sctp |    yes   |          |        |
+ ---------------|----------|----------|----------|----------|--------|
+ SOCK_DGRAM     |    udp   |   udp    |    yes   |          |        |
+ ---------------|----------|----------|----------|----------|--------| 
+ SOCK_SEQPACKET |   sctp   |   sctp   |    yes   |          |        |
+ ---------------|----------|----------|----------|----------|--------| 
+ SOCK_RAW       |   ipv4   |   ipv6   |          |    yes   |   yes  |
+ ---------------|----------|----------|----------|----------|--------|
+ Figure 4.5 Combinations of @family and @type for the @socket function
+       
+ Not all combinations of @socket @family and @type are valid.Figure 4.5 shows the 
+ valid combinations, along with the actual protocols that are valid for each pair. 
+ The boxes marked "Yes" are valid but do not have handy acronyms. The blank boxes 
+ are not supported.    
+ ******************************************************************************/
+
+ 
+#include <sys/select.h>
+ 
+#define FD_SETSIZE /* a constant in <sys/select.h> that specifies the maximum number 
+ of descriptors (often 1,024) */
+
+

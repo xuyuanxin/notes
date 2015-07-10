@@ -7,8 +7,5 @@ integral types).
 -----------------------------------------------------------------------------------*/
 
 
-#define uint8_t
-#define uint16_t
-#define uint32_t
-#define uint64_t
+
 

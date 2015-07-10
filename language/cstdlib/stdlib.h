@@ -196,4 +196,7 @@ int system(const char *command);
 
 void* malloc (size_t size);
 
+int rand(void);
+int rand_r(unsigned int *seedp);
+void srand(unsigned int seed);
 

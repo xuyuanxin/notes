@@ -38,7 +38,6 @@ pthread_t pthread_self(void);
 int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr, 
                        void *(*start_rtn)(void *), void *restrict arg);
 
-
 /*-----------------------------------------------------------------------------------
  @rval_ptr
     The rval_ptr argument is a typeless pointer,similar to the single argument passed 
@@ -47,9 +46,9 @@ int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr
 
  If any thread within a process calls exit, _Exit,or _exit,then the entire process t-
  erminates. Similarly, when the default action  is to terminate the process, a signal 
- sent to a thread will terminate the entire process 
- A single thread can exit in three ways, there by stopping its flow of control, with-
- out terminating the entireprocess.
+ sent to a thread will terminate the entire process. A single thread can exit in thr-
+ ee ways, there by stopping its flow of control, without terminating the entireproce-
+ ss.
  1 The thread can simply return from the start routine. The return value is the thre-
    ad's exit code.
  2 The thread can be canceled by another thread in the same process.
@@ -57,25 +56,6 @@ int pthread_create(pthread_t *restrict tidp, const pthread_attr_t *restrict attr
 -----------------------------------------------------------------------------------*/
 void pthread_exit(void *rval_ptr);
 
-
-/*-----------------------------------------------------------------------------------
- 在任何一个时间点上，线程是可结合的（joinable）或者是分离的（detached）。一个可结合的
- 线程能够被其他线程收回其资源和杀死。在被其他线程回收之前，它的存储器资源（例如栈）是
- 不释放的。相反，一个分离的线程是不能被其他线程回收或杀死的，它的存储器资源在它终止时
- 由系统自动释放。
-
- 创建一个线程默认的状态是 joinable, 如果一个线程结束运行但没有被join,则它的状态类似于
- 进程中的 Zombie Process , 即还有一部分资源没有被回收(退出状态码)，所以创建线程者应该
- 调用 @pthread_join 来等待线程运行结束，并可得到线程的退出代码，回收其资源(类似于wait,
- waitpid). 但是调用pthread_join(pthread_id)后，如果该线程没有运行结束，调用者会被阻塞，
- 在有些情况下我们并不希望如此，比如在Web服务器中当主线程为每个新来的链接创建一个子线程
- 进行处理的时候，主线程并不希望因为调用pthread_join而阻塞(因为还要继续处理之后到来的链
- 接)，这时可以在子线程中加入代码
-            pthread_detach(pthread_self())
- 或者父线程调用
-            pthread_detach(thread_id) //(非阻塞，可立即返回)
- 这将该子线程的状态设置为detached,则该线程运行结束后会自动释放所有资源。
------------------------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------------------
  @returns 
     0 if OK, error number on failure 
@@ -87,8 +67,8 @@ void pthread_exit(void *rval_ptr);
  
  By calling @pthread_join, we automatically place the thread with which we're joining 
  in the detached state (discussed shortly) so that its resources can be recovered. If 
- the thread was already in the detached state, @pthread_join can fail, returning EINVAL,
- although this behavior is implementation-specific.
+ the thread was already in the detached state, @pthread_join can fail, returning    -
+ EINVAL, although this behavior is implementation-specific.
  
  If we're not interested in a thread's return value, we can set @rval_ptr to NULL. In 
  this case, calling @pthread_join allows us to wait for the specified thread, but do-
@@ -105,14 +85,13 @@ int pthread_join(pthread_t thread,void **rval_ptr);
  @Returns : 
     0 if OK, error number on failure
 
- In the default circumstances, @pthread_cancel will cause the thread specified by @tid 
- to behave as if it had called @pthread_exit with an argument of PTHREAD_CANCELED. H-
- owever, a thread can elect  to ignore or otherwise  control how it is canceled. Note 
- that @pthread_cancel doesn't  wait for the thread to terminate ; it merely makes the 
- request.
+ In the default circumstances, @pthread_cancel will cause the thread specified by   -
+ @tid to behave as if it had called @pthread_exit with an argument of               -
+ PTHREAD_CANCELED. However, a thread can elect to ignore or otherwise control how  it 
+ is canceled. Note that @pthread_cancel doesn't wait for the thread to terminate;  it 
+ merely makes the request.
 -----------------------------------------------------------------------------------*/
 int pthread_cancel(pthread_t tid);
-
 
 /*-----------------------------------------------------------------------------------
  A thread can arrange for functions to be called when it exits, similar to the way t-
@@ -150,9 +129,9 @@ void pthread_cleanup_pop(int execute);
  By default, a thread's termination status is retained until we call @pthread_join f-
  or that thread. A thread's underlying storage can be reclaimed immediately on termi-
  nation if the thread has been detached. After a thread is detached, we can't use the
- @pthread_join function to wait for its termination status, because calling @pthread_join 
- for a detached thread results in undefined behavior. We can detach a thread by call-
- ing @pthread_detach.
+ @pthread_join function to wait for its termination status, because calling         -
+ @pthread_join for a detached thread results in undefined behavior. We can detach a -
+ thread by calling @pthread_detach.
  
  we can create a thread that is already in the detached state by modifying the thread 
  attributes we pass to @pthread_create.

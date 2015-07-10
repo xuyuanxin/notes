@@ -1,161 +1,138 @@
+#include <netinet/in.h>
+/*-----------------------------------------------------------------------------------
+ host byte order: 
+     We refer to the byte ordering used by a given system as the host byte order. 
+ network byte order
+     The Internet protocols use big-endian byte ordering for these multibyte integers
+ 
+ htons htonl Both return: value in network byte order
+ ntohs ntohl Both return: value in host byte order
 
-#include <sys/select.h>
+ In the names of these functions, h stands for host, n stands for network, s stands -
+ for short, and l stands for long. The terms "short" and "long" are historical artif-
+ acts from the Digital VAX implementation of 4.2BSD. We should instead think of s  as 
+ a 16-bit value (such as a TCP or UDP port number) and l as a 32-bit value (such as -
+ an IPv4 address). Indeed, on the 64-bit Digital Alpha, a long integer occupies 64 b-
+ its, yet the htonl and ntohl functions operate on 32-bit values.
+ 
+ When using these functions, we do not care about the actual values (big-endian or  -
+ little-endian) for the host byte order and the network byte order. What we must do -
+ is call the appropriate function to convert a given value between the host and netw-
+ ork byte order. On those systems that have the same byte ordering as the Internet p-
+ rotocols (big-endian), these four functions are usually defined as null macros.
 
-#define FD_SETSIZE /* a constant in <sys/select.h> that specifies the maximum number 
-of descriptors (often 1,024) */
+ We have not yet defined the term "byte." We use the term to mean an 8-bit quantity -
+ since almost all current computer systems use 8-bit bytes. Most Internet standards -
+ use the term octet instead of byte to mean an 8-bit quantity. This started in the e-
+ arly days of TCP/IP because much of the early work was done on systems such as the -
+ DEC-10, which did not use 8-bit bytes.
 
-
-
-
+ 
+ Another important convention in Internet standards is bit ordering. In many Internet 
+ standards, you will see "pictures" of packets that look similar to the following (t-
+ his is the first 32 bits of the IPv4 header from RFC 791):
+  0 				  1 				  2 				  3   
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |Version|	IHL  |Type of Service|			Total Length		 |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ This represents four bytes in the order in which they appear on the wire; the leftm-
+ ost bit is the most significant. However, the numbering starts with zero assigned to 
+ the most significant bit. This is a notation that you should become familiar with to 
+ make it easier to read protocol definitions in RFCs.
+ ----------------------------------------------------------------------------------*/
+uint16_t htons(uint16_t host16bitvalue);
+uint32_t htonl(uint32_t host32bitvalue); 
+uint16_t ntohs(uint16_t net16bitvalue);
+uint32_t ntohl(uint32_t net32bitvalue);
 
 #include <arpa/inet.h>
 
-/*
-function:converts the C character string pointed to by @strptr into its 32-bit binary network byte ordered value, 
-         which is stored through the pointer @addrptr.
-Returns: 1 if string was valid, 0 on error*/
+/*----------------------------------------------------------------------------------
+ converts the C character string pointed to by @strptr into its 32-bit binary networ-
+ k byte ordered value, which is stored through the pointer @addrptr. Returns: 1 if s-
+ tring was valid, 0 on error. An undocumented feature of inet_aton is that if addrptr 
+ is a null pointer, the function still performs its validation of the input string b-
+ ut does not store any result.
+ ----------------------------------------------------------------------------------*/
 int inet_aton(const char *strptr, struct in_addr *addrptr);
  
+/*-----------------------------------------------------------------------------------
+ Today, inet_addr is deprecated and any new code should use inet_aton instead. Better 
+ still is to use the newer functions(inet_pton and inet_ntop), which handle both IPv4 
+ and IPv6.
 
-/*Returns: 32-bit binary network byte ordered IPv4 address; INADDR_NONE(0xffffffff) if error*/
+ returning the 32-bit binary network byte ordered value as the return value. The pro-
+ blem with this function is that all 2^32 possible binary values are valid IP addres-
+ ses (0.0.0.0 through 255.255.255.255), but the function returns the constant       -
+ INADDR_NONE (typically 32 one-bits) on an error. This means the dotted-decimal stri-
+ ng 255.255.255.255 (the IPv4 limited broadcast address) cannot be handled by this f-
+ unction since its binary value appears to indicate failure of the function.
+ ----------------------------------------------------------------------------------*/
 in_addr_t inet_addr(const char *strptr);
  
-
-/*Returns: pointer to dotted-decimal string
-The inet_ntoa function converts a 32-bit binary network byte ordered IPv4 address into its corresponding dotted-decimal string. 
-The string pointed to by the return value of the function resides in static memory. This means the function is not reentrant*/ 
+/*-----------------------------------------------------------------------------------
+ The inet_ntoa function converts a 32-bit binary network byte ordered IPv4 address i-
+ nto its corresponding dotted-decimal string. The string pointed to by the return va-
+ lue of the function resides in static memory. This means the function is not reentr-
+ ant
+ ----------------------------------------------------------------------------------*/
 char *inet_ntoa(struct in_addr inaddr);
  
 
-/*
-@family:AF_INET or AF_INET6
-Returns: 1 if OK, 0 if input not a valid presentation format, -1 on error
+/*-----------------------------------------------------------------------------------
+ The letters "p" and "n" stand for presentation and numeric. The presentation  format 
+ for an address is often an ASCII string and the numeric format is the binary value -
+ that goes into a socket address structure.
 
-1 If family is not supported, both functions return an error with errno set to EAFNOSUPPORT
-2 The letters "p" and "n" stand for presentation and numeric. The presentation format for an address is often an ASCII string 
-  and the numeric format is the binary value that goes into a socket address structure.
+ @family  AF_INET or AF_INET6
+     The @family argument for both functions is either AF_INET or AF_INET6. If      -
+     @family is not supported, both functions return an error with errno set to     -
+     EAFNOSUPPORT.
+ @strptr
+     The @strptr argument to inet_ntop cannot be a null pointer. The caller must all-
+     ocate memory for the destination and specify its size. On success, this  pointer 
+     is the return value of the function.
+ @len
+     The @len argument is the size of the destination, to prevent the  function  from 
+     overflowing the caller's buffer. To help specify this size, the following two d-
+     efinitions are defined by including the <netinet/in.h> header: INET_ADDRSTRLEN -
+     INET6_ADDRSTRLEN. If @len is too small to hold the resulting presentation forma-
+     t, including the terminating null, a null pointer is returned and errno is set -
+     to ENOSPC.
+ @functon 
+     inet_pton tries to convert the string pointed to by @strptr, storing the  binary 
+     result through the pointer @addrptr. inet_ntop does the reverse conversion, from 
+     numeric (addrptr) to presentation (strptr). 
+ @Returns
+     1 if OK, 0 if input not a valid presentation format, -1 on error
 
-*/  
+ Example
+ Even if your system does not yet include support for IPv6, you can start using these 
+ newer functions by replacing calls of the form 
+     foo.sin_addr.s_addr = inet_addr(cp);
+ with
+     inet_pton(AF_INET, cp, &foo.sin_addr);
+ and replacing calls of the form
+     ptr = inet_ntoa(foo.sin_addr);
+ with
+     char str[INET_ADDRSTRLEN];
+     ptr = inet_ntop(AF_INET, &foo.sin_addr, str, sizeof(str));
+ ----------------------------------------------------------------------------------*/
 int inet_pton(int family, const char *strptr, void *addrptr);
+const char *inet_ntop(int family, const void *addrptr, char *strptr, size_t len);
   
- 
-/*
-@family :地址类型 AF_INET or AF_INET6
-@addrptr:这个地址指向的是一个地址的值,把这个值转换成字符串
-@strptr :返回转换后的结果,不能是NULL.
-@len    :缓存区strptr的大小，避免溢出，如果缓存区太小无法存储地址的值，则返回一个空指针，并将errno置为ENOSPC
-  
-Returns: pointer to result if OK, NULL on error
-
-实例
-struct sockaddr_in   addr;
-inet_ntop(AF_INET, &addr.sin_addr, str, sizeof(str));
-
-struct sockaddr_in6   addr6;
-inet_ntop(AF_INET6, &addr6.sin6_addr, str, sizeof(str));*/ 
- const char *inet_ntop(int family, const void *addrptr, char *strptr, size_t len);
-  
- 
-#define INET_ADDRSTRLEN       16       /* for IPv4 dotted-decimal */
-#define INET6_ADDRSTRLEN      46       /* for IPv6 hex string */
-
-/************************************************************************************
-                             protocol family
-*************************************************************************************
- AF_KEY
-    It provides support for cryptographic security. Similar to the way that a routing 
-    socket (AF_ROUTE) is an interface to the kernel's routing table,the key socket is 
-    an interface into the kernel's key table.
-
-
- PF_INET
-    在Unix/Linux系统中，在不同的版本中这两者有微小差别.对于BSD,是AF,对于POSIX是PF.理论
-    上建立socket时是指定协议，应该用PF_xxxx，设置地址时应该用AF_xxxx。当然AF_INET和
-    PF_INET的值是相同的，混用也不会有太大的问题。
-
-************************************************************************************/
-#define AF_INET   /* ipv4 protocols */
-#define PF_INET   /* */
-#define AF_INET6  /* ipv6 protocols */
-#define AF_LOCAL  /* unix domain protocols */
-#define AF_ROUTE  /* routing sockets */
-#define AF_KEY	  /* */
-
-/******************************** socket type *********************************/
-#define SOCK_STREAM /*stream socket TCP 协议,这样会提供按顺序的,可靠,双向,面向连
-接的比特流. */
-#define SOCK_DGRAM /*datagram socket UDP协议,这样只会提供定长的,不可靠,无连接的
-通信.*/
-#define SOCK_SEQPACKET /*sequenced packet socket*/
-#define SOCK_RAW /*raw socket*/
-#define SOCK_PACKET	/* Linux supports a new socket type, SOCK_PACKET, that provides 
-access to the datalink */
-
-/****************************** socket protocol *******************************/
-#define IPPROTO_TCP   /* TCP transport protocol */
-#define IPPROTO_UDP   /* UDP transport protocol */
-#define IPPROTO_SCTP  /* SCTP transport protocol */
-
-/**************************** @connect error type ****************************/
-#define ETIMEDOUT
-#define ECONNREFUSED
-#define EHOSTUNREACH
-#define ENETUNREACH 
-
-/********************************* @shutdown @howto *********************************/
-#define SHUT_RD /* The read half of the connection is closed— No more data can be 
-received on the socket and any data currently in the socket receive buffer is discarded. 
-The process can no longer issue any of the read functions on the socket.Any data received 
-after this call for a TCP socket is acknowledged and then silently discarded.*/
-#define SHUT_WR /* The write half of the connection is closed— In the case of TCP,
-this is called a half-close.Any data currently in the socket send buffer will be sent, 
-followed by TCP's normal connection termination sequence.As we mentioned earlier,this 
-closing of the write half is done regardless of whether or not the socket descriptor's 
-reference count is currently greater than 0. The process can no longer issue any of the 
-write functions on the socket.*/
-#define SHUT_RDWR /* The read half and the write half of the connection are both closed
-This is equivalent to calling shutdown twice: first with SHUT_RD and then with SHUT_WR.*/
-
-
-/*******************************************************************************
-                | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
- ---------------|----------|----------|----------|----------|--------|
- SOCK_STREAM    | tcp|sctp | tcp|sctp |    yes   |          |        |
- ---------------|----------|----------|----------|----------|--------|
- SOCK_DGRAM     |    udp   |   udp    |    yes   |          |        |
- ---------------|----------|----------|----------|----------|--------| 
- SOCK_SEQPACKET |   sctp   |   sctp   |    yes   |          |        |
- ---------------|----------|----------|----------|----------|--------| 
- SOCK_RAW       |   ipv4   |   ipv6   |          |    yes   |   yes  |
- ---------------|----------|----------|----------|----------|--------|
- Figure 4.5 Combinations of @family and @type for the @socket function
-       
- Not all combinations of @socket @family and @type are valid.Figure 4.5 shows the 
- valid combinations, along with the actual protocols that are valid for each pair. 
- The boxes marked "Yes" are valid but do not have handy acronyms. The blank boxes 
- are not supported.    
- ******************************************************************************/
-
-/*******************************************************************************
- @domain: AF_INET等
-    协议族,也叫协议域，用来确定通信的特性，包括地址格式.We note that you may 
-    encounter AF_UNIX (the historical Unix name)instead of AF_LOCAL (the POSIX 
-    name).You may also encounter the corresponding PF_xxx constant as the first 
-    argument to socket.
- @type: SOCK_STREAM等 
-    套接字类型 
- @protocol: IPPROTO_TCP等
-    协议类型 0表示选择domain和type组合的系统默认值。When multiple protocols are 
-    supported for the same @domain and socket @type,we can use the @protocol 
-    argument to select a particular protocol.The default protocol for a SOCK_STREAM 
-    socket in the AF_INET communication domain is TCP(Transmission Control Protocol).
-    The default protocol for a SOCK_DGRAM socket in the AF_INET communication domain  
-    is UDP(User Datagram  Protocol).
+#include <sys/socket.h>
+/*-----------------------------------------------------------------------------------
+ @domain: AF_INET
+     specifies the protocol family 
+ @type: SOCK_STREAM 
+ @protocol: IPPROTO_TCP
+     specific protocol type. 0 to select the system's default for the given combinat-
+     ion of @domain and @type.
  return:
-    成功时返回文件描述符(有的也称为套接字描述符),失败时返回-1,看errno可知道出错
-    的详细情况.On success, the socket function returns a small non-negative 
-    integer value, similar to a file descriptor. We call this a socket descriptor, 
-    or a sockfd.
+	non-negative descriptor if OK, -1 on error.
+
  AF_xxx Versus PF_xxx
     The "AF_" prefix stands for "address family" and the "PF_" prefix stands for 
     "protocol family." Historically, the intent was that a single protocol family 
@@ -168,13 +145,28 @@ This is equivalent to calling shutdown twice: first with SHUT_RD and then with S
     anyone change this for existing protocols, lots of existing code would break. 
     To conform to existing coding practice, we use only the AF_ constants in this 
     text, although you may encounter the PF_ value, mainly in calls to socket.
- ******************************************************************************/
-#include <sys/socket.h>	 
+
+  --------------------------------------------------------------------+
+                 | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
+  ---------------|----------|----------|----------|----------|--------|
+  SOCK_STREAM    | tcp|sctp | tcp|sctp |    yes   |          |        |
+  ---------------|----------|----------|----------|----------|--------|
+  SOCK_DGRAM     |    udp   |   udp    |    yes   |          |        |
+  ---------------|----------|----------|----------|----------|--------| 
+  SOCK_SEQPACKET |   sctp   |   sctp   |    yes   |          |        |
+  ---------------|----------|----------|----------|----------|--------| 
+  SOCK_RAW       |   ipv4   |   ipv6   |          |    yes   |   yes  |
+  ---------------+----------+----------+----------+----------+--------+
+  Figure 4.5 Combinations of @family and @type for the @socket function
+       
+ Not all combinations of @socket @family and @type are valid. Figure 4.5 shows the v-
+ alid combinations, along with the actual protocols that are valid for each pair. Th-
+ e boxes marked "Yes" are valid but do not have handy acronyms. The blank boxes are -
+ not supported.   
+ ----------------------------------------------------------------------------------*/
 int socket(int domain, int type,int protocol);
 
-
-
-/*******************************************************************************
+/*-----------------------------------------------------------------------------------
  @sockfd: 
    is a socket descriptor returned by the @socket function. 
  @servaddr: 
@@ -196,7 +188,9 @@ int socket(int domain, int type,int protocol);
    error occurs
  3 each time connect fails, we must close the socket descriptor and call socket 
    again.
- 4 客户端connect发起三次握手,收到ack后返回(第二次握手),而服务器要第三个握手才返回
+ 4 @connect returns when the second segment of the handshake(tcp) is received by  the 
+   client, but @accept does not return until the third segment of the handshake is r-
+   eceived by the server, one-half of the RTT after @connect returns.
  5 When @connect is interrupted by a caught signal and is not automatically 
    restarted.If this function returns EINTR, we cannot call it again, as doing 
    so will return an immediate error.
@@ -224,7 +218,7 @@ There are several different error returns possible.
   either EHOSTUNREACH or ENETUNREACH. It is also possible that the remote system 
   is not reachable by any route in the local system's forwarding table, or that 
   the connect call returns without waiting at all.
-*******************************************************************************/
+ ----------------------------------------------------------------------------------*/
 int connect(int sockfd, const struct sockaddr *servaddr, socklen_t addrlen);
 	 
 	
@@ -463,22 +457,7 @@ ssize_t sendmsg(int sockfd, struct msghdr *msg, int flags);
 
 
 
-/************************************************************************************
- @function:
-    The normal Unix close function is also used to close a socket and terminate a TCP 
-    connection.
- @returns: 
-    0 if OK, -1 on error
 
- The default action of close with a TCP socket is to mark the socket as closed and 
- return to the process immediately.The socket descriptor is no longer usable by the 
- process:It cannot be used as an argument to read or write.But,TCP will try to send 
- any data that is already queued to be sent to the other end, and after this occurs, 
- the normal TCP connection termination sequence takes place . we will describe the 
- SO_LINGER socket option, which lets us change this default action with a TCP socket.
- ***********************************************************************************/
-#include <unistd.h>  
-int close (int sockfd);
   
 
 
@@ -491,99 +470,43 @@ We  can use SHUT_RDWR to disable both data transmission and reception.*/
 #include <sys/socket.h>
 int shutdown(int sockfd,int how);
 
+/*-----------------------------------------------------------------------------------
+ The socket mechanism provides two socket-option interfaces for us to control the be-
+ havior of sockets. One interface is used to set an option, and another interface al-
+ lows us to query the state of an option. We can get and set three kinds of options:
+ 1. Generic options that work with all socket types
+ 2. Options that are managed at the socket level, but depend on the underlying proto-
+    cols for support
+ 3. Protocol-specific options unique to each individual protocol
+ The Single UNIX Specification defines only the socket-layer options (the first two -
+ option types in the preceding list).
 
-/*
-在这四个转换函数中,h 代表host, n 代表 network.s 代表short l 代表long 
-第一个函数的意义是将本机器上的long数据转化为网络上的long. 其他几个函数的意义也差不多.
-*/
-unsigned long  int htonl(unsigned long  int hostlong);
-unsigned short int htons(unisgned short int hostshort);
-unsigned long  int ntohl(unsigned long  int netlong);
-unsigned short int ntohs(unsigned short int netshort);
-
-#include <sys/socket.h>
-
-
-
-
-
-#include <sys/socket.h>
-
-
-#include <sys/socket.h>
-
-
-
-
-
-/************************************************************************************
  @sockfd 
-    must refer to an open socket descriptor. 
+     must refer to an open socket descriptor. 
  @level  SOL_SOCKET
-    specifies the code in the system that interprets the option: the general socket 
-    code or some protocol-specific code (e.g., IPv4, IPv6, TCP, or SCTP).
+	The @level argument identifies the protocol to which the option applies. If the - 
+	option is a generic socket-level option, then level is set to SOL_SOCKET. Otherw-
+	ise, @level is set to the number of the protocol that controls the option. Examp-
+	les are IPPROTO_TCP for TCP options and IPPROTO_IP for IP options. 
  @optname  SO_LINGER
-    当操作套接字选项时，必须给出选项位于的层(@level)和选项的名称(@optname)。为了操作
-    套接字层的选项，应该将层的值指定为SOL_SOCKET。为了操作其它层的选项，控制选项的合
-    适协议号必须给出。例如，为了表示一个选项由TCP协议解析，层应该设定为协议 号TCP。
- @optval 
-    is a pointer to a variable from which the new value of the option is fetched by 
-    @setsockopt,or into which the current value of the option is stored by @getsockopt. 
- @optlen    
-    The size of this variable is specified by the final argument, as a value for 
-    @setsockopt and as a value-result for getsockopt.
-
- There are two basic types of options: binary options that enable or disable a certain 
- feature (flags), and options that fetch and return specific values that we can either 
- set or examine (values). The column labeled "Flag" specifies if the option is a flag 
- option. When calling getsockopt for these flag options, *optval is an integer. The 
- value returned in *optval is zero if the option is disabled, or nonzero if the option 
- is enabled. Similarly,setsockopt requires a nonzero *optval to turn the option on,and 
- a zero value to turn the option off. If the "Flag" column does not contain a "?," then 
- the option is used to pass a value of the specified datatype between the user process 
- and the system.
-
-选项名称　　　　　　　　说明　　　　　　　　　　　　　　　　　　数据类型 
-======================================================================== 
-　　　　　　　　　　　　SOL_SOCKET 
------------------------------------------------------------------------- 
-SO_BROADCAST　　　　　　允许发送广播数据　　　　　　　　　　　　int 
-SO_DEBUG　　　　　　　　允许调试　　　　　　　　　　　　　　　　int 
-SO_DONTROUTE　　　　　　不查找路由　　　　　　　　　　　　　　　int 
-SO_ERROR　　　　　　　　获得套接字错误　　　　　　　　　　　　　int 
-SO_KEEPALIVE　　　　　　保持连接　　　　　　　　　　　　　　　　int 
-SO_LINGER　　　　　　　 延迟关闭连接　　　　　　　　　　　　　　struct linger 
-SO_OOBINLINE　　　　　　带外数据放入正常数据流　　　　　　　　　int 
-SO_RCVBUF　　　　　　　 接收缓冲区大小　　　　　　　　　　　　　int 
-SO_SNDBUF　　　　　　　 发送缓冲区大小　　　　　　　　　　　　　int 
-SO_RCVLOWAT　　　　　　 接收缓冲区下限　　　　　　　　　　　　　int 
-SO_SNDLOWAT　　　　　　 发送缓冲区下限　　　　　　　　　　　　　int 
-SO_RCVTIMEO　　　　　　 接收超时　　　　　　　　　　　　　　　　struct timeval 
-SO_SNDTIMEO　　　　　　 发送超时　　　　　　　　　　　　　　　　struct timeval 
-SO_REUSERADDR　　　　　 允许重用本地地址和端口　　　　　　　　　int 
-SO_TYPE　　　　　　　　 获得套接字类型　　　　　　　　　　　　　int 
-SO_BSDCOMPAT　　　　　　与BSD系统兼容　　　　　　　　　　　　　 int 
-========================================================================
-　　　　　　　　　　　　IPPROTO_IP 
-------------------------------------------------------------------------
-IP_HDRINCL　　　　　　　在数据包中包含IP首部　　　　　　　　　　int 
-IP_OPTINOS　　　　　　　IP首部选项　　　　　　　　　　　　　　　int 
-IP_TOS　　　　　　　　　服务类型 
-IP_TTL　　　　　　　　　生存时间　　　　　　　　　　　　　　　　int 
-========================================================================
-　　　　　　　　　　　　IPPRO_TCP 
-------------------------------------------------------------------------
-TCP_MAXSEG　　　　　　　TCP最大数据段的大小　　　　　　　　　　 int 
-TCP_NODELAY　　　　　　 不使用Nagle算法　　　　　　　　　　　　 int 
-========================================================================
-************************************************************************************/
-  
-/* return: 0 if OK,–1 on error */ 
-int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen);
- 
-/* return: 0 if OK,–1 on error
-   example: dg_cli_timeout3 */ 
-int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+ @optval   
+	The @optval argument points to a data structure or an integer, depending on the -
+	option. Some options are on/off switches. If the integer is nonzero, then the op-
+	tion is enabled. If the integer is zero, then the option is disabled. 
+ @optlen2  
+     specifies the size of the object to which val points.
+ @optlen1
+     The optlen2 argument is a pointer to an integer. Before calling getsockopt, we -
+     set the integer to the size of the buffer where the option is to be copied. If -
+     the actual size of the option is greater than this size, the option is  silently 
+     truncated. If the actual size of the option is less than this size, then the in-
+     teger is updated with the actual size on return.
+ @return: 
+     0 if OK,–1 on error 
+ @example dg_cli_timeout3
+ ----------------------------------------------------------------------------------*/
+int getsockopt(int sockfd, int level, int optname, void *optval, socklen_t *optlen1);
+int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen2);
  
 /*
 具体使用如下： 
@@ -640,4 +563,20 @@ setsockopt(s,SOL_SOCKET,SO_LINGER,(const char*)&m_sLinger,sizeof(linger));
 
 */
  
+#include <unistd.h>  
+/************************************************************************************
+ @function:
+    The normal Unix close function is also used to close a socket and terminate a TCP 
+    connection.
+ @returns: 
+    0 if OK, -1 on error
+
+ The default action of close with a TCP socket is to mark the socket as closed and 
+ return to the process immediately.The socket descriptor is no longer usable by the 
+ process:It cannot be used as an argument to read or write.But,TCP will try to send 
+ any data that is already queued to be sent to the other end, and after this occurs, 
+ the normal TCP connection termination sequence takes place . we will describe the 
+ SO_LINGER socket option, which lets us change this default action with a TCP socket.
+ ***********************************************************************************/
+int close (int sockfd);
 

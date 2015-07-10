@@ -147,4 +147,13 @@ returns the number of code units in this sequence.
 returns a CharSequence consisting of the code units stored at index startIndex to endIndex - 1.
 ? String toString()
 returns a string consisting of the code units of this sequence.
+
+ ------------------------------------------------------------------------------------
+ FileInputStream and FileOutputStream
+ 
+ ------------------------------------------------------------------------------------
+ When saving data, you have the choice between binary and text formats. For  example, 
+ if the integer 1234 is saved in binary, it is written as the sequence of bytes 00 00 
+ 04 D2 (in hexadecimal notation). In text format, it is saved as the string "1234". 
+
  ----------------------------------------------------------------------------------*/
