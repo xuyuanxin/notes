@@ -3,10 +3,25 @@
 import java.io.*;
 import java.util.*;
 
-/**
- * @version 1.13 2012-05-30
- * @author Cay Horstmann
- */
+/*-----------------------------------------------------------------------------------
+ ----> How to Write Text Output
+ For text output, use a PrintWriter. That class has methods to print strings and num-
+ bers in text format. There is even a convenience constructor to link a PrintWriter -
+ to a FileWriter. The statement
+     PrintWriter out = new PrintWriter("employee.txt");
+ is equivalent to
+     PrintWriter out = new PrintWriter(new FileWriter("employee.txt"));
+
+     String name = "Harry Hacker";
+     double salary = 75000;
+     out.print(name);
+     out.print(' ');
+     out.println(salary);
+ This writes the characters
+     Harry Hacker 75000.0
+
+ ----> How to Read Text Input    
+ ----------------------------------------------------------------------------------*/
 public class TextFileTest
 {
    public static void main(String[] args) throws IOException
@@ -96,3 +111,24 @@ public class TextFileTest
       return new Employee(name, salary, year, month, day);
    }   
 }
+
+/*-----------------------------------------------------------------------------------
+ When saving data, you have the choice between binary and text formats. For  example, 
+ if the integer 1234 is saved in binary, it is written as the sequence of bytes     -
+ 00 00 04 D2 (in hexadecimal notation). In text format, it is saved as the string   -
+ "1234". Although binary I/O is fast and efficient, it is not easily readable by hum-
+ ans. 
+
+ When saving text strings, you need to consider the character encoding. In the UTF-16 
+ encoding, the string "1234" is encoded as 00 31 00 32 00 33 00 34 (in hex).
+
+ The OutputStreamWriter class turns a stream of Unicode code units into a stream of -
+ bytes, using a chosen character encoding. Conversely,
+the InputStreamReader class turns an input stream that contains bytes (specifying characters in some character encoding) into a reader that
+emits Unicode code units.
+For example, here is how you make an input reader that reads keystrokes from the console and converts them to Unicode:
+InputStreamReader in = new InputStreamReader(System.in);
+This input stream reader assumes the default character encoding used by the host system, such as the ISO 8859-1 encoding in Western Europe.
+You can choose a different encoding by specifying it in the constructor for the InputStreamReader, for example:
+InputStreamReader in = new InputStreamReader(new FileInputStream("kremlin.dat"), "ISO8859_5");
+ ----------------------------------------------------------------------------------*/

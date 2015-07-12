@@ -2,18 +2,18 @@
 
 import java.util.*;
 
-public class Employee
+public class EmployeeRa
 {
-   public static final int NAME_SIZE = 40;
+   public static final int NAME_SIZE = 40+14;
    public static final int RECORD_SIZE = 2 * NAME_SIZE + 8 + 4 + 4 + 4;
    
    private String name;
    private double salary;
    private Date hireDay;
 
-   public Employee() {}
+   public EmployeeRa() {}
 
-   public Employee(String n, double s, int year, int month, int day)
+   public EmployeeRa(String n, double s, int year, int month, int day)
    {  
       name = n;
       salary = s;
