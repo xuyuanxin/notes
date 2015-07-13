@@ -1,9 +1,7 @@
-#ifndef __lk_list_h__
-#define __lk_list_h__
+#ifndef __SA_LIST_H__
+#define __SA_LIST_H__
 
 #include <inttypes.h>
-
-#include "list_test.h"
 
 
 struct list_head 
@@ -11,26 +9,6 @@ struct list_head
     struct list_head *next; 
     struct list_head *prev;
 };
-
-struct list_item
-{
-	union 
-	{
-		struct _dog dog;
-		struct _cat cat;
-	};
-
-	union
-	{
-		void 		*data;
-		uint32_t 	uint32;
-		int32_t 	int32;
-		char 		*str;
-	};
-
-	struct list_head list;
-};
-
 
 #define x_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
