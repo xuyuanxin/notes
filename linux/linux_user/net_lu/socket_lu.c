@@ -378,55 +378,49 @@ will be 0 (close the read half), 1 (close the write half), and 2 (close the read
 ************************************************************************************/
 int shutdown(int sockfd, int howto);
 
-/************************************************************************************
- @sockfd:
- @buff  :接收的数据存放在这个缓冲区里
- @nbytes:希望接收的字节数
+/*-----------------------------------------------------------------------------------
+ @sockfd @buff @nbytes
+     The first three arguments, sockfd, buff, and nbytes: descriptor, pointer to buf-
+     fer to read into or write from, and number of bytes to read or write.
  @flag:
  @from:
-   数据是谁发来的,可以为NULL,表示不关心来源,此时addrlen也是NULL.
-   the protocol address of who sent the datagram. The number of bytes stored in this 
-   socket address structure is also returned to the caller in the integer pointed to 
-   by @addrlen. 
+     The @recvfrom function fills in the socket address structure pointed to by @from 
+     with the protocol address of who sent the datagram. The number of bytes stored -
+     in this socket address structure is also returned to the caller in the integer -
+     pointed to by @addrlen.
  @addrlen:
-    If the from argument to @recvfrom is a null pointer, then the corresponding length 
-    argument (addrlen) must also be a null pointer, and this indicates that we are not 
-    interested in knowing the protocol address of who sent us data. 
- @return: number of bytes read if OK, –1 on error
-
- Both @recvfrom and @sendto can be used with TCP, although there is normally no reason 
- to do so.
-
- 1 可以返回0,并不表示对端关闭。
-************************************************************************************/
+     If the @from argument to @recvfrom is a null pointer, then the corresponding le-
+     ngth argument (addrlen) must also be a null pointer, and this indicates that  we 
+     are not interested in knowing the protocol address of who sent us data. 
+ @return: 
+     number of bytes read if OK, –1 on error
+ ----------------------------------------------------------------------------------*/
 ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags, 
 struct sockaddr *from, socklen_t *addrlen);
 
- 
-/************************************************************************************
- @sockfd:
- @buff  :发送的数据都在这个缓冲区里
- @nbytes:发送的字节数，可以为0,此时发送的只有报文头没有数据区.
+/*-----------------------------------------------------------------------------------
  @flag:
- @to:
-    The @to argument for @sendto is a socket address structure containing the protocol 
-    address (e.g., IP address and port number) of where the data is to be sent. The 
-    size of this socket address structure is specified by @addrlen.
- @addrlen:
- @return: number of bytes written if OK, –1 on error
+ @to @addrlen
+     The @to argument for @sendto is a socket address structure containing the proto-
+     col address (e.g. IP address and port number) of where the data is to be sent. -
+     The size of this socket address structure is specified by @addrlen.
+ @return: 
+     number of bytes written if OK, –1 on error
 
  Writing a datagram of length 0 is acceptable. In the case of UDP, this results in an 
- IP datagram containing an IP header(normally 20 bytes for IPv4 and 40 bytes for IPv6), 
- an 8-byte UDP header, and no data. This also means that a return value of 0 from 
- @recvfrom is acceptable for a datagram protocol: It does not mean that the peer has 
- closed the connection, as does a return value of 0 from read on a TCP socket. Since 
- UDP is connectionless, there is no such thing as closing a UDP connection.
+ IP datagram containing an IP header (normally 20 bytes for IPv4 and 40 bytes for   -
+ IPv6), an 8-byte UDP header, and no data. This also means that a return value of 0 -
+ from @recvfrom is acceptable for a datagram protocol: It does not mean that the peer 
+ has closed the connection, as does a return value of 0 from read on a TCP socket. S-
+ ince UDP is connectionless, there is no such thing as closing a UDP connection.
  
- 1 一般用于UDP,也可以用于TCP(一般不用)
- 2 The client must specify the server's IP address and port number for the call to @sendto.
- 3 a successful return from a UDP output operation only means there was room for the 
+ 1 Both @recvfrom and @sendto can be used with TCP, although there is normally no re-
+   ason to do so.
+ 2 The client must specify the server's IP address and port number for the call to  -
+   @sendto.
+ 3 a successful return from a UDP output operation only means there was room for  the 
    resulting IP datagram on the interface output queue. 
-************************************************************************************/
+ ----------------------------------------------------------------------------------*/
 ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, 
 const struct sockaddr *to, socklen_t addrlen);
  

@@ -8,21 +8,22 @@
 #include"net_pub.h"
 
 
-/************************************************************************************
+/*-----------------------------------------------------------------------------------
  Despite the simplicity of this function, there are numerous details to consider. 
  1 this function never terminates. Since UDP is a connectionless protocol, there 
    is nothing like an EOF as we have with TCP.
  2 this function provides an iterative server, not a concurrent server as we had with 
    TCP.There is no call to fork,so a single server process handles any and all clients. 
-   In general, most TCP servers are concurrent and most UDP servers are iterative.  
- 3 There is implied queuing taking place in the UDP layer for this socket. Indeed, each 
-   UDP socket has a receive buffer and each datagram that arrives for this socket is 
-   placed in that socket receive buffer.When the process calls recvfrom,the next datagram 
-   from the buffer is returned to the process in a first-in, first-out (FIFO) order. 
-   This way, if multiple datagrams arrive for the socket before the process can read 
-   what's already queued for the socket, the arriving datagrams are just added to the 
-   socket receive buffer. But, this buffer has a limited size. 
-************************************************************************************/
+   In general, most TCP servers are concurrent and most UDP servers are iterative. 
+   
+ Each UDP socket has a receive buffer and each datagram that arrives for this  socket 
+ is placed in that socket receive buffer. When the process calls recvfrom, the next -
+ datagram from the buffer is returned to the process in a first-in, first-out  (FIFO) 
+ order. This way, if multiple datagrams arrive for the socket before the process  can 
+ read what's already queued for the socket, the arriving datagrams are just added  to 
+ the socket receive buffer. But, this buffer has a limited size. We discussed this s-
+ ize and how to increase it with the SO_RCVBUF socket option in Section 7.5.
+ ----------------------------------------------------------------------------------*/
 void dg_echo(int sockfd, struct sockaddr  *pcliaddr, socklen_t clilen)
 {
 	int			n;

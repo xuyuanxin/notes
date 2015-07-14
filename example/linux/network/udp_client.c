@@ -7,8 +7,126 @@
 #include<string.h>
 #include"net_pub.h"
 
+/*-----------------------------------------------------------------------------------
+ There are four steps in the client processing loop: read a line from standard  input 
+ using fgets, send the line to the server using sendto, read back the server's echo -
+ using recvfrom, and print the echoed line to standard output using fputs.
 
-/************************************************************************************
+ Our client has not asked the kernel to assign an ephemeral port to its socket. (Wit-
+ h a TCP client, we said the call to connect is where this takes place.) With a UDP -
+ socket, the first time the process calls sendto, if the socket has not yet had a lo-
+ cal port bound to it, that is when an ephemeral port is chosen by the kernel for the 
+ socket. As with TCP, the client can call bind explicitly, but this(udp) is rarely d-
+ one.
+
+ Notice that the call to @recvfrom specifies a null pointer as the fifth and sixth a-
+ rguments. This tells the kernel that we are not interested in knowing who sent the -
+ reply. There is a risk that any process, on either the same host or some other host, 
+ can send a datagram to the client's IP address and port, and that datagram will be -
+ read by the client, who will think it is the server's reply. 
+
+ If a client datagram is lost (say it is discarded by some router between the  client 
+ and server), the client will block forever in its call to recvfrom in the function -
+ @dg_cli, waiting for a server reply that will never arrive. Similarly, if the client 
+ datagram arrives at the server but the server's reply is lost, the client will again 
+ block forever in its call to recvfrom. A typical way to prevent this is to place a -
+ timeout on the client's call to recvfrom. 
+ ---------------------------------------------------------------------------------*/
+void dg_cli_v1(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
+{
+	int	n;
+	char	sendline[MAXLINE], recvline[MAXLINE + 1];
+
+	while (fgets(sendline, MAXLINE, fp) != NULL) 
+	{
+		sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
+
+		n = recvfrom(sockfd, recvline, MAXLINE, 0, NULL, NULL);
+
+		recvline[n] = 0;	/* null terminate */
+		fputs(recvline, stdout);
+	}
+}
+
+/*-----------------------------------------------------------------------------------
+ At the end of Section 8.6, we mentioned that any process that knows the client's ep-
+ hemeral port number could send datagrams to our client, and these would be intermix-
+ ed with the normal server replies. What we can do is change the call to recvfrom  in 
+ Figure 8.8 to return the IP address and port of who sent the reply and ignore any r-
+ eceived datagrams that are not from the server to whom we sent the datagram. There -
+ are a few pitfalls with this, however, as we will see.
+ ----------------------------------------------------------------------------------*/
+void dg_cli_v2(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
+{
+	int				n;
+	char			sendline[MAXLINE], recvline[MAXLINE + 1];
+	socklen_t		len;
+	struct sockaddr	*preply_addr;
+
+	preply_addr = malloc(servlen);
+
+	while (fgets(sendline, MAXLINE, fp) != NULL) {
+
+		sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
+
+		len = servlen;
+		n = recvfrom(sockfd, recvline, MAXLINE, 0, preply_addr, &len);
+		if (len != servlen || memcmp(pservaddr, preply_addr, len) != 0) {
+			printf("reply from %s (ignored)\n",
+					Sock_ntop(preply_addr, len));
+			continue;
+		}
+
+		recvline[n] = 0;	/* null terminate */
+		fputs(recvline, stdout);
+	}
+}
+
+
+/*-----------------------------------------------------------------------------------
+ ----> Server Not Running
+ The next scenario to examine is starting the client without starting the server.  If 
+ we do so and type in a single line to the client, nothing happens. The client blocks 
+ forever in its call to recvfrom, waiting for a server reply that will never appear.
+
+ First we start tcpdump on the host @macosx, and then we start the client on the sam-
+ e host, specifying the host @freebsd4 as the server host.We then type a single line, 
+ but the line is not echoed.
+ 
+ macosx % udpcli01 172.24.37.94
+ hello, world    // we type this line but nothing is echoed back
+
+ ------------------------------------------------------------------------------------
+   1 0.0				  arp who-has freebsd4 tell macosx
+   2 0.003576 ( 0.0036)  arp reply freebsd4 is-at 0:40:5:42:d6:de
+   3 0.003601 ( 0.0000)  macosx.51139 > freebsd4.9877: udp 13
+   4 0.009781 ( 0.0062)  freebsd4 > macosx: icmp: freebsd4 udp port 9877 unreachable
+ ------------------------------------------------------------------------------------
+       Figure 8.10 tcpdump output when server process not started on server host.
+ ------------------------------------------------------------------------------------
+ First we notice that an ARP request and reply are needed before the client host  can 
+ send the UDP datagram to the server host. In line 3, we see the client datagram sent 
+ but the server host responds in line 4 with an ICMP "port unreachable." ( The length 
+ of 13 accounts for the 12 characters and the newline.) This ICMP error, however,  is 
+ not returned to the client process, for reasons that we will describe shortly. Inst-
+ ead, the client blocks forever in the call to recvfrom in Figure 8.8. We also note -
+ that ICMPv6 has a "port unreachable" error, similar to ICMPv4 (Figures A.15 and A.16
+ ), so the results described here are similar for IPv6.
+  
+ ----> asynchronous error
+ We call this ICMP error an asynchronous error. The error was caused by sendto, but -
+ sendto returned successfully. Recall from Section 2.11 that a successful return from 
+ a UDP output operation only means there was room for the resulting IP datagram on t-
+ he interface output queue. The ICMP error is not returned until later (4 ms later i-
+ n Figure 8.10), which is why it is called asynchronous.
+ 
+ The basic rule is that an asynchronous error is not returned for a UDP socket unless 
+ the socket has been connected. We will describe how to call connect for a UDP socket 
+ in Section 8.11. Why this design decision was made when sockets were first implemen-
+ ted is rarely understood.
+
+
+
  an asynchronous error is not returned on a UDP socket unless the socket has been connected.
  we are able to call @connect for a UDP socket. But this does not result in anything 
  like a TCP connection:There is no three-way handshake.Instead,the kernel just checks 
@@ -51,8 +169,8 @@
  might return an error of EAFNOSUPPORT (p. 736 of TCPv2), but that is acceptable. It 
  is the process of calling connect on an already connected UDP socket that causes the 
  socket to become unconnected (pp. 787¨C788 of TCPv2).
-************************************************************************************/ 
-void dg_cli_v2(FILE *fp, int sockfd, const SA *pservaddr, socklen_t servlen)
+ ----------------------------------------------------------------------------------*/
+void dg_cli_v3(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
 {
 	int		n;
 	char	sendline[MAXLINE], recvline[MAXLINE + 1];
@@ -70,39 +188,7 @@ void dg_cli_v2(FILE *fp, int sockfd, const SA *pservaddr, socklen_t servlen)
 	}
 }
 
-/************************************************************************************
- the first time the process calls sendto, if the socket has not yet had a local port 
- bound to it, that is when an ephemeral port is chosen by the kernel for the socket. 
- As with TCP, the client can call bind explicitly, but this is rarely done.
 
- Notice that the call to @recvfrom specifies a null pointer as the fifth and sixth 
- arguments. This tells the kernel that we are not interested in knowing who sent the 
- reply. There is a risk that any process, on either the same host or some other host, 
- can send a datagram to the client's IP address and port, and that datagram will be 
- read by the client, who will think it is the server's reply. 
-
- If a client datagram is lost (say it is discarded by some router between the client 
- and server), the client will block forever in its call to recvfrom in the function 
- @g_cli, waiting for a server reply that will never arrive. Similarly, if the client 
- datagram arrives at the server but the server's reply is lost, the client will again 
- block forever in its call to recvfrom. A typical way to prevent this is to place a 
- timeout on the client's call to recvfrom. 
-************************************************************************************/
-void dg_cli(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
-{
-	int	n;
-	char	sendline[MAXLINE], recvline[MAXLINE + 1];
-
-	while (fgets(sendline, MAXLINE, fp) != NULL) 
-	{
-		sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
-
-		n = recvfrom(sockfd, recvline, MAXLINE, 0, NULL, NULL);
-
-		recvline[n] = 0;	/* null terminate */
-		fputs(recvline, stdout);
-	}
-}
 
 static void sig_alrm(int signo)
 {
@@ -234,7 +320,7 @@ int main(int argc, char **argv)
 {
 	int					sockfd;
 	struct sockaddr_in	servaddr;
-
+	
 	if (argc != 2)
 	{
 		printf("usage: udpcli <IPaddress>");
@@ -242,7 +328,7 @@ int main(int argc, char **argv)
 	}
 
 	memset(&servaddr,0,sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
+	servaddr.sin_family = AF_INET;	
 	servaddr.sin_port = htons(SERV_PORT);
 	
 	inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
