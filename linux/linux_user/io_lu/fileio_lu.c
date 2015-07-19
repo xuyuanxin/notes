@@ -154,7 +154,6 @@ ssize_t read(int fd,void *buf,size_t nbytes);
  ----------------------------------------------------------------------------------*/
 ssize_t write(int fd,const void *buf, size_t nbytes);
 
-#include <unistd.h>
 /******************************************************************************
 @fd    ：要读取数据的文件描述符
 @buf   ：数据缓存区指针，存放读取出来的数据
@@ -181,9 +180,6 @@ ssize_t pread(int fd, void *buf, size_t nbytes, off_t offset);
 ******************************************************************************/
 ssize_t pwrite(int fd, const void *buf, size_t nbytes, off_t offset);
 
-
-
-#include <unistd.h>
 /*
  dup和dup2也是两个非常有用的调用，它们的作用都是用来复制一个文件的描述符。它们经常用来
  重定向进程的stdin、stdout和stderr。
@@ -258,7 +254,6 @@ of a file. With @fsync,the file's attributes are also updated synchronously.
 
   Returns: 0 if OK,-1 on errors
 *********************************************************************************/
-#include <unistd.h>
 int fsync(int fd);
 int fdatasync(int fd);
 void sync(void);
@@ -383,25 +378,32 @@ lock becomes available or when interrupted by a signal.*/
   file are released when the descriptor is closed as part of an exec.
  ******************************************************************************/
 
-
-
 #include <sys/select.h>
-#include <sys/time.h>
 
-#define FD_SETSIZE  /*@select的第一个参数，最大的描述符个数，通常是1024*/
-
-struct timeval	
-{
-  long	 tv_sec;  /* seconds */
-  long	 tv_usec; /* microseconds */
-};
-
-/*******************************************************************************
- @maxfdp1: 描述符个数+1
- @readset: 读描述符集，可以为NULL
- @readset: 写描述符集，可以为NULL
- @readset: 异常描述符集，可以为NULL
- @timeout: 等待时间
+/*-----------------------------------------------------------------------------------
+ @maxfdp1: FD_SETSIZE
+     The @maxfdp1 argument specifies the number of descriptors to be tested. Its val-
+     ue is the maximum descriptor to be tested plus one (hence our name of maxfdp1).
+ @readset @readset @exceptset
+     The three arguments, readset, writeset, and exceptset, specify the descriptors -
+     that we want the kernel to test for reading, writing, and exception  conditions.
+     three arguments can be specified as a null pointer if we are not interested in -
+     that condition. Indeed, if all three pointers are null, then we have a higher p-
+     recision timer than the normal Unix @sleep function ( which sleeps for multiples 
+     of a second). 
+ @timeout: 
+     tells the kernel how long to wait for one of the specified descriptors to becom-
+     e ready. There are three possibilities: 1 Wait forever--Return only when one  of 
+     the specified descriptors is ready for I/O. For this, we specify the timeout ar-
+     gument as a null pointer. 2 Wait up to a fixed amount of time--Return when one -
+     of the specified descriptors is ready for I/O, but do not wait beyond the number 
+     of seconds and microseconds specified in the timeval structure pointed to by the 
+     timeout argument. 3 Do not wait at all--Return immediately after checking the d-
+     escriptors. This is called polling. To specify this, the timeout argument must -
+     point to a timeval structure and the timer value (the number of seconds and mic-
+     roseconds specified by the structure) must be 0. The wait in the first two scen-
+     arios is normally interrupted if the process catches a signal and returns from -
+     the signal handler.
  function: 
     告诉内核
     1 关心的描述符
@@ -412,31 +414,22 @@ struct timeval
     2 对于读、写或异常这三个状态中的每一个，哪些描述符已经准备好。
       使用这些返回信息就可以调用相应的I/O函数，并确切知道函数不会阻塞
  Returns: 
-    positive count of ready descriptors, 0 on timeout, –1 on error
-    
- There are three possible return values from @select.
- 1 return -1 means that an error occurred. This can happen, for example, if a 
-   signal is caught before any of the specified descriptors are ready.In this 
-   case, none of the descriptor sets will be modified.
- 2 return 0 means that no descriptors are ready.This happens if the time limit 
-   expires before any of the descriptors are ready.When this happens,all the 
-   descriptor sets will be zeroed out.
- 3 A positive return value specifies the number of descriptors that are ready.
-   This value is the sum of the descriptors ready in all three sets, so if the 
-   same descriptor is ready to be read and written, it will be counted twice in 
-   the return value. The only bits left on in the three descriptor sets are the 
-   bits corresponding to the descriptors that are ready.
- ---->等待的时间
- 1 永远等待  timeout == NULL
- 2 等待指定的时间 具体的时间由timeout指定
- 3 不等待  timeout中的时间为0
- The wait in the first two scenarios is normally interrupted if the process 
- catches a signal and returns from the signal handler.
+     There are three possible return values from @select. 1 return -1 means that an -
+     error occurred. This can happen, for example, if a signal is caught before any -
+     of the specified descriptors are ready.In this case, none of the descriptor sets 
+     will be modified. 2 return 0 means that no descriptors are ready. This happens -
+     if the time limit expires before any of the descriptors are ready. When this ha-
+     ppens, all the descriptor sets will be zeroed out. 3 A positive return value sp-
+     ecifies the number of descriptors that are ready. This value is the sum of the -
+     descriptors ready in all three sets, so if the same descriptor is ready to be r-
+     ead and written, it will be counted twice in the return value. The only bits le-
+     ft on in the three descriptor sets are the bits corresponding to the descriptors 
+     that are ready.
 
  If we encounter the end of file on a descriptor, that descriptor is considered 
  readable by @select. We then call read and it returns 0—the way to signify end 
  of file on UNIX systems. 
- ---->准备好
+ ----> Under What Conditions Is a Descriptor Ready?
  1 对于读描述符集中的一个描述符的read操作将不会阻塞，则此描述符是准备好的
  2 对于写描述符集中的一个描述符的write操作将不会阻塞，则此描述符是准备好的
  3 若异常描述符集中的一个描述符有一个未决异常状态，则此描述符是准备好的。
@@ -445,19 +438,22 @@ struct timeval
    b 处于数据包模式的伪终端上发生了某些状态。
  4 File descriptors for regular files always return ready for reading, writing, 
    and exception conditions.
- *******************************************************************************/
-int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, 
-const struct timeval *timeout);
 
-#include <sys/select.h>
-/*******************************************************************************
+ example: tcp_serv_select()
+ ----------------------------------------------------------------------------------*/
+int select(int maxfdp1, fd_set *readset, fd_set *writeset, fd_set *exceptset, 
+            const struct timeval *timeout);
+
+/*-----------------------------------------------------------------------------------
  @select uses descriptor sets, typically an array of integers, with each bit in 
  each integer corresponding to a descriptor. For example, using 32-bit integers, 
  the first element of the array corresponds to descriptors 0 through 31, the 
  second element of the array corresponds to descriptors 32 through 63, and so on. 
  All the implementation details are irrelevant to the application and are hidden 
  in the fd_set datatype and the following four macros:
- ******************************************************************************/
+
+ example: fd_set_example()
+ -----------------------------------------------------------------------------------*/
 int  FD_ISSET(int fd,fd_set *fdset);
 void FD_CLR(int fd,fd_set *fdset);
 void FD_SET(int fd,fd_set *fdset);

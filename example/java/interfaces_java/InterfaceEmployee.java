@@ -28,32 +28,22 @@ public class Employee implements Comparable<Employee>
       salary += raise;
    }
 
-/*
+/*-----------------------------------------------------------------------------------
  In the interface declaration, the compareTo method was not declared public because -
  all methods in an interface are automatically public. However, when implementing the 
  interface, you must declare the method as public. Otherwise, the compiler assumes t-
  hat the method has package visibility¡ªthe default for a class. The compiler then c-
  omplains that you're trying to supply a weaker access privilege.
-*/
 
-   /**
-    * Compares employees by salary
-    * @param other another Employee object
-    * @return a negative value if this employee has a lower salary than
-    * otherObject, 0 if the salaries are the same, a positive value otherwise
-    */
+ @return a negative value if this employee has a lower salary than otherObject, 0  if 
+ the salaries are the same, a positive value otherwise
+ ----------------------------------------------------------------------------------*/
    public int compareTo(Employee other)
    {
       return Double.compare(salary, other.salary);
    }
 }
 
-
-/**
- * This program demonstrates the use of the Comparable interface.
- * @version 1.30 2004-02-27
- * @author Cay Horstmann
- */
 public class InterfaceEmployee
 {
    public static void main(String[] args)
@@ -72,12 +62,21 @@ public class InterfaceEmployee
    }
 }
 
-/*
- Typically, the supplier of some service states:¡°If your class conforms to a partic-
- ular interface, then I'll perform the service.¡± Let's look at a concrete example. -
+/*-----------------------------------------------------------------------------------
+ ----> interfaces
+ The first technique, called interfaces, is a way of describing what classes should -
+ do, without specifying how they should do it. A class can implement one or more int-
+ erfaces. You can then use objects of these implementing classes whenever conformance 
+ to the interface is required. 
+
+ In the Java programming language, an interface is not a class but a set of requirem-
+ ents for the classes that want to conform to the interface.
+
+ Typically, the supplier of some service states: "If your class conforms to a partic-
+ ular interface, then I'll perform the service."  Let's look at a concrete example. -
  The @sort method of the @Arrays class promises to sort an array of objects, but und-
- er one condition:The objects must belong to classes that implement the Comparable i-
- nterface. Here is what the Comparable interface looks like:
+ er one condition: The objects must belong to classes that implement the Comparable -
+ interface. Here is what the Comparable interface looks like:
      public interface Comparable<T>
 	{
 	    int compareTo(T other); // parameter has type T
@@ -95,17 +94,19 @@ public class InterfaceEmployee
      public class Employee implements Comparable<Employee>
  Of course, now the Employee class needs to supply the compareTo method.
 
-
-
----->
+ ---->
  Although you cannot put instance fields or static methods in an interface, you can -
  supply constants in them . Just as methods in an interface are automatically public, 
  fields are always "public static final".
 
-----> Properties of Interfaces
- Interfaces are not classes. In particular, you can never use the @new operator to i-
- nstantiate an interface:
+ ----> Properties of Interfaces
+ Interfaces never have instance fields, and the methods are never implemented in  the 
+ interface. Supplying instance fields and method implementations is the job of the c-
+ lasses that implement the interface. Interfaces are not classes. In particular,  you 
+ can never use the @new operator to instantiate an interface:
      x = new Comparable(. . .); // ERROR
+ However, even though you can't construct interface objects, you can still declare i-
+ nterface variables.    
      Comparable x; // OK you can still declare interface variables.
  An interface variable must refer to an object of a class that implements the interf-
  ace:
@@ -128,6 +129,7 @@ public class InterfaceEmployee
      {
          double milesPerGallon();
      }
+     
  Although you cannot put instance fields or static methods in an interface, you can -
  supply constants in them. For example:
      public interface Powered extends Moveable
@@ -135,8 +137,11 @@ public class InterfaceEmployee
          double milesPerGallon();
          double SPEED_LIMIT = 95; // a public static final constant
      }
-
- Use commas to separate the interfaces that describe the characteristics that you wa-
- nt to supply.
+ Just as methods in an interface are automatically public, fields are always        -
+ "public static final".
+ 
+ While each class can have only one superclass, classes can implement multiple inter-
+ faces. Use commas to separate the interfaces that describe the characteristics  that 
+ you want to supply.
     class Employee implements Cloneable, Comparable
-*/
+ ----------------------------------------------------------------------------------*/

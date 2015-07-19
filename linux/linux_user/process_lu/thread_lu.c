@@ -271,9 +271,21 @@ int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
  其前提是该互斥锁或条件变量必须存在在由这些进程共享的内存区。
 -----------------------------------------------------------------------------------*/
 
-/*
+/*-----------------------------------------------------------------------------------
+ Before a condition variable is used, it must first be initialized. A condition vari-
+ able, represented by the pthread_cond_t data type, can be initialized in two ways. -
+ We can assign the constant PTHREAD_COND_INITIALIZER to a statically allocated condi-
+ tion variable, but if the condition variable is allocated dynamically, we can use t-
+ he pthread_cond_init function to initialize it. We can use the  pthread_cond_destroy 
+ function to deinitialize a condition variable before freeing its underlying memory.
+
+ Unless you need to create a conditional variable with nondefault attributes, the   -
+ @attr argument to pthread_cond_init can be set to NULL. 
+
  return: 0 if OK, error number on failure
-*/
+
+ example: pthread_cond_eg01
+ ----------------------------------------------------------------------------------*/
 #define PTHREAD_COND_INITIALIZER 
 int pthread_cond_init(pthread_cond_t *restrict cond,const pthread_condattr_t *restrict attr);
 int pthread_cond_destroy(pthread_cond_t *cond);

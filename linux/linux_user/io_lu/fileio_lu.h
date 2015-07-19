@@ -210,6 +210,31 @@ the same asO_SYNC
 #define SEEK_END (2)
 
 
+#define FD_SETSIZE  /*@select的第一个参数，最大的描述符个数，通常是1024*/
+
+#include <sys/time.h>
+
+struct timeval	
+{
+  long	 tv_sec;  /* seconds */
+  long	 tv_usec; /* microseconds */
+};
+
+#include <sys/select.h>
+
+typedef struct
+{
+/*XPG4.2requiresthismembername.Otherwiseavoidthename
+fromtheglobalnamespace.*/
+#ifdef__USE_XOPEN
+__fd_maskfds_bits[__FD_SETSIZE/__NFDBITS];
+#define__FDS_BITS(set)((set)->fds_bits)
+#else
+__fd_mask__fds_bits[__FD_SETSIZE/__NFDBITS];
+#define__FDS_BITS(set)((set)->__fds_bits)
+#endif
+}fd_set;
+
 
 #include <sys/epoll.h> 
 /********************************* @epoll_create1 @flags ****************************

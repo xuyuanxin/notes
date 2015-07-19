@@ -125,50 +125,49 @@ void dg_cli_v2(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t
  in Section 8.11. Why this design decision was made when sockets were first implemen-
  ted is rarely understood.
 
+ ----> connect Function with UDP
+ an asynchronous error is not returned on a UDP socket unless the socket has been co-
+ nnected. we are able to call @connect for a UDP socket. But this does not result  in 
+ anything like a TCP connection:There is no three-way handshake. Instead,the kernel -
+ just checks for any immediate errors (e.g., an obviously unreachable destination), -
+ records the IP address and port number of the peer(from the socket address structure 
+ passed to connect), and returns immediately to the calling process.
 
-
- an asynchronous error is not returned on a UDP socket unless the socket has been connected.
- we are able to call @connect for a UDP socket. But this does not result in anything 
- like a TCP connection:There is no three-way handshake.Instead,the kernel just checks 
- for any immediate errors (e.g., an obviously unreachable destination), records the IP 
- address and port number of the peer(from the socket address structure passed to connect), 
- and returns immediately to the calling process.
-
- With a connected UDP socket, three things change, compared to the default unconnected 
- UDP socket:
- 1 We can no longer specify the destination IP address and port for an output operation. 
-   That is, we do not use @sendto, but @write or @send instead. Anything written to a 
-   connected UDP socket is automatically sent to the protocol address (e.g., IP address 
-   and port) specified by connect.
-   Similar to TCP, we can call @sendto for a connected UDP socket, but we cannot specify 
-   a destination address.The fifth argument to @sendto(the pointer to the socket address 
-   structure) must be a null pointer, and the sixth argument (the size of the socket 
-   address structure) should be 0. The POSIX specification states that when the fifth 
-   argument is a null pointer, the sixth argument is ignored.
- 2 We do not need to use @recvfrom to learn the sender of a datagram, but @read, @recv, 
-   or @recvmsg instead. The only datagrams returned by the kernel for an input operation 
-   on a connected UDP socket are those arriving from the protocol address specified in 
-   connect. Datagrams destined to the connected UDP socket's local protocol address 
-   (e.g., IP address and port) but arriving from a protocol address other than the one 
-   to which the socket was connected are not passed to the connected socket. This limits 
-   a connected UDP socket to exchanging datagrams with one and only one peer.
-   Technically, a connected UDP socket exchanges datagrams with only one IP address, 
-   because it is possible to connect to a multicast or broadcast address.
- 3 Asynchronous errors are returned to the process for connected UDP sockets. The 
-   corollary, as we previously described, is that unconnected UDP sockets do not receive 
+ With a connected UDP socket, three things change, compared to the default unconnect-
+ ed UDP socket:
+ 1 We can no longer specify the destination IP address and port for an output operat-
+   ion. That is, we do not use @sendto, but @write or @send instead. Anything written 
+   to a connected UDP socket is automatically sent to the protocol address (e.g.,  IP 
+   address and port) specified by connect. Similar to TCP, we can call @sendto for  a 
+   connected UDP socket, but we cannot specify a destination address. The fifth argu-
+   ment to @sendto (the pointer to the socket address structure) must be a null poin-
+   ter,and the sixth argument (the size of the socket address structure) should be 0. 
+   The POSIX specification states that when the fifth argument is a null pointer, the 
+   sixth argument is ignored.
+ 2 We do not need to use @recvfrom to learn the sender of a datagram,but @read,@recv, 
+   or @recvmsg instead. The only datagrams returned by the kernel for an input opera-
+   tion on a connected UDP socket are those arriving from the protocol address speci-
+   fied in connect. Datagrams destined to the connected UDP socket's local protocol -
+   address (e.g., IP address and port) but arriving from a protocol address other th-
+   an the one to which the socket was connected are not passed to the connected sock-
+   et. This limits a connected UDP socket to exchanging datagrams with one and only -
+   one peer. Technically, a connected UDP socket exchanges datagrams with only one IP 
+   address, because it is possible to connect to a multicast or broadcast address.
+ 3 Asynchronous errors are returned to the process for connected UDP sockets. The co-
+   rollary, as we previously described,is that unconnected UDP sockets do not receive 
    asynchronous errors.
 
  A process with a connected UDP socket can call connect again for that socket for one 
  of two reasons:
  1 To specify a new IP address and port
  2 To unconnect the socket
- The first case, specifying a new peer for a connected UDP socket, differs from the 
- use of connect with a TCP socket: connect can be called only one time for a TCP socket.
- To unconnect a UDP socket, we call connect but set the family member of the socket 
- address structure (sin_family for IPv4 or sin6_family for IPv6) to AF_UNSPEC. This 
- might return an error of EAFNOSUPPORT (p. 736 of TCPv2), but that is acceptable. It 
- is the process of calling connect on an already connected UDP socket that causes the 
- socket to become unconnected (pp. 787¨C788 of TCPv2).
+ The first case, specifying a new peer for a connected UDP socket, differs from the -
+ use of connect with a TCP socket: connect can be called only one time for a TCP soc-
+ ket. To unconnect a UDP socket, we call connect but set the family member of the so-
+ cket address structure (sin_family for IPv4 or sin6_family for IPv6) to AF_UNSPEC. -
+ This might return an error of EAFNOSUPPORT (p. 736 of TCPv2),but that is acceptable. 
+ It is the process of calling connect on an already connected UDP socket that  causes 
+ the socket to become unconnected (pp. 787¨C788 of TCPv2).
  ----------------------------------------------------------------------------------*/
 void dg_cli_v3(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
 {
@@ -189,36 +188,9 @@ void dg_cli_v3(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t
 }
 
 
-
 static void sig_alrm(int signo)
 {
 	return;			/* just interrupt the recvfrom() */
-}
-
-/*with a call to alarm to interrupt the recvfrom if a reply is not received within five seconds.*/
-void dg_cli_timeout1(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
-{
-	int	n;
-	char	sendline[MAXLINE], recvline[MAXLINE + 1];
-
-	signal(SIGALRM, sig_alrm);
-
-	while (fgets(sendline, MAXLINE, fp) != NULL) {
-
-		sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
-
-		alarm(5);
-		if ( (n = recvfrom(sockfd, recvline, MAXLINE, 0, NULL, NULL)) < 0) {
-			if (errno == EINTR)
-				fprintf(stderr, "socket timeout\n");
-			else
-				printf("recvfrom error");
-		} else {
-			alarm(0);
-			recvline[n] = 0;	/* null terminate */
-			fputs(recvline, stdout);
-		}
-	}
 }
 
 /************************************************************************************
@@ -255,6 +227,34 @@ int Readable_timeo(int fd, int sec)
 		printf("readable_timeo error");
 	return(n);
 }
+
+/*with a call to alarm to interrupt the recvfrom if a reply is not received within five seconds.*/
+void dg_cli_timeout1(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
+{
+	int	n;
+	char	sendline[MAXLINE], recvline[MAXLINE + 1];
+
+	signal(SIGALRM, sig_alrm);
+
+	while (fgets(sendline, MAXLINE, fp) != NULL) {
+
+		sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
+
+		alarm(5);
+		if ( (n = recvfrom(sockfd, recvline, MAXLINE, 0, NULL, NULL)) < 0) {
+			if (errno == EINTR)
+				fprintf(stderr, "socket timeout\n");
+			else
+				printf("recvfrom error");
+		} else {
+			alarm(0);
+			recvline[n] = 0;	/* null terminate */
+			fputs(recvline, stdout);
+		}
+	}
+}
+
+
 
 /**
  * We do not call recvfrom until the function readable_timeo tells us that the descriptor 
@@ -335,9 +335,9 @@ int main(int argc, char **argv)
 
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	
-	if(socket < 0)
+	if(sockfd < 0)
 	{
-	    printf("\r\nudp client error socket %d",socket);
+	    printf("\r\nudp client error socket %d", sockfd);
 		return 0;
 	}
 
