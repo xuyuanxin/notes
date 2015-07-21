@@ -1,3 +1,11 @@
+/*-----------------------------------------------------------------------------------
+ For text output, use a PrintWriter. That class has methods to print strings and num-
+ bers in text format. There is even a convenience constructor to link a PrintWriter -
+ to a FileWriter. The statement
+     PrintWriter out = new PrintWriter("employee.txt");
+ is equivalent to
+     PrintWriter out = new PrintWriter(new FileWriter("employee.txt"));
+ ----------------------------------------------------------------------------------*/
 public class PrintWriter { /* java.io.PrintWriter 1.1 */
 
 /* creates a new PrintWriter. */
