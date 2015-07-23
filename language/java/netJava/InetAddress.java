@@ -22,5 +22,9 @@ public class InetAddress extends Object implements Serializable
  ----------------------------------------------------------------------------------*/
 public static InetAddress getByName(String host) throws UnknownHostException;
 
+/* Returns the IP address string in textual presentation. */
+public String getHostAddress();
+
+
 }
 

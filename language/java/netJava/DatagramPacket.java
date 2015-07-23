@@ -1,6 +1,6 @@
 public final class DatagramPacket extends Object
 {
-/* Constructs a DatagramPacket for receiving packets of length length. */
+/* Constructs a DatagramPacket for receiving packets of length @length. */
 DatagramPacket(byte[] buf, int length);
 
 /* Constructs a datagram packet for sending packets of length length to the specified port number on the specified host. */
@@ -41,7 +41,10 @@ int	getLength();
 public int getPort();
 
 
-/* Set the data buffer for this packet. */
+/*----------------------------------------------------------------------------------- 
+ Set the data buffer for this packet. With the offset of this DatagramPacket set to 0, 
+ and the length set to the length of buf. 
+ -----------------------------------------------------------------------------------*/
 void	setData(byte[] buf);
 
 /*-----------------------------------------------------------------------------------

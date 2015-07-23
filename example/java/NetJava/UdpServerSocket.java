@@ -5,18 +5,19 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;  
 import java.net.SocketException;  
    
-public class UdpServerSocket {  
-    private byte[] buffer = new byte[1024];  
-    private DatagramSocket ds = null;  
-    private DatagramPacket packet = null;  
-    private InetSocketAddress socketAddress = null;  
-    private String orgIp;  
+public class UdpServerSocket 
+{  
+    private byte[] buffer = new byte[1024];
+    private DatagramSocket ds = null;
+    private DatagramPacket packet = null;
+    private InetSocketAddress socketAddress = null;
+    private String orgIp;
   
     public UdpServerSocket(String host, int port) throws Exception 
     {  
         socketAddress = new InetSocketAddress(host, port);  
         ds = new DatagramSocket(socketAddress);  
-        System.out.println("服务端启动!");  
+        System.out.println("server startup");  
     }  
       
     public final String getOrgIp() 
@@ -49,17 +50,46 @@ public class UdpServerSocket {
 		
         String info = new String(packet.getData(), 0, packet.getLength());
 		
-        System.out.println("接收信息：" + info);  
+        System.out.println("recv from client:" + info);  
         return info;  
     }  
 
+	public static byte[] byteMerger(byte[] byte_1, byte[] byte_2)
+	{	
+		 byte[] byte_3 = new byte[byte_1.length+byte_2.length];  
+		 System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);  
+		 System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);  
+		 return byte_3;  
+	 }	
+
     public final void response(String info) throws IOException 
-	{  
-        System.out.println("客户端地址 : " + packet.getAddress().getHostAddress()  
-                + ",端口：" + packet.getPort());
+	{
+		int num = 0x11020304;
+		System.out.println("num:" + num);
+
+		byte[] int2bytes = Utilities.int2Bytes(num);
+		byte[] all;
+
+		//int bytes2int = Utilities.bytes2Int(int2bytes);
+		//System.out.println("bytes2int: " + bytes2int);
+	
+        System.out.println("client ip:" + packet.getAddress().getHostAddress() + 
+			               ",port:" + packet.getPort());
 		
         DatagramPacket dp = new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort());  
-        dp.setData(info.getBytes());  
+
+        all = byteMerger(info.getBytes(),int2bytes);
+		System.out.println("setData Len " + all.length);
+		dp.setData(all,0,all.length);
+		//dp.setData(int2bytes,info.length(),info.length()+4);
+
+		System.out.println("serv send:");
+
+		for (int i = 0; i < all.length; ++i) {
+			System.out.print(all[i] + " ");
+		}
+		System.out.println();
+
         ds.send(dp);  
     }  
  
@@ -97,7 +127,7 @@ public class UdpServerSocket {
         while (true) 
 		{  
             udpServerSocket.receive();  
-            udpServerSocket.response("你好,sterning!");  
+            udpServerSocket.response("hello client:");  
         }  
     }  
 }  

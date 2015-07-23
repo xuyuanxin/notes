@@ -12,6 +12,11 @@ String(byte[] bytes, int offset, int length);
  ----------------------------------------------------------------------------------*/
 byte[]	getBytes();
 
+/*----------------------------------------------------------------------------------- 
+ Returns the length of this string. The length is equal to the number of Unicode code 
+ units in the string. 
+ -----------------------------------------------------------------------------------*/
+public int length();
 
 
 }
