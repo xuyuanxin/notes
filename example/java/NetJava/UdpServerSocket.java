@@ -60,7 +60,7 @@ public class UdpServerSocket
 		 System.arraycopy(byte_1, 0, byte_3, 0, byte_1.length);  
 		 System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);  
 		 return byte_3;  
-	 }	
+	}	
 
     public final void response(String info) throws IOException 
 	{

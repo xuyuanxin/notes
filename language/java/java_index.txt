@@ -1,0 +1,9 @@
+---->JavaËõÂÔÓï
+
+---->Ë÷Òý
+Array     java.util
+ArrayList java.util
+Class     java.lang.Class
+reflect   import java.lang.reflect.*;
+Scanner   java.util.Scanner
+System    java.lang.System 

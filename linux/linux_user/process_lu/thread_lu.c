@@ -300,7 +300,7 @@ int pthread_cond_destroy(pthread_cond_t *cond);
  @return: 
     0 if OK, error number on failure
     
- We @use pthread_cond_wait to wait for a condition to be true . A variant is provided 
+ We use @pthread_cond_wait to wait for a condition to be true . A variant is provided 
  to return an error code if the condition hasn't been satisfied in the specified amo-
  unt of time.
 
@@ -325,7 +325,7 @@ int pthread_cond_timedwait(pthread_cond_t *restrict cond,pthread_mutex_t *restri
  @return: 
     0 if OK, error number on failure
 
- There are two functions to notify threads that a condition has been satisfied. The
+ There are two functions to notify threads that a condition has been satisfied. The -
  @pthread_cond_signal function will wake up at least one thread waiting on a conditi-
  on (如果没有等待的线程，则什么也不做 ), whereas the @pthread_cond_broadcast function 
  will wake up all threads waiting on a condition. 
@@ -335,10 +335,6 @@ int pthread_cond_timedwait(pthread_cond_t *restrict cond,pthread_mutex_t *restri
   
  The POSIX specification allows for implementations of pthread_cond_signal to wake up 
  more than one thread, to make the implementation simpler.
-
- When we call @pthread_cond_signal or @pthread_cond_broadcast, we are said to be sig-
- naling the thread or condition. We have to be careful to signal the threads only af-
- ter changing the state of the condition.
 
  example: pthread_cond_eg01()
 -----------------------------------------------------------------------------------*/
