@@ -35,24 +35,33 @@ public class UdpClientSocket
     }  
  
     public final String receive(final String lhost, final int lport)  throws Exception 
-	{  
+	{
+	    byte[] str = new byte[1024];
+        String str2 ;
         DatagramPacket dp = new DatagramPacket(buffer, buffer.length);  
         ds.receive(dp);
-		System.out.println("client recv len " + dp.getLength());
-		for (int i = 0; i < dp.getLength(); ++i) {
+		System.out.println("client recv from serv, len " + dp.getLength() + 
+			               " offset " + dp.getOffset() + " : ");
+		
+		for (int i = 0; i < dp.getLength(); ++i) 
+		{
 			System.out.print(dp.getData()[i] + " ");
 		}
-		System.out.println();		
-        String info = new String(dp.getData(), 0, dp.getLength()-4);
-		int bytes2int = Utilities.bytes2Int(dp.getData(),dp.getLength()-4);
-		System.out.println("bytes2int: " + bytes2int);	
+		System.out.println();
 
-		System.out.println("client recv len " + dp.getLength());
-		for (int i = 0; i < dp.getLength(); ++i) {
-			System.out.print(dp.getData()[i] + " ");
-		}
-		System.out.println();			
-        return info;  
+		InputStream in = new ByteArrayInputStream(dp.getData(), dp.getOffset(), dp.getLength());
+		DataInputStream din = new DataInputStream(in);
+		int mgc1 = din.readInt();
+		int mgc2 = din.readInt();
+		din.readFully(str,8,4);
+		str2 = new String(dp.getData(), 8, dp.getLength()-8);
+
+		System.out.printf("mgc1: 0x%x\n",mgc1);
+		System.out.printf("mgc2: 0x%x\n",mgc2);
+		System.out.printf("str : %s\n",str.toString());
+		System.out.println("str : " + str2);
+
+        return "tmp";
     }  
  
     public final void close() 
@@ -66,11 +75,11 @@ public class UdpClientSocket
  
     public static void main(String[] args) throws Exception 
 	{  
-        UdpClientSocket client = new UdpClientSocket();  
+        UdpClientSocket client = new UdpClientSocket();
         String serverHost = "127.0.0.1";  
         int serverPort = 3344;  
         
-		while(true)
+		//while(true)
 		{
 		client.send(serverHost, serverPort, ("client").getBytes());
         String info = client.receive(serverHost, serverPort); 

@@ -1,5 +1,25 @@
 
-public class DatagramSocket extends Object implements Closeable
+/*-----------------------------------------------------------------------------------
+ This class represents a socket for sending and receiving datagram packets. A datagr-
+ am socket is the sending or receiving point for a packet delivery service. Each pac-
+ ket sent or received on a datagram socket is individually addressed and routed. Mul-
+ tiple packets sent from one machine to another may be routed differently, and may a-
+ rrive in any order.
+
+ Where possible, a newly constructed DatagramSocket has the SO_BROADCAST socket opti-
+ on enabled so as to allow the transmission of broadcast datagrams. In order to rece-
+ ive broadcast packets a DatagramSocket should be bound to the wildcard address. In -
+ some implementations, broadcast packets may also be received when a DatagramSocket -
+ is bound to a more specific address.
+
+ Example: 
+     DatagramSocket s = new DatagramSocket(null); 
+     s.bind(new InetSocketAddress(8888)); 
+ Which is equivalent to: 
+     DatagramSocket s = new DatagramSocket(8888); 
+ Both cases will create a DatagramSocket able to receive broadcasts on UDP port 8888.
+-----------------------------------------------------------------------------------*/
+public class DatagramSocket extends Object implements Closeable /* java.net.DatagramSocket */
 {
 /*-----------------------------------------------------------------------------------
  Constructs a datagram socket and binds it to any available port on the local host m-

@@ -61,33 +61,38 @@ public class UdpServerSocket
 		 System.arraycopy(byte_2, 0, byte_3, byte_1.length, byte_2.length);  
 		 return byte_3;  
 	}	
+/*
+ ack:
+ mgc    4 bytes
+ type   1 bytes
+ 
 
+*/
     public final void response(String info) throws IOException 
 	{
 		int num = 0x11020304;
 		System.out.println("num:" + num);
 
-		byte[] int2bytes = Utilities.int2Bytes(num);
+		byte[] data1 = Utilities.int2Bytes(num);
+		byte[] data2 = Utilities.int2Bytes(0x11050607);
+		byte[] all_1;
 		byte[] all;
-
-		//int bytes2int = Utilities.bytes2Int(int2bytes);
-		//System.out.println("bytes2int: " + bytes2int);
 	
-        System.out.println("client ip:" + packet.getAddress().getHostAddress() + 
-			               ",port:" + packet.getPort());
+        System.out.println("client ip: " + packet.getAddress().getHostAddress() + 
+			               ",port:"     + packet.getPort());
 		
-        DatagramPacket dp = new DatagramPacket(buffer, buffer.length, packet.getAddress(), packet.getPort());  
+        DatagramPacket dp = new DatagramPacket(buffer, buffer.length, 
+			                    packet.getAddress(), packet.getPort());  
 
-        all = byteMerger(info.getBytes(),int2bytes);
-		System.out.println("setData Len " + all.length);
+        all_1 = byteMerger(data1, data2);
+		all = byteMerger(all_1, info.getBytes());
 		dp.setData(all,0,all.length);
-		//dp.setData(int2bytes,info.length(),info.length()+4);
-
-		System.out.println("serv send:");
+		System.out.println("serv send to client len: " + dp.getLength());
 
 		for (int i = 0; i < all.length; ++i) {
 			System.out.print(all[i] + " ");
 		}
+		
 		System.out.println();
 
         ds.send(dp);  
@@ -127,7 +132,7 @@ public class UdpServerSocket
         while (true) 
 		{  
             udpServerSocket.receive();  
-            udpServerSocket.response("hello client:");  
+            udpServerSocket.response("hello");  
         }  
     }  
 }  

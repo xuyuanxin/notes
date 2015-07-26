@@ -3,7 +3,10 @@ public final class DatagramPacket extends Object
 /* Constructs a DatagramPacket for receiving packets of length @length. */
 DatagramPacket(byte[] buf, int length);
 
-/* Constructs a datagram packet for sending packets of length length to the specified port number on the specified host. */
+/*----------------------------------------------------------------------------------- 
+ Constructs a datagram packet for sending packets of length length to the specified -
+ port number on the specified host. 
+ -----------------------------------------------------------------------------------*/
 DatagramPacket(byte[] buf, int length, InetAddress address, int port);
 
 /* Constructs a DatagramPacket for receiving packets of length length, specifying an offset into the buffer. */
@@ -33,6 +36,9 @@ public byte[] getData();
 /* Returns the length of the data to be sent or the length of the data received. */
 int	getLength();
 
+
+/* Returns the offset of the data to be sent or the offset of the data received. */
+int	getOffset();
 
 /*-----------------------------------------------------------------------------------
  Returns the port number on the remote host to which this datagram is being sent or -

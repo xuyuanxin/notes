@@ -10,30 +10,54 @@
  DataOutput interface:
      DataOutputStream out = new DataOutputStream(new FileOutputStream("xxx.dat"));
  ----------------------------------------------------------------------------------*/
-
-public class DataInput { /* java.io.DataInput 1.0 */
+public interface DataInput /* java.io */
+{ 
 
 /* reads in a value of the given type. */
 boolean readBoolean();
 byte readByte();
 char readChar();
 double readDouble();
-float readFloat();
-int readInt();
-long readLong();
-short readShort();
 
 /* reads bytes into the array b, blocking until all bytes are read. */
 void readFully(byte[] b);
 
-/* reads bytes into the array b, blocking until all bytes are read. */
+/*-----------------------------------------------------------------------------------
+ Parameters:
+ b - the buffer into which the data is read.
+ off - an int specifying the offset into the data.
+ len - an int specifying the number of bytes to read.
+
+ reads bytes into the array b, blocking until all bytes are read. 
+ ----------------------------------------------------------------------------------*/
 void readFully(byte[] b, int off, int len);
 
+float readFloat();
+
+/*-----------------------------------------------------------------------------------
+ Reads four input bytes and returns an int value. Let a-d be the first through fourth 
+ bytes read. The value returned is:
+
+ (((a & 0xff) << 24) | ((b & 0xff) << 16) | ((c & 0xff) <<  8) | (d & 0xff))
+ 
+ This method is suitable for reading bytes written by the writeInt method of interfa-
+ ce DataOutput.
+
+ Returns: the int value read.
+ Throws:
+ EOFException - if this stream reaches the end before reading all the bytes.
+ IOException - if an I/O error occurs.
+ ----------------------------------------------------------------------------------*/
+int readInt() throws IOException;
+
+long readLong();
+short readShort();
+
 /* reads a string of characters in the "modified UTF-8" format. */
-String readUTF()
+String readUTF();
 
 /* skips n bytes, blocking until all bytes are skipped. */
-int skipBytes(int n)
+int skipBytes(int n);
 
 }
 
@@ -60,8 +84,7 @@ void writeUTF(String s);
 }
 
 
-public class DataInputStream { /*  */
-}
+
 
 public class DataOutputStream { /*  */
 }
