@@ -54,7 +54,7 @@ public class UdpClientSocket
 		int mgc1 = din.readInt();
 		int mgc2 = din.readInt();
 		din.readFully(str,8,4);
-		str2 = new String(dp.getData(), 8, dp.getLength()-8);
+		str2 = new String(dp.getData(), 8, dp.getLength()-8, "US-ASCII");
 
 		System.out.printf("mgc1: 0x%x\n",mgc1);
 		System.out.printf("mgc2: 0x%x\n",mgc2);

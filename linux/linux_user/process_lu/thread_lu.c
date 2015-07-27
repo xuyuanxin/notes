@@ -121,7 +121,6 @@ int pthread_cancel(pthread_t tid);
 void pthread_cleanup_push(void (*rtn)(void *), void *arg);
 void pthread_cleanup_pop(int execute);
 
-
 /*-----------------------------------------------------------------------------------
  @Returns: 
     0 if OK, error number on failure

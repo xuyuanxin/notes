@@ -43,8 +43,8 @@ void *thr_fn4(void *arg)
 
 
 /*-----------------------------------------------------------------------------------
- As we can see, when a thread exits by calling @pthread_exitor by simply returning f-
- rom the start routine, the exit status can  be obtained by another thread by calling 
+ As we can see, when a thread exits by calling @pthread_exit or by simply returning -
+ from the start routine, the exit status can be obtained by another thread by calling 
  @pthread_join
 
 output:

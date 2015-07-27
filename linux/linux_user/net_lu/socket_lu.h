@@ -18,29 +18,24 @@
  ------------------------------------------------------------------------------------
  ----------------------------------------------------------------------------------*/
 
-
-
 /* socklent_t   uint32_t */
 
 #include<netinet/in.h>
 
-#define INET_ADDRSTRLEN       16       /* for IPv4 dotted-decimal */
-#define INET6_ADDRSTRLEN      46       /* for IPv6 hex string */
-
-
 /*-----------------------------------------------------------------------------------
-	  The generic socket address structure: sockaddr.  <sys/socket.h>
- ------------------------------------------------------------------------------------  
+ ----> Socket Address Structures
+ Most socket functions require a pointer to a socket address structure as an argumen-
+ t. Each supported protocol suite defines its own socket address structure. The names 
+ of these structures begin with sockaddr_ and end with a unique suffix for each prot-
+ ocol suite.
  ----------------------------------------------------------------------------------*/
-struct sockaddr 
-{
-  uint8_t      sa_len;
-  sa_family_t  sa_family;    /* address family: AF_xxx value */
-  char         sa_data[14];  /* protocol-specific address */
-};
+ 
+#define INET_ADDRSTRLEN   16 /* for IPv4 dotted-decimal  <netinet/in.h>*/
+#define INET6_ADDRSTRLEN  46 /* for IPv6 hex string  <netinet/in.h>*/
 
 /*-----------------------------------------------------------------------------------
-     The Internet (IPv4) socket address structure: sockaddr_in. <netinet/in.h>
+ An IPv4 socket address structure, commonly called an "Internet socket address struc-
+ ture," is named sockaddr_in and is defined by including the <netinet/in.h> header.
  ------------------------------------------------------------------------------------
  @sin_len
      The length member, sin_len, was added with 4.3BSD-Reno, when support for the OSI 
@@ -71,7 +66,7 @@ struct in_addr
   in_addr_t   s_addr;           /* 32-bit IPv4 address network byte ordered */
 };
 
-struct sockaddr_in
+struct sockaddr_in /* POSIX definition */
 {
   uint8_t         sin_len;      /* length of structure (16) */
   sa_family_t     sin_family;   /* AF_INET */
@@ -80,6 +75,19 @@ struct sockaddr_in
   char            sin_zero[8];  /* unused */
 };
 
+
+#include <sys/socket.h>
+
+/*-----------------------------------------------------------------------------------
+	  The generic socket address structure: sockaddr.  <sys/socket.h>
+ ------------------------------------------------------------------------------------  
+ ----------------------------------------------------------------------------------*/
+struct sockaddr 
+{
+  uint8_t      sa_len;
+  sa_family_t  sa_family;    /* address family: AF_xxx value */
+  char         sa_data[14];  /* protocol-specific address */
+};
 
 
 /*

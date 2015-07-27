@@ -75,6 +75,7 @@ public class UdpServerSocket
 
 		byte[] data1 = Utilities.int2Bytes(num);
 		byte[] data2 = Utilities.int2Bytes(0x11050607);
+		byte[] data3;
 		byte[] all_1;
 		byte[] all;
 	
@@ -85,7 +86,8 @@ public class UdpServerSocket
 			                    packet.getAddress(), packet.getPort());  
 
         all_1 = byteMerger(data1, data2);
-		all = byteMerger(all_1, info.getBytes());
+		data3 = info.getBytes("US-ASCII");
+		all = byteMerger(all_1, data3);
 		dp.setData(all,0,all.length);
 		System.out.println("serv send to client len: " + dp.getLength());
 
