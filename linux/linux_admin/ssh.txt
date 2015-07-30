@@ -1,0 +1,43 @@
+安装ssh server
+http://www.powerxing.com/install-hadoop-cluster/                                     |
+----> SSH无密码登陆                                                                  |
+安装ssh server后,可以使用如下命令登陆本机:                                           |
+ssh localhost                                                                        |
+此时会有如下提示(SSH首次登陆提示), 输入 yes. 然后按提示输入密码xxx, 这样就登陆到本机 |
+了. 但这样登陆是需要每次输入密码的, 我们需要配置成SSH无密码登陆比较方便. 首先退出刚才|
+的ssh, 就回到了我们原先的终端窗口, 然后利用ssh-keygen生成密钥, 并将密钥加入到授权中: |
+exit                               # 退出刚才的 ssh localhost                        |
+cd ~/.ssh/                         # 若没有该目录，请先执行一次ssh localhost         |
+ssh-keygen -t rsa                  # 会有提示, 都按回车就可以                        |
+cat id_rsa.pub >> authorized_keys  # 加入授权                                        |
+此时再用ssh localhost命令, 无需输入密码就可以直接登陆了.                             |
+                                                                                     |
+-----> SSH无密码登录到其它主机                                                       |
+Master  192.168.1.121       # 两台机器                                               |
+Slave1  192.168.1.122                                                                |
+sudo vim /etc/hostname      # 在此处修改主机名                                       |
+sudo vim /etc/hosts         # 在此处修改主机与IP的映射关系                           |
+                                                                                     |
+这个操作是要让Master节点可以无密码SSH登陆到Slave节点上. 首先生成Master的公匙,在Master|
+节点终端中执行:                                                                      |
+cd ~/.ssh                      # 如果没有该目录，先执行一次ssh localhost             |
+ssh-keygen -t rsa              # 一直按回车就可以，生成的密钥保存为.ssh/id_rsa       |
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys                                      |
+完成后可以使用ssh Master验证一下. 接着将公匙传输到Slave1节点:                        |
+scp ~/.ssh/id_rsa.pub hadoop@Slave1:/home/hadoop/                                    |
+scp时会要求输入Slave1上hadoop用户的密码, 输入完成后会提示传输完毕. 接着在Slave1节点上|
+将ssh公匙保存到相应位置, 执行                                                        |
+cat ~/id_rsa.pub >> ~/.ssh/authorized_keys                                           |
+如果有其他Slave节点, 也要执行:将公匙传输到Slave节点, 在Slave节点上加入授权这两步. 最 |
+后在Master节点上就可以无密码SSH到Slave1节点了.                                       |
+ssh Slave1                                                                           |
+
+
+
+
+
+
+
+
+
+
