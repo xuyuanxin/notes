@@ -1,4 +1,6 @@
 安装ssh server
+sudo apt-get install openssh-server
+
 http://www.powerxing.com/install-hadoop-cluster/                                     |
 ----> SSH无密码登陆                                                                  |
 安装ssh server后,可以使用如下命令登陆本机:                                           |

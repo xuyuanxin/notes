@@ -1,0 +1,12 @@
+----> 安装
+分区
+
+
+
+1 ssh
+2 vnc
+3 linux源码
+  zypper install kernel-source   # suse
+4 主机名
+  sudo vim /etc/hostname      # 在此处修改主机名 
+  sudo vim /etc/HOSTNAME      # suse

@@ -48,6 +48,8 @@ int strcmp ( const char * str1, const char * str2 );
 -----------------------------------------------------------------------------------*/
 char * strcat ( char * destination, const char * source );
 
+/* strstr */
+char *strcasestr(const char *haystack, const char *needle);
 
 /*-----------------------------------------------------------------------------------
  @ptr
@@ -101,6 +103,17 @@ char * strerror ( int errnum );
 const char * strchr ( const char * str, int character ); /* C++ */
 	  char * strchr (		char * str, int character );  /* C++ */
 	  char * strchr ( const char *, int ); /* C */
+
+/*-----------------------------------------------------------------------------------
+ The strstr() function finds the first occurrence of the substring @needle in the st-
+ ring @haystack. The terminating null bytes ('\0') are not compared.
+
+ The strcasestr() function is like strstr(), but ignores the case of both arguments.
+
+ return a pointer to the beginning of the located substring, or NULL if the substring 
+ is not found.
+ ----------------------------------------------------------------------------------*/
+char *strstr(const char *haystack, const char *needle);
 
 /*-----------------------------------------------------------------------------------
  @destination

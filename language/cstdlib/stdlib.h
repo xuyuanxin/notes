@@ -41,6 +41,41 @@ EXIT_SUCCESS
 -----------------------------------------------------------------------------------*/
 int atoi (const char * str);
 
+/*-----------------------------------------------------------------------------------
+ The strtol() function converts the initial part of the string in @nptr to a long in-
+ teger value according to the given @base, which must be between 2 and 36  inclusive, 
+ or be the special value 0.
+
+ The string may begin with an arbitrary amount of white space followed by a single o-
+ ptional '+' or '-' sign.  If base is zero or 16, the string may then include a  "0x"
+ prefix, and the number will be read in base 16; otherwise, a zero base is taken as -
+ 10 (decimal) unless the next character is '0', in which case it is taken as 8 (octa-
+ l).
+
+ The remainder of the string is converted to a long int value in the obvious  manner, 
+ stopping at the first character which is not a valid digit in the given base. (In b-
+ ases above 10, the letter 'A' in either uppercase or lowercase represents 10, 'B' r-
+ epresents 11, and so forth, with 'Z' representing 35.)
+
+ If @endptr is not NULL, strtol() stores the address of the first invalid character -
+ in *@endptr. If there were no digits at all, strtol() stores the original value of -
+ @nptr in *@endptr (and returns 0). In particular, if *@nptr is not '\0' but **endptr 
+ is '\0' on return, the entire string is valid.
+
+ The strtoll() function works just like the strtol() function but returns a long lon-
+ g integer value.
+
+ RETURN VALUE
+ The strtol() function returns the result of the conversion, unless the value would -
+ underflow or overflow.  If an underflow occurs, strtol() returns LONG_MIN.  If an o-
+ verflow occurs, strtol() returns LONG_MAX. In both cases, errno is set to ERANGE. P-
+ recisely the same holds for strtoll() (with LLONG_MIN and LLONG_MAX instead of     -
+ LONG_MIN and LONG_MAX). 
+-----------------------------------------------------------------------------------*/
+long int strtol(const char *nptr, char **endptr, int base);
+long long int strtoll(const char *nptr, char **endptr, int base);
+
+
 
 /*-----------------------------------------------------------------------------------
  @str
@@ -196,7 +231,18 @@ int system(const char *command);
 
 void* malloc (size_t size);
 
+/*-----------------------------------------------------------------------------------
+ The rand() function returns a pseudo-random integer in the range 0 to RAND_MAX incl-
+ usive (i.e., the mathematical range [0, RAND_MAX]).
+ ----------------------------------------------------------------------------------*/
 int rand(void);
 int rand_r(unsigned int *seedp);
 void srand(unsigned int seed);
+
+
+
+
+
+#define RAND_MAX Ox7FFF /* min:32767 max:2147483647 */
+
 
