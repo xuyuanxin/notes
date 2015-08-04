@@ -1,8 +1,38 @@
+检查SUSE上的sshd服务有无启动。
+ps -ef|grep sshd
+
 安装ssh server
 sudo apt-get install openssh-server
 
-http://www.powerxing.com/install-hadoop-cluster/                                     |
+启动ssh服务
+service sshd restart 
+                                                                                     |
+----> ssh保活                                                                        |
+http://pswzyu.iteye.com/blog/1280718                                                 |
+可以让服务器发送"心跳"信号测试提醒客户端进行保持连接. 打开服务器/etc/ssh/sshd_config |
+ClientAliveInterval 60
+ClientAliveCountMax 1                                                                |
+这 样SSH Server每60秒就会自动发送一个信号给Client, 等待Client回应. 如果客户端没有回应|
+, 会记录下来直到记录数超过ClientAliveCountMax的值时, 才会断开连接.                   |
+在客户端进行设置也可以实现, 只要在/etc/ssh/ssh_config文件里加两个参数就行了          |
+TCPKeepAlive yes
+ServerAliveInterval 300                                                              |
+前一个参数是说要保持连接, 后一个参数表示每过5分钟发一个数据包到服务器表示"我还活着", |
+如果你没有root权限, 修改或者创建~/.ssh/ssh_config也是可以的. 在这种方法中, 如果你只想|
+针对某一个ssh连接进行持续, 你可以将上述配置文件复制一下进行修改然后在连接的时候使用-F|
+参数进行配置文件的指定. 当然因为只需要修改两个参数, 你也可以直接在连接命令中进行设定 |
+即:                                                                                  |
+ssh -o TCPKeepAlive=yes -o ServerAliveInterval=300 pswzyu@nuihq.com -p 12345678      |
+                                                                                     |
+/etc/init.d/sshd restart  #重启sshd生效
+
+windows系统
+使用SecureCRT连接远程服务器, 在会话选项 -> 终端设置中勾选"发送协议 NO-OP".
+使用putty连接远程服务器, 找到Connection -> Seconds between keepalives(0 to turn off),| 
+默认为0, 改为60.                                                                     |
+
 ----> SSH无密码登陆                                                                  |
+http://www.powerxing.com/install-hadoop-cluster/                                     |
 安装ssh server后,可以使用如下命令登陆本机:                                           |
 ssh localhost                                                                        |
 此时会有如下提示(SSH首次登陆提示), 输入 yes. 然后按提示输入密码xxx, 这样就登陆到本机 |

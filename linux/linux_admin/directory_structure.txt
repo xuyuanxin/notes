@@ -26,7 +26,7 @@ Parts of a Unix directory tree. See the FSSTND standard (Filesystem standard)
 |    |----1		A directory with info about process number 1.  Each process
 |				has a directory below proc.  
 |---usr			Contains all commands, libraries, man pages, games and static files for normal
-|    |			operation.
+|    |			operation. Unix System Resource
 |    |----bin		Almost all user commands.  some commands are in /bin or /usr/local/bin.
 |    |----sbin		System admin commands not needed on the root filesystem.  e.g., most server 
 |    |			programs.

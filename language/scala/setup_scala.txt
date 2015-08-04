@@ -1,0 +1,16 @@
+1 进入官网下载tar.gz文件
+
+2 解压
+chmod 755 scala-2.11.6.tgz
+tar -xzvf scala-2.11.6.tgz  #安装路径为~/install/scala-2.11.6
+
+3 配置环境变量
+cd ~
+vim .bash_profile 
+添加如下配置：
+export SCALA_HOME=/home/test/install/scala-2.11.6
+export PATH=$SCALA_HOME/bin:$PATH
+保存后, 执行 . .bash_profile (注意. .之间空格)
+
+4 显示版本信息
+键入scala，进入scala命令行

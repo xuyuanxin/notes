@@ -1,0 +1,12 @@
+二.对占用的端口进行释放
+[plain] view plaincopy
+[shen@localhost hadoop]$ lsof -i:9000  
+[shen@localhost hadoop]$ lsof -i:50070  
+[shen@localhost hadoop]$ lsof -i:50030  
+[shen@localhost hadoop]$ lsof -i:50075  
+[shen@localhost hadoop]$ lsof -i:50060  
+COMMAND  PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME  
+java    4280 shen   79u  IPv6  51108      0t0  TCP *:50060 (LISTEN)  
+[shen@localhost hadoop]$ kill 4280  
+[shen@localhost hadoop]$ lsof -i:50020  
+[shen@localhost hadoop]$ lsof -i:50010 

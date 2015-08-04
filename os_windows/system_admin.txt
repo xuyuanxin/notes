@@ -1,0 +1,5 @@
+1 Windows下主机名和IP映射设置  
+如果需要添加域名和IP的对应关系可以在以下地方进行修改。
+打开系统目录：c:/windows/system32/drivers/etc找到hosts文件，打开hosts文件并在最后面添加一条记录
+例如：
+127.0.0.1 www.163.com

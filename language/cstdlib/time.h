@@ -17,6 +17,6 @@ time_t time(time_t *t);
 
 
 #include <sys/time.h>
-int gettimeofday(struct timeval *restrict tp, void *restrict tzp);
+int gettimeofday(struct timeval *restrict tp, void *restrict tzp); /* linux syscall */
 
 

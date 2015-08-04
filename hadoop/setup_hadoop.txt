@@ -1,8 +1,8 @@
-http://SparkMaster:50070  HDFS集群的状况
-http://SparkMaster:50075  不确定
-http://SparkMaster:8088   ResourceManager运行状态
-http://SparkWorker1:8042  NodeManager运行状态
-http://SparkMaster:19888  JobHistory中的任务执行历史信息
+http://IP:50070  HDFS集群的状况
+http://IP:50075  不确定
+http://IP:8088   ResourceManager运行状态
+http://IP:8042   NodeManager运行状态
+http://IP:19888  JobHistory中的任务执行历史信息
 
 jps
 xxxx DataNode             <-- slave  sbin/start-hdfs.sh(在master上执行)
@@ -158,7 +158,7 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 </property>
 <property>
     <name>dfs.replication</name>
-    <value>1</value>
+    <value>1</value>  # 本例中只有一个datanode
 </property>
 
 2.4 文件mapred-site.xml(首先需执行 cp mapred-site.xml.template mapred-site.xml):
@@ -183,16 +183,23 @@ rm -r ./hadoop/tmp                       # Master执行, 删除Hadoop临时文件
 sudo tar -zcf ./hadoop.tar.gz ./hadoop   # Master执行
 scp ./hadoop.tar.gz Slave1:/home/hadoop  # Master执行
 sudo tar -zxf ~/hadoop.tar.gz -C /usr/local     # 在Slave1上执行
-sudo chown -R hadoop:hadoop /usr/local/hadoop   # 在Slave1上执行 
-3.1 Slave上的java路径可能不同, 需要修改
-3.2 datanode的路径要提前创建,本例是/usr/local/hadoop/tmp
+sudo chown -R hadoop:hadoop /usr/local/hadoop   # 在Slave1上执行
 
-4 最后在Master主机上就可以启动hadoop了()
-cd /usr/local/hadoop/
-bin/hdfs namenode -format
-sbin/start-dfs.sh
-sbin/start-yarn.sh
-jps                 # 判断是否启动成功. 若成功启动, 则Master节点启动了NameNode, SecondrryNameNode, ResourceManager进程;
+注意 
+3.1 各个机器上的java路径可能不一致.
+3.2 datanode的路径要提前创建, 本例是/usr/local/hadoop/tmp
+
+4 最后在Master主机上就可以启动hadoop了(会自动启动slave上的datanode)
+cd /usr/local/hadoop/                                                                |
+bin/hdfs namenode -format  # 首次运行需要执行初始化，后面不再需要. 成功的话, 会看到  |
+                           # successfully formatted 的提示, 且倒数第5行的提示如下,   |
+						   # Exitting with status 0 表示成功, 若为                   |
+						   # Exitting with status 1 则是出错.                        |
+						   # 可试着加上sudo,既sudo bin/hdfs namenode -format再试试看.|
+sbin/start-dfs.sh   #
+sbin/start-yarn.sh  #
+jps                 # 判断是否启动成功. 若成功启动, 
+                    # Master节点启动了NameNode, SecondrryNameNode, ResourceManager进程;
                     # Slave节点启动了DataNode和NodeManager进程.
 
 5 在Master主机上执行WordCount实例:
