@@ -1,5 +1,87 @@
+----> The list Function
+It¡¯s actually a type, not a function, but the difference isn¡¯t important right now. -
+Because strings can¡¯t be modified in the same way as lists, sometimes it can be usef-
+ul to create a list from a string. You can do this with the list function:
+>>> list('Hello')
+['H', 'e', 'l', 'l', 'o']
+Note that list works with all kinds of sequences, not just strings.
+
+1 Changing Lists: Item Assignments
+You cannot assign to a position that doesn¡¯t exist;
+>>> x = [1, 1, 1]
+>>> x[1] = 2
+>>> x
+[1, 2, 1]
+
+2 Deleting Elements
+>>> names = ['Alice', 'Beth', 'Cecil', 'Dee-Dee', 'Earl']
+>>> del names[2]
+>>> names
+['Alice', 'Beth', 'Dee-Dee', 'Earl']
+
+3 Assigning to Slices
+>>> name = list('Perl')
+>>> name
+['P', 'e', 'r', 'l']
+>>> name[2:] = list('ar')
+>>> name
+['P', 'e', 'a', 'r']
+
+----> List Methods
+In general, a method is called like this:
+object.method(arguments)
+As you can see, a method call looks just like a function call, except that the object 
+is put before the method name, with a dot separating them.
+
+1 append
+The append method is used to append an object to the end of a list:
+>>> lst = [1, 2, 3]
+>>> lst.append(4)
+>>> lst
+[1, 2, 3, 4]
+It¡¯s also important to note that append, like several similar methods, changes the l-
+ist in place. This means that it does not simply return a new, modified list;instead, 
+it modifies the old one directly. 
+
+2 count
+The count method counts the occurrences of an element in a list:
+>>> ['to', 'be', 'or', 'not', 'to', 'be'].count('to')
+2
+>>> x = [[1, 2], 1, 1, [2, 1, [1, 2]]]
+>>> x.count(1)
+2
+>>> x.count([1, 2])
+1
+
+3 extend
+The extend method allows you to append several values at once by supplying a sequence 
+of the values you want to append. In other words, your original list has been extend-
+ed by the other one:
+>>> a = [1, 2, 3]
+>>> b = [4, 5, 6]
+>>> a.extend(b)
+>>> a
+[1, 2, 3, 4, 5, 6]
+This may seem similar to concatenation, but the important difference is that the ext-
+ended sequence (in this case, a) is modified. This is not the case in ordinary conca-
+tenation, in which a completely new sequence is returned:
+>>> a = [1, 2, 3]
+>>> b = [4, 5, 6]
+>>> a + b
+[1, 2, 3, 4, 5, 6]
+>>> a
+[1, 2, 3]
+
+
+
+
+
+
+
+
+
 ----> Sequence Overview
-Python has six built-in types of sequences: lists, tuples strings, Unicode strings, -
+Python has six built-in types of sequences : lists, tuples, strings, Unicode strings,
 buffer objects, and xrange objects. 
 
 Python has a basic notion of a kind of data structure called a container, which is b-
@@ -32,7 +114,54 @@ File "<pyshell#2>", line 1, in ?
 [1, 2, 3] + 'world!'
 TypeError: can only concatenate list (not "string") to list
 
-3 Slicing
+3 Multiplication
+Multiplying a sequence by a number x creates a new sequence where the original seque-
+nce is repeated x times:
+>>> 'python' * 5
+'pythonpythonpythonpythonpython'
+>>> [42] * 10
+[42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+
+4 None, Empty Lists, and Initialization
+ if you want to initialize a list of length 10, you could do the following:
+>>> sequence = [None] * 10
+>>> sequence
+[None, None, None, None, None, None, None, None, None, None]
+
+5 Membership
+To check whether a value can be found in a sequence, you use the @in operator. It ch-
+ecks whether something is true and returns a value accordingly: True for true and   -
+False for false. 
+>>> permissions = 'rw'
+>>> 'w' in permissions
+True
+>>> 'x' in permissions
+False
+>>> users = ['mlh', 'foo', 'bar']
+>>> raw_input('Enter your user name: ') in users
+Enter your user name: mlh
+True
+>>> subject = '$$$ Get rich now!!! $$$'
+>>> '$$$' in subject
+True
+
+6 Length, Minimum, and Maximum
+The built-in functions @len, @min, and @max can be quite useful. The function @len r-
+eturns the number of elements a sequence contains. @min and @max return the  smallest 
+and largest element of the sequence, respectively.
+>>> numbers = [100, 34, 678]
+>>> len(numbers)
+3
+>>> max(numbers)
+678
+>>> min(numbers)
+34
+>>> max(2, 3)
+3
+>>> min(9, 3, 2, 5)
+2
+
+7 Slicing
 you can use slicing to access ranges of elements. You do this by using two indices, -
 separated by a colon. The first index is the number of the first element you want  to 
 include. However, the last index is the number of the first element after your slice.

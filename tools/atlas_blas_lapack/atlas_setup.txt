@@ -1,0 +1,266 @@
+开发包     版本       文件名                   下载地址
+-----------------------------------------------------------------------------------------------
+BLAS                  blas.tgz                 http://www.netlib.org/blas/
+lapack     3.2.2      lapack.tgz               http://www.netlib.org/lapack/#_previous_release
+ATLAS      3.8.4      atlas3.8.4.tar.bz2       http://sourceforge.net/projects/math-atlas/files/Stable/
+
+http://blog.sina.com.cn/s/blog_4c4668bb01013ft5.html   安装ALTAS,LAPACK, SCALAPACK, MUMPS记录 (1)
+http://blog.sina.com.cn/s/blog_4c4668bb01013gsv.html   安装ALTAS,LAPACK, SCALAPACK, MUMPS记录 (2)
+
+----> blas                                                                           |
+BLAS, 全称Basic Linear Algebra Subprograms, 即基础线性代数子程序库, 里面拥有大量已经 |
+编写好的关于线性代数运算的程序. BLAS的源码可以从 http://www.netlib.org/blas/ 下载, 但|
+实际上LAPACK中已经包含了BLAS.                                                        |
+1 解压
+  tar -xvzf blas.tgz
+2 cd BLAS
+3 修改 make.inc 中的编译选项:
+  PLAT = _LINUX
+  FORTRAN  = gfortran
+  OPTS     = -O2 -m64 -fPIC
+  NOOPT    = -O0 -m64 -fPIC
+  LOADER   = gfortran
+4 编译BLAS
+  make # 编译完成后, 会生成blas_LINUX.a文件
+5 拷贝
+  mv blas_LINUX.a /usr/lib64/libblas.a
+
+----> Lapack                                                                         |
+LAPACK, 其名为Linear Algebra PACKage的缩写, 是一以Fortran编程语言写就, 用于数值计算的|
+函式集. LAPACK提供了丰富的工具函式, 可用于诸如解多元线性方程式, 线性系统方程组的最小 |
+平方解, 计算特征向量, 用于计算矩阵QR分解的Householder转换, 以及奇异值分解等问题.     |
+LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.           |
+0 依赖
+  gfortran
+  blas
+1 解压
+  tar xvzf lapack-3.4.0.gz 
+2 修改编译脚本(参考blas)
+  cp make.inc.example make.inc                                                               
+  FORTRAN  = gfortran -fimplicit-none -g
+  OPTS     = -O3     //此参数是编译器的版本 根据机器具体安装的编译器来设置
+  DRVOPTS  = $(OPTS)
+  NOOPT    =                                    
+  LOADER   = gfortran -g
+  LOADOPTS =      
+3 修改makefile文件
+  lib: lapacklib tmglib                     # 提前安装blas, 用这个(默认)
+  #lib: blaslib variants lapacklib tmglib   # 没有安装blas, 用这个. 会自动编译出blas.  
+4 编译
+  make # 生成liblapack.a librefblas.a(提前安装blas,就不生成这个文件了) libtmglib.a
+5 拷贝 
+  liblapack.a librefblas.a libtmglib.a 三个文件到/usr/lib /usr/local/lib两个文件夹中.
+  64位系统, 或许拷贝到 /usr/lib64 合适些.
+
+6 编译动态库(如果需要)
+  reference: http://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=908
+
+----> atlas
+根据atlas的安装文档, 首先要switch off cpu throttling. 在Ubuntu系统上要首先安装cpufrequtils和cpufreqd这两个包, 也许还要安装powernowd包, 然后执行sudo /usr/bin/cpufreq-selector –g. 不过幸运的是, 我在server上安装的时候发现cpu throttling已经disable了(否则在configure atlas的时候会报警) 
+
+
+
+
+
+
+
+
+ATLAS + NumPy + SciPy + Theano的python科学计算环境的搭建  
+
+2014-04-28 16:44:14|  分类： linux&shell |举报|字号 订阅
+    
+下载LOFTER客户端
+
+Numpy与Scipy的安装
+http://fhqdddddd.blog.163.com/blog/static/1869915420116642947209/
+
+
+Theano是一个python库，提供了定义、优化以及评估数学表达式的库，尤其适合处理高维数组。使用Theano能获得和C差不多的处理速度，并且当利用GPU进行计算时，效率要优于CPU上运行的C语言程序。利用Theano能快速验证各种算法模型。
+
+但是在Linux上安装theano是一件非常痛苦的事情，从theano的文档中看到，其依赖条件非常多：
+(1) 64-bit Linux(最佳)
+(2) python 2.4以上
+(3) g++ 4.2以上
+(4) NumPy 1.5.0以上
+(5) SciPy 0.8以上
+(6) BLAS支持Level-3
+事实上，在安装过程中发现，如果要安装NumPy，还需要安装ATLAS，而ATLAS则又依赖于lapack ……
+
+这其中涉及到：
+ATLAS是python下的一个线性代数库，是基于另外两个线性代数库BLAS和lapack的；
+NumPy提供了一个在python中做科学计算的基础库，它重在数值计算，甚至可以说是用于多维数组处理的库；
+SciPy是基于numpy，提供了一个在python中做科学计算的工具集，也就是说它是更上一个层次的库；
+Theano则是基于NumPy以及SciPy的一个更高级的用于科学计算的库。
+
+这里假设python和g++已经按要求装好，并且符合版本要求，以下根据安装的步骤来进行说明：
+
+首先介绍下环境，多核服务器，cpu时钟频率2668MHz，Linux-64bit，非root权限。所有源码放在/data4/open_src中
+
+各开发包的版本为：
+
+开发包     版本       文件名                   下载地址
+-----------------------------------------------------------------------------------------------
+BLAS                  blas.tgz                 http://www.netlib.org/blas/
+lapack     3.2.2      lapack.tgz               http://www.netlib.org/lapack/#_previous_release
+ATLAS      3.8.4      atlas3.8.4.tar.bz2       http://sourceforge.net/projects/math-atlas/files/Stable/
+NumPy      1.7.1      numpy-1.7.1.tar.gz       https://pypi.python.org/pypi/numpy
+SciPy      0.12.0     scipy-0.12.0.tar.gz      https://pypi.python.org/pypi/scipy
+Theano     0.6.0      Theano-0.6.0rc3.tar.gz   http://deeplearning.net/software/theano/#download
+
+以下是安装步骤：
+
+step 1. 编译BLAS
+
+
+step 2. 配置ATLAS
+
+  在安装ATLAS之前需要先编译lapack，但是为了能使得编译成功，需要保证lapack的编译选项与ATLAS一致。因此首先配置ATLAS，然后将相关编译配置拷贝到lapack中
+
+  (1) 解压：tar -xvjf atlas3.8.4.tar.bz2
+  (2) cd ATLAS
+  (3) 创建一个build目录，用于存放ATLAS的编译配置：mkdir atlas_build
+  (4) cd atlas_build
+  (5) 执行configure进行配置：../configure -b 64 -D c -DPentiumCPS=2668 -Fa alg -fPIC --with-netlib-lapack=/data4/open_src/lapack-3.2.2/lapack_LINUX.a --prefix=~/.local
+
+       其中的参数说明如下：
+       -b 指定编译出库的类型（32位库还是64位库）
+       -D c -DPentiumCPS 是指定你的CPU的时钟频率，可以通过 grep MHz /proc/cpuinfo 得到
+       -Fa alg -fPIC 得到与位置无关的代码，生成动态的共享库
+       --prefix 为安装路径
+       --with-netlib-lapack 则是制定lapack库文件（此时lapack库文件还没有生成，先随便指定一个）
+../configure -b 64 -Fa alg -fPIC -Si cputhrchk 0 --prefix=$HOME/atlas3.8.4 --with-netlib-lapack==$HOME/lapack-3.5.0/liblapack.a
+  (6) 完成配置后，在Make.inc文件中找到F77和F77FLAGS的参数配置，这两个配置将会赋给lapack的FORTRAN和OPTS
+  
+  ps：对于ATLAS 3.10及以上版本，设置--with-netlib-lapack会出错，需要直接指定lapack的压缩包（--with-netlib- lapack-tarfile=），它在编译过程中会自动解压和编译lapack，最终生成的so文件也由之前的6个整合成两个。ATLAS 3.10以上版本对后续安装NumPy没有影响，但是在使用的时候会造成有些库文件找不到的现象。因此这里使用的是ATLAS 3.8.4版本。
+
+step 3. 编译lapack
+
+  (1) 解压：tar -xvzf lapack.tgz
+  (2) cd lapack-3.2.2
+  (3) 拷贝生成make.inc: cp make.inc.example make.inc
+  (4) 修改make.inc: 
+       将其中FORTRAN和OPTS的值设置得跟 ATLAS/atlas_build/Make.inc 中的F77和F77FLAGS一致
+       同时设置
+       PLAT = _LINUX
+       BLASLIB = /data4/open_src/BLAS/blas$(PLAT).a
+  (5) 编译：make 
+  (6) 编译成功后，会在根目录生成两个库文件：lapack_LINUX.a 和 tmglib_LINUX.a
+
+step 4 编译并安装ATLAS
+
+  (1) cd ATLAS
+  (2) 删除原配置：rm -rf atlas_build
+  (3) 重新配置ATLAS：参考 step 2，并设置 --with-netlib-lapack=/data4/open_src/lapack-3.2.2/lapack_LINUX.a
+  (4) 在atlas_build中进行编译：make 
+       ps:这个过程相当漫长，耐心等待！！
+  (5) check编译结果：
+       make check
+       make ptcheck (对于多核服务器)
+       make time
+       ps：如果check过程中没有报错，则可以放心进行以后的步骤；如果出现报错，也可以尝试进行后续步骤，是否成功就要靠人品了。
+  (6) 编译动态库：
+       cd lib
+       make shared
+       make ptshared (对于多核服务器)
+       cd ..
+       如果在 lib 下面出现libatlas.so, libcblas.so, libf77blas.so, liblapack.so, libptcblas.so, libptf77blas.so 这6个动态库文件，则表示编译成功
+  (7) 安装ATLAS：make install
+       由于之前设置了--prefix=~/.local 因此ATLAS将被安装到 ~/.local/lib 中
+  (8) cp ./lib/*.so ~/.local/lib
+  (9) 设置环境变量：在~/.bashrc中添加 export LD_LIBRARY_PATH=~/.local/lib:$LD_LIBRARY_PATH 并执行 source ~/.bashrc
+
+step 5. 安装nose
+tar -xzvf nose-1.0.0
+cd nose-1.0.0
+python setup.py build
+python setup.py install
+
+step 6. 安装NumPy
+  (1) 解压 tar -xvzf numpy-1.7.1.tar.gz
+  (2) cd numpy-1.7.1
+  (3) 拷贝生成sit.cfg: cp site.cfg.example site.cfg
+  (4) 配置site.cfg: 
+       1> 打开[DEFAULT]，并设置 library_dirs 和 include_dirs ，使得在编译的时候能够找到atlas库
+          library_dirs = ~/.local/lib
+          include_dirs = ~/.local/include
+       2> 打开[blas_opt]，并设置 libraries
+          libraries = ptf77blas, ptcblas, atlas
+       3> 打开[lapack_opt]，并设置 libraries
+          libraries = lapack, ptf77blas, ptcblas, atlas
+       ps：如果在ATLAS安装过程中，没有生成libptf77blas和libptcblas，则需要设置两个libraries为
+           libraries = f77blas, cblas, atlas
+           libraries = lapack, f77blas, cblas, atlas
+  (5) 利用python构建NumPy：python setup.py build
+  (6) 利用python安装NumPy：python setup.py install --prefix=~/.local
+  (7) 安装完成后，NumPy被安装在 ~/.local/lib/python2.7/site-packages/numpy 
+  (8) 设置环境变量：在~/.bashrc中添加 export PYTHONPATH=~/.local/lib/python2.7/site-packages:$PYTHONPATH 并执行 source ~/.bashrc
+
+step 7. 安装SicPy
+
+  (1) 解压： tar -xvzf scipy-0.12.0.tar.gz
+  (2) cd scipy-0.12.0
+  (3) 设置site.cfg: 可以直接将NumPy的site.cfg拷贝到当前目录中
+  (4) 利用python构建SciPy：python setup.py build
+  (5) 利用python安装SciPy：python setup.py install --prefix=~/.local
+  (6) 安装完成后，SciPy被安装在 ~/.local/lib/python2.7/site-packages/scipy
+  
+如果前面得到的Fortran编译器是gfortran的话，执行：
+
+ python setup.py build --fcompiler=gnu95
+
+如果前面得到的Fortran编译器是g77的话，执行：
+
+ python setup.py build --fcompiler=gnu
+
+
+环境变量设置：
+
+我换成 gnu95 以后，和我以前 环境变量设置有冲突（动态库设置）
+
+export HOME=/home/SCE/zhaolei
+
+export PATH=$HOME/local/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/local/lib:$HOME/local/BerkeleyDB.4.5/lib:$LD_LIBRARY_PATH
+
+export LIBRARY_PATH=$HOME/local/lib:$HOME/local/BerkeleyDB.4.5/lib:$LIBRARY_PATH
+export LD_RUN_PATH=$LD_LIBRARY_PATH
+
+export INCLUDE=$HOME/local/include:$INCLUDE
+
+所以安装时，只好先注释掉了。
+
+或者下面的变量一般不用设置：
+#export LDFLAGS="-L$HOME/local/lib -L$HOME/local/BerkeleyDB.4.5/lib"
+#export CPPFLAGS="-I$HOME/local/include -I$HOME/local/BerkeleyDB.4.5/include"
+#export CXXFLAGS=$CPPFLAGS
+#export CFLAGS=$CPPFLAGS
+
+
+step 8. 安装Theano
+
+  有了以上的准备后，安装Theano就是一个非常简单的过程了。直接利用python就可以完成安装：
+  (1) 解压：tar -xvzf Theano-0.6.0rc3.tar.gz
+  (2) cd Theano-0.6.0rc3
+  (3) python setup.py install --prefiex=~/.local
+  (4) 安装完成后，SciPy被安装在 ~/.local/lib/python2.7/site-packages/Theano-0.6.0rc3-py2.7.egg
+
+然后可以在python下执行相应的测试程序：
+
+python
+
+>>> import nose
+
+>>> import numpy
+
+>>> import scipy
+
+>>> numpy.test('full')
+
+等待。。。。
+
+>>> scipy.test('full')
+
+ 
+
+至此，完成了ATLAS + NumPy + SciPy + Theano的python科学计算环境的搭建
+http://blog.sina.com.cn/s/blog_6cb8e53d0101keak.html
