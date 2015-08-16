@@ -1,0 +1,10 @@
+http://sourceforge.net/projects/scipy/files/    win32安装包.exe
+http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy  win64安装包.whl
+
+--------> install
+----> windows install
+1 下载scipy-0.16.0-cp27-none-win_amd64.whl, 拷贝到c:\Python27\Scripts
+2 c:\Python27\Scripts>pip install scipy-0.16.0-cp27-none-win_amd64.whl
+  Processing c:\python27\scripts\scipy-0.16.0-cp27-none-win_amd64.whl
+  Installing collected packages: scipy
+  Successfully installed scipy-0.16.0

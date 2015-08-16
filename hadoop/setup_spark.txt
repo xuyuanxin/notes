@@ -88,3 +88,14 @@ export HADOOP_CONF_DIR=/usr/local/hadoop/hadoop-2.5.2/etc/hadoop
 master
 slave1
 slave2
+
+---->conf/spark-defaults.conf
+bin/spark-submit will also read configuration options from  conf/spark-defaults.conf, 
+in which each line consists of a key and a value separated by whitespace. For exampl-
+e:
+spark.master            spark://5.6.7.8:7077
+spark.executor.memory   512m
+spark.eventLog.enabled  true
+spark.serializer        org.apache.spark.serializer.KryoSerializer
+
+----> log4j.properties

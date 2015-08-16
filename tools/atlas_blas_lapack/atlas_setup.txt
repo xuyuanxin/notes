@@ -55,6 +55,11 @@ LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.      
 6 编译动态库(如果需要)
   reference: http://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=908
 
+----> Lapack windows
+http://icl.cs.utk.edu/lapack-for-windows/index.html
+  
+  
+  
 ----> atlas
 根据atlas的安装文档, 首先要switch off cpu throttling. 在Ubuntu系统上要首先安装cpufrequtils和cpufreqd这两个包, 也许还要安装powernowd包, 然后执行sudo /usr/bin/cpufreq-selector –g. 不过幸运的是, 我在server上安装的时候发现cpu throttling已经disable了(否则在configure atlas的时候会报警) 
 

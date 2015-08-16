@@ -4,7 +4,7 @@ a) chmod 755 jdk-7u4-linux-xxx.rpm
 b) rpm   -i  jdk-7u4-linux-xxx.rpm
 c) vi /etc/profile 
 #set java environment
-JAVA_HOME=/usr/java/jdkxxx # xxx is version, 使用rpm, 默认安装在/usr/java
+JAVA_HOME=/usr/java/jdkxxx # xxx is version(jdk1.6.0_43), 使用rpm, 默认安装在/usr/java
 CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 PATH=$JAVA_HOME/bin:$PATH
 export JAVA_HOME,PATH,CLASSPATH 

@@ -1,0 +1,79 @@
+--------> install
+依赖:  dateutil six
+----> windows install
+1 有64位的exe文件，直接下载：http://sourceforge.net/projects/matplotlib/files/?source=navbar
+  安装这个不会检查依赖, 如果依赖没有安装, import的时候会报错.
+2 import matplotlib 
+  此时会报有些模块找不到, 缺啥补啥.(可能是 six dateutil)
+3 要安装的模块太多, 未完成.
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+http://blog.sina.com.cn/s/blog_6fb8aa0d0101qtt9.html  matplotlib在windows下安装
+反反复复安装又卸载好多次终于把matplotlib安装成功了，主要参考的三个链接：
+链接1 http://blog.sciencenet.cn/blog-579770-738240.html
+链接2 http://www.open-open.com/lib/view/open1393488232380.html
+链接3 http://blog.csdn.net/yang6464158/article/details/18546871#comments
+链接4 http://www.lfd.uci.edu/~gohlke/pythonlibs/
+链接123是靠谱的安装过程；此过程中需要的各种程序包都能在链接4（非官方下载，比较全）里找到。
+
+matplotlib安装的官方链接为http://matplotlib.org/users/installing.html，没有用到。下面详细记录改编自链接123的安装过程以备份。
+注意：各个安装程序的版本必须一致，这里都统一用windows，64 bit，python2.7版本（据说Python3.*系列对于一些安装包不兼容，故选取了比较旧的python2.7版本）！！！！
+
+1、python下载地址https://www.python.org/download/
+
+2、安装与python相对应版本的Matplotlib，下载地址http://matplotlib.org/downloads.html
+
+3、对于标准版本的Python，要使用Matplotlib，需要安装numpy模块，下载地址见链接4
+
+4、可能还会用到msvcp.dll库，自行在网上搜一个添加到C:\windows\system32目录下。
+此时如果运行 import matplotlib.pyplot as plt 可能会显示以下错误：
+raise ImportError("matplotlib requiresdateutil")
+ImportError: matplotlib requires dateutil
+意味着需要dateutil
+
+5、安装dateutil，下载地址http://www.lfd.uci.edu/~gohlke/pythonlibs/#python-dateutil
+此后又出现错误：
+raise ImportError("matplotlib requirespyparsing")
+ImportError: matplotlib requires pyparsing
+意味着需要pyparsing
+
+6、安装pyparsing，下载地址http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyparsing
+安装完又出现错误：
+No module name six
+需要安装scipy
+
+7、安装scipy，下载地址见链接4。
+然后把C:\Python27\Lib\site-packages\scipy\lib中的six.py six.pyc six.pyo三个文件拷贝到C:\Python27\Lib\site-packages目录下。
+再在IDLE(Python GUI)中输入import matplotlib.pyplot as plt便可以解决啦！
+
+8、输入以下代码不报错：
+import matplotlib
+import numpy
+import scipy
+import pyparsing
+import matplotlib.pyplot as plt
+
+9、验证一个简单的例子
+import matplotlib.pyplot as plt
+plt,plot([1,2,3])
+plt.ylabel('some numbers')
+plt.show()
+结果如下
+【python】matplotlib在windows下安装
+
+
+10、其他有用的链接：
+example： http://matplotlib.org/examples/index.html
+gallery：http://matplotlib.org/gallery.html

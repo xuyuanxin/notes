@@ -6,6 +6,14 @@ https://en.wikipedia.org/wiki/C_string_handling
 */
 
 /*-----------------------------------------------------------------------------------
+ Returns the length of the C string str. The length of a C string is determined by t-
+ he terminating null-character: A C string is as long as the number of characters be-
+ tween the beginning of the string and the terminating null character (without inclu-
+ ding the terminating null character itself).
+ ----------------------------------------------------------------------------------*/
+size_t strlen ( const char * str );
+
+/*-----------------------------------------------------------------------------------
 功能：把src所指由NULL结束的字符串的前n个字节复制到dst所指的数组中。
 返回：返回指向dst的指针（该指向dst的最后一个元素）
 说明：如果src的前n个字节不含NULL字符，则结果不会以NULL字符结束。        
@@ -13,7 +21,6 @@ https://en.wikipedia.org/wiki/C_string_handling
       src和dest所指内存区域不可以重叠且dest必须有足够的空间来容纳src的字符串。        
 -----------------------------------------------------------------------------------*/
 char *strncpy(char *dst, const char *src, size_t n);
-
 
 /*-----------------------------------------------------------------------------------
  @str1
