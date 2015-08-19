@@ -1,3 +1,12 @@
+https://www.suse.com/zh-cn/documentation/sles11/book_sle_admin/data/book_sle_admin.html                     sles 11 sp3 管理指南
+https://www.suse.com/zh-cn/documentation/sles11/singlehtml/book_sle_admin/book_sle_admin.html#cha.sw_cl  	SUSE Linux Enterprise Server 11 SP4 管理指南
+https://download.suse.com/Download?buildid=fQKpDcAhPVY
+https://cn.opensuse.org/%E8%BD%AF%E4%BB%B6%E6%BA%90  软件源介绍
+
+SLE-11-SDK-DVD-x86_64-GM-Media1.iso
+SLE-11-SDK-DVD-x86_64-GM-Media2.iso
+http://download.novell.com/protected/Summary.jsp?buildid=fQKpDcAhPVY
+
 .....................................................................................
 6.1  Zypper
 https://www.suse.com/zh-cn/documentation/sles11/book_sle_admin/data/sec_zypper.html

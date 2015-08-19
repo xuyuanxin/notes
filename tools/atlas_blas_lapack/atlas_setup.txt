@@ -7,10 +7,13 @@ ATLAS      3.8.4      atlas3.8.4.tar.bz2       http://sourceforge.net/projects/m
 http://blog.sina.com.cn/s/blog_4c4668bb01013ft5.html   °²×°ALTAS,LAPACK, SCALAPACK, MUMPS¼ÇÂ¼ (1)
 http://blog.sina.com.cn/s/blog_4c4668bb01013gsv.html   °²×°ALTAS,LAPACK, SCALAPACK, MUMPS¼ÇÂ¼ (2)
 
-----> blas                                                                           |
+----> blas (Fortran)                                                                 |
 BLAS, È«³ÆBasic Linear Algebra Subprograms, ¼´»ù´¡ÏßĞÔ´úÊı×Ó³ÌĞò¿â, ÀïÃæÓµÓĞ´óÁ¿ÒÑ¾­ |
 ±àĞ´ºÃµÄ¹ØÓÚÏßĞÔ´úÊıÔËËãµÄ³ÌĞò. BLASµÄÔ´Âë¿ÉÒÔ´Ó http://www.netlib.org/blas/ ÏÂÔØ, µ«|
 Êµ¼ÊÉÏLAPACKÖĞÒÑ¾­°üº¬ÁËBLAS.                                                        |
+--------> install                                                                    |
+0 ÒÀÀµ                                                                               |
+  ĞèÒªgfortran±àÒëÆ÷, ²»ÒÀÀµÆäËü¿â                                                   |
 1 ½âÑ¹
   tar -xvzf blas.tgz
 2 cd BLAS
@@ -21,7 +24,7 @@ BLAS, È«³ÆBasic Linear Algebra Subprograms, ¼´»ù´¡ÏßĞÔ´úÊı×Ó³ÌĞò¿â, ÀïÃæÓµÓĞ´óÁ¿
   NOOPT    = -O0 -m64 -fPIC
   LOADER   = gfortran
 4 ±àÒëBLAS
-  make # ±àÒëÍê³Éºó, »áÉú³Éblas_LINUX.aÎÄ¼ş
+  make       # ±àÒëÍê³Éºó, »áÉú³Éblas_LINUX.aÎÄ¼ş
 5 ¿½±´
   mv blas_LINUX.a /usr/lib64/libblas.a
 
@@ -31,8 +34,7 @@ LAPACK, ÆäÃûÎªLinear Algebra PACKageµÄËõĞ´, ÊÇÒ»ÒÔFortran±à³ÌÓïÑÔĞ´¾Í, ÓÃÓÚÊıÖµ¼
 Æ½·½½â, ¼ÆËãÌØÕ÷ÏòÁ¿, ÓÃÓÚ¼ÆËã¾ØÕóQR·Ö½âµÄHouseholder×ª»», ÒÔ¼°ÆæÒìÖµ·Ö½âµÈÎÊÌâ.     |
 LAPACKµÄÔ´Âë¿ÉÒÔ´Ó http://www.netlib.org/lapack/ ´¦ÏÂÔØ, BLASÒ²°üº¬ÔÚÆäÖĞ.           |
 0 ÒÀÀµ
-  gfortran
-  blas
+  gfortran blas
 1 ½âÑ¹
   tar xvzf lapack-3.4.0.gz 
 2 ĞŞ¸Ä±àÒë½Å±¾(²Î¿¼blas)
@@ -57,8 +59,79 @@ LAPACKµÄÔ´Âë¿ÉÒÔ´Ó http://www.netlib.org/lapack/ ´¦ÏÂÔØ, BLASÒ²°üº¬ÔÚÆäÖĞ.      
 
 ----> Lapack windows
 http://icl.cs.utk.edu/lapack-for-windows/index.html
-  
-  
+ 
+
+http://www.cnblogs.com/Frandy/archive/2011/05/18/Lapack_Install_Test.html 
+LAPACK(1)¡ª¡ª°²×°Óë²âÊÔ
+¡¡¡¡LAPACKLAPACK,È«³ÆÊÇLinear Algebra PACKage,Ò»¸ö¸ßĞÔÄÜµÄÏßĞÔ´úÊıµÄ³ÌĞò¿â£¬Ö÷Ò³http://www.netlib.org/lapack/  ¡£
+
+1¡¢°²×°
+
+¡¡¡¡LAPACKÊÇÓÃfortranĞ´µÄ£¬LAPACKEÊÇËüµÄCÓïÑÔ½Ó¿Ú£¬ÏÈ°²×°LAPACK,È»ºó°²×°LAPACKE,ÄÇÃ´ÔÚ³ÌĞòÖĞ¿ÉÒÔÖ±½Óµ÷ÓÃCº¯ÊıÀ´ÊµÏÖĞèÒªµÄ¹¦ÄÜ¡£
+
+ÏÂÃæ½éÉÜÕâÁ½¸ö°üµÄ°²×°¡£
+
+1£©LAPACKµÄ°²×°
+
+¡¡¡¡´Ó¹Ù·½ÍøÕ¾ÉÏÏÂÔØlapack°ü£¬Ä¿Ç°×îĞÂ°æ±¾ÊÇ3.3.1¡£½âÑ¹Ö®ºó£¬²é¿´Ò»ÏÂREADMEÎÄ¼ş¡£ÔÚLinuxÉÏ°²×°(ÎÒÓÃµÄÊ±Ubuntu10.04LTS)£¬ĞèÒªÏÈÅäÖÃºÃmake.incÎÄ¼ş¡£
+
+Ò»Ğ©±àÒë²ÎÊı£¬
+
+PLAT ±íÊ¾Ê¹ÓÃµÄÆ½Ì¨£¬»á½ÓÔÚÉú³Élib¿âµÄÃû×ÖÖĞ£¬Ô­±¾ÊÇ _LINUX, ÎÒ¸Ä³É¿ÕµÄÁË¡£
+FORTRAN ±íÊ¾ÄãÊ¹ÓÃµÄfortran±àÒëÆ÷£¬¸ù¾İ×Ô¼º°²×°µÄ±àÒëÆ÷À´ÉèÖÃ£¬ÎÒÓÃµÄÊÇ gfortran¡£
+OPTS ±íÊ¾ ±àÒëÊ±µÄÓÅ»¯³Ì¶È£¬ÉèÖÃÎª -O2¼´¿É¡£
+LOADER ÉèÖÃ³ÉºÍFORTRAN »ù±¾Ò»Ñù¾Í¿ÉÒÔÁË¡£
+È·¶¨Éú³ÉÄ¿±êÈçÏÂ£¬
+
+BLASLIB = http://www.cnblogs.com/libblas$(PLAT).a
+LAPACKLIB = liblapack$(PLAT).a
+TMGLIB = libtmglib$(PLAT).a
+EIGSRCLIB = libeigsrc$(PLAT).a
+LINSRCLIB = liblinsrc$(PLAT).a
+¡¡¡¡Ô­À´µÄÕâĞ©¿âÎÄ¼şµÄÃû×ÖÇ°ÃæÃ»ÓĞlibµÄ£¬ÕâÀï¼ÓÉÏ¡£ÒòÎªlinuxÉÏ¿âÎÄ¼şÒ»°ãÓĞÇ°×ºlibµÄ£¬ÔÚÁ´½ÓµÄÊ±ºò -lºóÃæ´øµÄÊÇ¿âµÄÃû×Ö£¬ÄÇ¸öÊ±ºòÊÇ²»¼ÓlibµÄ¡£Èç¹ûÒÑ¾­±àÒëÉú³ÉÁËÕâĞ©¿â£¬¿ÉÒÔÖØÃüÃû£¬¶ø²»ÓÃÖØĞÂ±àÒë¡£
+
+¡¡¡¡ÔÚMakefileÖĞ£¬¿ÉÒÔ¿´µ½ allÕâÒ»ĞĞÓĞºÜ¶àÑ¡Ïî£¬ÎÒÃÇmakeµÄÊ±ºò£¬¿ÉÒÔÊäÈëlib£¬ÄÇÃ´¾Í»áÖ»Éú³Élib£¬Èç¹ûÖ±½Ómake£¬»á°ÑËùÓĞµÄ¶¼±àÒë£¬°üÀ¨²âÊÔ¡£»¹ÓĞÒ»ĞĞlib, ÁĞ³öÁËÒªÉú³ÉµÄlib£¬×¢ÊÍµôµÄÒ»ĞĞÃ»ÓĞblaslib,Èç¹ûÒÑ¾­°²×°ÁËblaslib,ÄÇÃ´¾Í²»ÓÃ¸ÄÁË£¬Ã»ÓĞ°²×°µÄ»°£¬¾Í°ÑÉÏÒ»ĞĞ×¢ÊÍµô£¬°ÑÕâÒ»ĞĞµÄ×¢ÊÍÈ¥µô¡£»òÕß×Ô¼ºÊÖ¶¯¼ÓÉÏ¡£
+
+2) LAPACKEµÄ°²×°
+
+¡¡¡¡´ÓÍøÕ¾ÉÏÏÂÔØlapackeµÄÑ¹Ëõ°ü£¬¾ÍÊÇStandard C language APIs for LAPACK¶ÔÓ¦µÄÑ¹Ëõ°ü£¬½âÑ¹Ëõ£¬²é¿´READMEÎÄ¼ş¡£
+
+Í¬ÑùµØ£¬ĞèÒªĞŞ¸Ämake.incÎÄ¼ş£¬
+
+¸´ÖÆ´úÂë
+CC ±íÊ¾Ê¹ÓÃµÄC³ÌĞò±àÒëÆ÷£¬¸Ä³É gcc,
+LINKER ±íÊ¾±àÒëÊ±ÒªÊ¹ÓÃµÄÁ¬½ÓÆ÷£¬Ç°Ãæ¼¸ĞĞ×¢ÊÍÌáµ½ÁË£¬
+¡¡¡¡Ö®Ç°±àÒëlapack.a ºÍblas.aÓÃµÄÊ²Ã´fortran±àÒëÆ÷£¬ÕâÀï¾ÍÓÃÊ²Ã´¡£ÄÇÃ´¸Ä³É gfortran.
+
+LAPACKE ±íÊ¾ÒªÉú³ÉµÄ¿âÎÄ¼şµÄÃû×Ö£¬ÀàËÆµÄ£¬¸Ä³Éliblapacke.a
+LAPACKEµÄ±àÒëĞèÒªÖ®Ç°Éú³ÉµÄlapack¿âÎÄ¼ş£¬ËùÒÔLIBSÕâÒ»ĞĞĞèÒªÉèÖÃºÃ¡£
+LIBS = $(LAPACK_PATH)/liblapack.a $(LAPACK_PATH)/libblas.a
+¸´ÖÆ´úÂë
+ÆäÖĞLAPACK_PATH¾ÍÊÇliblapack.aËùÔÚµÄÄ¿Â¼ÁË¡£
+
+²é¿´ÒÔÏÂMakefile£¬Ã»Ê²Ã´ĞèÒªĞŞ¸ÄµÄ£¬¿ÉÒÔÖ±½Ómake£¬»òÕßÊÇmake lapacke, ²»ÈÃËü±àÒëtestµÄÄÚÈİ¡£È»ºó¾ÍÉú³Éliblapacke.aÁË¡£
+
+2¡¢Ê¹ÓÃÊ¾Àı
+
+¡¡¡¡ÒòÎªÉú³ÉµÄÊÇ¿âÎÄ¼ş£¬ËùÒÔ¿ÉÒÔ°ÑÕâĞ©¿âÎÄ¼ş·ÅÔÚÏµÍ³µÄ/usr/libÏÂÃæ£¬ÕâÑùÁ´½ÓÕâĞ©¿âµÄÊ±ºò¿ÉÒÔ²»ÓÃ¸ø³öÂ·¾¶ÁË¡£
+
+¡¡¡¡ÏÈ²âÊÔÒ»ÏÂLAPACK¡£Á´½ÓÖĞÓĞÒ»¸ö²âÊÔÀı×Ó£¬http://blog.sciencenet.cn/home.php?mod=space&uid=271986&do=blog&id=280793¡£
+
+Ê¹ÓÃÏÂÃæµÄÓï¾ä±àÒë£¬
+
+gfortran test.f90 -llapack -lblas
+
+È»ºó¾ÍÉú³ÉÁËa.out,¿ÉÒÔÖ´ĞĞÁË¡£
+
+¡¡¡¡ÔÙ²âÊÔLAPACKE¡£ÔÚlapackeµÄÎÄ¼ş¼ĞÏÂÃæ£¬ÓĞtestingÄ¿Â¼¡£ÎÒÃÇ½ü²âÊÔÒ»¸öĞ¡µÄ³ÌĞò¡£ĞÂ½¨Ò»¸öÄ¿Â¼£¬test_lapacke,°Ñtesting/includeÏÂÃæµÄtest_utils.hÎÄ¼ş¿½³öÀ´£¬°ÑutlisÎÄ¼ş¼Ğ¿½³öÀ´£¬°ÑinterfaceµÄÒ»¸ö.cÎÄ¼ş¿½³öÀ´£¬±ÈÈçcbdsqr_1.c¡£»¹ÓĞlapackeÎÄ¼ş¼ĞÏÂÃæµÄincludeÀïÃæµÄÍ·ÎÄ¼ş¡£
+
+ÄÇÃ´°´ÏÂÃæµÄÃüÁî±àÒë£¬
+
+gcc *.h cbdsqr_1.c utils/*.c -llapack -lblas -llapacke
+
+±àÒë³É¹¦£¬ÔËĞĞ£¬Êä³öPASSED£¬...¡£ÄÇÃ´¾Í±íÊ¾³ÌĞòÔËĞĞÕıÈ·ÁË¡£
+
+¡¡¡¡ÕâĞ©Ö»ÊÇ²âÊÔ£¬ÏëÒª¸ü·½±ãµÄÊ¹ÓÃÕâĞ©¿â£¬ÓĞÁ½ÖÖ·½·¨£¬Ò»ÊÇ½«ÄÇ¼¸¸ö¿âÎÄ¼ş·ÅÔÚ/usr/libÏÂÃæ£¬Ê¹ÓÃ-lÖ¸¶¨Á´½ÓÕâĞ©¿â£¬Í¬Ê±°Ñlapacke/includeÏÂÃæµÄÎÄ¼ş·Åµ½/usr/includeÏÂÃæ£¬ÄÇÃ´Ê¹ÓÃµÄÊ±ºò£¬¿ÉÒÔÖ±½Ó°üº¬ÕâĞ©Í·ÎÄ¼ş¡£ÁíÒ»ÖÖ·½·¨¾ÍÊÇ°ÑÕâĞ©¿âÎÄ¼ş£¬ºÍÄÇ¼¸¸öÍ·ÎÄ¼ş·ÅÔÚ×Ô¼ºµÄ¹¤³ÌÄ¿Â¼Àï¡£ÕâÁ½ÖÖ·½·¨²î²»¶à¡£  
   
 ----> atlas
 ¸ù¾İatlasµÄ°²×°ÎÄµµ, Ê×ÏÈÒªswitch off cpu throttling. ÔÚUbuntuÏµÍ³ÉÏÒªÊ×ÏÈ°²×°cpufrequtilsºÍcpufreqdÕâÁ½¸ö°ü, Ò²Ğí»¹Òª°²×°powernowd°ü, È»ºóÖ´ĞĞsudo /usr/bin/cpufreq-selector ¨Cg. ²»¹ıĞÒÔËµÄÊÇ, ÎÒÔÚserverÉÏ°²×°µÄÊ±ºò·¢ÏÖcpu throttlingÒÑ¾­disableÁË(·ñÔòÔÚconfigure atlasµÄÊ±ºò»á±¨¾¯) 

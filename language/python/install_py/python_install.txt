@@ -4,8 +4,8 @@ http://www.cnblogs.com/lanxuezaipiao/archive/2012/10/21/2732864.html            
   wget http://www.python.org/ftp/python/3.3.0/Python-3.3.0.tgz                       |
 2 解压
   bunzip2 Python-3.1.2.tar.bz2
-  tar -xvf Python-3.1.2.tar
-  tar -xzvf Python-3.3.0.tgz  # 这样也行
+  tar -xvf Python-3.1.2.tar     # 或者
+  tar -xzvf Python-3.3.0.tgz    # 这样也行
 3 编译安装
   cd Python-3.1.2                           # 进入解压缩后的文件夹
   mkdir /usr/local/python3

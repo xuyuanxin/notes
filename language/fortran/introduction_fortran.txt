@@ -1,0 +1,20 @@
+                                                                                     |
+Fortran源自于"公式翻译”(英语: Formula Translation)的缩写, 是一种编程语言. 它是世界上 |
+最早出现的计算机高级程序设计语言, 广泛应用于科学和工程计算领域. FORTRAN语言以其特有的|
+功能在数值, 科学和工程计算领域发挥着重要作用. Fortran 90之前的版本是人们所知晓的     |
+FORTRAN(全部字母大写), 从Fortran 90以及以后的版本都写成Fortran(仅有第一个字母大写).  |
+                                                                                     |
+---->编译器                                                                          |
+--------> Linux操作系统下:                                                           |
+PGI Fortran                                                                          |
+Intel Fortran  英特尔公司的开发的Linux平台Fortran编译器.                             |
+G77            GNU的Fortran77编译器, 集成在GCC中.                                    |
+GFORTRAN       GNU的最新的Fortran编译器, 集成在GCC 4.0中, 目的是支持Fortran 95和一部 |
+               分Fortran 2003的功能, 以替代G77.                                      |
+G95            跟GFortran同为开放源代码的Fortran95编译器.                            |
+
+----> 几个著名的Fortran程序包: 
+IMSL     国际数学和统计链接库
+BLAS     Basic Linear Algebra Subroutines
+LAPACK   Linear Algebra PACKage
+

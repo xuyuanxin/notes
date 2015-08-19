@@ -1,5 +1,7 @@
 --------> install
-依赖:  dateutil six
+---->依赖 
+dateutil six
+
 ----> windows install
 1 有64位的exe文件，直接下载：http://sourceforge.net/projects/matplotlib/files/?source=navbar
   安装这个不会检查依赖, 如果依赖没有安装, import的时候会报错.

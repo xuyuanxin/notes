@@ -1,16 +1,20 @@
-https://pip.pypa.io/en/stable/installing.html  
+https://pip.pypa.io                                     
+https://pip.pypa.io/en/stable/installing.html 
+http://lesliezhu.github.io/public/2014-11-08-pip.html   Python包管理工具——Pip
 -------------------------------------------------------------------------------------+
-----> install                                                                        |
+--------> install                                                                    |
+----> 依赖                                                                           |
 Python 2.7.9 and later (on the python2 series), and Python 3.4 and later include  pip|
 by default, so you may have pip already.                                             |
 pip安装的前提是pip requires either setuptools or distribute.所以必须先安装distribute.|
-因为 setuptools已经不更新所以不支持python3.所以最好先安装distribute再安装pip.        |
+因为setuptools已经不更新所以不支持python3.所以最好先安装distribute再安装pip.         |
                                                                                      |
 ----> 源码安装                                                                       |
 $ curl -O https://pypi.python.org/packages/source/p/pip/pip-X.X.tar.gz  
 $ tar xvfz pip-X.X.tar.gz  
 $ cd pip-X.X  
 $ [sudo] python setup.py install  
+
 ----> 脚本安装
 $ curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py  
 $[sudo] python get-pip.py  
@@ -25,11 +29,22 @@ pip uninstall [PACKAGE_NAME]                                                    
 ----> introduction                                                                   |
 pip是python包管理工具                                                                |
 -------------------------------------------------------------------------------------+
-
-
-
-
-
+Pythoner的福利, 豆瓣的PyPI源                                                         |
+http://www.isaced.com/post-228.html                                                  |
+Python下用的最多的包安装工具就是easy_install和pip, 但是他们都是从Python官方的Pypi源上|
+寻找并下载资源, 由于国内网络原因, 有时候连接和速度就不是那么理想, 跟淘宝的RubyGems镜 |
+像源一样, 于是便有了国内的PyPi镜像源, 如今天说的豆瓣PyPi镜像.                        |
+豆瓣PyPi镜像:   http://pypi.douban.com/simple/                                       |
+阿里云的PyPi源: http://mirrors.aliyun.com/pypi/simple/                               |
+使用方法:                                                                            |
+sudo easy_install -i http://pypi.douban.com/simple/ flask                            |
+sudo pip install -i http://pypi.douban.com/simple/ flask                             |
+要配制成默认的话, 需要创建或修改配置文件(linux的文件在~/.pip/pip.conf, windows在     |
+%HOMEPATH%\pip\pip.ini), 修改内容为:                                                 |
+[global]                                                                             |
+index-url = http://pypi.douban.com/simple                                            |
+然后用pip的时候自动就会用此镜像源了                                                  |
+-------------------------------------------------------------------------------------|
 Python 包工具之间的关系
 http://blog.yangyubo.com/2012/07/27/python-packaging/
 written on Friday, July 27, 2012

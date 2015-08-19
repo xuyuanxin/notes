@@ -2,8 +2,19 @@
 setuptools是Python Enterprise Application Kit(PEAK)的一个副项目, 它是一组Python的    |
 distutilsde工具的增强工具(适用于 Python 2.3.5 以上的版本, 64 位平台则适用于Python 2.4|
 以上的版本), 可以让程序员更方便的创建和发布Python包, 特别是那些对其它包具有依赖性的状|
-况.                                                                                  |
-$ tar -zxvf setuptools-12.0.3.tar.gz
-$ cd setuptools=12.0.3
-$ python setup.py install
+况. 
+
+----> 下载setuptools软件包后安装 
+1) 下载setuptools包
+   wget http://pypi.python.org/packages/source/s/setuptools/setuptools-2.0.tar.gz
+2) 解压setuptools包
+   # tar zxvf setuptools-2.0.tar.gz
+   # cd setuptools-2.0
+3) 编译setuptools
+   # python setup.py build
+4) 开始执行setuptools安装
+   # python setup.py install
 可能会提示缺少一些库, 安装好缺少的库后要重新安装python, 再安装setuptools
+
+
+
