@@ -1,10 +1,10 @@
---------> install
+--------> install matplotlib
 ---->依赖 
 dateutil six
 
 ----> windows install
 1 有64位的exe文件，直接下载：http://sourceforge.net/projects/matplotlib/files/?source=navbar
-  安装这个不会检查依赖, 如果依赖没有安装, import的时候会报错.
+  安装这个不会检查依赖, 缺少依赖也能安装成功，但是如果依赖没有安装, import的时候会报错.
 2 import matplotlib 
   此时会报有些模块找不到, 缺啥补啥.(可能是 six dateutil)
 3 要安装的模块太多, 未完成.

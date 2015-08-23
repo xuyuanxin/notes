@@ -1,0 +1,11 @@
+File objects are implemented using C¡¯s stdio package and can be created with the    -
+built-in open() function.
+
+
+file.readlines([sizehint])
+    Read until EOF using readline() and return a list containing the lines thus read. 
+	If the optional @sizehint argument is present, instead of reading up to EOF, who-
+	le lines totalling approximately @sizehint bytes (possibly after rounding up to -
+	an internal buffer size) are read. Objects implementing a file-like interface may 
+	choose to ignore @sizehint if it cannot be implemented, or cannot be  implemented 
+	efficiently.

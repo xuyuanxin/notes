@@ -25,6 +25,10 @@ pip install --upgrade pip
 ----> cmd                                                                            |
 pip install [PACKAGE_NAME]                                                           |
 pip uninstall [PACKAGE_NAME]                                                         |
+
+Requirements files
+pip freeze > requirements.txt
+pip install -r requirements.txt
 -------------------------------------------------------------------------------------+
 ----> introduction                                                                   |
 pip是python包管理工具                                                                |

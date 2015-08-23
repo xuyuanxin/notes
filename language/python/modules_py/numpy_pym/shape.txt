@@ -1,0 +1,27 @@
+numpy.ndarray.shape
+
+ndarray.shape
+Tuple of array dimensions.
+
+Notes
+
+May be used to ¡°reshape¡± the array, as long as this would not require a change in the total number of elements
+
+Examples
+
+>>>
+>>> x = np.array([1, 2, 3, 4])
+>>> x.shape
+(4,)
+>>> y = np.zeros((2, 3, 4))
+>>> y.shape
+(2, 3, 4)
+>>> y.shape = (3, 8)
+>>> y
+array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])
+>>> y.shape = (3, 6)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ValueError: total size of new array must be unchanged

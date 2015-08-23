@@ -31,6 +31,7 @@ D:\Python27;D:\Python27\Scripts
 
 ---->依赖关系
 scipy: lapack/blas
+matplotlib: six pyparsing dateutil(Python-Dateutil) numpy
 
 http://blog.csdn.net/Silver_sail/article/details/44417641  Numpy Windows安装
 

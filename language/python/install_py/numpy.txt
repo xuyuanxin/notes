@@ -10,8 +10,9 @@ http://www.goldencui.org/2014/10/02/windows64%E4%BD%8D%E7%8E%AF%E5%A2%83%E4%B8%8
 
 ----> install
 ----> 方法1
-pip install numpy-1.9.2+mkl-cp33-none-win_amd64.whl
-C:\Python27\Scripts>pip2.7.exe install "numpy-1.9.2+mkl-cp27-none-win_amd64.whl"   (windows 10 成功安装)
+1 把whl文件拷贝到 C:\Python27\Scripts
+2 pip install numpy-1.9.2+mkl-cp33-none-win_amd64.whl
+3 C:\Python27\Scripts>pip2.7.exe install "numpy-1.9.2+mkl-cp27-none-win_amd64.whl"   (windows 10 成功安装)
 ----> 方法2
 pip install numpy
 ----> 方法3
