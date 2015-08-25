@@ -1,3 +1,4 @@
+https://github.com/pypa/pip
 https://pip.pypa.io                                     
 https://pip.pypa.io/en/stable/installing.html 
 http://lesliezhu.github.io/public/2014-11-08-pip.html   Python包管理工具——Pip
@@ -18,6 +19,10 @@ $ [sudo] python setup.py install
 ----> 脚本安装
 $ curl -O https://raw.github.com/pypa/pip/master/contrib/get-pip.py  
 $[sudo] python get-pip.py  
+
+----> pip cfg 
+linux  : ~/.pip/pip.conf (没有就创建一个) 
+windows: %HOMEPATH%\pip\pip.ini
 
 ----> 
 pip install --upgrade pip
@@ -49,6 +54,31 @@ sudo pip install -i http://pypi.douban.com/simple/ flask                        
 index-url = http://pypi.douban.com/simple                                            |
 然后用pip的时候自动就会用此镜像源了                                                  |
 -------------------------------------------------------------------------------------|
+
+
+----> ImportError: cannot import name HTTPSHandler
+http://jingyan.baidu.com/article/e52e3615aba39640c60c51c3.html
+原因在于openssl,openssl-devel两个文件包未正确安装
+安装完成后，重新安装python
+再次安装pip
+
+----> 解决pip无法使用http的源
+http://www.tuicool.com/articles/2uqEFr
+解决方法:修改pip.conf
+[global]
+index-url = http://pypi.douban.com/simple
+[install]
+trusted-host = pypi.douban.com
+
+
+
+
+
+
+
+
+
+
 Python 包工具之间的关系
 http://blog.yangyubo.com/2012/07/27/python-packaging/
 written on Friday, July 27, 2012

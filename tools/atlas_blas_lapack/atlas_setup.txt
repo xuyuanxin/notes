@@ -50,6 +50,7 @@ LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.      
   #lib: blaslib variants lapacklib tmglib   # 没有安装blas, 用这个. 会自动编译出blas.  
 4 编译
   make # 生成liblapack.a librefblas.a(提前安装blas,就不生成这个文件了) libtmglib.a
+       # 实际用发现都要编译blas
 5 拷贝 
   liblapack.a librefblas.a libtmglib.a 三个文件到/usr/lib /usr/local/lib两个文件夹中.
   64位系统, 或许拷贝到 /usr/lib64 合适些.

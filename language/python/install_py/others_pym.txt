@@ -1,0 +1,8 @@
+http://www.lfd.uci.edu/~gohlke/pythonlibs/     Unofficial Windows Binaries for Python Extension Packages
+
+
+
+---->ÒÀÀµ¹ØÏµ
+scipy: lapack/blas
+matplotlib: six pyparsing dateutil(Python-Dateutil) numpy
+

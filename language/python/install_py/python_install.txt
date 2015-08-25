@@ -29,9 +29,18 @@ http://www.cnblogs.com/lanxuezaipiao/archive/2012/10/21/2732864.html            
 ----> windows安装
 D:\Python27;D:\Python27\Scripts
 
----->依赖关系
-scipy: lapack/blas
-matplotlib: six pyparsing dateutil(Python-Dateutil) numpy
+----> egg
+egg包和setup tools
+
+python的egg文件有点像java中的jar文件，是一个工程打包文件，便于安装部署，仅此一点，给多少pythoner带来了多少激动。而setup tools就是一个提供包管理的工具或者说是软件。
+
+egg 是一个包含所有包数据的文件包。在理想情况中，egg 是一个使用 zip 压缩的文件，其中包括了所有需要的包文件。但是在某些情况下，setuptools 会决定（或被开关告知）包不应该是 zip 压缩的。在这些情况下，egg 只是一个简单的未曾压缩的子目录，但是里面的内容是相同的。使用单一的版本可以方便地进行转换，并可以节省一点磁盘空间，但是 egg 目录从功能和组织结构上来说都是相同的。
+
+安装package是经常碰到事情, 而且安装也比较繁琐，最头疼就是包依赖的问题，有时候一个上午可能就为了安装一个包，就像我今天这样的。在Java里面有这样的包管理软件，那就是Maven了， 他会帮助你找到所依赖的包. 据说其他语言,比如, php, ruby, perl等 也有类似的工具软件.
+
+
+
+
 
 http://blog.csdn.net/Silver_sail/article/details/44417641  Numpy Windows安装
 

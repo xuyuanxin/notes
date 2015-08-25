@@ -18,3 +18,34 @@ distutilsde工具的增强工具(适用于 Python 2.3.5 以上的版本, 64 位平台则适用于Pytho
 
 
 
+----> RuntimeError: Compression requires the (missing) zlib module
+yum install zlib
+yum install zlib-devel
+安装完成后，重新编译 python2.7, 不需要删除，只需要重新编译，make，安装就行了
+然后重新安装setuptools：
+cd setuptools-0.6c11
+python setup.py install
+
+----> 问题1
+http://wangjunle23.blog.163.com/blog/static/117838171201331462359901/
+如果你没有安装setuptools，而你的机器又没法联网
+运行
+python setup.py install
+
+
+你会发现惊奇地发现有错误：
+Traceback (most recent call last):  File "setup.py", line 5, in <module>    from setuptools import setup, ExtensionImportError: No module named setuptools
+
+这时想到的是，下载setuptools：
+https://pypi.python.org/packages/2.7/s/setuptools/setuptools-0.6c11-py2.7.egg#md5=fe1f997bc722265116870bc7919059ea
+setuptools-0.6c11-py2.7.egg (md5)
+
+
+下载安之后进行安装：
+sh setuptools-0.6c11-py2.7.egg
+----------------------------结果---------------------------------
+Adding setuptools 0.6c11 to easy-install.pth fileInstalling easy_install script to /usr/local/binInstalling easy_install-2.7 script to /usr/local/binInstalled /usr/local/lib/python2.7/site-packages/setuptools-0.6c11-py2.7.eggProcessing dependencies for setuptools==0.6c11Finished processing dependencies for setuptools==0.6c11ok, have fun.
+
+
+
+

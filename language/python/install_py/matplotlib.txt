@@ -1,6 +1,6 @@
 --------> install matplotlib
 ---->依赖 
-dateutil six
+Requires numpy, dateutil, pytz, pyparsing, six, setuptools, and optionally pillow, pycairo, tornado, wxpython, pyside, pyqt4, ghostscript, miktex, ffmpeg, mencoder, avconv, or imagemagick.
 
 ----> windows install
 1 有64位的exe文件，直接下载：http://sourceforge.net/projects/matplotlib/files/?source=navbar
