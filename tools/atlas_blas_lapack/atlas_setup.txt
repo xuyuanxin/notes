@@ -7,6 +7,7 @@ ATLAS      3.8.4      atlas3.8.4.tar.bz2       http://sourceforge.net/projects/m
 http://blog.sina.com.cn/s/blog_4c4668bb01013ft5.html   安装ALTAS,LAPACK, SCALAPACK, MUMPS记录 (1)
 http://blog.sina.com.cn/s/blog_4c4668bb01013gsv.html   安装ALTAS,LAPACK, SCALAPACK, MUMPS记录 (2)
 
+-------------------------------------------------------------------------------------+
 ----> blas (Fortran)                                                                 |
 BLAS, 全称Basic Linear Algebra Subprograms, 即基础线性代数子程序库, 里面拥有大量已经 |
 编写好的关于线性代数运算的程序. BLAS的源码可以从 http://www.netlib.org/blas/ 下载, 但|
@@ -27,7 +28,7 @@ BLAS, 全称Basic Linear Algebra Subprograms, 即基础线性代数子程序库, 里面拥有大量
   make       # 编译完成后, 会生成blas_LINUX.a文件
 5 拷贝
   mv blas_LINUX.a /usr/lib64/libblas.a
-
+-------------------------------------------------------------------------------------+
 ----> Lapack                                                                         |
 LAPACK, 其名为Linear Algebra PACKage的缩写, 是一以Fortran编程语言写就, 用于数值计算的|
 函式集. LAPACK提供了丰富的工具函式, 可用于诸如解多元线性方程式, 线性系统方程组的最小 |
@@ -38,28 +39,41 @@ LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.      
 1 解压
   tar xvzf lapack-3.4.0.gz 
 2 修改编译脚本(参考blas)
-  cp make.inc.example make.inc                                                               
-  FORTRAN  = gfortran -fimplicit-none -g
-  OPTS     = -O3     //此参数是编译器的版本 根据机器具体安装的编译器来设置
-  DRVOPTS  = $(OPTS)
-  NOOPT    =                                    
-  LOADER   = gfortran -g
-  LOADOPTS =      
+  cp make.inc.example make.inc                                                                  
 3 修改makefile文件
   lib: lapacklib tmglib                     # 提前安装blas, 用这个(默认)
   #lib: blaslib variants lapacklib tmglib   # 没有安装blas, 用这个. 会自动编译出blas.  
 4 编译
-  make # 生成liblapack.a librefblas.a(提前安装blas,就不生成这个文件了) libtmglib.a
-       # 实际用发现都要编译blas
+  make # 生成liblapack.a librefblas.a libtmglib.a
+       # 实际安装中发现都要编译blas(无论是否安装过blas, 可能是blas没有安装正确)
 5 拷贝 
   liblapack.a librefblas.a libtmglib.a 三个文件到/usr/lib /usr/local/lib两个文件夹中.
-  64位系统, 或许拷贝到 /usr/lib64 合适些.
-
+  64位系统, 拷贝到/usr/lib64
 6 编译动态库(如果需要)
   reference: http://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=908
 
 ----> Lapack windows
 http://icl.cs.utk.edu/lapack-for-windows/index.html
+-------------------------------------------------------------------------------------+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
 
 http://www.cnblogs.com/Frandy/archive/2011/05/18/Lapack_Install_Test.html 

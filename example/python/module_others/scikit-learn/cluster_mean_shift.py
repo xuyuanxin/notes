@@ -18,8 +18,9 @@ from sklearn.datasets.samples_generator import make_blobs
 
 ###############################################################################
 # Generate sample data
-centers = [[1, 1], [-1, -1], [1, -1]]
-X, _ = make_blobs(n_samples=10000, centers=centers, cluster_std=0.6)
+centers1 = [[1, 1], [-1, -1], [1, -1]]
+centers2 = [[-2, -3], [0, 0], [3, 2]]
+X, _ = make_blobs(n_samples=100, centers=centers2, cluster_std=0.6)
 
 ###############################################################################
 # Compute clustering with MeanShift
@@ -28,10 +29,12 @@ X, _ = make_blobs(n_samples=10000, centers=centers, cluster_std=0.6)
 bandwidth = estimate_bandwidth(X, quantile=0.2, n_samples=500)
 
 ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
+
 ms.fit(X)
 labels = ms.labels_
 cluster_centers = ms.cluster_centers_
-
+#print labels
+#print cluster_centers
 labels_unique = np.unique(labels)
 n_clusters_ = len(labels_unique)
 
