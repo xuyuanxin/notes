@@ -1,0 +1,12 @@
+zip([iterable, ...])
+This function returns a list of tuples, where the i-th tuple contains the i-th eleme-
+nt from each of the argument sequences or iterables. 
+
+>>> x = [1, 2, 3]
+>>> y = [4, 5, 6]
+>>> zipped = zip(x, y)
+>>> zipped
+[(1, 4), (2, 5), (3, 6)]
+>>> x2, y2 = zip(*zipped)
+>>> x == list(x2) and y == list(y2)
+True

@@ -1,0 +1,3 @@
+$xz -d ***.tar.xz
+
+$tar -xvf  ***.tar

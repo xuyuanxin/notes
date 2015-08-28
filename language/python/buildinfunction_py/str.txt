@@ -1,0 +1,29 @@
+class str(object='')
+class str(object=b'', encoding='utf-8', errors='strict')
+Return a str version of object. See str() for details.
+
+str is the built-in string class. For general information about strings, see Text Sequence Type ¡ª str.
+
+Actually, str is a type, just like int and long. repr, however, is simply a function.
+
+>>> print str("Hello, world!")
+Hello, world!
+>>> print str(10000L)
+10000
+
+
+>>> temp = 42
+>>> print "The temperature is " + temp
+Traceback (most recent call last):
+File "<pyshell#61>", line 1, in ?
+print "The temperature is " + temp
+TypeError: cannot add type "int" to string
+>>> print "The temperature is " + `temp` 
+The temperature is 42
+ 
+converted temp to the string "42" by using the backticks. 
+In short, str, repr, and backticks are three ways of converting a Python value to a string.
+The function str makes it look good, while repr (and the backticks) tries to make the resulting
+string a legal Python expression.
+
+
