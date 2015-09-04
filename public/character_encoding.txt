@@ -1,12 +1,13 @@
 http://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html  字符集和字符编码（Charset & Encoding）
 http://www.freebuf.com/articles/others-articles/25623.html     学点编码知识又不会死：Unicode的流言终结者和编码大揭秘
 http://www.cnblogs.com/hongfei/p/3648794.html                  趣谈unicode，ansi，utf-8，unicode big endian这些编码有什么区别
--------------------------------------------------------------------------------------|
-DBCS  Double Byte Charecter Set 双字节字符集 
-Ascii American Standard Code for Information Interchange，美国信息互换标准代码
-UCS   Universal Multiple-Octet Coded Character Set，简称 UCS, 俗称 "UNICODE"。 
-BOM   byte-order mark 字节序标记
-BMP   Basic Multilingual Plane                                                       |
+-------------------------------------------------------------------------------------+
+DBCS   Double Byte Charecter Set 双字节字符集                                        |
+Ascii  American Standard Code for Information Interchange，美国信息互换标准代码      |
+UCS    Universal Multiple-Octet Coded Character Set，简称 UCS, 俗称 "UNICODE".       |
+BOM    byte-order mark 字节序标记                                                    |
+BMP    Basic Multilingual Plane                                                      |
+-------------------------------------------------------------------------------------+
 原始的ASCII标准定义了从0到127的字符, 128到255的编码并没有被制定ASCII标准的人所规定,其|
 它国家的人趁这个机会开始使用128到255范围内的编码来表达自己语言中的字符. ASCII码的问题|
 在于尽管所有人都在0-127号字符的使用上达成了一致, 但对于128-255号字符却有很多很多不同 |

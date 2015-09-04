@@ -1,15 +1,23 @@
-----> The list Function
-It¡¯s actually a type, not a function, but the difference isn¡¯t important right now. -
+----> @list
+@list actually a type, not a function, but the difference isn¡¯t important right  now.
 Because strings can¡¯t be modified in the same way as lists, sometimes it can be usef-
 ul to create a list from a string. You can do this with the list function:
 >>> list('Hello')
 ['H', 'e', 'l', 'l', 'o']
-Note that list works with all kinds of sequences, not just strings.
+Note that list works with all kinds of sequences, not just strings. To convert a lis-
+t of characters back to a string, you would use the following expression:
+''.join(somelist)
+where @somelist is your list. 
+>>> a=list('hello')
+>>> a
+['h', 'e', 'l', 'l', 'o']
+>>> ''.join(a)
+'hello'
 
 1 Changing Lists: Item Assignments
 You cannot assign to a position that doesn¡¯t exist;
 >>> x = [1, 1, 1]
->>> x[1] = 2
+>>> x[1] = 2 
 >>> x
 [1, 2, 1]
 
@@ -26,6 +34,19 @@ You cannot assign to a position that doesn¡¯t exist;
 >>> name[2:] = list('ar')
 >>> name
 ['P', 'e', 'a', 'r']
+
+>>> name = list('Perl')      # replace the slice with a sequence whose length is dif-
+>>> name[1:] = list('ython') # ferent from that of the original:                      
+>>> name
+['P', 'y', 't', 'h', 'o', 'n']
+
+>>> numbers = [1, 5]         # Slice assignments can even be used to insert  elements 
+>>> numbers[1:1] = [2, 3, 4] # without replacing any of the original ones:
+>>> numbers
+[1, 2, 3, 4, 5]
+>>> numbers[1:4] = []
+>>> numbers
+[1, 5]
 
 ----> List Methods
 In general, a method is called like this:
@@ -72,8 +93,89 @@ tenation, in which a completely new sequence is returned:
 >>> a
 [1, 2, 3]
 
+4 index
+The index method is used for searching lists to find the index of the first occurren-
+ce of a value:
+>>> knights = ['We', 'are', 'the', 'knights', 'who', 'say', 'ni']
+>>> knights.index('who')
+4
+>>> knights.index('herring')
+Traceback (innermost last):
+File "<pyshell#76>", line 1, in ?
+knights.index('herring')
+ValueError: list.index(x): x not in list
 
+5 insert
+The insert method is used to insert an object into a list:
+>>> numbers = [1, 2, 3, 5, 6, 7]
+>>> numbers.insert(3, 'four')
+>>> numbers
+[1, 2, 3, 'four', 5, 6, 7]
+As with extend, you can implement insert with slice assignments:
+>>> numbers = [1, 2, 3, 5, 6, 7]
+>>> numbers[3:3] = ['four']
+>>> numbers
+[1, 2, 3, 'four', 5, 6, 7]
 
+6 pop
+The pop method removes an element (by default, the last one) from the list and returns it:
+>>> x = [1, 2, 3]
+>>> x.pop()
+3
+>>> x
+[1, 2]
+>>> x.pop(0)
+1
+>>> x
+[2]
+
+7 remove
+The remove method is used to remove the first occurrence of a value:
+>>> x = ['to', 'be', 'or', 'not', 'to', 'be']
+>>> x.remove('be')
+>>> x
+['to', 'or', 'not', 'to', 'be']
+>>> x.remove('bee')
+Traceback (innermost last):
+File "<pyshell#3>", line 1, in ?
+x.remove('bee')
+ValueError: list.remove(x): x not in list
+As you can see, only the first occurrence is removed, and you cannot remove somethin-
+g (in this case, the string 'bee') if it isn¡¯t in the list to begin with. It¡¯s impor-
+tant to note that this is one of the ¡°nonreturning in-place changing¡± methods. It mo-
+difies the list, but returns nothing.
+
+8 reverse
+The @reverse method reverses the elements in the list. 
+>>> x = [1, 2, 3]
+>>> x.reverse()
+>>> x
+[3, 2, 1]
+Note that reverse changes the list and does not return anything. If you want to iter-
+ate over a sequence in reverse, you can use the @reversed function. This function do-
+esn¡¯t return a list, though; it returns an iterator. You can convert the returned ob-
+ject with @list:
+>>> x = [1, 2, 3]
+>>> list(reversed(x))
+[3, 2, 1]
+
+9 sort (returns nothing)
+>>> x = [4, 6, 2, 1, 7, 9]
+>>> x.sort()
+>>> x
+[1, 2, 4, 6, 7, 9]
+
+>>> x = [4, 6, 2, 1, 7, 9]
+>>> y = x.sort() # Don't do this!
+>>> print y
+None
+
+>>> x = [4, 6, 2, 1, 7, 9]
+>>> y = sorted(x)
+>>> x
+[4, 6, 2, 1, 7, 9]
+>>> y
+[1, 2, 4, 6, 7, 9]
 
 
 
@@ -81,25 +183,39 @@ tenation, in which a completely new sequence is returned:
 
 
 ----> Sequence Overview
-Python has six built-in types of sequences : lists, tuples, strings, Unicode strings,
-buffer objects, and xrange objects. 
-
 Python has a basic notion of a kind of data structure called a container, which is b-
 asically any object that can contain other objects. The two main kinds of  containers 
 are sequences (such as lists and tuples) and mappings (such as dictionaries). While -
 the elements of a sequence are numbered, each element in a mapping has a name (also -
-called a key). 
+called a key). For an example of a container type that is neither a sequence nor a  -
+mapping, see the discussion of @sets in Chapter 10.
+
+Python has six built-in types of sequences : lists, tuples, strings, Unicode strings,
+buffer objects, and xrange objects. 
 
 ----> Common Sequence Operations
 1 Indexing
 All elements in a sequence are numbered -- from zero and upwards. When you use a neg-
 ative index, Python counts from the right; that is, from the last element. The last -
 element is at position ¨C1. [first, last)
->>> greeting = 'Hello'
+>>> greeting = 'Hello'  # A string is just a sequence of characters. The index 0 ref-
+                        # ers to the first element, in this case the letter H.
 >>> greeting[0]
 'H'
 >>> greeting[-1]
 'o'
+
+String literals (and other sequence literals, for that matter) may be indexed direct-
+ly, without using a variable to refer to them. The effect is exactly the same:
+>>> 'Hello'[1]
+'e'
+If a function call returns a sequence, you can index it directly. For instance, if y-
+ou are simply interested in the fourth digit in a year entered by the user, you could 
+do something like this:
+>>> fourth = raw_input('Year: ')[3]
+Year: 2005
+>>> fourth
+'5'
 
 2 Adding Sequences
 Sequences can be concatenated with the addition (plus) operator. In general, you can-
@@ -123,7 +239,13 @@ nce is repeated x times:
 [42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
 
 4 None, Empty Lists, and Initialization
- if you want to initialize a list of length 10, you could do the following:
+An empty list is simply written as two brackets ([])¡ªthere¡¯s nothing in it. But  what 
+if you want to have a list with room for ten elements but with nothing useful in  it? 
+You could use [42]*10, as before, or perhaps more realistically [0]*10. You now  have 
+a list with ten zeros in it. Sometimes, however, you would like a value that  somehow 
+means "nothing," as in "we haven¡¯t put anything here yet." That¡¯s when you use  None. 
+None is a Python value and means exactly that¡ª"nothing here." So if you want to init-
+ialize a list of length 10, you could do the following:
 >>> sequence = [None] * 10
 >>> sequence
 [None, None, None, None, None, None, None, None, None, None]
@@ -143,6 +265,12 @@ Enter your user name: mlh
 True
 >>> subject = '$$$ Get rich now!!! $$$'
 >>> '$$$' in subject
+True
+
+In general, the @in operator checks whether an object is a member (that is, an eleme-
+nt) of a sequence (or some other collection). However, the only members or elements -
+of a string are its characters. So, the following makes perfect sense:
+>>> 'P' in 'Python'
 True
 
 6 Length, Minimum, and Maximum
@@ -210,10 +338,15 @@ tive step size, it moves from the end toward the beginning.
 [10, 8, 6, 4, 2]
 >>> numbers[5::-2]
 [6, 4, 2]
->>> numbers[:5:-2]
+>>> numbers[:5:-2] # numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 [10, 8]
 
-
+As you can see, the first limit (the leftmost) is still inclusive, while the second -
+(the rightmost) is exclusive. When using a negative step size, you need to have a fi-
+rst limit (start index) that is higher than the second one. What may be a bit confus-
+ing is that when you leave the start and end indices implicit, Python does the "right 
+thing", for a positive step size, it moves from the beginning toward the end, and for
+a negative step size, it moves from the end toward the beginning.
 
 
 	
