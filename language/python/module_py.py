@@ -1,3 +1,161 @@
+'''
+A standard installation includes a set of modules called the standard library. 
+
+----> modules
+import module_name # 导入模块
+
+the code in the module is executed when you import it. However, if you try to  import 
+it again, nothing happens. Because modules aren’t really meant to do things (such  as
+printing text) when they’re imported. They are mostly meant to define things, such as 
+variables, functions, classes, and so on. And because you need to define things  only 
+once, importing a module several times has the same effect as importing it once.
+
+When you import a module, you may notice that a new file appears. The file with the -
+.pyc extension is a (platform-independent) processed (“compiled”) Python file that h-
+as been translated to a format that Python can handle more efficiently. If you import 
+the same module later, Python will import the .pyc file rather than the .py file, un-
+less the .py file has changed; in that case, a new .pyc file is generated. Deleting -
+the .pyc file does no harm (as long as there is an equivalent .py file available),  -
+a new one is created when needed.
+
+----------------------------------------
+# hello4.py
+def hello():
+    print "Hello, world!"
+def test():
+    hello()
+if __name__ == '__main__': test()
+---------------------------------------
+in the "main program" (including the interactive prompt of the interpreter), the var-
+iable __name__ has the value '__main__'. In an imported module, it is set to the nam-
+e of that module.
+
+----> Putting Your Module in the Right Place
+the list of directories (the so-called search path) can be found in the @path variab-
+le in the @sys module.
+>>> import sys, pprint
+>>> sys.path.append('c:/python')
+>>> pprint.pprint(sys.path)
+['C:\\Python25\\Lib\\idlelib',
+'C:\\WINDOWS\\system32\\python25.zip',
+'C:\\Python25',
+'C:\\Python25\\DLLs',
+'C:\\Python25\\lib',
+'C:\\Python25\\lib\\plat-win',
+'C:\\Python25\\lib\\lib-tk',
+'C:\\Python25\\lib\\site-packages']
+The point is that each of these strings provides a place to put modules if you want -
+your interpreter to find them. Even though all these will work, the site-packages di-
+rectory is the best choice because it’s meant for this sort of thing. 
+
+----> Telling the Interpreter Where to Look
+one way of doing this is to edit sys.path, but that is not a common way to do it. The 
+standard method is to include your module directory (or directories) in the environm-
+ent variable PYTHONPATH.
+
+export PYTHONPATH=$PYTHONPATH:~/python  # linux
+set PYTHONPATH=%PYTHONPATH%;C:\python   # windows
+
+----> Naming Your Module
+As you may have noticed, the file that contains the code of a module must be given t-
+he same name as the module, with an additional .py file name extension. In Windows, -
+you can use the file name extension .pyw instead.
+
+----> Packages
+To structure your modules, you can group them into packages. A package is basically -
+just another type of module. The interesting thing about them is that they can conta-
+in other modules. While a module is stored in a file (with the file name extension  -
+.py), a package is a directory. To make Python treat it as a package, it must contain 
+a file (module) named __init__.py. The contents of this file will be the contents  of 
+the package, if you import it as if it were a plain module. For example, if you had -
+a package named @constants, and the file constants/__init__.py contains the statement 
+        PI = 3.14
+you would be able to do the following:
+>>> import constants
+>>> print constants.PI
+
+To put modules inside a package, simply put the module files inside the package dire-
+ctory. For example, if you wanted a package called @drawing, which contained one mod-
+ule called @shapes and one called @colors, you would need the files and directories -
+(UNIX pathnames) shown in Table 10-1.
+-------------------------------------------------------------------------------------
+~/python/                               # Directory in PYTHONPATH
+~/python/drawing/                       # Package directory (drawing package)
+~/python/drawing/__init__.py            # Package code (drawing module)
+~/python/drawing/colors.py              # colors module
+~/python/drawing/shapes.py              # shapes module
+-------------------------------------------------------------------------------------
+With this setup, the following statements are all legal:
+import drawing              # (1) Imports the drawing package
+import drawing.colors       # (2) Imports the colors module
+from drawing import shapes  # (3) Imports the shapes module
+After the first statement, the contents of the __init__ module in drawing would be a-
+vailable; the shapes and colors modules, however, would not be. After the second sta-
+tement, the colors module would be available, but only under its full name,         -
+drawing.colors. After the third statement, the shapes module would be available, und-
+er its short name (that is, simply shapes). Note that these statements are just exam-
+ples. There is no need, for example, to import the package itself before importing o-
+ne of its modules as I have done here. The second statement could very well be execu-
+ted on its own, as could the third. You may nest packages inside each other.
+
+*************************************************************************************
+*************************************************************************************
+
+--------> Exploring Modules
+----> Using dir
+>>> import copy
+>>> [n for n in dir(copy) if not n.startswith('_')]
+['Error', 'PyStringMap', 'copy', 'deepcopy', 'dispatch_table', 'error', 'name', 't']
+
+----> The __all__ Variable
+>>> copy.__all__
+['Error', 'copy', 'deepcopy']
+__all__ defines the public interface of the module. More specifically, it tells the -
+interpreter what it means to import all the names from this module. So if you use th-
+is:
+from copy import *
+you get only the four functions listed in the __all__ variable. 
+
+----> Getting Help with help
+>>> help(copy.copy)
+>>> print copy.copy.__doc__
+
+----> Documentation
+A natural source for information about a module is, of course, its documentation. 
+>>> print range.__doc__
+range([start,] stop[, step]) -> list of integers
+
+----> Use the Source
+Where would you find it? One solution would be to examine sys.path again and actuall-
+y look for it yourself, just like the interpreter does. A faster way is to examine t-
+he module’s __file__ property:
+>>> print copy.__file__    # C:\Python24\lib\copy.py
+Note that some modules don’t have any Python source you can read. They may be built -
+into the interpreter (such as the sys module) or they may be written in the C progra-
+mming language.
+
+
+
+
+
+
+
+
+pym: python modules
+
+
+
+
+
+tldextract
+https://github.com/john-kurkowski/tldextract
+https://pypi.python.org/pypi/tldextract
+
+
+
+
+
+'''
 #******************************************************************************# 
 #-->-->-->-->-->-->-->-->-->            1 模块             <--<--<--<--<--<--<-#
 #******************************************************************************#
@@ -237,3 +395,4 @@ print '10 // 3 =', 10 // 3
 #由于Python是由社区推动的开源并且免费的开发语言，不受商业公司控制，因此，Python的
 #改进往往比较激进，不兼容的情况时有发生。Python为了确保你能顺利过渡到新版本，特
 #别提供了__future__模块，让你在旧的版本中试验新版本的一些特性。
+'''

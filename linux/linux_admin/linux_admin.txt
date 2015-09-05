@@ -10,3 +10,6 @@ java    4280 shen   79u  IPv6  51108      0t0  TCP *:50060 (LISTEN)
 [shen@localhost hadoop]$ kill 4280  
 [shen@localhost hadoop]$ lsof -i:50020  
 [shen@localhost hadoop]$ lsof -i:50010 
+
+
+http://www.cnblogs.com/kerrycode/p/3759395.html  Linux查看系统开机时间

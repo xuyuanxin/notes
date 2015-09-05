@@ -1,3 +1,0 @@
-----> sys.path
-A list of strings that specifies the search path for modules. Initialized from the e-
-nvironment variable PYTHONPATH, plus an installation-dependent default.
