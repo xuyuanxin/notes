@@ -35,3 +35,18 @@ def system(command):
 '''
 def join(path, *paths):
     pass
+	
+''' os.path.split(path)
+Split the pathname @path into a pair, (head, tail) where tail is the last pathname c-
+omponent and head is everything leading up to that. The tail part will never  contain 
+a slash; if path ends in a slash, tail will be empty. If there is no slash in path, -
+head will be empty. If path is empty, both head and tail are empty. Trailing  slashes 
+are stripped from head unless it is the root (one or more slashes only). In all cases
+, join(head, tail) returns a path to the same location as path (but the strings may -
+differ). Also see the functions dirname() and basename().
+
+d:\\python\\python.exe -->  ['d:\\python', 'python.exe']
+'''
+def split(path):
+    pass
+	

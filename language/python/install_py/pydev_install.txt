@@ -1,0 +1,8 @@
+方法一：下载ZIP文件后自己手动安装
+1. 直接到http://pydev.org/download.html 下载离线安装ZIP包。
+2. 一种比较随意的方法就是把压缩包里面的plugins解压到Eclipse安装目录下对应的目录，features目录也是同样操作。但是你如果不想搞乱原版本的Eclipse，可以选择如下操作：
+在Eclipse安装目录下新建一个links文件夹。然后再在links文件夹下新建名为eclipse的目录，最后把pedev.zip的压缩包内容解压到eclipse目录中。
+在links目录下，新建一个名为pydev.link的文件，文件的内容为：path=C:\ItDevelop\eclipse\links\eclipse ，(其中path=C:\ItDevelop\eclipse为eclipse的安装目录)
+3. 之后重启Eclipse就可以了。如何检查是否已经正确安装pydev？ 打开Eclipse–>Windows–>preferences,然后在左边的树状结构中就能找到Pydev选项。
+
+http://www.linuxidc.com/Linux/2015-02/113882.htm   Pydev在Eclipse上的安装及配置
