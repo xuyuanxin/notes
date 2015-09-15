@@ -1,3 +1,5 @@
+# adfasdfasdfasdf
+
 '''
 In this chapter, you learn about a data structure in which you can refer to each val-
 ue by name. This type of structure is called a mapping. The only built-in mapping ty-
@@ -55,6 +57,91 @@ Membership:
 
 '''
 
+'''
+The @clear method removes all items from the dictionary. This is an in-place operati-
+on (like list.sort), so it returns nothing (or, rather, None):
+>>> d = {}
+>>> d['name'] = 'Gumby'
+>>> d['age'] = 42
+>>> d
+{'age': 42, 'name': 'Gumby'}
+>>> returned_value = d.clear()
+>>> d
+{}
+>>> print returned_value
+None
+'''
+def clear():
+    pass
+
+'''
+The @copy method returns a new dictionary with the same key-value pairs (a shallow c-
+opy, since the values themselves are the same, not copies):
+>>> x = {'username': 'admin', 'machines': ['foo', 'bar', 'baz']}
+>>> y = x.copy()
+>>> y['username'] = 'mlh'
+>>> y['machines'].remove('bar')
+>>> y
+{'username': 'mlh', 'machines': ['foo', 'baz']}
+>>> x
+{'username': 'admin', 'machines': ['foo', 'baz']}
+'''
+def copy():
+    pass
+	
+'''
+>>> from copy import deepcopy
+>>> d = {}
+>>> d['names'] = ['Alfred', 'Bertrand']
+>>> c = d.copy()
+>>> dc = deepcopy(d)
+>>> d['names'].append('Clive')
+>>> c
+{'names': ['Alfred', 'Bertrand', 'Clive']}
+>>> dc
+{'names': ['Alfred', 'Bertrand']}
+'''
+def deepcopy():
+    pass
+
+'''
+The @fromkeys method creates a new dictionary with the given keys, each with a defau-
+lt corresponding value of None:
+>>> {}.fromkeys(['name', 'age'])
+{'age': None, 'name': None}
+This example first constructs an empty dictionary and then calls the @fromkeys metho-
+d on that, in order to create another dictionary¡ªa somewhat redundant strategy. Inst-
+ead, you can call the method directly on dict, which (as mentioned before) is the ty-
+pe of all dictionaries. (The concept of types and classes is discussed more thorough-
+ly in Chapter 7.)
+>>> dict.fromkeys(['name', 'age'])
+{'age': None, 'name': None}
+If you don¡¯t want to use None as the default value, you can supply your own default:
+>>> dict.fromkeys(['name', 'age'], '(unknown)')
+{'age': '(unknown)', 'name': '(unknown)'}
+'''
+def fromkeys():
+    pass
+
+'''
+The @get method is a forgiving way of accessing dictionary items. Ordinarily, when y-
+ou try to access an item that is not present in the dictionary, things go very wrong:
+>>> d = {}
+>>> print d['name']
+Traceback (most recent call last):
+File "<stdin>", line 1, in ?
+KeyError: 'name'
+Not so with get:
+>>> print d.get('name')
+None
+As you can see, when you use get to access a nonexistent key, there is no  exception.
+Instead, you get the value None. You may supply your own ¡°default¡± value, which is t-
+hen used instead of None:
+>>> d.get('name', 'N/A')
+'N/A'
+'''
+def get():
+    pass
 
 
 
