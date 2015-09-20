@@ -13,6 +13,8 @@ https://github.com/gamelinux/passivedns                                         
 A MongoDB Administration Tool                                                        |
 https://github.com/magicdict/MongoCola                                               |
 -------------------------------------------------------------------------------------+
+https://github.com/Sword-Destiny/destinyRegex (C/C++正则表达式库实现)                |
+-------------------------------------------------------------------------------------+
 ----> books                                                                          |
 -------------------------------------------------------------------------------------|
 Hadoop: The Definitive Guide

@@ -1,56 +1,70 @@
-#类是创建实例的模板，实例是具体的对象
+'''
+----> 1 
+---->====> 1.1
+---->====>####> 1.1.1
 
-######### 1 通过class关键字定义类
-  class Student(object):
-      pass	 
-#class后是类名Student，类名通常是大写开头的单词
-#紧接着是(object)，表示该类是从哪个类继承下来的，通常，如果没有合适的继承类，就使用object类，这是所有类最终都会继承的类。
-#创建实例是通过类名+()实现的
-bart = Student() #创建了一个类的实例bart
-
-######### 2 类的属性和方法
-# 2.1 属性:类中封装的变量 如下面的name、score
-#实例的变量名如果以__开头，就变成了一个私有变量（private），只有内部可以访问，外部不能访问
-#不能直接访问__name是因为Python解释器对外把__name变量改成了_Student__name，所以，仍然可以通过_Student__name来访问__name变量：
->>> bart._Student__name
-'Bart Simpson'
-#变量名类似__xxx__的，是特殊变量，特殊变量是可以直接访问的，不是private变量，
-#以一个下划线开头的实例变量名，比如_name表示虽然我可以被访问，但是，请把我视为私有变量，不要随意访问
-# 2.2 方法:类中封装的函数 如下面的print_score
-
-######### 3 创建实例的时候，可以初始化一些默认属性
-#  通过定义一个特殊的__init__方法，在创建实例的时候，就把name，score等属性绑上去：
-  
-  class Student(object):
-
-    def __init__(self, name, score):
-        self.name = name
-        self.score = score
-		
-    def print_score(self):
-        print '%s: %s' % (self.name, self.score)		
-#__init__方法的第一个参数永远是self，表示创建的实例本身，因此，在__init__方法内部，就可以把各种属性绑定到self，因为self就指向创建的实例本身。
-#有了__init__方法，在创建实例的时候，就不能传入空的参数了，必须传入与__init__方法匹配的参数，但self不需要传，		
->>> bart = Student('Bart Simpson', 59)
->>> bart.name
-'Bart Simpson'
->>> bart.score
-59
->>> bart.print_score()
-Bart Simpson: 59
-#Python允许对实例变量绑定任何数据，也就是说，对于两个实例变量，虽然它们都是同一个类的不同实例，但拥有的变量名称都可能不同：
->>> bart = Student('Bart Simpson', 59)
->>> lisa=Student('Lisa Simpson', 87)
->>> bart.age = 8
->>> bart.age
-8
->>> lisa.age
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-AttributeError: 'Student' object has no attribute 'age'
-######### 4 继承和多态
-#子类:定义一个class的时候，可以从某个现有的class继承，新的class称为子类（Subclass）
-#     子类获得父类的全部功能，如果子类定义了相同的方法则覆盖父类的方法。
++-----------------------------------------------------------------------------------+|
+|-->-->-->-->-->-->-->-->-->-->-->-->      类 基础         <--<--<--<--<--<--<--<-- ||
++-----------------------------------------------------------------------------------+|
+                                                                                     |
+类是创建实例的模板，实例是具体的对象。                                               |
+                                                                                     |
+----> 1 通过class关键字定义类                                                        |
+| class Student(object):                                                             |
+|     pass	                                                                         |
+class后是类名Student，类名通常是大写开头的单词。紧接着是(object)，表示该类是从哪个类 |
+继承下来的，通常，如果没有合适的继承类，就使用object类，这是所有类最终都会继承的类。 |
+创建实例是通过 类名+() 实现的                                                        |
+bart = Student() #创建了一个类的实例bart                                             |
+------------------------------------------------------------------------------------+|
+----> 2 类的属性和方法                                                               |
+self的概念(todo)                                                                     |
+---->====> 2.1 属性：类中封装的变量 如下面的 name 、 score                           |
+实例的变量名如果以__开头，就变成了一个私有变量（private），只有内部可以访问，外部不能|
+访问。不能直接访问__name是因为Python解释器对外把__name变量改成了_Student__name，所以 |
+，仍然可以通过_Student__name来访问__name变量：                                       |
+* >>> bart._Student__name                                                            |
+* 'Bart Simpson'                                                                     |
+#变量名类似__xxx__的，是特殊变量，特殊变量是可以直接访问的，不是private变量。以一个下|
+划线开头的实例变量名，比如_name表示虽然我可以被访问，但是，请把我视为私有变量，不要随|
+意访问。                                                                             |
+---->====> 2.2 方法：类中封装的函数 如下面的print_score                              |
+------------------------------------------------------------------------------------+|
+----> 3 创建实例的时候，可以初始化一些默认属性                                       |
+通过定义一个特殊的__init__方法，在创建实例的时候，就把name，score等属性绑上去：      |
+*  class Student(object):
+*
+*   def __init__(self, name, score):
+*       self.name = name
+*       self.score = score
+*		
+*   def print_score(self):
+*       print '%s: %s' % (self.name, self.score)		                             |
+__init__方法的第一个参数永远是self，表示创建的实例本身，因此，在__init__方法内部，就 |
+可以把各种属性绑定到self，因为self就指向创建的实例本身。有了__init__方法，在创建实例 |
+的时候，就不能传入空的参数了，必须传入与__init__方法匹配的参数，但self不需要传，     |		
+* >>> bart = Student('Bart Simpson', 59)
+* >>> bart.name
+* 'Bart Simpson'
+* >>> bart.score
+* 59
+* >>> bart.print_score()
+* Bart Simpson: 59                                                                   |
+Python允许对实例变量绑定任何数据，也就是说，对于两个实例变量，虽然它们都是同一个类的 |
+不同实例，但拥有的变量名称都可能不同：                                               |
+* >>> bart = Student('Bart Simpson', 59)
+* >>> lisa=Student('Lisa Simpson', 87)
+* >>> bart.age = 8
+* >>> bart.age
+* 8
+* >>> lisa.age
+* Traceback (most recent call last):
+*   File "<stdin>", line 1, in <module>
+* AttributeError: 'Student' object has no attribute 'age'
+------------------------------------------------------------------------------------+|
+----> 4 继承和多态                                                                   |
+子类：定义一个class的时候，可以从某个现有的class继承，新的class称为子类(Subclass)子类|
+      获得父类的全部功能，如果子类定义了相同的方法则覆盖父类的方法。
 #     在继承关系中，如果一个实例的数据类型是某个子类，那它的数据类型也可以被看做是父类。但是，反过来就不行
 #父类:被继承的class称为基类、父类或超类（Base class、Super class）。
 #多态:有了继承，才能有多态。多态是指同一个方法在父类和子类中有不同的功能。
@@ -175,5 +189,4 @@ class Student(object):
 #
 #
 #
-
-
+'''
