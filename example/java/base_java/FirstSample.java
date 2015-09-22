@@ -14,7 +14,7 @@ public class FirstSample
 3 You need to make the file name for the source code the same as the name of the pub-
   lic class, with the extension .java appended. 
 4 compile this source code:
-          javac ClassName.java
+      javac ClassName.java
   you end up with a file containing the bytecodes for this class. The Java compiler -
   automatically names the bytecode file ClassName.class and stores it in the same di-
   rectory as the source file. 

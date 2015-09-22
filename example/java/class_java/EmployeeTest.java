@@ -1,20 +1,17 @@
 import java.util.*;
 
 /*-----------------------------------------------------------------------------------
- Note that the example program consists of two classes: the Employee class and a cla-
- ss EmployeeTest with the public access specifier. The main method is contained in t-
- he EmployeeTest class. The name of the source file is  EmployeeTest.java because the 
- name of the file must match the name of the public class. You can only have one pub-
- lic class in a source file, but you can have any number of nonpublic classes.
+ You can only have one public class in a source file, but you can have any number  of 
+ nonpublic classes. The name of the file must match the name of the public class. 
 
  when you compile this source code, the compiler creates two class files in the dire-
  ctory: EmployeeTest.class and Employee.class. You then start the program by giving -
  the bytecode interpreter the name of the class that contains the main method of your 
  program:
      java EmployeeTest
- The bytecode interpreter starts running the code in the main method in the EmployeeTest 
- class. This code in turn constructs three new Employee objects and shows you their -
- state.
+ The bytecode interpreter starts running the code in the main method in the         -
+ EmployeeTest class. This code in turn constructs three new Employee objects and sho-
+ ws you their state.
 
  ----> Use of Multiple Source Files
  The program has two classes in a single source file . Many programmers prefer to put 
@@ -63,20 +60,29 @@ public class EmployeeTest
 The keyword public means that any method in any class can call the method. The priva-
 te keyword makes sure that the only methods that can access these instance fields are 
 the methods of the Employee class itself. No outside method can read or write to the-
-se fields.
+se fields. The @name and @hireDay fields are references to @String and @Date objects. 
+This is quite usual: Classes will often contain instance fields of class type.
 -----------------------------------------------------------------------------------*/
 class Employee
 {
-   private String name;
+   private String name;   //instance fields
    private double salary;
    private Date hireDay;
 
 /*-----------------------------------------------------------------------------------
+ ----> constructor
  As you can see, the name of the constructor is the same as the name of the class. T-
  his constructor runs when you construct objects of the Employee class, giving the i-
- nstance fields the initial state you want them to have. A constructor can only be c-
- alled in conjunction with the new operator. You can't apply a constructor to an exi-
- sting object to reset the instance fields. For example,
+ nstance fields the initial state you want them to have. For example, when you create 
+ an instance of the Employee class with code like this:
+     new Employee("James Bond", 100000, 1950, 1, 1)
+ you have set the instance fields as follows:
+     name = "James Bond";
+     salary = 100000;
+     hireDay = January 1, 1950;
+
+ A constructor can only be called in conjunction with the new operator. You can't ap-
+ ply a constructor to an existing object to reset the instance fields. For example,
     james.Employee("James Bond", 250000, 1950, 1, 1) // compile-time error
 
  A constructor has the same name as the class.
@@ -86,13 +92,13 @@ class Employee
  A constructor is always called with the new operator.
 
  all Java objects are constructed on the heap and that a constructor must be combine-
- d with new. 
+ d with @new. 
  
  ----> Caution
  Be careful not to introduce local variables with the same names as the instance fie-
  lds.
 -----------------------------------------------------------------------------------*/
-   public Employee(String n, double s, int year, int month, int day)
+   public Employee(String n, double s, int year, int month, int day) /* constructor */
    {
       name = n;
       salary = s;
@@ -145,13 +151,7 @@ class Employee
 
 /*-----------------------------------------------------------------------------------
  ----> Implicit and Explicit Parameters
- Consider the call
-     number007.raiseSalary(5);
- More specifically, the call executes the following instructions:
-     double raise = number007.salary * 5 / 100;
-     number007.salary += raise;
-     
- The raiseSalary method has two parameters . The first parameter, called the implicit 
+ The @raiseSalary method has two parameters . The first parameter, called the implicit 
  parameter, is the object of type Employee that appears before the method name. The -
  second parameter, the number inside the parentheses after the method name, is an ex-
  plicit parameter.
@@ -199,22 +199,4 @@ class Employee
  changed after the object is constructed. That does not mean that the hiredate object 
  is constant. Any method is free to invoke the setTime mutator on the object to which
  hiredate refers.
-
-----> Use of Multiple Source Files
-The program in Listing 4.2 has two classes in a single source file . Many programmers
-prefer to put each class into its own source file. For example, you can place the Em-
-ployee class into a file Employee.java and the EmployeeTest class into EmployeeTest.java.
-If you like this arrangement, then you have two choices for compiling the program. Y-
-ou can invoke the Java compiler with a wildcard:
-    javac Employee*.java
-Then, all source files matching the wildcard will be compiled into class files. Or, -
-you can simply type
-    javac EmployeeTest.java
-You may find it surprising that the second choice works even though the Employee.java 
-file is never explicitly compiled. However , when the Java compiler sees the Employee 
-class being used inside EmployeeTest.java, it will look for a file named Employee.class. 
-If it does not find that file, it automatically searches for Employee.java and compi-
-les it. Moreover, if the timestamp of the version of Employee.java that it finds is -
-newer than that of the existing Employee.class file, the Java compiler will automati-
-cally recompile the file.
 -----------------------------------------------------------------------------------*/
