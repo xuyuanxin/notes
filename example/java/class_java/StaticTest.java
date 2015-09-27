@@ -54,18 +54,17 @@ public class StaticTest
  You can access this constant in your programs as Math.PI .
 
  ----> Static Methods
-	Static methods are methods that do not operate on objects. For example, the pow -
-	method of the Math class is a static method. The expression
-	    Math.pow(x, a)
-	computes the power x^a. It does not use any Math object to carry out its task. I-
-	n other words, it has no implicit parameter.
+ Static methods are methods that do not operate on objects. For example, the pow met-
+ hod of the Math class is a static method. The expression
+     Math.pow(x, a)
+ computes the power x^a. It does not use any Math object to carry out its task. In o-
+ ther words, it has no implicit parameter.
 
  It is legal to use an object to call a static method. For example, if harry is an  -
  Employee object,then you can call harry.getNextId() instead of Employee.getnextId(). 
  However, we find that notation confusing. The getNextId method doesn't look at harry 
  at all to compute the result. We recommend that you use class names, not objects, to 
  invoke static methods.
-
 
  ----> Use static methods in two situations:
  * When a method doesn't need to access the object state because all needed paramete-
@@ -152,7 +151,7 @@ class Employee
      NumberFormat percentFormatter = NumberFormat.getPercentInstance();
      double x = 0.1;
      System.out.println(currencyFormatter.format(x)); // prints $0.10
-     System.out.println(percentFormatter.format(x)); // prints 10%
+     System.out.println(percentFormatter.format(x));  // prints 10%
  Why doesn't the NumberFormat class use a constructor instead? There are two reasons:
  * You can't give names to constructors. The constructor name is always the same as -
  the class name. But we want two different names to get the currency instance and the 
@@ -160,5 +159,4 @@ class Employee
  * When you use a constructor, you can't vary the type of the constructed object. But 
  the factory methods actually return objects of the class DecimalFormat, a subclass -
  that inherits from NumberFormat. 
-
  ----------------------------------------------------------------------------------*/

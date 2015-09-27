@@ -1,0 +1,355 @@
+http://www.cnblogs.com/wangtao_20/archive/2014/04/04/3645690.html   linux中注册系统服务—service命令的原理通俗
+http://blog.csdn.net/firefoxbug/article/details/8393787             Linux注册系统服务
+
+
+linux中注册系统服务—service命令的原理通俗
+
+能够使用service命令进行操作的，就是已经注册成为linux的系统服务了。window中也可以注册成为系统服务的办法。
+
+ 
+
+service命令用的次数真不少，就是比较多的关联点，用了很多次了,还是有些地方没打通，云里雾里的。所以才梳理一下这个技术知识点，理顺思路。此时我觉得，很有必要理解service命令的原理性知识了。
+
+ 
+
+了解service命令的来龙去脉，在解决实际问题中的帮助，结合实际应用，我对以下问题有帮助：
+
+1、如果从网上下载一个新的软件，安装到linux上面去。想注册成系统服务,我需要自己编写一个shell脚本文件才行。这个脚本文件如何编写呢？如果不了解servcie命令的机制。会漏掉一些东西了。比如我之前下载的sphinx安装到服务器后。我想使用"service sphinx start"这样的简短命令来管理，就必须注册成为系统服务。而源码包中是没有提供写好的脚本的。必须自己写一个。
+
+知道了来龙去脉，可以减少依赖。像niginx、mysql我们都可以自己编写供servcie调用的脚本文件。
+
+2、使用chkconfig的先决条件。如果要进一步使用"chkconfig --level 3456 sphinx"来自由控制开启和关闭，那么前提必须实现有供调用的脚本文件(也就是这个服务要是系统服务可以让service调用)
+
+ 
+
+ 
+
+以"为什么要注册成为service服务"的角度来理解，这样做的好处是什么，从这里展开来理解。
+
+ 
+
+把一个程序(比如mysql、apache等)注册成系统服务的好处，通俗点理解我觉得包括两个方面：
+
+ 
+
+ 
+
+1、可以使用"service 服务名称"来进行管理，比如常常使用的命令”service httpd start”,就是httpd注册成为一个服务了，于是才不需要写一大串的原始服务路径。
+
+ 
+
+像sphinx的启动手工方式为:”/data/installsoft/sphinx-for-chinese/bin/searchd –c 配置文件”
+
+ 
+
+ 
+
+将sphinx注册成为系统服务后，就可以像"service sphinx start"来启动。
+
+ 
+
+注：sphinx是一个全文搜索服务。为方便理解，可以换成是mysql、apache也行。
+
+ 
+
+把”service sphinx”看成等价于"/data/installsoft/sphinx-for-chinese/bin/searchd"也可以。
+
+ 
+
+ 
+
+ 
+
+关联要点
+
+ 
+
+要把一个程序注册成系统服务，首先得给出一个供service命令调用的脚本文件放到目录"/etc/rc.d/init.d/"中去。
+
+ 
+
+/etc/rc.d/init.d/这个目录下其实就是很多脚本文件。看下面的截图，就是我服务器上列出的文件(其实都是一些shell脚本文件)
+
+ 
+
+ 
+
+ 
+
+现在疑问：这个脚本文件是一个shell文件，假设要自己编写这个脚本，里面要编写什么样的内容呢？
+
+ 
+
+ 
+
+联想一下常常使用的命令：service httpd start、service httpd stop。
+
+ 
+
+ 
+
+注册成系统服务是方便类似上面这样子调用。那么编写的shell脚本只要处理接受start参数应该干嘛，接收stop参数应该干嘛。
+
+ 
+
+实际上，脚本的内容是完全可以按照自己需要来编写。比如我在管理sphinx的时候。我需要重建索引，直接传递一个reindex参数就可以重建:”service sphinx reindex”。
+
+ 
+
+ 
+
+ 
+
+通俗点的理解方式
+
+ 
+
+我习惯于将”service httpd start” 将httpd理解成目录/etc/rc.d/init.d/下的脚本文件httpd(脚本文件与服务名称是同名的)，所以service httpd就是去调用/etc/rc.d/init.d/下的脚本文件httpd。
+
+而后面接着的start，则是向/etc/rc.d/init.d/httpd传递一个start参数。归纳一下如下：
+
+ 
+
+service httpd 等价 /etc/rc.d/init.d/httpd
+
+service httpd start 等价 /etc/rc.d/init.d/httpd  start
+
+service httpd stop 等价 /etc/rc.d/init.d/httpd  stop
+
+ 
+
+ 
+
+注：httpd是一个shell脚本
+
+ 
+
+ 
+
+具体接到这个start参数该如何处理，你爱干嘛就干嘛，你完全可以停掉服务，也可以启动服务。只是按照我们习惯，都是启动服务。
+
+ 
+
+我一般理解”service httpd start “ 命令执行的时候，会去目录”/etc/rc.d/init.d/”目录下寻找一个httpd的脚本文件。有同名文件，就表示服务存在，没有会提示服务不存在。可以试一下使用一个文件名不存在的服务:service jgj start，看看会提示什么信息。
+
+ 
+
+ 
+
+其实就是jgj这个文件不存在。在这个目录里面创建一个jgj文件，就不会告诉你，服务不存在。所以服务存在的条件是同名文件存在，哈哈。
+
+ 
+
+ 
+
+这个时候不会提示服务不存在，是没有执行权限
+
+增加一下执行权限，chmod +x jgj
+
+ 
+
+这个时候会执行jgj脚本文件里面的命令，里面是什么就执行什么，语法错了就报错。
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+具体例子：sphinx注册成系统服务
+
+ 
+
+ 
+
+原来我启动sphinx服务的命令为 “/data/install/sphinx-for-chinese/bin/searchd –c  /data/install/sphinx-for-chinese/ect/shpinx.conf”
+
+ 
+
+重建sphinx中的索引的命令为 “/data/install/sphinx-for-chinese/bin/indexer –c –c  /data/install/sphinx-for-chinese/ect/shpinx.conf  --all --rotate”
+
+ 
+
+实在太长了，其他不用管是干嘛的，只需要知道–c表示配置文件位置，它后面的值为” /data/install/sphinx-for-chinese/ect/shpinx.conf”
+
+ 
+
+如果我每次都需要这样子来操作，敲命令确实繁琐了。把sphinx加到系统服务中去。
+
+ 
+
+ 
+
+ 
+
+可以使用”service sphinx start”、”service sphinx reindex”很简短的命令来替代上面一大串。
+
+ 
+
+ 
+
+大体意思是，把上面一大串启动的命令和重建索引的命令都放到了/etc/rc.d/init.d/sphinx这个脚本文件中去了(为了通俗点才这么说,当然不是简单复制进去就可以，还要接收start、reindex这些参数)
+
+ 
+
+下面是我用在服务器上名sphinx脚本文件(/etc/rc.d/init.d/sphinx)
+
+ 
+
+ 
+
+# !/bin/bash
+
+# chkconfig:  - 85 15  
+
+# description: sphinx-for-chinese  service
+
+#processname:sphinx
+
+ 
+
+ROOT_PATH=/data/installsoft/sphinx-for-chinese
+
+ 
+
+case "$1" in
+
+start)
+
+echo "Starging sphinx Server..."
+
+$ROOT_PATH/bin/searchd  -c $ROOT_PATH/etc/sphinx.conf
+
+;;
+
+stop)
+
+echo "Stopping sphinx Server..."
+
+$ROOT_PATH/bin/searchd  --stop
+
+;;
+
+restart)
+
+$ROOT_PATH/bin/searchd  --stop
+
+ 
+
+$ROOT_PATH/bin/searchd  -c $ROOT_PATH/etc/sphinx.conf
+
+ 
+
+;;
+
+ 
+
+reindex)
+
+echo "reindexing..."
+
+$ROOT_PATH/bin/indexer -c $ROOT_PATH/etc/sphinx.conf --all --rotate
+
+ 
+
+;;
+
+ 
+
+*)
+
+echo "Usage: $0 {start|stop|restart|reindex}"
+
+exit 1
+
+;;
+
+ 
+
+esac
+
+ 
+
+exit 0
+
+ 
+
+ 
+
+解释：上面用了case语法。可以看到接收start参数进来的时候，执行的是：$ROOT_PATH/bin/searchd  -c $ROOT_PATH/etc/sphinx.conf
+
+ 
+
+ 以后我还需要增加一些 操作项，比如servcie sphinx kill，那么在脚本中继续添加一段接收kill参数的处理代码即可了。写到这里，我更加理解注册成为系统服务管理上的方便之处。
+
+ 
+
+ 
+
+ 
+
+2、注册成系统服务，还有一个好处。可以使用chkconfig命令来控制运行级别。也就是控制什么级别下面是开启还是运行。
+
+ 
+
+ 
+
+ 
+
+chkconfig –level sphinx 3456
+
+ 
+
+这个命令是设置在3、4、5、6运行级别下sphinx服务(也就是/etc/rc.d/init.d/sphinx这个脚本)是启动状态。
+
+ 
+
+我以前就比较纳闷，既然都是使用到/etc/rc.d/init.d/下的脚本文件。这个脚本文件内容完全是自己编写的，里面内容不一定有启动命令啊。如何使得chkconfig就可以开机启动服务了呢？
+
+ 
+
+每个启动级别在/etc/rc.d/下是有一个单独的目录：rc0.d、rc1.d………rc6.d
+
+ 
+
+ 
+
+直到从某个资料中下面介绍：
+
+ 
+
+S开始的文件向脚本传递start参数
+
+ 
+
+K开始的文件向脚本传递stop参数
+
+ 
+
+ 
+
+ 
+
+看到上面的话，顿时理解了。原来，向/etc/rc.d/init.d/sphinx传递start和stop参数来实现了。一句话：chkconfig配置的S85sphinx这些文件实际上就是传递一个参数给脚本文件/ect/rc.d/init.d/sphinx。这样很通俗的明白了。chkconfig来开机启动机制了，在开机的时候，传递参数给脚本文件。
+
+ 
+
+ 
+
+那么现在明白，自己编写的服务脚本，也必须实现接受start和stop两个参数的处理才行。
+
+ 
+
+ 
+
+service与chkconfig的关系归纳为：
+
+先要注册成为系统服务(即service可以调用)，然后才能使用chkconfig控制运行级别。
+
+service是chkconfig的前提条件。

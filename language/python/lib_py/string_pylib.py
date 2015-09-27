@@ -1,4 +1,11 @@
 '''
+http://blog.csdn.net/xiaoxiaoniaoer1/article/details/8542834
+
+
+
+'''
+
+'''
 ----> String Formatting
 To the left of the %, you place a string (the format string); to the right of it, yo-
 u place the value you want to format. You can use a single value such as a string  or 

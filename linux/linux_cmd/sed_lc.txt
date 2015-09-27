@@ -1,0 +1,50 @@
+http://blog.chinaunix.net/uid-25505925-id-3321133.html  sed 变量替换 
+
+
+
+
+通常我们使用sed的时候使用单引号
+
+
+点击(此处)折叠或打开
+$echo "aaaa" | sed -n 's/aaaa/bbbb/p'
+bbbb
+
+
+但是如果我们想使用变量来替换呢？
+
+
+点击(此处)折叠或打开
+b=bbbb
+$echo "aaaa" | sed -n 's/aaaa/$b/p'
+$b
+
+
+没有被替换，输出是$b。  单引号中$b  shell 没有解释并替换
+那我们可以将单引号换成双引号
+
+
+点击(此处)折叠或打开
+echo "aaaa" | sed -n "s/aaaa/$b/p" 
+bbbb
+
+
+如果
+b=bbbb/bbbb
+在进行替换呢？
+
+
+点击(此处)折叠或打开
+echo "aaaa" | sed -n "s/aaaa/$b/p"
+sed: -e expression #1, char 13: unknown option to `s
+
+
+？如何解决呢；$b中的/被用作了s命令匹配
+将sed中/ 替换成# 就行了
+
+
+点击(此处)折叠或打开
+echo "aaaa" | sed -n "s#aaaa#$b#p" 
+bbbb/bbbb
+
+

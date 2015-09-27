@@ -3,6 +3,164 @@
 ---->====> 1.1
 ---->====>####> 1.1.1
 
+
+----> Attributes, Functions, and Methods
+The self parameter is, in fact, what distinguishes methods from functions. Methods (-
+or, more technically, bound methods) have their first parameter bound to the instance 
+they belong to, so you don’t have to supply it. While you can certainly bind an attr-
+ibute to a plain function, it won’t have that special self parameter:
+>>> class Class:
+        def method(self):
+            print 'I have a self!'
+>>> def function():
+print "I don't..."
+>>> instance = Class()
+>>> instance.method()
+I have a self!
+>>> instance.method = function
+>>> instance.method()
+I don't...
+Note that the self parameter is not dependent on calling the method the way I’ve done
+until now, as instance.method. You’re free to use another variable that refers to the 
+same method:
+>>> class Bird:
+song = 'Squaawk!'
+def sing(self):
+print self.song
+>>> bird = Bird()
+>>> bird.sing()
+Squaawk!
+>>> birdsong = bird.sing
+>>> birdsong()
+Squaawk!
+Even though the last method call looks exactly like a function call, the variable   -
+birdsong refers to the bound method bird.sing, which means that it still has access -
+to the self parameter (that is, it is still bound to the same instance of the class).
+
+----> The Class Namespace
+The following two statements are (more or less) equivalent:
+    def foo(x): return x*x
+    foo = lambda x: x*x
+Both create a function that returns the square of its argument, and both bind the va-
+riable foo to that function. The name foo may be defined in the global (module) scop-
+e, or it may be local to some function or method. The same thing happens when you de-
+fine a class: all the code in the class statement is executed in a special  namespace 
+, the class namespace.This namespace is accessible later by all members of the class. 
+Not all Python programmers know that class definitions are simply code sections  that 
+are executed, but it can be useful information. For example, you aren’t restricted to 
+def statements inside the class definition block:
+>>> class C:
+print 'Class C being defined...'
+Class C being defined...
+>>>
+Okay, that was a bit silly. But consider the following:
+class MemberCounter:
+members = 0
+def init(self):
+MemberCounter.members += 1
+>>> m1 = MemberCounter()
+>>> m1.init()
+>>> MemberCounter.members
+1
+>>> m2 = MemberCounter()
+>>> m2.init()
+>>> MemberCounter.members
+2
+In the preceding code, a variable is defined in the class scope, which can be access-
+ed by all the members (instances), in this case to count the number of class members. 
+Note the use of init to initialize all the instances: I’ll automate that (that is, t-
+urn it into a proper constructor) in Chapter 9.
+This class scope variable is accessible from every instance as well, just as  methods 
+are:
+>>> m1.members
+2
+>>> m2.members
+2
+What happens when you rebind the members attribute in an instance?
+>>> m1.members = 'Two'
+>>> m1.members
+'Two'
+>>> m2.members
+2
+The new members value has been written into an attribute in m1, shadowing the       -
+class-wide variable. This mirrors the behavior of local and global variables in func-
+tions, as discussed in the sidebar "The Problem of Shadowing" in Chapter 6.
+
+----> Specifying a Superclass
+subclasses expand on the definitions in their superclasses. You indicate the supercl-
+ass in a class statement by writing it in parentheses after the class name:
+class Filter:
+    def init(self):
+    self.blocked = []
+    def filter(self, sequence):
+        return [x for x in sequence if x not in self.blocked]
+
+class SPAMFilter(Filter): # SPAMFilter is a subclass of Filter
+    def init(self): # Overrides init method from Filter superclass
+        self.blocked = ['SPAM']
+
+Note two important points in the definition of SPAMFilter:
+1 I override the definition of init from Filter by simply providing a new definition.
+2 The definition of the filter method carries over (is inherited) from Filter, so yo-
+  u don’t need to write the definition again.
+
+>>> issubclass(SPAMFilter, Filter)
+True
+>>> issubclass(Filter, SPAMFilter)
+False
+>>> SPAMFilter.__bases__
+(<class __main__.Filter at 0x171e40>,)
+>>> Filter.__bases__
+()
+>>> s = SPAMFilter()
+>>> isinstance(s, SPAMFilter)
+True
+>>> isinstance(s, Filter)
+True
+>>> isinstance(s, str)
+False
+>>> s.__class__
+<class __main__.SPAMFilter at 0x1707c0>
+
+----> Multiple Superclasses
+classes:
+    class Calculator:
+        def calculate(self, expression):
+        self.value = eval(expression)
+
+class Talker:
+    def talk(self):
+        print 'Hi, my value is', self.value
+
+class TalkingCalculator(Calculator, Talker):
+    pass
+
+The subclass (TalkingCalculator) does nothing by itself; it inherits all its behavior 
+from its superclasses. The point is that it inherits both calculate from Calculator -
+and talk from Talker, making it a talking calculator:
+>>> tc = TalkingCalculator()
+>>> tc.calculate('1+2*3')
+>>> tc.talk()
+Hi, my value is 7
+
+This is called multiple inheritance, and can be a very powerful tool. However, unles-
+s you know you need multiple inheritance, you may want to stay away from it, as it c-
+an, in some cases, lead to unforeseen complications.
+If you are using multiple inheritance, there is one thing you should look out for: i-
+f a method is implemented differently by two or more of the superclasses (that is, y-
+ou have two different methods with the same name), you must be careful about the ord-
+er of these superclasses (in the class statement). The methods in the earlier classes 
+override the methods in the later ones. So if the Calculator class in the preceding -
+example had a method called talk, it would override (and make inaccessible) the  talk 
+method of the Talker. Reversing their order,
+like this:
+class TalkingCalculator(Talker, Calculator): pass
+would make the talk method of the Talker accessible. If the superclasses share a com-
+mon superclass, the order in which the superclasses are visited while looking for a -
+given attribute or method is called the method resolution order (MRO), and follows  a 
+rather complicated algorithm. Luckily, it works very well, so you probably don’t need 
+to worry about it.
+  
 +-----------------------------------------------------------------------------------+|
 |-->-->-->-->-->-->-->-->-->-->-->-->      类 基础         <--<--<--<--<--<--<--<-- ||
 +-----------------------------------------------------------------------------------+|

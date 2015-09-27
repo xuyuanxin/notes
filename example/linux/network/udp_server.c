@@ -13,8 +13,9 @@
  1 this function never terminates. Since UDP is a connectionless protocol, there 
    is nothing like an EOF as we have with TCP.
  2 this function provides an iterative server, not a concurrent server as we had with 
-   TCP.There is no call to fork,so a single server process handles any and all clients. 
-   In general, most TCP servers are concurrent and most UDP servers are iterative. 
+   TCP. There is no call to fork, so a single server process handles any and all cli-
+   ents. In general, most TCP servers are concurrent and most UDP servers are iterat-
+   ive. 
    
  Each UDP socket has a receive buffer and each datagram that arrives for this  socket 
  is placed in that socket receive buffer. When the process calls recvfrom, the next -
@@ -42,10 +43,11 @@ void dg_echo(int sockfd, struct sockaddr  *pcliaddr, socklen_t clilen)
 		}
 
 		if(n != sendto(sockfd, mesg, n, 0, pcliaddr, len))
+		{
 			printf("\r\nudp server error sendto fail!");
+		}
 	}
 }
-
 
 int main(int argc, char **argv)
 {
