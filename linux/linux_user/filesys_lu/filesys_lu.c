@@ -293,20 +293,33 @@ int rmdir(const char *pathname);
  I/O library, which we describe in Chapter 5.
 *******************************************************************************/
 
+/*-----------------------------------------------------------------------------------
+ The opendir() function opens a directory stream corresponding to the directory     -
+ @pathname, and returns a pointer to the directory stream. The stream is positioned -
+ at the first entry in the directory.
 
-
-/*return: pointer if OK, NULL on error*/
+ return: pointer if OK, NULL on error
+-----------------------------------------------------------------------------------*/
 DIR *opendir(const char *pathname);
 
 /*return: pointer if OK, NULL on error*/
 DIR *fdopendir(int fd);
 
-/*Returns: pointer if OK, NULL at end of directory or error*/
+/*-----------------------------------------------------------------------------------
+ The readdir() function returns a pointer to a @dirent structure representing the ne-
+ xt directory entry in the directory stream pointed to by @dp. It returns NULL on re-
+ aching the end of the directory stream or if an error occurred.
+ ----------------------------------------------------------------------------------*/
 struct dirent *readdir(DIR *dp);
 
 void rewinddir(DIR *dp);
 
-/*Returns: 0 if OK, -1 on error*/
+/*-----------------------------------------------------------------------------------
+ The closedir() function closes the directory stream associated with @dp. A successf-
+ ul call to closedir() also closes the underlying file descriptor associated with @dp
+ . The directory stream descriptor @dp is not available after this call. The function 
+ returns 0 on success.  On error, -1 is returned, and errno is set appropriately.
+ ----------------------------------------------------------------------------------*/
 int closedir(DIR *dp);
 
 /*Returns: current location in directory associated with dp*/

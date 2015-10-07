@@ -77,6 +77,8 @@ print 'After pack:',binascii.hexlify(prebuffer)
 print s1.unpack_from(prebuffer,0)
 print s2.unpack_from(prebuffer,s1.size)
 
-
+a = 3
+s3 = struct.Struct('I3s')
+print 'size:',s3.size
 
 

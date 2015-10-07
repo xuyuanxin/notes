@@ -6,12 +6,12 @@ https://en.wikipedia.org/wiki/C_string_handling
 */
 
 /*-----------------------------------------------------------------------------------
- Returns the length of the C string str. The length of a C string is determined by t-
- he terminating null-character: A C string is as long as the number of characters be-
- tween the beginning of the string and the terminating null character (without inclu-
+ Returns the length of the C string @str. The length of a C string is determined by -
+ the terminating null-character: A C string is as long as the number of characters b-
+ etween the beginning of the string and the terminating null character (without inclu-
  ding the terminating null character itself).
  ----------------------------------------------------------------------------------*/
-size_t strlen ( const char * str );
+size_t strlen ( const char *str );
 
 /*-----------------------------------------------------------------------------------
 功能：把src所指由NULL结束的字符串的前n个字节复制到dst所指的数组中。

@@ -42,6 +42,24 @@ p         char[]                string
 P         void *                integer                               (5), (3)
 
 
+
+http://blog.csdn.net/happen23/article/details/44728015
+
+fp = open('house.db', 'wb+')  
+recv_cnt = 0  
+while True:  
+    rx_buf = sock.recv(4096)  
+    len_buf = len(rx_buf)  
+    if len_buf ==0:  
+        break  
+    if recv_cnt == 0:  
+        cmd_word, data_len_total = struct.unpack(rx_buf[0:8])  
+        buf = buffer(rx_buf, 8, len_buf - 8)  
+        fp.write(buf)  
+    else:  
+        buf = buffer(rx_buf)  
+        fp.write(buf)  
+    recv_cnt = recv_cnt +1  
 '''
 
 
