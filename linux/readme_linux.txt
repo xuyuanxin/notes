@@ -9,3 +9,9 @@ linux_kernel
 
 linux_cmd
   命令
+  
+  
+1 进程管理
+1.1 注册为demo进程
+    process_la.txt
+	service_lc.txt

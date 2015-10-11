@@ -2,3 +2,7 @@
 
 ----> net
 route
+
+----> 包管理
+rpm
+zypper(suse)
