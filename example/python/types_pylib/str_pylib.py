@@ -34,3 +34,29 @@ print delimiter.join(mylist)
 #Yes, it contains the string "a"
 #Yes, it contains the string "war"
 #Brazil_*_Russia_*_India_*_China 
+
+
+
+
+#!/usr/bin/python
+
+
+
+'''
+5
+5
+-1
+2
+2
+-1
+'''
+str = "this is really a string example....wow!!!";
+str = "is";
+
+print str.rfind(str);
+print str.rfind(str, 0, 10);
+print str.rfind(str, 10, 0);
+
+print str.find(str);
+print str.find(str, 0, 10);
+print str.find(str, 10, 0);
