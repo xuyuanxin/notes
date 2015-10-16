@@ -8,3 +8,8 @@
 fileinput: Iterate over lines from multiple input streams
 
 file_io_py.py
+
+
+----> ∂‡œﬂ≥Ã
+thread_pylib_eg.py
+
