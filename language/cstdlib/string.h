@@ -23,6 +23,25 @@ size_t strlen ( const char *str );
 char *strncpy(char *dst, const char *src, size_t n);
 
 /*-----------------------------------------------------------------------------------
+ @str1: C string to be compared.
+ @str2: C string to be compared.
+ @num : Maximum number of characters to compare.
+ @Return
+ return value	 indicates
+ <0  the first character that does not match has a lower value in str1 than in str2
+ =0	 the contents of both strings are equal
+ >0  the first character that does not match has a greater value in str1 than in str2
+
+ Compare characters of two strings. Compares up to @num characters of the C string  -
+ @str1 to those of the C string @str2. This function starts comparing the first char-
+ acter of each string. If they are equal to each other, it continues with the follow-
+ ing pairs until the characters differ,until a terminating null-character is reached, 
+ or until num characters match in both strings, whichever happens first.
+ ----------------------------------------------------------------------------------*/
+int strncmp ( const char * str1, const char * str2, size_t num );
+
+
+/*-----------------------------------------------------------------------------------
  @str
     C string to truncate. Notice that this string is modified by being broken into s-
     maller strings (tokens). Alternativelly, a null pointer may be specified, in whi-
@@ -199,4 +218,22 @@ the string pointed to by s1. The returned pointer can be passed to free(). A nul
 inter is returned if the new string cannot be created.
 -----------------------------------------------------------------------------------*/
 char *strdup(const char *s1);
+
+
+
+
+
+
+
+/*----------------------------------------------------------------------------------- 
+ strlwr()和strupr()不是标准库函数，只能在windows下（VC、MinGW等）使用，Linux GCC中需
+ 要自己定义。
+ strupr()用于将字符串中的字符转换为小写
+ strlwr()用于将字符串中的字符转换为小写
+
+ http://c.biancheng.net/cpp/html/2716.html
+ -----------------------------------------------------------------------------------*/
+char *strupr(char *str);
+char *strlwr(char *str);
+
 

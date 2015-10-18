@@ -1,39 +1,133 @@
 
 '''
-----> positional parameters, Keyword Parameters and Defaults
+----> positional parameters, Keyword Parameters
+ |def hello_1(greeting, name):
+ |  print '%s, %s!' % (greeting, name)
 
+ @greeting @name are called positional parameters because their positions are import-
+ ant. 
+ 
+ hello_1('a','b') 
+ hello_1('b','a')   # print not same
+ 
+ hello_1(name='world', greeting='Hello')
+ hello_1(greeting='Hello', name='world') # print same
+
+ The parameters that are supplied with a name like this are called keyword parameters. 
+
+ |def hello_3(greeting='Hello', name='world'):
+ |   print '%s, %s!' % (greeting, name)
+
+ When a parameter has a default value like this, you don’t need to supply it when you 
+ call the function! You can supply none, some, or all, as the situation might dictat-
+ e:
+ >>> hello_3()
+ Hello, world!
+ >>> hello_3('Greetings')
+ Greetings, world!
+ >>> hello_3('Greetings', 'universe')
+ Greetings, universe!
+ >>> hello_3(name='Gumby')
+ Hello, Gumby!
+
+ |def hello_4(name, greeting='Hello', punctuation='!'):
+ |    print '%s, %s%s' % (greeting, name, punctuation)
+ This function can be called in many ways. Here are some of them:
+ >>> hello_4('Mars')
+ Hello, Mars!
+ >>> hello_4('Mars', 'Howdy')
+ Howdy, Mars!
+ >>> hello_4('Mars', 'Howdy', '...')
+ Howdy, Mars...
+ >>> hello_4('Mars', punctuation='.')
+ Hello, Mars.
+ >>> hello_4('Mars', greeting='Top of the morning to ya')
+ Top of the morning to ya, Mars!
+ >>> hello_4()
+ Traceback (most recent call last):
+ File "<pyshell#64>", line 1, in ?
+ hello_4()
+ TypeError: hello_4() takes at least 1 argument (0 given)
+ 
 ----> Collecting Parameters
-def print_params(*params):
-    print params
-The star in front of the parameter puts all the values into the same tuple. It gathe-
-rs them up, so to speak. 
->>> print_params(1, 2, 3)
-(1, 2, 3)
+ |def print_params(*params):
+ |  print params
+ The star in front of the parameter puts all the values into the same tuple. It gath-
+ ers them up, so to speak. 
+ >>> print_params(1, 2, 3)
+ (1, 2, 3)
 
-def print_params_3(**params):
-    print params
->>> print_params_3(x=1, y=2, z=3)
-{'z': 3, 'x': 1, 'y': 2}
-Yep, we get a dictionary rather than a tuple. 
+ |def print_params_3(**params):
+ |   print params
+ >>> print_params_3(x=1, y=2, z=3)
+ {'z': 3, 'x': 1, 'y': 2}
+ Yep, we get a dictionary rather than a tuple. 
 
-----> Reversing the Process
-Now you’ve learned about gathering up parameters in tuples and dictionaries, but it -
-is in fact possible to do the "opposite" as well, with the same two operators, *  and 
-**. This is simply done by using the * or ** operator at the "other end" — that is, -
-when calling the function rather than when defining it.
------------------------------
-def add(x, y): return x + y
-params = (1, 2) 
->>> add(*params)
-3
------------------------------
-You can use the same technique with dictionaries, using the ** operator.
------------------------------ 
-def print_params_3(**params): print params
->>> params = {'name': 'Sir Robin', 'greeting': 'Well met'}
->>> hello_3(**params)
-Well met, Sir Robin!
------------------------------
+ Reversing the Process
+ Now you’ve learned about gathering up parameters in tuples and dictionaries, but  it 
+ is in fact possible to do the "opposite" as well, with the same two operators, * and 
+ **. This is simply done by using the * or ** operator at the "other end" — that is ,
+ when calling the function rather than when defining it. 
+ |def add(x, y): return x + y
+ params = (1, 2) 
+ >>> add(*params)
+ 3
+ You can use the same technique with dictionaries, using the ** operator.
+ def print_params_3(**params): print params
+ >>> params = {'name': 'Sir Robin', 'greeting': 'Well met'}
+ >>> hello_3(**params)
+ Well met, Sir Robin!
+
+----> Can I Change a Parameter
+ Parameters are kept in what is called a local scope
+ >>> def try_to_change(n):
+ n = 'Mr. Gumby'
+ >>> name = 'Mrs. Entity'
+ >>> try_to_change(name)
+ >>> name
+ 'Mrs. Entity'
+ It’s just as if you did something like this:
+ >>> name = 'Mrs. Entity'
+ >>> n = name # This is almost what happens when passing a parameter
+ >>> n = 'Mr. Gumby' # This is done inside the function
+ >>> name
+ 'Mrs. Entity'
+ But consider what happens if you use a mutable data structure such as a list:
+ >>> def change(n):
+ n[0] = 'Mr. Gumby'
+ >>> names = ['Mrs. Entity', 'Mrs. Thing']
+ >>> change(names)
+ >>> names
+ ['Mr. Gumby', 'Mrs. Thing']
+ Let’s do it again without the function call:
+ >>> names = ['Mrs. Entity', 'Mrs. Thing']
+ >>> n = names # Again pretending to pass names as a parameter
+ >>> n[0] = 'Mr. Gumby' # Change the list
+ >>> names
+ ['Mr. Gumby', 'Mrs. Thing']
+ You’ve seen this sort of thing before. When two variables refer to the same list,  -
+ they . . . refer to the same list. It’s really as simple as that. If you want to av-
+ oid this, you must make a copy of the list. When you do slicing on a sequence, the -
+ returned slice is always a copy. Thus, if you make a slice of the entire list, you -
+ get a copy:
+ >>> names = ['Mrs. Entity', 'Mrs. Thing']
+ >>> n = names[:]
+ Now n and names contain two separate (nonidentical) lists that are equal:
+ >>> n is names
+ False
+ >>> n == names
+ True
+ If you change n now (as you did inside the function change), it won’t affect names:
+ >>> n[0] = 'Mr. Gumby'
+ >>> n
+ ['Mr. Gumby', 'Mrs. Thing']
+ >>> names
+ ['Mrs. Entity', 'Mrs. Thing']
+ Let’s try this trick with change:
+ >>> change(names[:])
+ >>> names
+ ['Mrs. Entity', 'Mrs. Thing']
+ Now the parameter n contains a copy, and your original list is safe.
 
 ----> Scoping
 What are variables, really? You can think of them as names referring to values. So, -
