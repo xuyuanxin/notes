@@ -1,0 +1,251 @@
+
+nohup命令参考
+
+nohup 命令
+
+　　用途：不挂断地运行命令。
+
+　　语法：nohup Command [ Arg ... ] [　& ]
+
+　　描述：nohup 命令运行由 Command 参数和任何相关的 Arg 参数指定的命令，忽略所有挂断（SIGHUP）信号。在注销后使用 nohup 命令运行后台中的程序。要运行后台中的 nohup 命令，添加 & （ 表示"and"的符号）到命令的尾部。
+
+　　无论是否将 nohup 命令的输出重定向到终端，输出都将附加到当前目录的 nohup.out 文件中。如果当前目录的 nohup.out 文件不可写，输出重定向到 $HOME/nohup.out 文件中。如果没有文件能创建或打开以用于追加，那么 Command 参数指定的命令不可调用。如果标准错误是一个终端，那么把指定的命令写给标准错误的所有输出作为标准输出重定向到相同的文件描述符。
+
+　　退出状态：该命令返回下列出口值：
+
+　　126 可以查找但不能调用 Command 参数指定的命令。
+
+　　127 nohup 命令发生错误或不能查找由 Command 参数指定的命令。
+
+　　否则，nohup 命令的退出状态是 Command 参数指定命令的退出状态。
+
+　　nohup命令及其输出文件
+
+　　nohup命令：如果你正在运行一个进程，而且你觉得在退出帐户时该进程还不会结束，那么可以使用nohup命令。该命令可以在你退出帐户/关闭终端之后继续运行相应的进程。nohup就是不挂起的意思( n ohang up)。
+
+　　该命令的一般形式为：nohup command &
+
+　　使用nohup命令提交作业
+
+　　如果使用nohup命令提交作业，那么在缺省情况下该作业的所有输出都被重定向到一个名为nohup.out的文件中，除非另外指定了输出文件：
+
+　　nohup command > myout.file 2>&1 &
+
+　　在上面的例子中，输出被重定向到myout.file文件中。
+
+　　使用 jobs 查看任务。
+
+　　使用 fg %n　关闭。
+
+　　另外有两个常用的ftp工具ncftpget和ncftpput，可以实现后台的ftp上传和下载，这样就可以利用这些命令在后台上传和下载文件了。 
+
+
+
+
+                                                                                     |
+#if 2 nohup命令及其输出文件                                                          |
+http://blog.sina.com.cn/s/blog_700e11ff01011ny0.html
+如果你正在运行一个进程，而且你觉得在退出帐户时该进程还不会结束，那么可以使用nohup命令。该命令可以在你退出帐户/关闭终端之后继续运行相应的进程。nohup就是不挂起的意思( n ohang up)。
+该命令的一般形式为：nohup command &
+
+ls xxx 1>out.txt 2>&1
+nohup /mnt/Nand3/H2000G >/dev/null 2>&1 &
+对 于& 1 更准确的说应该是文件描述符 1,而1 一般代表的就是STDOUT_FILENO,实际上这个操作就是一个dup2(2)调用.他标准输出到all_result ,然后复制标准输出到文件描述符2(STDERR_FILENO),其后果就是文件描述符1和2指向同一个文件表项,也可以说错误的输出被合并了.其中0 表示键盘输入 1表示屏幕输出 2表示错误输出.把标准出错重定向到标准输出,然后扔到/DEV/NULL下面去。通俗的说，就是把所有标准输出和标准出错都扔到垃圾桶里面。
+command >out.file 2>&1 &
+command >out.file是将command的输出重定向到out.file文件，即输出内容不打印到屏幕上，而是输出到out.file文件中。 2>&1 是将标准出错重定向到标准输出，这里的标准输出已经重定向到了out.file文件，即将标准出错也输出到out.file文件中。最后一个& ， 是让该命令在后台执行。
+
+试想2>1代表什么，2与>结合代表错误重定向，而1则代表错误重定向到一个文件1，而不代表标准输出；
+换成2>&1，&与1结合就代表标准输出了，就变成错误重定向到标准输出.
+
+你可以用
+ls 2>1测试一下，不会报没有2文件的错误，但会输出一个空的文件1；
+ls xxx 2>1测试，没有xxx这个文件的错误输出到了1中；
+ls xxx 2>&1测试，不会生成1这个文件了，不过错误跑到标准输出了；
+ls xxx >out.txt 2>&1, 实际上可换成 ls xxx 1>out.txt 2>&1；重定向符号>默认是1,错误和输出都传到out.txt了。
+       为何2>&1要写在后面？
+       command > file 2>&1
+首先是command > file将标准输出重定向到file中， 2>&1 是标准错误拷贝了标准输出的行为，也就是同样被重定向到file中，最终结果就是标准输出和错误都被重定向到file中。
+command 2>&1 >file
+2>&1 标准错误拷贝了标准输出的行为，但此时标准输出还是在终端。>file 后输出才被重定向到file，但标准错误仍然保持在终端。
+
+用strace可以看到：
+1. command > file 2>&1
+这个命令中实现重定向的关键系统调用序列是：
+open(file) == 3
+dup2(3,1)
+dup2(1,2)
+
+2. command 2>&1 >file
+这个命令中实现重定向的关键系统调用序列是：
+dup2(1,2)
+open(file) == 3
+dup2(3,1)
+
+为什么要用 /dev/null 2>&1 这样的写法.这条命令的意思是将标准输出和错误输出全部重定向到/dev/null中,也就是将产生的所有信息丢弃.下面我就为大家来说一下, command > file 2>file   与command > file 2>&1 有什么不同的地方.
+首先~command > file 2>file 的意思是将命令所产生的标准输出信息,和错误的输出信息送到file 中.command   > file 2>file 这样的写法,stdout和stderr都直接送到file中, file会被打开两次,这样stdout和stderr会互相覆盖,这样写相当使用了FD1和FD2两个同时去抢占file 的管道.
+而command >file 2>&1 这条命令就将stdout直接送向file, stderr 继承了FD1管道后,再被送往file,此时,file 只被打开了一次,也只使用了一个管道FD1,它包括了stdout和stderr的内容.
+从IO效率上,前一条命令的效率要比后面一条的命令效率要低,所以在编写shell脚本的时候,较多的时候我们会用command > file 2>&1 这样的写法.
+#endif
+
+
+
+
+
+
+
+
+
+http://www.cnblogs.com/itech/archive/2012/03/04/2379523.html
+ 
+
+如果想在关闭ssh连接后刚才启动的程序继续运行怎么办，可以使用nohup。但是如果要求第二天来的时候，一开ssh，还能查看到昨天运行的程序的状态，然后继续工作，这时nohup是不行了，需要使用screen来达到这个目的。
+ 
+
+nohup命令可以用来执行其他命令，并且忽略SIGHUP信号（run a command immune to hangups, with output to a non-tty。Run COMMAND, ignoring hangup signals.）当一个虚拟终端的网络连接断开时，操作系统向正在运行的程序发送SIGHUP信号（HUP = HangUP、挂断），默认情况下这个信号将使程序退出。
+ 
+一 nohup
+ 
+
+问题1为什么ssh一关闭，程序就不再运行了？
+元凶：SIGHUP 信号 
+让我们来看看为什么关掉窗口/断开连接会使得正在运行的程序死掉。
+ 
+
+在Linux/Unix中，有这样几个概念：
+进程组（process group）：一个或多个进程的集合，每一个进程组有唯一一个进程组ID，即进程组长进程的ID。
+会话期（session）：一个或多个进程组的集合，有唯一一个会话期首进程（session leader）。会话期ID为首进程的ID。
+会话期可以有一个单独的控制终端（controlling terminal）。与控制终端连接的会话期首进程叫做控制进程（controlling process）。当前与终端交互的进程称为前台进程组。其余进程组称为后台进程组。
+根据POSIX.1定义：
+挂断信号（SIGHUP）默认的动作是终止程序。
+当终端接口检测到网络连接断开，将挂断信号发送给控制进程（会话期首进程）。
+如果会话期首进程终止，则该信号发送到该会话期前台进程组。
+一个进程退出导致一个孤儿进程组中产生时，如果任意一个孤儿进程组进程处于STOP状态，发送SIGHUP和SIGCONT信号到该进程组中所有进程。
+结论：因此当网络断开或终端窗口关闭后，也就是SSH断开以后，控制进程收到SIGHUP信号退出，会导致该会话期内其他进程退出。
+ 
+简而言之：就是ssh 打开以后，bash等都是他的子程序，一旦ssh关闭，系统将所有相关进程杀掉！！ 导致一旦ssh关闭，执行中的任务就取消了
+ 
+ 
+例子：
+我们来看一个例子。打开两个SSH终端窗口，在其中一个运行top命令。
+[root@tivf09 root]# top
+ 
+在另一个终端窗口，找到top的进程ID为5180，其父进程ID为5128，即登录shell。
+[root@tivf09 root]# ps -ef|grep top
+root      5180  5128  0 01:03 pts/0    00:00:02 top
+root      5857  3672  0 01:12 pts/2    00:00:00 grep top
+ 
+使用pstree命令可以更清楚地看到这个关系：
+[root@tivf09 root]# pstree -H 5180|grep top
+|-sshd-+-sshd---bash---top
+           
+ 
+使用ps-xj命令可以看到，登录shell（PID 5128）和top在同一个会话期，shell为会话期首进程，所在进程组PGID为5128，top所在进程组PGID为5180，为前台进程组。
+[root@tivf09 root]# ps -xj|grep 5128
+ 5126  5128  5128  5128 pts/0     5180 S        0   0:00 -bash
+ 5128  5180  5180  5128 pts/0     5180 S        0   0:50 top
+ 3672 18095 18094  3672 pts/2    18094 S        0   0:00 grep 5128
+ 
+关闭第一个SSH窗口，在另一个窗口中可以看到top也被杀掉了。
+[root@tivf09 root]# ps -ef|grep 5128
+root     18699  3672  0 04:35 pts/2    00:00:00 grep 5128
+ 
+问题2   为什么守护程序就算ssh 打开的，就算关闭ssh也不会影响其运行？ 
+因为他们的程序特殊，比如httpd –k start运行这个以后，他不属于sshd这个进程组  而是单独的进程组，所以就算关闭了ssh，和他也没有任何关系！ 
+[root@CentOS5-4 ~]# pstree |grep http
+     |-httpd
+[root@CentOS5-4 ~]# pstree |grep top
+     |-sshd-+-sshd---bash---top
+ 
+ 
+结论：守护进程的启动命令本身就是特殊的，和一般命令不同的，比如mysqld_safe 这样的命令 一旦使用了  就是守护进程运行。所以想把一般程序改造为守护程序是不可能，
+ 
+问题3 使用后台运行命令&  能否将程序摆脱ssh进程组控制呢  也就是ssh关闭，后台程序继续运行？ 
+我们做一个试验:  find / -name ‘*http*’ &
+利用ctrl+d 注销以后 再进入系统  会不会看见这个命令再运行?
+答案是  :命令被中止了!!
+ 
+因为他依然属于这个ssh进程组 就算加了&也无法摆脱！！
+[root@CentOS5-4 ~]# pstree |grep find
+     |-sshd-+-sshd---bash---find
+ 
+结论就是：只要是ssh 打开执行的一般命令，不是守护程序，无论加不加&，一旦关闭ssh，系统就会用SIGHUP终止
+ 
+问题4  nohup能解决的问题
+但是为了能够再注销以后 依然能后台运行，那么我们就可以使用nohup这个命令，我们现在开始查找find / -name ‘*http*’ &
+，并且希望在后台运行，
+那么就使用nohup：nohup find / -name "*httpd*"
+此时默认地程序运行的输出信息放到当前文件夹的 nohup.out 文件中去
+加不加&并不会影响这个命令   只是让程序 前台或者后台运行而已 
+ 
+二 screen
+ 
+
+虽然nohup很容易使用，但还是比较“简陋”的，对于简单的命令能够应付过来，对于复杂的需要人机交互的任务就麻烦了。
+其实我们可以使用一个更为强大的实用程序screen。流行的Linux发行版（例如Red Hat Enterprise Linux 4）通常会自带screen实用程序，如果没有的话，可以从GNU screen的官方网站下载。
+ 
+
+ 1）使用
+执行screen ， 按任意键进入子界面;
+我用ping命令开始执行,如果下班了，但是想关闭ssh以后ping继续运行，那么按ctrl+a   再按d   这样暂停了子界面，会显示[detached]的字样，这时候 我回到了父界面；
+用screen –ls查看目前子界面的状态 screen -ls
+There is a screen on: 22292.pts-3.free (Detached)
+1 Socket in /tmp/screens/S-root，这里的22292其实是子界面的pid号；
+ 
+如果回到子界面 用screen –r 22292，一下子弹到了ping 的子界面；
+ 
+2）更多帮助 
+可以通过C-a（ctrl+a） ?来查看所有的键绑定，常用的键绑定有：
+ 
+C-a ?
+显示所有键绑定信息
+C-a w
+显示所有窗口列表
+C-a C-a
+切换到之前显示的窗口
+C-a c
+创建一个新的运行shell的窗口并切换到该窗口
+C-a n
+切换到下一个窗口
+C-a p
+切换到前一个窗口(与C-a n相对)
+C-a 0..9
+切换到窗口0..9
+C-a a
+发送 C-a到当前窗口
+C-a d
+暂时断开screen会话
+C-a k
+杀掉当前窗口
+C-a [
+进入拷贝/回滚模式
+ 
+其他常用选项：
+ 
+-c file
+使用配置文件file，而不使用默认的$HOME/.screenrc
+-d|-D [pid.tty.host]
+不开启新的screen会话，而是断开其他正在运行的screen会话
+-h num
+指定历史回滚缓冲区大小为num行
+-list|-ls
+列出现有screen会话，格式为pid.tty.host
+-d -m
+启动一个开始就处于断开模式的会话
+-r sessionowner/ [pid.tty.host]
+重新连接一个断开的会话。多用户模式下连接到其他用户screen会话需要指定sessionowner，需要setuid-root权限
+-S sessionname
+创建screen会话时为会话指定一个名字
+-v
+显示screen版本信息
+-wipe [match]
+同-list，但删掉那些无法连接的会话
+ 
+ 
+  
+参考：http://chlotte.blog.51cto.com/318402/556540
+ 
+完！ 
+ 
+ 
+ 
+
