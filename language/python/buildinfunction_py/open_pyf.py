@@ -19,8 +19,10 @@ def file(name[, mode[, buffering]]):
     
 def open(name[, mode[, buffering]]):
     '''
+    @name:
+	   relative or absolute/full pathname
     @mode:
-      'r' Read mode
+      'r' Read mode (defaults)
       'w' Write mode
       'a' Append mode
       'b' Binary mode (added to other mode)
@@ -30,6 +32,16 @@ def open(name[, mode[, buffering]]):
       dded to any of the other modes to indicate that both reading and writing is al-
       lowed. The 'b' mode changes the way the file is handled. Generally, Python ass-
 	  umes that you are dealing with text files (containing characters). 
+	  
+	  Any file opened with mode 'r' or 'U' must exist. Any file opened with 'w'  will 
+	  be truncated first if it exists, and then the file is (re)created. Any file op-
+	  ened with 'a' will be opened for append. All writes to files opened with 'a' w-
+	  ill be from end-of-file, even if you seek elsewhere during access. If the  file 
+	  does not exist, it will be created, making it the same as if you opened the fi-
+	  le in 'w' mode. 
+	  
+	  'b' is antiquated on all Unix systems that are POSIX-compliant (including Linux
+	  ) because they treat all files as binary files, including text files. 
     @buffering
       If the parameter is 0 (or False), input/output (I/O) is unbuffered (all reads -
 	  and writes go directly from/to the disk); if it is 1 (or True), I/O is buffere-
@@ -41,4 +53,19 @@ def open(name[, mode[, buffering]]):
     You can open files with the @open function. The @open function takes a file  name 
     as its only mandatory argument, and returns a file object. If the file cannot  be 
     opened(file doesn¡¯t exist, for example), IOError is raised. 
+
+    File Mode    Operation
+    r            Open for read
+    rU or U      Open for read with universal NEWLINE support (PEP 278)
+    w            Open for write (truncate if necessary)
+    a            Open for append (always works from EOF, create if necessary)
+    r+           Open for read and write
+    w+           Open for read and write (see w above)
+    a+           Open for read and write (see a above)
+    rb           Open for binary read
+    wb           Open for binary write (see w above)
+    ab           Open for binary append (see a above)
+    rb+          Open for binary read and write (see r+ above)
+    wb+          Open for binary read and write (see w+ above)
+    ab+          Open for binary read and write (see a+ above)
     '''

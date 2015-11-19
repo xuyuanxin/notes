@@ -130,101 +130,96 @@
  Now the parameter n contains a copy, and your original list is safe.
 
 ----> Scoping
-What are variables, really? You can think of them as names referring to values. So, -
-after the assignment x = 1, the name x refers to the value 1. It’s almost like  using 
-dictionaries, where keys refer to values, except that you’re using an "invisible" di-
-ctionary. Actually, this isn’t far from the truth. There is a built-in function call-
-ed @vars, which returns this dictionary:
->>> x = 1
->>> scope = vars()
->>> scope['x']
-1
->>> scope['x'] += 1
->>> x
-2
-This sort of "invisible dictionary" is called a namespace or scope. So, how many nam-
-espaces are there? In addition to the global scope, each function call creates a  new 
-one:
->>> def foo(): x = 42
-...
->>> x = 1
->>> foo()
->>> x
-1
+ What are variables, really? You can think of them as names referring to values.  So, 
+ after the assignment x = 1, the name x refers to the value 1. It’s almost like usin-
+ g dictionaries, where keys refer to values, except that you’re using an  "invisible" 
+ dictionary. Actually, this isn’t far from the truth. There is a built-in function c-
+ alled @vars, which returns this dictionary:
+ >>> x = 1
+ >>> scope = vars()
+ >>> scope['x']
+ 1
+ >>> scope['x'] += 1
+ >>> x
+ 2
+ This sort of "invisible dictionary" is called a namespace or scope. So, how many na-
+ mespaces are there? In addition to the global scope, each function call creates a n-
+ ew one:
+ >>> def foo(): x = 42
+ ...
+ >>> x = 1
+ >>> foo()
+ >>> x
+ 1
 
-The parameters work just like local variables, so there is no problem in having a pa-
-rameter with the same name as a global variable:
->>> def output(x): print x
-...
->>> x = 1
->>> y = 2
->>> output(y)
-2
+ The parameters work just like local variables, so there is no problem in having a p-
+ arameter with the same name as a global variable:
+ >>> def output(x): print x
+ ...
+ >>> x = 1
+ >>> y = 2
+ >>> output(y)
+ 2
 
-But what if you want to access the global variables inside a function? 
->>> def combine(parameter): print parameter + external
-...
->>> external = 'berry'
->>> combine('Shrub')
-Shrubberry
+ But what if you want to access the global variables inside a function? 
+ >>> def combine(parameter): print parameter + external
+ ...
+ >>> external = 'berry'
+ >>> combine('Shrub')
+ Shrubberry
 
-If a local variable or parameter exists with the same name as the global variable you 
-want to access, you can’t do it directly. The global variable is shadowed by the loc-
-al one. If needed, you can still gain access to the global variable by using the fun-
-ction @globals.
->>> def combine(parameter):
-print parameter + globals()['parameter']
-...
->>> parameter = 'berry'
->>> combine('Shrub')
-Shrubberry
+ If a local variable or parameter exists with the same name as the global variable y-
+ ou want to access, you can’t do it directly. The global variable is shadowed by  the 
+ local one. If needed, you can still gain access to the global variable by using  the 
+ function @globals.
 
-And how do you think you can tell it to make a variable global?
->>> x = 1
->>> def change_global():
-global x
-x = x + 1
->>> change_global()
->>> x
-2
+ >>> def combine(parameter):
+ print parameter + globals()['parameter']
+ ...
+ >>> parameter = 'berry'
+ >>> combine('Shrub')
+ Shrubberry
+
+ And how do you think you can tell it to make a variable global?
+ >>> x = 1
+ >>> def change_global():
+ global x
+ x = x + 1
+ >>> change_global()
+ >>> x
+ 2
 
 ----> NESTED SCOPES closure
-Python functions may be nested, you can put one inside another. Here is an example: -
--------------------------------
-def foo():
-    def bar():
-        print "Hello, world!"
-    bar()
--------------------------------
-Nesting is normally not all that useful, but there is one particular application that 
-stands out: using one function to "create" another. This means that you can (among o-
-ther things) write functions like the following:
--------------------------------
-def multiplier(factor):
-    def multiplyByFactor(number):
-        return number*factor
-    return multiplyByFactor
--------------------------------
-One function is inside another, and the outer function returns the inner one; that is, 
-the function itself is returned, it is not called. What’s important is that the retu-
-rned function still has access to the scope where it was defined; in other words,  it 
-carries its environment (and the associated local variables) with it! Each time the -
-outer function is called, the inner one gets redefined, and each time, the variable -
-factor may have a new value. Because of Python’s nested scopes, this variable from t-
-he outer local scope (of multiplier) is accessible in the inner function later on, as 
-follows:
--------------------------------
->>> double = multiplier(2)
->>> double(5)
-10
->>> triple = multiplier(3)
->>> triple(3)
-9
->>> multiplier(5)(4)
-20
--------------------------------
-A function such as multiplyByFactor that stores its enclosing scopes is called a    -
-@closure.
+ Python functions may be nested, you can put one inside another. Here is an example:
+ |def foo():
+ |   def bar():
+ |       print "Hello, world!"
+ |   bar()
+ Nesting is normally not all that useful, but there is one particular application th-
+ at stands out: using one function to "create" another. This means that you can (amo-
+ ng other things) write functions like the following:
+ |def multiplier(factor):
+ |  def multiplyByFactor(number):
+ |      return number*factor
+ |  return multiplyByFactor
+ One function is inside another, and the outer function returns the inner one; that -
+ is, the function itself is returned, it is not called. What’s important is that  the 
+ returned function still has access to the scope where it was defined; in other words
+ , it carries its environment (and the associated local variables) with it! Each time 
+ the outer function is called, the inner one gets redefined, and each time, the vari-
+ able factor may have a new value. Because of Python’s nested scopes, this variable -
+ from the outer local scope (of multiplier) is accessible in the inner function later 
+ on, as follows:
+ >>> double = multiplier(2)
+ >>> double(5)
+ 10
+ >>> triple = multiplier(3)
+ >>> triple(3)
+ 9
+ >>> multiplier(5)(4)
+ 20
+ A function such as multiplyByFactor that stores its enclosing scopes is called a   -
+ @closure.
 
 
 

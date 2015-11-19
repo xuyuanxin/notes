@@ -13,6 +13,17 @@ Python实例浅谈之五Python守护进程和脚本单例运行 http://blog.csdn.net/taiyang19879
 This module constructs higher-level threading interfaces on top of the lower level  -
 @thread module. The @dummy_threading module is provided for situations where        -
 @threading cannot be used because @thread is missing.
+
+
+Another reason to avoid using the thread module is that it does not support the conc-
+ept of daemon (or daemonic) threads. When the main thread exits, all child threads w-
+ill be killed, regardless of whether they are doing work. The concept of daemon thre-
+ads comes into play here if you do not desire this behavior. A new child thread inhe-
+rits its daemonic flag from its parent. The entire Python program ( read as: the main 
+thread) will stay alive until all non-daemonic threads have exited, in other words, -
+when no active non-daemonic threads are left.
+
+
 '''
 
 
@@ -24,6 +35,11 @@ class Thread: # threading.Thread
 	onstructor, or by overriding the run() method in a subclass. No other methods (e-
 	xcept for the constructor) should be overridden in a subclass. In other words, o-
 	nly override the __init__() and run() methods of this class.
+	
+    Thread object data attributes
+    name        The name of a thread.
+    ident       The identifier of a thread.
+    daemon      Boolean flag indicating whether a thread is daemonic.	
 	'''
 
     def Thread(group=None, target=None, name=None, args=(), kwargs={})
@@ -49,10 +65,29 @@ class Thread: # threading.Thread
 		ase class constructor (Thread.__init__()) before doing anything else to the -
 		thread.
 	    '''
-    def start(self):
-        """Start the thread's activity.
-        It must be called at most once per thread object.It arranges for the object's 
-		run() method to be invoked in a separate thread of control. This method  will 
-		raise a RuntimeError if called more than once on the same thread object.
-        """	
+
+  def join(self, timeout=None):
+    '''
+    Wait until the thread terminates. This blocks the calling thread until the thread 
+    whose join() method is called terminates (either normally or through an unhandled 
+	exception) or until the optional @timeout occurs.
+
+    When the @timeout argument is present and not None, it should be a floating point 
+	number specifying a timeout for the operation in seconds (or fractions thereof ). 
+	As join() always returns None, you must call isAlive() after join() to decide wh-
+	ether a timeout happened,if the thread is still alive, the join() call timed out.
+
+    When the timeout argument is not present or None, the operation will block  until 
+	the thread terminates. A thread can be join()ed many times. join() raises a     -
+	RuntimeError if an attempt is made to join the current thread as that would cause 
+	a deadlock. It is also an error to join() a thread before it has been started and 
+	attempts to do so raises the same exception.	
+	'''
+
+  def start(self):
+    """Start the thread's activity.
+    It must be called at most once per thread object.It arranges for the object's   -
+	run() method to be invoked in a separate thread of control. This method  will ra-
+	ise a RuntimeError if called more than once on the same thread object.
+    """	
 	

@@ -1,105 +1,164 @@
 '''
+Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
+
+
 A standard installation includes a set of modules called the standard library. 
 
 ----> modules
-import module_name # 导入模块
+ import module_name # 导入模块
 
-the code in the module is executed when you import it. However, if you try to  import 
-it again, nothing happens. Because modules aren’t really meant to do things (such  as
-printing text) when they’re imported. They are mostly meant to define things, such as 
-variables, functions, classes, and so on. And because you need to define things  only 
-once, importing a module several times has the same effect as importing it once.
+ the code in the module is executed when you import it. However, if you try to import 
+ it again, nothing happens. Because modules aren’t really meant to do things (such as
+ printing text) when they’re imported. They are mostly meant to define things, such -
+ as variables, functions, classes, and so on. And because you need to define things -
+ only once,importing a module several times has the same effect as importing it once.
 
-When you import a module, you may notice that a new file appears. The file with the -
-.pyc extension is a (platform-independent) processed (“compiled”) Python file that h-
-as been translated to a format that Python can handle more efficiently. If you import 
-the same module later, Python will import the .pyc file rather than the .py file, un-
-less the .py file has changed; in that case, a new .pyc file is generated. Deleting -
-the .pyc file does no harm (as long as there is an equivalent .py file available),  -
-a new one is created when needed.
+ When you import a module, you may notice that a new file appears. The file with  the 
+ .pyc extension is a (platform-independent) processed ("compiled") Python file that -
+ has been translated to a format that Python can handle more efficiently. If you imp-
+ ort the same module later, Python will import the .pyc file rather than the .py fil-
+ e, unless the .py file has changed; in that case, a new .pyc file is generated. Del-
+ eting the .pyc file does no harm (as long as there is an equivalent .py file availa-
+ ble),  a new one is created when needed.
+ 
+ WHY ONLY ONCE?
+ |# hello.py
+ |print "Hello, world!"
+ The import-only-once behavior is a substantial optimization in most cases, and it c-
+ an be very important in one special case: if two modules import each other. In  many 
+ cases, you may write two modules that need to access functions and classes from each 
+ other to function properly. For example, you may have created two modules—clientdb and billing—containing
+ code for a client database and a billing system, respectively. Your client database may contain calls to your
+ billing system (for example, automatically sending a bill to a client every month), while the billing system probably needs to access functionality from your client database to do the billing correctly.
+ If each module could be imported several times, you would end up with a problem here. The module
+ clientdb would import billing, which again imports clientdb, which . . . you get the picture. You get an
+ endless loop of imports (endless recursion, remember?). However, because nothing happens the second time
+ you import the module, the loop is broken.
+ If you insist on reloading your module, you can use the built-in function reload. It takes a single argument (the module you want to reload) and returns the reloaded module. This may be useful if you have made
+ changes to your module and want those changes reflected in your program while it is running. To reload the
+ simple hello module (containing only a print statement), I would use the following:
+ >>> hello = reload(hello)
+ Hello, world!
+ Here, I assume that hello has already been imported (once). By assigning the result of reload to
+ hello, I have replaced the previous version with the reloaded one. As you can see from the printed greeting,
+ I am really importing the module here.
+ If you’ve created an object x by instantiating the class Foo from the module bar, and you then reload
+ bar, the object x refers to will not be re-created in any way. x will still be an instance of the old version of Foo
+ (from the old version of bar). If, instead, you want x to be based on the new Foo from the reloaded module,
+ you will need to create it anew.
+ Note that the reload function has disappeared in Python 3.0. While you can achieve similar functionality
+ using exec, the best thing in most cases is simply to stay away from module reloading.
 
-----------------------------------------
-# hello4.py
-def hello():
-    print "Hello, world!"
-def test():
-    hello()
-if __name__ == '__main__': test()
----------------------------------------
-in the "main program" (including the interactive prompt of the interpreter), the var-
-iable __name__ has the value '__main__'. In an imported module, it is set to the nam-
-e of that module.
+ # hello2.py
+ def hello():
+     print "Hello, world!"
+ You can then import it like this:
+ >>> import hello2
+ The module is then executed, which means that the function hello is defined in the -
+ scope of the module, so you can access the function like this:
+ >>> hello2.hello()
+ Hello, world!
+ Any name defined in the global scope of the module will be available in the same manner. 
 
-----> Putting Your Module in the Right Place
-the list of directories (the so-called search path) can be found in the @path variab-
-le in the @sys module.
->>> import sys, pprint
->>> sys.path.append('c:/python')
->>> pprint.pprint(sys.path)
-['C:\\Python25\\Lib\\idlelib',
-'C:\\WINDOWS\\system32\\python25.zip',
-'C:\\Python25',
-'C:\\Python25\\DLLs',
-'C:\\Python25\\lib',
-'C:\\Python25\\lib\\plat-win',
-'C:\\Python25\\lib\\lib-tk',
-'C:\\Python25\\lib\\site-packages']
-The point is that each of these strings provides a place to put modules if you want -
-your interpreter to find them. Even though all these will work, the site-packages di-
-rectory is the best choice because it’s meant for this sort of thing. 
+ ----> Adding Test Code in a Module
+ |# hello3.py
+ |def hello():
+ |  print "Hello, world!"
+ |# A test:
+ |hello()
+ >>> import hello3
+ Hello, world!
+ >>> hello3.hello()
+ Hello, world!
+ This is not what you want. The key to avoiding it is "telling" the module whether  -
+ it’s being run as a program on its own or being imported into another program. To do 
+ that, you need the variable __name__:
+ >>> __name__
+ '__main__'
+ >>> hello3.__name__
+ 'hello3'
+ As you can see, in the "main program" (including the interactive prompt of the inte-
+ rpreter), the variable __name__ has the value '__main__'. In an imported module,  it 
+ is set to the name of that module. 
+ +---------------------------------------
+ |# hello4.py
+ |def hello():
+ |    print "Hello, world!"
+ |def test():
+ |    hello()
+ |if __name__ == '__main__': test()
+ +---------------------------------------
+ in the "main program" (including the interactive prompt of the interpreter), the va-
+ riable __name__ has the value '__main__'. In an imported module, it is set to the n-
+ ame of that module.
 
-----> Telling the Interpreter Where to Look
-one way of doing this is to edit sys.path, but that is not a common way to do it. The 
-standard method is to include your module directory (or directories) in the environm-
-ent variable PYTHONPATH.
+ ----> Putting Your Module in the Right Place
+ the list of directories (the so-called search path) can be found in the @path varia-
+ ble in the @sys module.
+ >>> import sys, pprint
+ >>> sys.path.append('c:/python')
+ >>> pprint.pprint(sys.path)
+ ['C:\\Python25\\Lib\\idlelib',
+ 'C:\\WINDOWS\\system32\\python25.zip',
+ 'C:\\Python25',
+ 'C:\\Python25\\DLLs',
+ 'C:\\Python25\\lib',
+ 'C:\\Python25\\lib\\plat-win',
+ 'C:\\Python25\\lib\\lib-tk',
+ 'C:\\Python25\\lib\\site-packages']
+ The point is that each of these strings provides a place to put modules if you  want 
+ your interpreter to find them. Even though all these will work, the site-packages d-
+ irectory is the best choice because it’s meant for this sort of thing. 
 
-export PYTHONPATH=$PYTHONPATH:~/python  # linux
-set PYTHONPATH=%PYTHONPATH%;C:\python   # windows
+ ----> Telling the Interpreter Where to Look
+ one way of doing this is to edit sys.path, but that is not a common way to do it. T-
+ he standard method is to include your module directory (or directories) in the envi-
+ ronment variable PYTHONPATH.
+ |export PYTHONPATH=$PYTHONPATH:~/python  # linux
+ |set PYTHONPATH=%PYTHONPATH%;C:\python   # windows
 
-----> Naming Your Module
-As you may have noticed, the file that contains the code of a module must be given t-
-he same name as the module, with an additional .py file name extension. In Windows, -
-you can use the file name extension .pyw instead.
+ ----> Naming Your Module
+ As you may have noticed, the file that contains the code of a module must be given -
+ the same name as the module, with an additional .py file name extension. In Windows,
+ you can use the file name extension .pyw instead.
 
 ----> Packages
-To structure your modules, you can group them into packages. A package is basically -
-just another type of module. The interesting thing about them is that they can conta-
-in other modules. While a module is stored in a file (with the file name extension  -
-.py), a package is a directory. To make Python treat it as a package, it must contain 
-a file (module) named __init__.py. The contents of this file will be the contents  of 
-the package, if you import it as if it were a plain module. For example, if you had -
-a package named @constants, and the file constants/__init__.py contains the statement 
-        PI = 3.14
-you would be able to do the following:
->>> import constants
->>> print constants.PI
+ To structure your modules, you can group them into packages. A package is  basically 
+ just another type of module. The interesting thing about them is that they can cont-
+ ain other modules. While a module is stored in a file ( with the file name extension  
+ .py), a package is a directory. To make Python treat it as a package, it must conta-
+ in a file (module) named __init__.py. The contents of this file will be the contents
+ of the package, if you import it as if it were a plain module. For example, if you -
+ had a package named @constants, and the file constants/__init__.py contains the sta-
+ tement 
+ |PI = 3.14
+ you would be able to do the following:
+ >>> import constants
+ >>> print constants.PI
 
-To put modules inside a package, simply put the module files inside the package dire-
-ctory. For example, if you wanted a package called @drawing, which contained one mod-
-ule called @shapes and one called @colors, you would need the files and directories -
-(UNIX pathnames) shown in Table 10-1.
--------------------------------------------------------------------------------------
-~/python/                               # Directory in PYTHONPATH
-~/python/drawing/                       # Package directory (drawing package)
-~/python/drawing/__init__.py            # Package code (drawing module)
-~/python/drawing/colors.py              # colors module
-~/python/drawing/shapes.py              # shapes module
--------------------------------------------------------------------------------------
-With this setup, the following statements are all legal:
-import drawing              # (1) Imports the drawing package
-import drawing.colors       # (2) Imports the colors module
-from drawing import shapes  # (3) Imports the shapes module
-After the first statement, the contents of the __init__ module in drawing would be a-
-vailable; the shapes and colors modules, however, would not be. After the second sta-
-tement, the colors module would be available, but only under its full name,         -
-drawing.colors. After the third statement, the shapes module would be available, und-
-er its short name (that is, simply shapes). Note that these statements are just exam-
-ples. There is no need, for example, to import the package itself before importing o-
-ne of its modules as I have done here. The second statement could very well be execu-
-ted on its own, as could the third. You may nest packages inside each other.
-
-*************************************************************************************
-*************************************************************************************
+ To put modules inside a package, simply put the module files inside the package dir-
+ ectory. For example, if you wanted a package called @drawing, which contained one m-
+ odule called @shapes and one called @colors, you would need the files and directori-
+ es (UNIX pathnames) shown in Table 10-1.
+ ------------------------------------------------------------------------------------
+ ~/python/                               # Directory in PYTHONPATH
+ ~/python/drawing/                       # Package directory (drawing package)
+ ~/python/drawing/__init__.py            # Package code (drawing module)
+ ~/python/drawing/colors.py              # colors module
+ ~/python/drawing/shapes.py              # shapes module
+ ------------------------------------------------------------------------------------
+ With this setup, the following statements are all legal:
+ |import drawing              # (1) Imports the drawing package
+ |import drawing.colors       # (2) Imports the colors module
+ |from drawing import shapes  # (3) Imports the shapes module
+ After the first statement, the contents of the __init__ module in drawing would be -
+ available; the shapes and colors modules, however, would not be. After the second s-
+ tatement, the colors module would be available, but only under its full name,      -
+ drawing.colors. After the third statement, the shapes module would be available, un-
+ der its short name (that is, simply shapes). Note that these statements are just ex-
+ amples. There is no need, for example, to import the package itself before importing 
+ one of its modules as I have done here. The second statement could very well be exe-
+ cuted on its own, as could the third. You may nest packages inside each other.
 
 --------> Exploring Modules
 ----> Using dir
@@ -151,59 +210,45 @@ tldextract
 https://github.com/john-kurkowski/tldextract
 https://pypi.python.org/pypi/tldextract
 
-
-
-
-
 '''
-#******************************************************************************# 
-#-->-->-->-->-->-->-->-->-->            1 模块             <--<--<--<--<--<--<-#
-#******************************************************************************#
-#模块最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模
-#块编写完毕，就可以被其他地方引用。我们在编写程序的时候，也经常引用其他模块，包
-#括Python内置的模块和来自第三方的模块。
 
-#使用模块还可以避免函数名和变量名冲突。相同名字的函数和变量完全可以分别存在不同
-#的模块中，因此，我们自己在编写模块时，不必考虑名字会与其他模块冲突。但是也要注
-#意，尽量不要与内置函数名字冲突。点这里查看Python的所有内置函数。
 
-#你也许还想到，如果不同的人编写的模块名相同怎么办？为了避免模块名冲突，Python又
-#引入了按目录来组织模块的方法，称为包（Package）。
 
-#举个例子，一个abc.py的文件就是一个名字叫abc的模块，一个xyz.py的文件就是一个名字
-#叫xyz的模块。
+'''                                                                                  |
+----> 1 模块                                                                         |
+ 模块最大的好处是大大提高了代码的可维护性。其次，编写代码不必从零开始。当一个模块编写|
+ 完毕，就可以被其他地方引用。我们在编写程序的时候，也经常引用其他模块，包括Python内置|
+ 的模块和来自第三方的模块。使用模块还可以避免函数名和变量名冲突。相同名字的函数和变量|
+ 完全可以分别存在不同的模块中，因此，我们自己在编写模块时，不必考虑名字会与其他模块冲|
+ 突。但是也要注意，尽量不要与内置函数名字冲突。如果不同的人编写的模块名相同怎么办？为|
+ 了避免模块名冲突，Python又引入了按目录来组织模块的方法，称为包（Package）。举个例子 |
+ ，一个abc.py的文件就是一个名字叫abc的模块，一个xyz.py的文件就是一个名字叫xyz的模块。|
+ 现在，假设我们的abc和xyz这两个模块名字与其他模块冲突了，于是我们可以通过包来组织模块|
+ ，避免冲突。方法是选择一个顶层包名，比如mycompany，按照如下目录存放：               |
+ |mycompany
+ |  __init__.py
+ |  abc.py
+ |  xyz.py                                                                           |
+ 引入了包以后，只要顶层的包名不与别人冲突，那所有模块都不会与别人冲突。现在，abc.py模|
+ 块的名字就变成了mycompany.abc，类似的，xyz.py的模块名变成了mycompany.xyz。请注意，每|
+ 一个包目录下面都会有一个__init__.py的文件，这个文件是必须存在的，否则，Python就把这 |
+ 个目录当成普通目录，而不是一个包。__init__.py可以是空文件，也可以有Python代码，因为 |
+ __init__.py本身就是一个模块，而它的模块名就是mycompany。类似的，可以有多级目录，组成|
+ 多级层次的包结构。比如如下的目录结构：
+ |mycompany-web
+ |  |web
+ |  |  |__init__.py
+ |  |  |utils.py
+ |  |  |www.py
+ |  |__init__.py  
+ |  |abc.py
+ |  |utils.py
+ |  |xyz.py                                                                          |
+ 文件www.py的模块名就是mycompany.web.www，两个文件utils.py的模块名分别是             |
+ mycompany.utils和mycompany.web.utils。mycompany.web也是一个模块。                   |
 
-#现在，假设我们的abc和xyz这两个模块名字与其他模块冲突了，于是我们可以通过包来组
-#织模块，避免冲突。方法是选择一个顶层包名，比如mycompany，按照如下目录存放：
-#|mycompany
-#|  __init__.py
-#|  abc.py
-#|  xyz.py
-#引入了包以后，只要顶层的包名不与别人冲突，那所有模块都不会与别人冲突。现在，
-#abc.py模块的名字就变成了mycompany.abc，类似的，xyz.py的模块名变成了
-#mycompany.xyz。
-
-#请注意，每一个包目录下面都会有一个__init__.py的文件，这个文件是必须存在的，否
-#则，Python就把这个目录当成普通目录，而不是一个包。__init__.py可以是空文件，也
-#可以有Python代码，因为__init__.py本身就是一个模块，而它的模块名就是mycompany。
-
-#类似的，可以有多级目录，组成多级层次的包结构。比如如下的目录结构：
-#|mycompany-web
-#|  |web
-#|  |  |__init__.py
-#|  |  |utils.py
-#|  |  |www.py
-#|  |__init__.py  
-#|  |abc.py
-#|  |utils.py
-#|  |xyz.py
-#文件www.py的模块名就是mycompany.web.www，两个文件utils.py的模块名分别是
-#mycompany.utils和mycompany.web.utils。
-#mycompany.web也是一个模块，请指出该模块对应的.py文件。
-#******************************************************************************# 
-#-->-->-->-->-->-->-->-->-->          2 使用模块           <--<--<--<--<--<--<-#
-#******************************************************************************#
-#Python本身就内置了很多非常有用的模块，只要安装完毕，这些模块就可以立刻使用。
+----> 2 使用模块                                                                     |
+ Python本身就内置了很多非常有用的模块，只要安装完毕，这些模块就可以立刻使用。
 
 #我们以内建的sys模块为例，编写一个hello的模块：
 #!/usr/bin/env python
