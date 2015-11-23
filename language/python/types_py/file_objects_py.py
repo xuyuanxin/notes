@@ -2,6 +2,22 @@
 
 example: file_io_py_eg.py
 
+Standard Files
+  There are generally three standard files that are made available to you when your -
+  program starts. These are standard input (usually the keyboard), standard output (-
+  buffered output to the monitor or display), and standard error (unbuffered output -
+  to the screen). (The ¡°buffered¡± or ¡°unbuffered¡± output refers to that third argume-
+  nt to open()). These files are named stdin, stdout, and stderr and take their names 
+  from the C language. When we say these files are ¡°available to you when your progr-
+  am starts,¡± that means that these files are pre-opened for you, and access to these 
+  files may commence once you have their file handles.
+  Python makes these file handles available to you from the sys module. Once you imp-
+  ort sys, you have access to these files as sys.stdin, sys.stdout, and sys.stderr. -
+  The print statement normally outputs to sys.stdout while the raw_input() built-in -
+  function receives its input from sys.stdin.
+
+
+
 File objects are implemented using C¡¯s stdio package and can be created with the    -
 built-in open() function. File objects are also returned by some other built-in func-
 tions and methods, such as os.popen() and os.fdopen() and the makefile() method of s-

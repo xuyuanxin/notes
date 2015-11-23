@@ -2,6 +2,267 @@
 Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
 
 
+
+Modules are a means to organize Python code, and packages help you organize modules. 
+
+If modules represent a logical way to organize your Python code, then files
+are a way to physically organize modules. To that end, each file is considered
+an individual module, and vice versa. The filename of a module is the module
+name appended with the.py file extension.
+
+sys.path.append('/home/wesc/py/lib')
+
+
+
+Namespaces versus Variable Scope
+
+The __builtins__ module consists of a set of built-in
+names for the built-ins namespace. Most, if not all, of these names come
+from the __builtin__ module, which is a module of the built-in
+functions, exceptions, and other attributes. In standard Python execution,__builtins__ contains all the names from __builtin__. 
+
+
+A namespace is a mapping of names (identifiers) to objects. The process of adding a name to a namespace consists of binding the identifier to the object (and
+increasing the reference count to the object by one). The Python Language
+Reference also includes the following definitions: “changing the mapping of a
+name is called rebinding [, and] removing a name is unbinding.”
+ there are either two or three active
+namespaces at any given time during execution. These three namespaces are
+the local, global, and built-ins namespaces, but local name-spaces come and
+go during execution, hence the “two or three” we just alluded to. The names
+accessible from these namespaces are dependent on their loading order, or the
+order in which the namespaces are brought into the system.
+The Python interpreter loads the built-ins namespace first. This consists of
+the names in the __builtins__ module. Then the global namespace for the
+executing module is loaded, which then becomes the active namespace when
+the module begins execution. Thus we have our two active namespaces.
+When a function call is made during execution, the third, a local, namespace
+is created. We can use the globals() and locals() built-in functions to
+tell us which names are in which namespaces.
+
+Namespaces are purely mappings between names and objects, but scope
+dictates how, or rather where, one can access these names based on the physical location from within your code. 
+
+
+So how do scoping rules work in relationship to namespaces? It all has to do
+with name lookup. When accessing an attribute, the interpreter must find it
+in one of the three namespaces. The search begins with the local namespace.
+If the attribute is not found there, then the global namespace is searched. If
+that is also unsuccessful, the final frontier is the built-ins namespace. If the
+exhaustive search fails, you get the familiar:
+>>> foo
+Traceback (innermost last):
+File "<stdin>", line 1, in ?
+NameError: foo
+
+names found in the local
+namespace will hide access to objects in the global or built-ins namespaces.
+
+
+
+The import Statement
+Importing a module requires the use of the import statement, whose syntax is:
+import module1
+import module2
+:
+import moduleN
+It is also possible to import multiple modules on the same line like this . . .
+import module1[, module2[,... moduleN]]  # not preferred form
+. . . but the resulting code is not as readable as having multiple import
+statements. Also, there is no performance hit and no change in the way that
+the Python bytecode is generated, so by all means, use the first form, which is
+the preferred form.
+When this statement is encountered by the interpreter, the module is
+imported if found in the search path. Scoping rules apply, so if imported from
+the top level of a module, it has global scope; if imported from a function, it
+has local scope.
+When a module is imported the first time, it is loaded and executed.
+
+The from-import Statement
+It is possible to import specific module elements into your own module. By
+this, we really mean importing specific names from the module into the current namespace. For this purpose, we can use the from-import statement,
+whose syntax is:
+from module import name1[, name2[,... nameN]]
+
+Extended Import Statement (as)
+Using extended import, you can change
+the locally bound name for what you are importing. Statements like . . .
+import Tkinter
+from cgi import FieldStorage
+. . . can be replaced by . . .
+import Tkinter as tk
+from cgi import FieldStorage as form
+
+
+One effect of loading a module is that the imported module is “executed,”
+that is, the top-level portion of the imported module is directly executed.
+This usually includes setting up of global variables as well as performing the
+class and function declarations. If there is a check for __name__ to do more
+on direct script invocation, that is executed, too.Of course, this type of execution may or may not be the desired effect. If
+not, you will have to put as much code as possible into functions. 
+
+A module is loaded only once, regardless of the number of times it is
+imported. This prevents the module “execution” from happening over and
+over again if multiple imports occur. 
+
+Calling from-import brings the name into the current namespace, meaning
+that you do not use the attribute/dotted notation to access the module identifier. For example, to access a variable named var in module module that
+was imported with:
+from module import var
+we would use “var” by itself. There is no need to reference the module since
+you imported var into your namespace. It is also possible to import all the
+names from the module into the current namespace using the following
+from-import statement:
+from module import *
+
+CORE STYLE: Restrict your use of “from module import *”
+In practice, using from module import * is considered poor style
+because it “pollutes” the current namespace and has the potential of
+overriding names in the current namespace; however, it is extremely
+convenient if a module has many variables that are often accessed, or if
+the module has a very long name.
+We recommend using this form in only two situations. The first is where the
+target module has many attributes that would make it inconvenient to type
+in the module name over and over again. Two prime examples of this are
+the Tkinter (Python/Tk) and NumPy (Numeric Python) modules, and
+perhaps the socket module. The other place where it is acceptable to use
+from module import * is within the interactive interpreter, to save on
+the amount of typing.
+
+
+
+
+
+Names Imported into Importer’s Scope
+Another side effect of importing just names from modules is that those
+names are now part of the local namespace. A side effect is possibly hiding or
+overriding an existing object or built-in with the same name. Also, changes to
+the variable affect only the local copy and not the original in the imported
+module’s namespace. In other words, the binding is now local rather than
+across namespaces.
+Here we present the code to two modules: an importer, impter.py, and
+an importee, imptee.py. Currently, impter.py uses the from-import
+statement, which creates only local bindings.
+#############
+# imptee.py #
+#############
+foo = 'abc'
+def show():
+print 'foo from imptee:', foo
+#############
+# impter.py #
+#############
+from imptee import foo, show
+show()
+foo = 123
+print 'foo from impter:', foo
+show()
+Upon running the importer, we discover that the importee’s view of its foo
+variable has not changed even though we modified it in the importer.
+foo from imptee: abc
+foo from impter: 123
+foo from imptee: abc
+The only solution is to use import and fully qualified identifier names
+using the attribute/dotted notation.
+#############
+# impter.py #
+#############
+import imptee
+imptee.show()
+imptee.foo = 123
+print 'foo from impter:', imptee.foo
+imptee.show()
+Once we make the update and change our references accordingly, we now
+have achieved the desired effect.
+foo from imptee: abc
+foo from impter: 123
+foo from imptee: 123
+
+
+
+A package is a hierarchical file directory structure that defines a single Python
+application environment that consists of modules and subpackages. Packages
+were added to Python 1.5 to aid with a variety of problems including:
+• Adding hierarchical organization to flat namespace
+• Allowing developers to group related modules
+• Allowing distributors to ship directories vs. bunch of files
+• Helping resolve conflicting module names
+Along with classes and modules, packages use the familiar attribute/dotted
+attribute notation to access their elements. Importing modules within packages use the standard import and from-import statements.
+
+For our package examples, we will assume the directory structure below:
+Phone/
+    __init__.py
+    common_util.py
+    Voicedta/
+        __init__.py
+        Pots.py
+        Isdn.py
+    Fax/
+        __init__.py
+        G3.py
+    Mobile/
+        __init__.py
+        Analog.py
+        Digital.py
+    Pager/
+        __init__.py
+        Numeric.py
+
+Phone is a top-level package and Voicedta, etc., are subpackages. Import
+subpackages by using import like this:
+import Phone.Mobile.Analog
+Phone.Mobile.Analog.dial()
+Alternatively, you can use from-import in a variety of ways:
+The first way is importing just the top-level subpackage and referencing
+down the subpackage tree using the attribute/dotted notation:
+from Phone import Mobile
+Mobile.Analog.dial('555-1212')
+Furthermore, we can go down one more subpackage for referencing:
+from Phone.Mobile import Analog
+Analog.dial('555-1212')
+In fact, you can go all the way down in the subpackage tree structure:
+from Phone.Mobile.Analog import dial
+dial('555-1212')
+
+Using from-import with Packages
+Packages also support the from-import all statement:
+from package.module import *
+However, such a statement is dependent on the operating system’s filesystem
+for Python to determine which files to import. Thus the __all__ variable in
+__init__.py is required. This variable contains all the module names that
+should be imported when the above statement is invoked if there is such a
+thing. It consists of a list of module names as strings.
+
+
+python中sys.path使用
+时间 2014-02-27 18:14:44  CSDN博客
+原文  http://blog.csdn.net/magicharvey/article/details/20063437
+主题 Python Linux
+sys模块包含了与python解释器和它的环境有关的函数，这个你可以通过dir(sys)来查看他里面的方法和成员属性。
+
+下面的两个方法可以将模块路径加到当前模块扫描的路径里：
+
+sys.path.append('你的模块的名称')。
+
+sys.path.insert(0,'模块的名称')
+
+永久添加路径到sys.path中，方式有三，如下：
+
+1）将写好的py文件放到 /usr/lib/python2.6/site-packages 目录下 
+
+2) 在 /usr/lib/python2.6/site-packages 下面新建一个.pth 文件(以pth作为后缀名) 
+
+将模块的路径写进去，一行一个路径，如： vim pythonmodule.pth
+
+/home/liu/shell/config
+
+/home/liu/shell/base 
+
+3) 使用PYTHONPATH环境变量
+
+export PYTHONPATH=$PYTHONPATH:/home/liu/shell/config
+
 A standard installation includes a set of modules called the standard library. 
 
 ----> modules
