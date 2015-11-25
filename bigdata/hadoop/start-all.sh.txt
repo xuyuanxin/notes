@@ -1,0 +1,407 @@
+http://www.cnblogs.com/brucewoo/archive/2011/12/21/2296556.html
+
+
+第一章 Hadoop启动Shell启动脚本分析--基于hadoop-0.20.2-cdh3u1
+
+我的新浪微博：http://weibo.com/freshairbrucewoo。
+
+欢迎大家相互交流，共同提高技术。
+
+第一章 Hadoop启动Shell启动脚本分析
+
+第一节 start-all.sh脚本
+
+    此脚本很简单，就是根据运行此脚本的目录进入安装hadoop目录下的bin目录，然后运行启动hdfs和mapred的启动脚本。
+
+复制代码
+1 bin=`dirname "$0"`
+2 bin=`cd "$bin"; pwd`
+3 . "$bin"/hadoop-config.sh
+4 # start dfs daemons
+5 "$bin"/start-dfs.sh --config $HADOOP_CONF_DIR
+6 # start mapred daemons
+7 "$bin"/start-mapred.sh --config $HADOOP_CONF_DIR
+复制代码
+第二节 Start-dfs.sh脚本
+
+    此脚本首先检查是否带有参数，代码如下：
+
+复制代码
+ 1 if [ $# -ge 1 ]; then
+ 2 nameStartOpt=$1
+ 3 shift
+ 4 case $nameStartOpt in
+ 5 (-upgrade)
+ 6           ;;
+ 7         (-rollback)
+ 8           dataStartOpt=$nameStartOpt
+ 9           ;;
+10         (*)
+11             echo $usage
+12             exit 1
+13           ;;
+14       esac
+15 fi
+复制代码
+    从以上代码可以看出此脚本只支持upgrade和rollback两个选项参数，一个参数用于更新文件系统，另一个是回滚文件系统。
+
+    然后就开始启动namenode、datanode和secondarynamenode节点，执行的脚本代码如下：
+
+1 "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR start namenode $nameStartOpt
+2 "$bin"/hadoop-daemons.sh --config $HADOOP_CONF_DIR start datanode $dataStartOpt
+3 "$bin"/hadoop-daemons.sh --config $HADOOP_CONF_DIR --hosts masters start secondarynamenode
+    代码中的$HADOOP_CONF_DIR是在另一个脚本中设置的，这个脚本是hadoop-config.sh，后面会详细介绍，因为这个脚本在每一个启动脚本执行中都先执行，目的是为了检查和设置一些环境变量，例如JAVA_HOME和HADOOP_HOME等，而这个脚本又会执行hadoop-env.sh脚本来设置用户配置的相关环境变量，后面详细介绍这两个脚本。
+
+     从上面的脚本代码可以看出在启动namenode节点是在hadoop-daemon.sh脚本中启动，下面一节将分析这个脚本。而datanode和secondarynamenode节点的启动又会通过hadoop-daemon.sh脚本来执行。后面也将分析这个脚本的运行情况。
+
+第三节 hadoop-daemon.sh脚本
+
+在具体介绍这个脚本以前先介绍几个环境变量的意义（在这个脚本的注释部分有介绍）：
+
+复制代码
+1 HADOOP_CONF_DIR  选择配置文件目录。默认是${HADOOP_HOME}/conf。
+2 HADOOP_LOG_DIR   存放日志文件的目录。默认是 PWD 命令产生的目录
+3 HADOOP_MASTER    host:path where hadoop code should be rsync'd from
+4 HADOOP_PID_DIR   The pid files are stored. /tmp by default.
+5 HADOOP_IDENT_STRING   A string representing this instance of hadoop. $USER by default
+6 HADOOP_NICENESS The scheduling priority for daemons. Defaults to 0.
+复制代码
+    这个脚本首先判断所带的参数是否小于1，如果小于就打印使用此脚本的使用帮助，shell代码如下：
+
+1 usage="Usage: hadoop-daemon.sh [--config <conf-dir>] [--hosts hostlistfile] (start|stop) <had    oop-command> <args...>"
+2 if [ $# -le 1 ]; then
+3    echo $usage
+4    exit 1
+5 fi
+    然后同其他脚本一样执行hadoop-config.sh脚本检查和设置相关环境变量。对于此脚本，hadoop-config.sh脚本的作用就是把配置文件和主机列表的文件处理好了并设置相应的环境变量保存它们。
+
+接着保存启动还是停止的命令和相关参数，如下（注意：shift的shell脚本的作用就是将shell脚本所带参数向前移动一个）：
+
+1 startStop=$1
+2 shift
+3 command=$1
+4 shift
+     继续就是定义一个用于滚动日志的函数了，具体就不详细分析了。后面是一些根据配置文件中的配置选项来设置前面提到的环境变量，这些环境变量会用于具体启动namenode，例如有调度优先级的环境变量等。
+
+最后就是根据命令还是控制namenode的启停（start或stop）了，具体代码如下：
+
+复制代码
+ 1 case $startStop in
+ 2    (start)
+ 3      mkdir -p "$HADOOP_PID_DIR"
+ 4      if [ -f $_HADOOP_DAEMON_PIDFILE ]; then
+ 5        if kill -0 `cat $_HADOOP_DAEMON_PIDFILE` > /dev/null 2>&1; then
+ 6          echo $command running as process `cat $_HADOOP_DAEMON_PIDFILE`.  Stop it first.
+ 7          exit 1
+ 8        fi
+ 9      fi
+10  
+11      if [ "$HADOOP_MASTER" != "" ]; then
+12        echo rsync from $HADOOP_MASTER
+13        rsync -a -e ssh --delete --exclude=.svn --exclude='logs/*' --exclude='contrib/hod/logs/    *' $HADOOP_MASTER/ "$HADOOP_HOME"
+14      fi
+15  
+16      hadoop_rotate_log $_HADOOP_DAEMON_OUT
+17      echo starting $command, logging to $_HADOOP_DAEMON_OUT
+18      cd "$HADOOP_HOME"
+19      nice -n $HADOOP_NICENESS "$HADOOP_HOME"/bin/hadoop --config $HADOOP_CONF_DIR $command "$@    " < /dev/null
+20      ;;
+21  
+22    (stop)
+23  
+24      if [ -f $_HADOOP_DAEMON_PIDFILE ]; then
+25        if kill -0 `cat $_HADOOP_DAEMON_PIDFILE` > /dev/null 2>&1; then
+26          echo stopping $command
+27          kill `cat $_HADOOP_DAEMON_PIDFILE`
+28        else
+29          echo no $command to stop
+30        fi
+31      else
+32        echo no $command to stop
+33      fi
+34      ;;
+35  
+36    (*)
+37      echo $usage
+38      exit 1
+39      ;;
+40 esac           
+复制代码
+     如果是start就是启动namenode的命令，那么首先创建存放pid文件的目录，如果存放pid的文件已经存在说明已经有namenode节点已经在运行了，那么就先停止在启动。然后根据日志滚动函数生成日志文件，最后就用nice根据调度优先级启动namenode，但是最终的启动还在另一个脚本hadoop，这个脚本是启动所有节点的终极脚本，它会选择一个带有main函数的类用java启动，这样才到达真正的启动java守护进程的效果，这个脚本是启动的重点，也是我们分析hadoop源码的入口处，所以后面章节重点分析。
+
+如果是stop命令就执行简单的停止命令，其他都是错误的，打印提示使用此脚本的文档。
+
+第四节 hadoop-daemons.sh和slaves.sh脚本
+
+      这个脚本简单，因为他最后也是通过上一节介绍的脚本来启动的，只是在这之前做了一些特殊处理，就是执行另一个脚本slaves.sh，代码如下：
+
+1 exec "$bin/slaves.sh" --config $HADOOP_CONF_DIR cd "$HADOOP_HOME" \;"$bin/hadoop-daemon.sh"     --config $HADOOP_CONF_DIR "$@"
+          Slaves.sh脚本的主要功能就是通过ssh在所有的从节点上运行启动从节点的启动脚本，就是上面代码中的最后两条命令，进入hadoop的目录运行bin目录下的hadoop-daemon.sh脚本。执行这个功能的代码如下：
+
+复制代码
+ 1 if [ "$HOSTLIST" = "" ]; then
+ 2    if [ "$HADOOP_SLAVES" = "" ]; then
+ 3      export HOSTLIST="${HADOOP_CONF_DIR}/slaves"
+ 4    else
+ 5      export HOSTLIST="${HADOOP_SLAVES}"
+ 6    fi
+ 7  fi
+ 8  
+ 9 for slave in `cat "$HOSTLIST"|sed  "s/#.*$//;/^$/d"`; do
+10   ssh $HADOOP_SSH_OPTS $slave {1}quot;${@// /\\ }" \
+11     2>&1 | sed "s/^/$slave: /" &
+12   if [ "$HADOOP_SLAVE_SLEEP" != "" ]; then
+13     sleep $HADOOP_SLAVE_SLEEP
+14   fi
+15  done 
+16  wait
+复制代码
+    以上代码首先找到所有从节点的主机名称（在slaves文件中，或者配置文件中配置有），然后通过for循环依次通过ssh远程后台运行启动脚本程序，最后等待程序完成才退出此shell脚本。
+
+     因此这个脚本主要完成的功能就是在所有从节点执行启动相应节点的脚本。这个脚本执行datanode是从slaves文件中找到datanode节点，执行secondarynamenode是在master文件找到节点主机（在start-dfs.sh脚本中用-hosts master指定的，不然默认会找到slaves文件，datanode就是按默认找到的）。
+
+第五节 start-mapred.sh脚本
+
+    这个脚本就两句重要代码，就是分别启动jobtracker和tasktracker节点，其他的环境变量还是通过相应的脚本照样设置，如下：
+
+1 "$bin"/hadoop-daemon.sh --config $HADOOP_CONF_DIR start jobtracker
+2 "$bin"/hadoop-daemons.sh --config $HADOOP_CONF_DIR start tasktracker
+    从代码可以看出还是通过上一节相同的方式来启动，具体就不在分析了，请看前一节。
+
+第六节 hadoop脚本
+
+这个脚本才是重点，前面的脚本执行都是为这个脚本执行做铺垫的，这个脚本的功能也是相当强大，不仅仅可以启动各个节点的服务，还能够执行很多命令和工具。它会根据传入的参数来决定执行什么样的功能（包括启动各个节点服务），下面详细介绍这个脚本的执行流程和功能。
+
+第一步：切换到bin目录下运行脚本hadoop-config.sh，代码如下：
+
+1 bin=`dirname "$0"`
+2 bin=`cd "$bin"; pwd`
+3 . "$bin"/hadoop-config.sh
+第二步：得到hadoop运行实例的名称和检测运行hadoop的环境是否是windows下的linux模拟环境cygwin，代码如下：
+
+1 HADOOP_IDENT_STRING=${HADOOP_IDENT_STRING:-$USER}
+2 cygwin=false
+3 case "`uname`" in
+4 CYGWIN*) cygwin=true;;
+5 esac
+第三步：判断参数个数是否为0个，是的话打印脚本使用方式并退出，否则就获得具体命令，获得命令的代码如下：
+
+1 COMMAND=$1
+2 shift
+第四步：判断配置文件所在的目录下是否有hadoop-env.sh脚本，有就执行，代码如下：
+
+1  if [ -f "${HADOOP_CONF_DIR}/hadoop-env.sh" ]; then
+2    . "${HADOOP_CONF_DIR}/hadoop-env.sh"
+3  fi
+第五步：设置java执行的相关参数，例如JAVA_HOME变量、运行jvm的最大堆空间等，代码如下：
+
+复制代码
+ 1 if [ "$JAVA_HOME" != "" ]; then
+ 2   #echo "run java in $JAVA_HOME"
+ 3   JAVA_HOME=$JAVA_HOME
+ 4 fi
+ 5 if [ "$JAVA_HOME" = "" ]; then
+ 6   echo "Error: JAVA_HOME is not set."
+ 7   exit 1
+ 8 fi
+ 9 JAVA=$JAVA_HOME/bin/java
+10 JAVA_HEAP_MAX=-Xmx1000m
+11 if [ "$HADOOP_HEAPSIZE" != "" ]; then
+12    JAVA_HEAP_MAX="-Xmx""$HADOOP_HEAPSIZE""m"
+13 fi
+复制代码
+第六步：设置CLASSPATH，这一步很重要，因为不设置的话很多类可能找不到，具体设置了那些路径到CLASSPATH看下面的具体代码：
+
+复制代码
+ 1 CLASSPATH="${HADOOP_CONF_DIR}"
+ 2 CLASSPATH=${CLASSPATH}:$JAVA_HOME/lib/tools.jar
+ 3 if [ "$HADOOP_USER_CLASSPATH_FIRST" != "" ] && [ "$HADOOP_CLASSPATH" != "" ]     ; then
+ 4   CLASSPATH=${CLASSPATH}:${HADOOP_CLASSPATH}
+ 5 fi
+ 6 if [ -d "$HADOOP_HOME/build/classes" ]; then
+ 7   CLASSPATH=${CLASSPATH}:$HADOOP_HOME/build/classes
+ 8 fi
+ 9 if [ -d "$HADOOP_HOME/build/webapps" ]; then
+10   CLASSPATH=${CLASSPATH}:$HADOOP_HOME/build
+11 fi
+12 if [ -d "$HADOOP_HOME/build/test/classes" ]; then
+13   CLASSPATH=${CLASSPATH}:$HADOOP_HOME/build/test/classes
+14 fi
+15 if [ -d "$HADOOP_HOME/build/tools" ]; then
+16   CLASSPATH=${CLASSPATH}:$HADOOP_HOME/build/tools
+17 fi
+复制代码
+    上面代码省略很大一部分，具体还有那些可以看具体的hadoop脚本。
+
+第七步：根据第三步保存的命令选择对应的启动java类，如下：
+
+复制代码
+ 1 if [ "$COMMAND" = "classpath" ] ; then
+ 2   if $cygwin; then
+ 3     CLASSPATH=`cygpath -p -w "$CLASSPATH"`
+ 4   fi
+ 5   echo $CLASSPATH
+ 6   exit
+ 7 elif [ "$COMMAND" = "namenode" ] ; then
+ 8   CLASS='org.apache.hadoop.hdfs.server.namenode.NameNode'
+ 9   HADOOP_OPTS="$HADOOP_OPTS $HADOOP_NAMENODE_OPTS"
+10 elif [ "$COMMAND" = "secondarynamenode" ] ; then
+11   CLASS='org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode'
+12   HADOOP_OPTS="$HADOOP_OPTS $HADOOP_SECONDARYNAMENODE_OPTS"
+13 elif [ "$COMMAND" = "datanode" ] ; then
+14   CLASS='org.apache.hadoop.hdfs.server.datanode.DataNode'
+15   HADOOP_OPTS="$HADOOP_OPTS $HADOOP_DATANODE_OPTS"
+16 elif [ "$COMMAND" = "fs" ] ; then
+17   CLASS=org.apache.hadoop.fs.FsShell
+18 .....省略很多
+19 elif [[ "$COMMAND" = -*  ]] ; then
+20   # class and package names cannot begin with a -
+21   echo "Error: No command named \`$COMMAND' was found. Perhaps you meant \`h    adoop ${COMMAND#-}'"
+22   exit 1
+23 else
+24   CLASS=$COMMAND
+25 fi
+复制代码
+     具体可以执行那些命令从以上代码完全可以看出来，而且执行哪一个命令具体对应哪一个类都很有清楚的对应，让我们在分析某一个具体功能的代码的时候能够很块找到入口点。从上面代码最后第二行可以看出hadoop脚本也可以直接运行一个java的jar包或类，这样方便开发者测试自己开发的基于hadoop平台的程序，看样子小脚本能够学到大量知识。
+
+第八步：如果是cygwin环境需要转换路径，代码如下：
+
+复制代码
+1 if $cygwin; then
+2    CLASSPATH=`cygpath -p -w "$CLASSPATH"`
+3    HADOOP_HOME=`cygpath -w "$HADOOP_HOME"`
+4    HADOOP_LOG_DIR=`cygpath -w "$HADOOP_LOG_DIR"`
+5    TOOL_PATH=`cygpath -p -w "$TOOL_PATH"`
+6    JAVA_LIBRARY_PATH=`cygpath -p -w "$JAVA_LIBRARY_PATH"`
+7  fi
+复制代码
+第九步：设置java执行需要的本地库路径JAVA_LIBRARY_PATH，具体代码如下：
+
+复制代码
+ 1 if [ -d "${HADOOP_HOME}/build/native" -o -d "${HADOOP_HOME}/lib/native" -o -    d "${HADOOP_HOME}/sbin" ]; then
+ 2   JAVA_PLATFORM=`CLASSPATH=${CLASSPATH} ${JAVA} -Xmx32m ${HADOOP_JAVA_PLATFO    RM_OPTS} org.apache.hadoop.util.PlatformName | sed -e "s/ /_/g"`
+ 3  
+ 4   if [ -d "$HADOOP_HOME/build/native" ]; then
+ 5     if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
+ 6         JAVA_LIBRARY_PATH=${JAVA_LIBRARY_PATH}:${HADOOP_HOME}/build/native/$    {JAVA_PLATFORM}/lib
+ 7     else
+ 8         JAVA_LIBRARY_PATH=${HADOOP_HOME}/build/native/${JAVA_PLATFORM}/lib
+ 9     fi
+10   fi
+11   if [ -d "${HADOOP_HOME}/lib/native" ]; then
+12     if [ "x$JAVA_LIBRARY_PATH" != "x" ]; then
+13       JAVA_LIBRARY_PATH=${JAVA_LIBRARY_PATH}:${HADOOP_HOME}/lib/native/${JAV    A_PLATFORM}
+14     else
+15       JAVA_LIBRARY_PATH=${HADOOP_HOME}/lib/native/${JAVA_PLATFORM}
+16     fi
+17   fi
+18   _JSVC_PATH=${HADOOP_HOME}/sbin/${JAVA_PLATFORM}/jsvc
+19 fi
+20 如果是cygwin环境需要转换路径：
+21 if $cygwin; then
+22   JAVA_LIBRARY_PATH=`cygpath -p "$JAVA_LIBRARY_PATH"`
+23 fi
+复制代码
+第十步：设置hadoop可选项变量：HADOOP_OPTS；
+
+第十一步：首先判断是运行节点的启动节点运行命令还是普通的客户端命令，然后根据相关条件设置运行的模式（有三种：jvsc、su和normal），代码如下：
+
+复制代码
+ 1 if [[ "$COMMAND" == *node ]] || [[ "$COMMAND" == *tracker ]]; then
+ 2   command_uc=$(echo $COMMAND| tr a-z A-Z) #转换为大写
+ 3   user_var="HADOOP_${command_uc}_USER"
+ 4   _HADOOP_DAEMON_USER=$(eval "echo \$user_var")
+ 5   _HADOOP_DAEMON_USER=${_HADOOP_DAEMON_USER:-$(id -un)}
+ 6   if [ -z "$_HADOOP_DAEMON_USER" ]; then
+ 7     echo Please specify a user to run the $COMMAND by setting $user_var
+ 8     exit 1
+ 9   elif  [ "$_HADOOP_DAEMON_USER" == "root" ]; then
+10     echo May not run daemons as root. Please specify $user_var
+11     exit 1
+12   fi
+13   if [ "$EUID" = "0" ] ; then
+14     if [ "$COMMAND" == "datanode" ] && [ -x "$_JSVC_PATH" ]; then
+15       _HADOOP_RUN_MODE="jsvc"
+16     elif [ -x /bin/su ]; then
+17       _HADOOP_RUN_MODE="su"
+18     else
+19       echo "Daemon wants to run as $_HADOOP_DAEMON_USER but script is runnin    g as root"
+20   echo "and su is not available."
+21       exit 1
+22     fi
+23   else
+24     if [ "$_HADOOP_DAEMON_USER" != "$(whoami)" ]; then
+25       echo Daemon wants to run as $_HADOOP_DAEMON_USER but not running as th    at user or root.
+26       exit 1
+27     fi
+28     _HADOOP_RUN_MODE="normal"
+29   fi
+30 else
+31   _HADOOP_RUN_MODE="normal"
+32 fi
+复制代码
+第十二步：最后一步就是根据上面确定的运行模式具体运行命令，只有datanode节点能够使用jsvc运行，如下代码所示：
+
+复制代码
+ 1 case "$_HADOOP_RUN_MODE" in
+ 2   jsvc)
+ 3     case "$COMMAND" in
+ 4       datanode)
+ 5         _JSVC_STARTER_CLASS=org.apache.hadoop.hdfs.server.datanode.SecureDat    aNodeStarter
+ 6        ;;
+ 7        *)
+ 8          echo "Cannot start $COMMAND with jsvc"
+ 9          exit 1
+10        ;;
+11      esac
+12  
+13      if [ "$_HADOOP_DAEMON_DETACHED" = "true" ]; then
+14        _JSVC_FLAGS="-pidfile $_HADOOP_DAEMON_PIDFILE
+15                    -errfile &1
+16                    -outfile $_HADOOP_DAEMON_OUT"
+17      ese
+18 .....省略一些代码，最终执行还是下面这一句代码：
+19 exec "$_JSVC_PATH" -Dproc_$COMMAND \
+20                         $_JSVC_FLAGS \
+21                         -user "$_HADOOP_DAEMON_USER" \
+22                         -cp "$CLASSPATH" \
+23                         $JAVA_HEAP_MAX $HADOOP_OPTS \
+24                         $_JSVC_STARTER_CLASS "$@"
+25    ;;
+复制代码
+如果是su和normal模式运行，所有的命令都可以正常的使用java来执行，如下代码：
+
+复制代码
+ 1    normal | su)
+ 2      # If we need to su, tack the command into a local variable
+ 3      if [ $_HADOOP_RUN_MODE = "su" ]; then
+ 4        _JAVA_EXEC="su $_HADOOP_DAEMON_USER -s $JAVA --"
+ 5      else
+ 6        _JAVA_EXEC="$JAVA"
+ 7      fi
+ 8      if [ "$_HADOOP_DAEMON_DETACHED" = "true" ]; then
+ 9        unset _HADOOP_DAEMON_DETACHED
+10        touch $_HADOOP_DAEMON_OUT
+11        nohup $_JAVA_EXEC -Dproc_$COMMAND $JAVA_HEAP_MAX $HADOOP_OPTS -classpa    th "$CLASSPATH" $CLASS "$@" > "$_HADOOP_DAEMON_OUT" 2>&1 < /dev/null &
+12        if [ "$EUID" == "0" ]; then
+13          chown $_HADOOP_DAEMON_USER $_HADOOP_DAEMON_OUT
+14        fi
+15        echo $! > "$_HADOOP_DAEMON_PIDFILE"
+16        sleep 1
+17        head "$_HADOOP_DAEMON_OUT"
+18      else
+19    exec $_JAVA_EXEC -Dproc_$COMMAND $JAVA_HEAP_MAX $HADOOP_OPTS -classpat    h "$CLASSPATH" $CLASS "$@"
+20      fi
+21    ;;
+复制代码
+到此为止所有脚本执行完毕，剩余就是不能识别模式的错误处理和提示。在执行具体命令的时候可能涉及到用户名的检测，例如su可以指定一个用户名来运行，如果不指定就按照linux上的用户名来运行。
+
+第七节 hadoop-config.sh和hadoop-env.sh脚本
+
+     这两个脚本基本上在上面分析的所有脚本都涉及到，他们的主要功能就是根据命令行参数来设置一些配置文件的路径已经环境变量的值，都是一些公共设置，所以在执行每个脚本的时候都设置一遍。具体的代码就不详细分析了！
+
+ 
+
+第八节 总结
+
+      这个启动脚本还是比较复杂，从这个启动脚本我学习到很多知识，第一就是学到很多有关于shell编程的知识，里面很多shell编程的技巧值得学习和借鉴；第二，通过整个启动过程的了解，知道了运行hadoop需要设置的很多东西，包括我们在配置文件中配置的一些选项是怎么起作用的、设置了哪些classpath路径等，第三，详细了解了所有能够通过hadoop执行的命令。还有其他许多收获竟在不言中。

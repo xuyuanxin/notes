@@ -10,7 +10,7 @@ our earlier examples, a domain name consists of a sequence of subnames separated
 delimiter character, the dot. In our examples, we said that individual sections of t-
 he name might represent sites or groups, but DNS simply calls each section a label. -
 Thus, the domain name:
-                 cs .purdue .edu
+                 cs.purdue .edu
 contains three labels: cs, purdue, and edu. Any suffix of a label in a domain name is
 also called a domain. In the above example, the lowest-level domain is cs.purdue.edu,
 (the domain name for the Computer Science department at Purdue University), the seco-

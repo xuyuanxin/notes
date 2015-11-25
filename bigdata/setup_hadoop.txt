@@ -119,12 +119,11 @@ sudo vim /etc/HOSTNAME                  # 修改主机名
 sudo vim /etc/hosts                     # 修改主机与 IP 的映射关系
 sudo reboot                             # 重启, 使网络配置生效
                                         # 在Master主机上执行：
-cd ~/.ssh                               #
+cd ~/.ssh                               # 如果没有.ssh目录，登录一下(ssh localhost)就自动创建了.
 ssh-keygen -t rsa                       # 一直按回车就可以
-cat ~/id_rsa.pub >> ~/authorized_keys
-scp ~/.ssh/id_rsa.pub hadoop@Slave1:/home/hadoop/ # 传输公钥到Slave1
-                                        # 接着在 Slave1 节点上执行
-cd ~
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+scp ~/.ssh/id_rsa.pub hadoop@Slave1:/home/hadoop/ # 传输公钥到Slave1                                        
+cd ~                                    # 接着在 Slave1 节点上执行
 mkdir .ssh
 cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 
@@ -135,7 +134,7 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 2.2 文件 core-site.xml:
 <property>
     <name>fs.defaultFS</name>
-    <value>hdfs://Master:9000</value>
+    <value>hdfs://Master:9000</value>  # Master是IP，/etc/hosts要有映射关系
 </property>
 <property>
     <name>hadoop.tmp.dir</name>
@@ -146,7 +145,7 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 2.3 文件 hdfs-site.xml:
 <property>
     <name>dfs.namenode.secondary.http-address</name>
-    <value>Master:50090</value>
+    <value>Master:50090</value> # Master是IP，/etc/hosts要有映射关系
 </property>
 <property>
     <name>dfs.namenode.name.dir</name>
@@ -170,7 +169,7 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 2.5 文件yarn-site.xml：
 <property>
     <name>yarn.resourcemanager.hostname</name>
-    <value>Master</value>
+    <value>Master</value> # Master是IP，/etc/hosts要有映射关系
 </property>
 <property>
     <name>yarn.nodemanager.aux-services</name>
@@ -181,13 +180,14 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 cd /usr/local                            # Master执行
 rm -r ./hadoop/tmp                       # Master执行, 删除Hadoop临时文件
 sudo tar -zcf ./hadoop.tar.gz ./hadoop   # Master执行
-scp ./hadoop.tar.gz Slave1:/home/hadoop  # Master执行
+scp ./hadoop.tar.gz Slave1:/home/hadoop  # Master执行，也可以直接用 -r 参数，拷贝文件夹
 sudo tar -zxf ~/hadoop.tar.gz -C /usr/local     # 在Slave1上执行
 sudo chown -R hadoop:hadoop /usr/local/hadoop   # 在Slave1上执行
 
 注意 
-3.1 各个机器上的java路径可能不一致.
+3.1 各个机器上的java路径可能不一致(注意修改hadoop-env.sh).
 3.2 datanode的路径要提前创建, 本例是/usr/local/hadoop/tmp
+3.3 datanode要和namenode通信，所有要知道namenode的IP(/etc/hosts)
 
 4 最后在Master主机上就可以启动hadoop了(会自动启动slave上的datanode)
 cd /usr/local/hadoop/                                                                |
