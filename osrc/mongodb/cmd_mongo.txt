@@ -1,32 +1,12 @@
 http://www.cnblogs.com/wufengtinghai/p/3801697.html   MongoDB新增及查询数据(一)
 http://blog.csdn.net/xyz_lmn/article/details/8072621  MongoDB shell操作
 
-MongoDB shell操作
-分类： MongoDB 2012-10-15 15:34 4202人阅读 评论(0) 收藏 举报
-shellmongodbjavascript数据库collectionssql
-           shell命令操作语法和JavaScript很类似，其实控制台底层的查询语句都是用JavaScript脚本完成操作的。使用shell 命令，需要启动mongo.exe。
-        
-常用shell命令如下：
-
-       1、查询本地所有数据库名称        
-
-
-> show dbs;
-       2、切换至指定数据库环境（若无指定的数据库，则创建新的库）
-
-> use mydb;
-       3、查询当前库下的所有聚集集合collection（相当于table）
-
-> show collections;
-       4、创建聚集集合
-
-> db.createCollection('mycollection');
-       5、查询聚集集合中数据条数
-
-> db.mycollection.count();
-           6、插入数据
-> db.mycollection.insert({'username':'xyz_lmn','age':26,'salary':120});
-往'mycollection'聚集集合中插上一条数库，name为'xyz_lmn',age为'26',salary为'120'
+> show dbs; #查询本地所有数据库名称        
+> use mydb; #切换至指定数据库环境（若无指定的数据库，则创建新的库）
+> show collections; #查询当前库下的所有聚集集合collection（相当于table）
+> db.createCollection('mycollection'); #创建聚集集合
+> db.mycollection.count(); #查询聚集集合中数据条数
+> db.mycollection.insert({'username':'xyz_lmn','age':26,'salary':120}); #插入数据
 
 
        7、查询age等于26的数据

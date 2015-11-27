@@ -1,3 +1,27 @@
+
+class date: # class datetime.date
+    def 
+
+class datetime: # datetime.datetime
+  def strptime(date_string, format):
+    ''' classmethod datetime.strptime(date_string, format)
+    Return a @datetime corresponding to @date_string, parsed according to @format. 
+    >>> dt = datetime.strptime("21/11/06 16:30", "%d/%m/%y %H:%M")
+    >>> dt
+    datetime.datetime(2006, 11, 21, 16, 30)
+    '''
+    pass
+
+''' datetime.strftime(format)
+Return a string representing the date and time, controlled by an explicit @format string.
+>>> t.strftime("%H:%M:%S %Z")
+'12:10:30 Europe/Prague'
+'''
+def strftime(format):
+    pass
+
+
+
 '''                                                                                  |
 http://www.cnblogs.com/lhj588/archive/2012/04/23/2466653.html                        |
 Python提供了多个内置模块用于操作日期时间，像calendar，time，datetime。time模块我在之 |
@@ -75,35 +99,6 @@ Di 16 Aug 21:30:00 1988 (de_DE)
 
 '''
 
-''' class datetime.date
 
-'''
-class date:
-    def 
 
-'''datetime.datetime
-'''
-class datetime:
-    def
-	
-	
-	
-	
-	
 
-''' datetime.strftime(format)
-Return a string representing the date and time, controlled by an explicit @format string.
->>> t.strftime("%H:%M:%S %Z")
-'12:10:30 Europe/Prague'
-'''
-def strftime(format):
-    pass
-
-''' classmethod datetime.strptime(date_string, format)
-Return a datetime corresponding to @date_string, parsed according to @format. 
->>> dt = datetime.strptime("21/11/06 16:30", "%d/%m/%y %H:%M")
->>> dt
-datetime.datetime(2006, 11, 21, 16, 30)
-'''
-def strptime(date_string, format):
-    pass

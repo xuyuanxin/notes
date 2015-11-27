@@ -1,13 +1,24 @@
 # http://blog.csdn.net/business122/article/details/7541486
 
-'''
-python的set和其他语言类似, 是一个无序不重复元素集, 基本功能包括关系测试和消除重复元素. 集合对象还支持union(联合), intersection(交), difference(差)和sysmmetric difference(对称差集)等数学运算.
+'''                                                                                  |
+python的set和其他语言类似, 是一个无序不重复元素集, 基本功能包括关系测试和消除重复元素|
+. 集合对象还支持union(联合), intersection(交), difference(差)和sysmmetric difference(|
+对称差集)等数学运算. sets 支持 x in set, len(set),和 for x in set。作为一个无序的集合|
+，sets不记录元素位置或者插入点。因此，sets不支持 indexing, slicing, 或其它类序列（   |
+sequence-like）的操作。                                                              |
 
-sets 支持 x in set, len(set),和 for x in set。作为一个无序的集合，sets不记录元素位置或者插入点。因此，sets不支持 indexing, slicing, 或其它类序列（sequence-like）的操作。
+set 集合是一种数据类型，可以用{}来定义，但是pyton -v 版本 >2.7
 
- 
-
-下面来点简单的小例子说明把。
+set的数据格式：
+s1={"abc","def"}      #{} 自己定义  
+>>> print s1  
+set(['abc', 'def'])    
+>>> s2=set("abcdef")  #set 函数用string进行初始化  
+>>> print s2  
+set(['a', 'c', 'b', 'e', 'd', 'f'])  
+>>> s3=set(["abc",123,"def"])  #set 函数用list进行初始化  
+>>> print s3  
+set([123, 'abc', 'def'])   
 
 >>> x = set('spam')
 >>> y = set(['h','a','m'])
