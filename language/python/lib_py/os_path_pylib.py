@@ -2,13 +2,14 @@
 
 #                      os.path
 
-''' os.path.basename(path)
-Return the base name of pathname @path. This is the second element of the pair retur-
-ned by passing path to the function split().
-os.path.basename('/Volumes/1.mp4')   # ('1.mp4')
-'''
-def basename(path):
-    pass
+
+def basename(path): #os.path.basename(path)
+  ''' 
+  Return the base name of pathname @path. This is the second element of the pair ret-
+  urned by passing path to the function split().
+  os.path.basename('/Volumes/1.mp4')   # ('1.mp4')
+  '''
+  pass
 
 ''' os.path.dirname(path)
 Return the directory name of pathname @path. This is the first element of the pair r-
@@ -18,9 +19,30 @@ os.path.dirname('/Volumes/1.mp4')   # ('/Volumes')
 def dirname(path):
     pass
 
-'''
+
 def join(path, *paths):
-    pass
+  '''
+  Join one or more path components intelligently. The return value is the concatenat-
+  ion of @path and any members of *@paths with exactly one directory separator      -
+  (os.sep) following each non-empty part except the last, meaning that the result wi-
+  ll only end in a separator if the last part is empty. If a component is an absolute 
+  path, all previous components are thrown away and joining continues from the absol-
+  ute path component.
+
+  On Windows, the drive letter is not reset when an absolute path component (e.g.,  -
+  r'\foo') is encountered. If a component contains a drive letter, all previous comp-
+  onents are thrown away and the drive letter is reset. Note that since there is a c-
+  urrent directory for each drive, os.path.join("c:", "foo") represents a path relat-
+  ive to the current directory on drive C: (c:foo), not c:\foo.
+  
+  >>> os.path.join('c:\\', 'csv', 'test.csv') 
+  'c:\\csv\\test.csv' 
+  >>> os.path.join('windows\temp', 'c:\\', 'csv', 'test.csv') 
+  'c:\\csv\\test.csv' 
+  >>> os.path.join('/home/aa','/home/aa/bb','/home/aa/bb/c') 
+  '/home/aa/bb/c' 
+  '''
+  pass
 	
 ''' os.path.split(path)
 Split the pathname @path into a pair, (head, tail) where tail is the last pathname c-

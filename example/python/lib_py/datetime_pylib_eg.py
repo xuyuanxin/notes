@@ -1,5 +1,16 @@
 #_*_coding:UTF-8_*_
 
+from datetime import timedelta
+from datetime import datetime
+
+start_date_str = '040101'
+day_gap = 2
+start_datetime = datetime.strptime(start_date_str, "%y%m%d")
+end_datetime = start_datetime + timedelta(days=int(day_gap))
+
+print(start_datetime)
+print(end_datetime)
+
 from  datetime  import  *  
 import  time  
  

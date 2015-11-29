@@ -1,8 +1,39 @@
+'''
+The @datetime module supplies classes for manipulating dates and times in both simple 
+and complex ways.
 
-class date: # class datetime.date
+The @datetime module exports the following constants:
+
+datetime.MINYEAR
+The smallest year number allowed in a date or datetime object. MINYEAR is 1.
+
+datetime.MAXYEAR
+The largest year number allowed in a date or datetime object. MAXYEAR is 9999.
+
+'''
+
+
+
+class date:      # class datetime.date
     def 
 
-class datetime: # datetime.datetime
+class datetime:  # datetime.datetime
+
+  def date(): # datetime.date()
+    '''
+    Return @date object with same year, month and day.
+  
+    >>> import datetime
+    >>> d = datetime.datetime.strptime('20151129','%Y%m%d')
+    >>> d.date()
+    datetime.date(2015, 11, 29)
+    >>> type(d.date())
+    <type 'datetime.date'>
+    >>> print d.date()
+    2015-11-29
+    '''
+    pass
+  
   def strptime(date_string, format):
     ''' classmethod datetime.strptime(date_string, format)
     Return a @datetime corresponding to @date_string, parsed according to @format. 
@@ -12,6 +43,27 @@ class datetime: # datetime.datetime
     '''
     pass
 
+class timedelta: # class datetime.timedelta
+  '''
+  A @timedelta object represents a duration, the difference between two dates or tim-
+  es.
+  '''
+  def timedelta([days[, seconds[, microseconds[, milliseconds[, minutes[, hours[, weeks]]]]]]]):
+    '''
+	>>> from datetime import timedelta
+    >>> d = timedelta(days=1)
+    >>> d
+    datetime.timedelta(1)
+    >>> print d
+    1 day, 0:00:00
+    >>> d.days
+    1
+	'''
+	pass
+    
+	
+	
+	
 ''' datetime.strftime(format)
 Return a string representing the date and time, controlled by an explicit @format string.
 >>> t.strftime("%H:%M:%S %Z")
@@ -49,7 +101,7 @@ Sunday, Monday, ..., Saturday (en_US);
 Sonntag, Montag, ..., Samstag (de_DE)
 (1)
 %w	Weekday as a decimal number, where 0 is Sunday and 6 is Saturday.	0, 1, ..., 6	 
-%d	Day of the month as a zero-padded decimal number.	01, 02, ..., 31	 
+ 
 %b	Month as locale’s abbreviated name.	
 Jan, Feb, ..., Dec (en_US);
 Jan, Feb, ..., Dez (de_DE)
@@ -93,6 +145,8 @@ Di 16 Aug 21:30:00 1988 (de_DE)
 
 
 ----> format
+ %d  Day of the month as a zero-padded decimal number. 01, 02, ..., 31	
+ %m  Month as a zero-padded decimal number. 01, 02, ..., 12	 
  %y  Year without century as a zero-padded decimal number.  00, 01, ..., 99	 
  %Y  Year with century as a decimal number.  1970, 1988, 2001, 2013
 

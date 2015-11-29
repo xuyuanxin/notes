@@ -1,9 +1,19 @@
 '''
 http://blog.csdn.net/xiaoxiaoniaoer1/article/details/8542834
-
-
-
 '''
+
+def join(words[, sep]) # string.join(words[, sep])
+  '''
+  Concatenate a list or tuple of @words with intervening occurrences of @sep. The de-
+  fault value for @sep is a single space character. It is always true that          -
+  string.join(string.split(s, sep), sep) equals s.
+
+  >>> print '+'.join(list('hello'))
+  h+e+l+l+o
+  '''
+  pass
+
+
 
 '''
 ----> String Formatting
@@ -33,16 +43,7 @@ Pi with three decimals: 3.142
 
 
 
-''' string.join(words[, sep])
-Concatenate a list or tuple of @words with intervening occurrences of @sep. The defa-
-ult value for @sep is a single space character. It is always true that              -
-string.join(string.split(s, sep), sep) equals s.
 
->>> print '+'.join(list('hello'))
-h+e+l+l+o
-'''
-def join(words[, sep])
-    pass
 	
 
 

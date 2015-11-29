@@ -1,3 +1,12 @@
+
+
+def find():
+  '''
+  >>> for item in db.Account.find():
+        item
+  '''
+  pass
+
 '''
 @filter (optional): 
     a dictionary specifying the query to be performed OR any other type to be used a-

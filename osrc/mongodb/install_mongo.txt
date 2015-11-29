@@ -1,77 +1,77 @@
 http://blog.csdn.net/u011203602/article/details/48006029   MongoDB数据库安装及测试
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/  
 
-
+'''
 ----> mongodb windows install
-1) Determine which MongoDB build you need
--> wmic os get caption
--> wmic os get osarchitecture
-MongoDB for Windows 64-bit runs only on Windows Server 2008 R2, Windows 7 64-bit, and 
-newer versions of Windows.
+  1) Determine which MongoDB build you need
+    -> wmic os get caption
+    -> wmic os get osarchitecture
+  
+  2) Download MongoDB for Windows. 
+    MongoDB for Windows 64-bit
 
-2) Download MongoDB for Windows.
+  3) Double-click the .msi file
+    You may specify an installation directory if you choose the "Custom" installatio-
+	n option(default C:\mongodb).
 
-3) Double-click the .msi file
-You may specify an installation directory if you choose the "Custom" installation op-
-tion(default C:\mongodb).
+  4) Run MongoDB
+   4.1) Set up the MongoDB environment.
+    MongoDB requires a data directory to store all data. MongoDB’s default data dire-
+	ctory path is \data\db. You can specify an alternate path for data files using t-
+	he --dbpath option to mongod.exe, for example:
+    -> C:\mongodb\bin\mongod.exe --dbpath d:\test\mongodb\data
+    If your path includes spaces, enclose the entire path in double quotes, for exam-
+	ple:
+    -> C:\mongodb\bin\mongod.exe --dbpath "d:\test\mongo db data"
+    You may also specify the dbpath in a configuration file.
+   4.2) Start MongoDB.
+    To start MongoDB, run mongod.exe. For example, from the Command Prompt:
+    -> C:\mongodb\bin\mongod.exe
+   4.3) Connect to MongoDB.
+    To connect to MongoDB through the mongo.exe shell, open another Command Prompt.
+    -> C:\mongodb\bin\mongo.exe
 
-4) Run MongoDB
-4.1) Set up the MongoDB environment.
-MongoDB requires a data directory to store all data. MongoDB’s default data directory 
-path is \data\db. You can specify an alternate path for data files using the --dbpath 
-option to mongod.exe, for example:
--> C:\mongodb\bin\mongod.exe --dbpath d:\test\mongodb\data
-If your path includes spaces, enclose the entire path in double quotes, for example:
--> C:\mongodb\bin\mongod.exe --dbpath "d:\test\mongo db data"
-You may also specify the dbpath in a configuration file.
-4.2) Start MongoDB.
-To start MongoDB, run mongod.exe. For example, from the Command Prompt:
--> C:\mongodb\bin\mongod.exe
-4.3) Connect to MongoDB.
-To connect to MongoDB through the mongo.exe shell, open another Command Prompt.
--> C:\mongodb\bin\mongo.exe
+  5 Configure a Windows Service for MongoDB
+   5.1 Open an Administrator command prompt.
+    Press the Win key, type cmd.exe, and press Ctrl + Shift + Enter to run the Comma-
+	nd Prompt as Administrator. Execute the remaining steps from the Administrator c-
+	ommand prompt.
+   5.2 Create directories.
+    Create directories for your database and log files:
+    -> mkdir c:\data\db
+    -> mkdir c:\data\log
+   5.3 Create a configuration file.
+    Create a configuration file. The file must set systemLog.path. Include additiona-
+	l configuration options as appropriate. For example, create a file at           -
+    C:\mongodb\mongod.cfg that specifies both systemLog.path and storage.dbPath:
+    -------------------------------------
+    systemLog:
+        destination: file
+        path: c:\data\log\mongod.log
+    storage:
+        dbPath: c:\data\db
+    ------------------------------------
+   5.4 Install the MongoDB service.
+    Run all of the following commands in Command Prompt with "Administrative Privile-
+	ges". Install the MongoDB service by starting mongod.exe with the --install opti-
+	on and the config option to specify the previously created configuration file.
+    -> "C:\mongodb\bin\mongod.exe" --config "C:\mongodb\mongod.cfg" --install
+    To use an alternate dbpath, specify the path in the configuration file (e.g.    -
+    C:\mongodb\mongod.cfg) or on the command line with the --dbpath option. If neede-
+	d, you can install services for multiple instances of mongod.exe or mongos.exe. -
+	Install each service with a unique --serviceName and --serviceDisplayName. Use  -
+	multi-ple instances only when sufficient system resources exist and your system -
+	design requires it.
+   5.5 Start the MongoDB service.
+    -> net start MongoDB
+   5.6 Stop or remove the MongoDB service as needed.
+    To stop the MongoDB service use the following command:
+    -> net stop MongoDB
+    To remove the MongoDB service use the following command:
+    -> "C:\mongodb\bin\mongod.exe" --remove
 
-5 Configure a Windows Service for MongoDB
-5.1 Open an Administrator command prompt.
-Press the Win key, type cmd.exe, and press Ctrl + Shift + Enter to run the Command P-
-rompt as Administrator. Execute the remaining steps from the Administrator command p-
-rompt.
-5.2 Create directories.
-Create directories for your database and log files:
--> mkdir c:\data\db
--> mkdir c:\data\log
-5.3 Create a configuration file.
-Create a configuration file. The file must set systemLog.path. Include additional co-
-nfiguration options as appropriate. For example, create a file at                   -
-C:\mongodb\mongod.cfg that specifies both systemLog.path and storage.dbPath:
--------------------------------------
-systemLog:
-    destination: file
-    path: c:\data\log\mongod.log
-storage:
-    dbPath: c:\data\db
-------------------------------------
-5.4 Install the MongoDB service.
-Run all of the following commands in Command Prompt with “Administrative Privileges”.
-Install the MongoDB service by starting mongod.exe with the --install option and  the 
--config option to specify the previously created configuration file.
--> "C:\mongodb\bin\mongod.exe" --config "C:\mongodb\mongod.cfg" --install
-To use an alternate dbpath, specify the path in the configuration file (e.g.        -
-C:\mongodb\mongod.cfg) or on the command line with the --dbpath option. If needed, y-
-ou can install services for multiple instances of mongod.exe or mongos.exe. Install -
-each service with a unique --serviceName and --serviceDisplayName. Use multiple inst-
-ances only when sufficient system resources exist and your system design requires it.
-5.5 Start the MongoDB service.
--> net start MongoDB
-5.6 Stop or remove the MongoDB service as needed.
-To stop the MongoDB service use the following command:
--> net stop MongoDB
-To remove the MongoDB service use the following command:
--> "C:\mongodb\bin\mongod.exe" --remove
-
-6 
-http://localhost:27017/
-
+  6 test
+    http://localhost:27017/
 
 ----> client
 pip install pymongo
@@ -81,3 +81,4 @@ pip install pymongo
 
 ----> I CONTROL  Error connecting to the Service Control Manager: 拒绝访问。 (5)
 以管理员身份运行win cmd
+'''

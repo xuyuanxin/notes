@@ -4,209 +4,200 @@
 pandas是基于Numpy构建的含有更高级数据结构和工具的数据分析包
 
 目录[-]
-Series
-DataFrame
-对象属性
-查找索引
-修改索引
-重新索引
-删除指定轴上的项
-索引和切片
-算术运算和数据对齐
-函数应用和映射
-排序和排名
-统计方法
-协方差与相关系数
-列与 Index 间的转换
-处理缺失数据
-is(not)null
-dropna
-fillna
-inplace 参数
-层次化索引
-                                                                                     |
+  Series
+  DataFrame
+  对象属性
+    查找索引 
+    修改索引
+    重新索引
+    删除指定轴上的项
+    索引和切片
+    算术运算和数据对齐
+    函数应用和映射
+    排序和排名
+    统计方法
+    协方差与相关系数
+    列与 Index 间的转换
+  处理缺失数据
+    is(not)null
+    dropna
+    fillna
+  inplace 参数
+  层次化索引
+
 pandas是基于Numpy构建的含有更高级数据结构和工具的数据分析包. 类似于Numpy的核心是     |
 ndarray, pandas也是围绕着Series和DataFrame两个核心数据结构展开的. Series和DataFrame分|
 别对应于一维的序列和二维的表结构. pandas 约定俗成的导入方法如下:                     |
 >>> from pandas import Series,DataFrame
 >>> import pandas as pd
-#------------------------------------------------------------------------------------#
-# ----> Series                                                                       #
-#------------------------------------------------------------------------------------#
-Series可以看做一个定长的有序字典. 基本任意的一维数据都可以用来构造Series对象:
->>> s = Series([1,2,3.0,'abc'])
->>> s
-0      1
-1      2
-2      3
-3    abc
-dtype: object                                                                        |
 
-虽然dtype:object可以包含多种基本数据类型, 但总感觉会影响性能的样子, 最好还是保持单纯 |
-的dtype.                                                                             |
-Series对象包含两个主要的属性:index和values, 分别为上例中左右两列。因为传给构造器的是 |
-一个列表，所以 index 的值是从 0 起递增的整数，如果传入的是一个类字典的键值对结构，就 |
-会生成 index-value 对应的 Series；或者在初始化的时候以关键字参数显式指定一个 index 对|
-象：
->>> s = Series(data=[1,3,5,7],index = ['a','b','x','y'])
->>> s
-a    1
-b    3
-x    5
-y    7
-dtype: int64
->>> s.index
-Index(['a', 'b', 'x', 'y'], dtype='object')
->>> s.values
-array([1, 3, 5, 7], dtype=int64)
+----> Series
+  Series可以看做一个定长的有序字典. 基本任意的一维数据都可以用来构造Series对象:
+  >>> s = Series([1,2,3.0,'abc'])
+  >>> s
+  0      1
+  1      2
+  2      3
+  3    abc
+  dtype: object                                                                      |
+
+  虽然dtype:object可以包含多种基本数据类型, 但总感觉会影响性能的样子, 最好还是保持单 |
+  纯的dtype. Series对象包含两个主要的属性:index和values, 分别为上例中左右两列。因为传|
+  给构造器的是一个列表，所以 index 的值是从 0 起递增的整数，如果传入的是一个类字典的 |
+  键值对结构，就会生成 index-value 对应的 Series；或者在初始化的时候以关键字参数显式 |
+  指定一个 index 对象：                                                              |
+  >>> s = Series(data=[1,3,5,7],index = ['a','b','x','y'])
+  >>> s
+  a    1
+  b    3
+  x    5
+  y    7
+  dtype: int64
+  >>> s.index
+  Index(['a', 'b', 'x', 'y'], dtype='object')
+  >>> s.values
+  array([1, 3, 5, 7], dtype=int64)
                                                                                      |
-Series 对象的元素会严格依照给出的 index 构建，这意味着：如果 data 参数是有键值对的， |
-那么只有 index 中含有的键会被使用；以及如果 data 中缺少相应的键，即使给出 NaN 值，这 |
-个键也会被添加。注意 Series 的 index 和 values 的元素之间虽然存在对应关系，但这与字典|
-的映射不同。index 和 values 实际仍为互相独立的 ndarray 数组，因此 Series 对象的性能完|
-全 ok。Series 这种使用键值对的数据结构最大的好处在于，Series 间进行算术运算时，index |
-会自动对齐。另外，Series 对象和它的 index 都含有一个 name 属性：                     |
->>> s.name = 'a_series'
->>> s.index.name = 'the_index'
->>> s
-the_index
-a            1
-b            3
-x            5
-y            7
-Name: a_series, dtype: int64
+  Series 对象的元素会严格依照给出的 index 构建，这意味着：如果 data 参数是有键值对的 |
+  ，那么只有 index 中含有的键会被使用；以及如果 data 中缺少相应的键，即使给出 NaN 值 |
+  ，这个键也会被添加。注意 Series 的 index 和 values 的元素之间虽然存在对应关系，但这|
+  与字典的映射不同。index 和 values 实际仍为互相独立的 ndarray 数组，因此 Series 对象|
+  的性能完全ok。Series 这种使用键值对的数据结构最大的好处在于，Series 间进行算术运算 |
+  时，index 会自动对齐。另外，Series 对象和它的 index 都含有一个 name 属性：         |
+  >>> s.name = 'a_series'
+  >>> s.index.name = 'the_index'
+  >>> s
+  the_index
+  a            1
+  b            3
+  x            5
+  y            7
+  Name: a_series, dtype: int64
 
-#------------------------------------------------------------------------------------#
-# ----> DataFrame                                                                    #
-#------------------------------------------------------------------------------------#
-DataFrame 是一个表格型的数据结构，它含有一组有序的列（类似于 index），每列可以是不同的值类型（不像 ndarray 只能有一个 dtype）。基本上可以把 DataFrame 看成是共享同一个 index 的 Series 的集合。
-
-DataFrame 的构造方法与 Series 类似，只不过可以同时接受多条一维数据源，每一条都会成为单独的一列：
-
-
->>> data = {'state':['Ohino','Ohino','Ohino','Nevada','Nevada'],
+----> DataFrame                                                                      |
+  DataFrame 是一个表格型的数据结构，它含有一组有序的列（类似于 index），每列可以是不 |
+  同的值类型（不像 ndarray 只能有一个 dtype）。基本上可以把 DataFrame 看成是共享同一 |
+  个 index 的 Series 的集合。DataFrame 的构造方法与 Series 类似，只不过可以同时接受多|
+  条一维数据源，每一条都会成为单独的一列：                                           |
+  >>> data = {'state':['Ohino','Ohino','Ohino','Nevada','Nevada'],
         'year':[2000,2001,2002,2001,2002],
         'pop':[1.5,1.7,3.6,2.4,2.9]}
->>> df = DataFrame(data)
->>> df
-   pop   state  year
-0  1.5   Ohino  2000
-1  1.7   Ohino  2001
-2  3.6   Ohino  2002
-3  2.4  Nevada  2001
-4  2.9  Nevada  2002
+  >>> df = DataFrame(data)
+  >>> df
+     pop   state  year
+  0  1.5   Ohino  2000
+  1  1.7   Ohino  2001
+  2  3.6   Ohino  2002
+  3  2.4  Nevada  2001
+  4  2.9  Nevada  2002
 
-[5 rows x 3 columns]
-虽然参数 data 看起来是个字典，但字典的键并非充当 DataFrame 的 index 的角色，而是 Series 的 “name” 属性。这里生成的 index 仍是 “01234”。
-
-较完整的 DataFrame 构造器参数为：DataFrame(data=None,index=None,coloumns=None)，columns 即 “name”：
-
-
->>> df = DataFrame(data,index=['one','two','three','four','five'],
+  [5 rows x 3 columns]                                                               |
+  虽然参数 data 看起来是个字典，但字典的键并非充当 DataFrame 的 index 的角色，而是   |
+  Series 的 “name” 属性。这里生成的 index 仍是 “01234”。较完整的 DataFrame 构造器参数|
+  为：
+  DataFrame(data=None,index=None,coloumns=None) # columns 即 “name”：
+  
+  >>> df = DataFrame(data,index=['one','two','three','four','five'],
                columns=['year','state','pop','debt'])
->>> df
-       year   state  pop debt
-one    2000   Ohino  1.5  NaN
-two    2001   Ohino  1.7  NaN
-three  2002   Ohino  3.6  NaN
-four   2001  Nevada  2.4  NaN
-five   2002  Nevada  2.9  NaN
+  >>> df
+         year   state  pop  debt
+  one    2000   Ohino  1.5  NaN
+  two    2001   Ohino  1.7  NaN
+  three  2002   Ohino  3.6  NaN
+  four   2001  Nevada  2.4  NaN
+  five   2002  Nevada  2.9  NaN
 
-[5 rows x 4 columns]
-同样缺失值由 NaN 补上。看一下 index、columns 和 索引的类型：
+  [5 rows x 4 columns]
+  同样缺失值由 NaN 补上。看一下 index、columns 和 索引的类型：
+  >>> df.index
+  Index(['one', 'two', 'three', 'four', 'five'], dtype='object')
+  >>> df.columns
+  Index(['year', 'state', 'pop', 'debt'], dtype='object')
+  >>> type(df['debt'])
+  <class 'pandas.core.series.Series'>
+  DataFrame 面向行和面向列的操作基本是平衡的，任意抽出一列都是 Series。 
 
+---->对象属性                                                                        |
+  查找索引                                                                           |
+   查找某个值在数组中的索引，类似于 Python 内建的 list.index(value) 方法。可以通过布 |
+   尔索引来实现。比如我们想在一个 Series 中寻找到 ‘c’：
+   >>> ser = Series(list('abcdefg'))
+   >>> ser[ser='c']
+   2   c
+   dtype: object
+   Series 中还有一对 ser.idxmax() 和 ser.idxmin() 方法，可以返回数组中最大（小）值的 |
+   索引值，或者 .argmin() 和 .argmax() 返回索引位置。当然这两类方法也是可以通过上面这|
+   种 ser[ser=ser.max()] 来替代实现的。 
+  修改索引
+   数组的 index 属性时不可变的，因此所谓修改索引，其实操作的是一个使用了新索引的新数 |
+   组，并继承旧数据。
+   obj.set_index(keys, drop=True, append=False, inplace=False, verify_integrity=False) 
+   方法接受一个新索引（key）并返回一个新数组。这个 key 的值可以是序列类型，也可以是调|
+   用者的一个列名，即将某一列设为新数组的索引。                                      |
+   >>> indexed_df = df.set_index(['A', 'B'])
+   >>> indexed_df2 = df.set_index(['A', [0, 1, 2, 0, 1, 2]])
+   >>> indexed_df3 = df.set_index('column1')
 
->>> df.index
-Index(['one', 'two', 'three', 'four', 'five'], dtype='object')
->>> df.columns
-Index(['year', 'state', 'pop', 'debt'], dtype='object')
->>> type(df['debt'])
-<class 'pandas.core.series.Series'>
-DataFrame 面向行和面向列的操作基本是平衡的，任意抽出一列都是 Series。 
+  重新索引
+   Series 对象的重新索引通过其 .reindex(index=None,**kwargs) 方法实现。**kwargs 中常 |
+   用的参数有俩：method=None,fill_value=np.NaN：
+   ser = Series([4.5,7.2,-5.3,3.6],index=['d','b','a','c'])
+   >>> a = ['a','b','c','d','e']
+   >>> ser.reindex(a)
+   a   -5.3
+   b    7.2
+   c    3.6
+   d    4.5
+   e    NaN
+   dtype: float64
+   >>> ser.reindex(a,fill_value=0)
+   a   -5.3
+   b    7.2
+   c    3.6
+   d    4.5
+   e    0.0
+   dtype: float64
+   >>> ser.reindex(a,method='ffill')
+   a   -5.3
+   b    7.2
+   c    3.6
+   d    4.5
+   e    4.5
+   dtype: float64
+   >>> ser.reindex(a,fill_value=0,method='ffill')
+   a   -5.3
+   b    7.2
+   c    3.6
+   d    4.5
+   e    4.5
+   dtype: float64                                                                    |
+   .reindex() 方法会返回一个新对象，其 index 严格遵循给出的参数，
+   method:{'backfill', 'bfill', 'pad', 'ffill', None} 
+   参数用于指定插值（填充）方式，当没有给出时，自动用 fill_value 填充，默认为 NaN    |
+   （ffill = pad，bfill = back fill，分别指插值时向前还是向后取值）
 
+   DataFrame 对象的重新索引方法为：
+   .reindex(index=None,columns=None,**kwargs)。
+   仅比 Series 多了一个可选的 columns 参数，用于给列索引。用法与上例类似，只不过插值 |
+   方法 method 参数只能应用于行，即轴 0。
 
-对象属性
-查找索引
+   >>> state = ['Texas','Utha','California']
+   >>> df.reindex(columns=state,method='ffill')
+       Texas  Utha  California
+   a      1   NaN           2
+   c      4   NaN           5  
+   d      7   NaN           8
 
-查找某个值在数组中的索引，类似于 Python 内建的 list.index(value) 方法。可以通过布尔索引来实现。比如我们想在一个 Series 中寻找到 ‘c’：
+   [3 rows x 3 columns]
+   >>> df.reindex(index=['a','b','c','d'],columns=state,method='ffill')
+      Texas  Utha  California
+   a      1   NaN           2
+   b      1   NaN           2
+   c      4   NaN           5
+   d      7   NaN           8
 
-
->>> ser = Series(list('abcdefg'))
->>> ser[ser='c']
-2   c
-dtype: object
-Series 中还有一对 ser.idxmax() 和 ser.idxmin() 方法，可以返回数组中最大（小）值的索引值，或者 .argmin() 和 .argmax() 返回索引位置。当然这两类方法也是可以通过上面这种 ser[ser=ser.max()] 来替代实现的。 
-
-
-修改索引
-
-数组的 index 属性时不可变的，因此所谓修改索引，其实操作的是一个使用了新索引的新数组，并继承旧数据。
-
-obj.set_index(keys, drop=True, append=False, inplace=False, verify_integrity=False) 方法接受一个新索引（key）并返回一个新数组。这个 key 的值可以是序列类型，也可以是调用者的一个列名，即将某一列设为新数组的索引。
-
-
->>> indexed_df = df.set_index(['A', 'B'])
->>> indexed_df2 = df.set_index(['A', [0, 1, 2, 0, 1, 2]])
->>> indexed_df3 = df.set_index('column1')
-
-
-重新索引
-
-Series 对象的重新索引通过其 .reindex(index=None,**kwargs) 方法实现。**kwargs 中常用的参数有俩：method=None,fill_value=np.NaN：
-
-
-ser = Series([4.5,7.2,-5.3,3.6],index=['d','b','a','c'])
->>> a = ['a','b','c','d','e']
->>> ser.reindex(a)
-a   -5.3
-b    7.2
-c    3.6
-d    4.5
-e    NaN
-dtype: float64
->>> ser.reindex(a,fill_value=0)
-a   -5.3
-b    7.2
-c    3.6
-d    4.5
-e    0.0
-dtype: float64
->>> ser.reindex(a,method='ffill')
-a   -5.3
-b    7.2
-c    3.6
-d    4.5
-e    4.5
-dtype: float64
->>> ser.reindex(a,fill_value=0,method='ffill')
-a   -5.3
-b    7.2
-c    3.6
-d    4.5
-e    4.5
-dtype: float64
-.reindex() 方法会返回一个新对象，其 index 严格遵循给出的参数，method:{'backfill', 'bfill', 'pad', 'ffill', None} 参数用于指定插值（填充）方式，当没有给出时，自动用 fill_value 填充，默认为 NaN（ffill = pad，bfill = back fill，分别指插值时向前还是向后取值）
-
-DataFrame 对象的重新索引方法为：.reindex(index=None,columns=None,**kwargs)。仅比 Series 多了一个可选的 columns 参数，用于给列索引。用法与上例类似，只不过插值方法 method 参数只能应用于行，即轴 0。
-
-
->>> state = ['Texas','Utha','California']
->>> df.reindex(columns=state,method='ffill')
-    Texas  Utha  California
-a      1   NaN           2
-c      4   NaN           5  
-d      7   NaN           8
-
-[3 rows x 3 columns]
->>> df.reindex(index=['a','b','c','d'],columns=state,method='ffill')
-   Texas  Utha  California
-a      1   NaN           2
-b      1   NaN           2
-c      4   NaN           5
-d      7   NaN           8
-
-[4 rows x 3 columns]
-不过 fill_value 依然对有效。聪明的小伙伴可能已经想到了，可不可以通过 df.T.reindex(index,method='**').T 这样的方式来实现在列上的插值呢，答案是可行的。另外要注意，使用 reindex(index,method='**') 的时候，index 必须是单调的，否则就会引发一个 ValueError: Must be monotonic for forward fill，比如上例中的最后一次调用，如果使用 index=['a','b','d','c'] 的话就不行。 
+   [4 rows x 3 columns]
+   不过 fill_value 依然对有效。聪明的小伙伴可能已经想到了，可不可以通过 df.T.reindex(index,method='**').T 这样的方式来实现在列上的插值呢，答案是可行的。另外要注意，使用 reindex(index,method='**') 的时候，index 必须是单调的，否则就会引发一个 ValueError: Must be monotonic for forward fill，比如上例中的最后一次调用，如果使用 index=['a','b','d','c'] 的话就不行。 
 
 
 删除指定轴上的项
