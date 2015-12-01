@@ -1,4 +1,6 @@
 # http://my.oschina.net/lionets/blog/277847
+import pandas as pd
+import numpy as np
 
 '''
 pandas是基于Numpy构建的含有更高级数据结构和工具的数据分析包

@@ -68,7 +68,7 @@ scala> count.collect()
 $ cd ~/spark-0.7.2
 $ bin/stop-all.sh  
 
-
+1 pyspark安装python是要安装zlib
 
 --------> spark cfg
 ---->conf/spark-env.sh

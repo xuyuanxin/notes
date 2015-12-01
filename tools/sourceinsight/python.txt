@@ -1,0 +1,17 @@
+http://blog.csdn.net/holybiblecx/article/details/3817256
+
+首先从http://www.sourceinsight.com/public/languages/下载Python的配置文件Python.CLF ，然后对SourceInsight作如下配置：
+
+（1）选择Options > Preferences，单击Languages选项；
+
+（2）单击import按钮，装载并导入Python.CLF；
+
+（3）这时可以看到，左栏语言列表多了一项Python Language；
+
+（4）单击Document Types按钮，打开文档选项对话框；
+
+（5）添加Document Type为Python，File filter为“*.py”，Passer组中Language选项设置为Python Language；
+
+（6）单击文档选项对话框的close按钮；
+
+（7）单击Preferences窗口OK按钮，退出Preferences窗口，完成设置。
