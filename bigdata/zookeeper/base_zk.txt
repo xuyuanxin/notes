@@ -1,0 +1,5 @@
+http://www.ibm.com/developerworks/cn/opensource/os-cn-zookeeper/  分布式服务框架 Zookeeper -- 管理分布式环境中的数据
+http://www.cnblogs.com/yuyijq/p/3391945.html  Zookeeper--Zookeeper是什么
+http://www.cnblogs.com/yuyijq/p/3424473.html  Zookeeper-Zookeeper可以干什么
+http://www.cnblogs.com/yuyijq/p/3438829.html  Zookeeper-Zookeeper的配置
+

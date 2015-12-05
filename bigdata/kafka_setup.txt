@@ -1,2 +1,0 @@
-https://kafka.apache.org/documentation.html#quickstart
-http://blog.csdn.net/unix21/article/details/18990123

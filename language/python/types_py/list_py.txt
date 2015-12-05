@@ -1,3 +1,59 @@
+http://my.oschina.net/syc2013/blog/333265?p=1   Python List数据的遍历
+
+
+方式一：
+
+
+app_list = [1234, 5677, 8899]
+<!-- lang: python -->
+for app_id in app_list:
+<!-- lang: python -->
+    print app_id
+输出： 
+1234 
+5677 
+8899
+
+方式二：
+
+
+app_list = [1234, 5677, 8899]
+<!-- lang: python -->
+for index,app_id in enumerate(app_list):
+<!-- lang: python -->
+    print index, app_id
+输出： 
+0 1234 
+1 5677 
+2 8899
+
+方式三： 使用range()或xrange()
+
+
+ app_list = [1234, 5677, 8899]
+<!-- lang: python -->
+    for i in range(len(app_list)):
+<!-- lang: python -->
+          print i,app_list[i]
+输出： 
+0 1234 
+1 5677 
+2 8899
+
+方式四： 使用iter()
+
+
+app_list = [1234, 5677, 8899]
+<!-- lang: python -->
+for app_id in iter(app_list):
+<!-- lang: python -->
+    print app_id
+输出： 
+1234 
+5677 
+8899
+
+
 ----> @list
 @list actually a type, not a function, but the difference isn’t important right  now.
 Because strings can’t be modified in the same way as lists, sometimes it can be usef-

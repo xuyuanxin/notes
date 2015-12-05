@@ -1,0 +1,310 @@
+http://zookeeper.apache.org/doc/r3.5.0-alpha/zookeeperStarted.html
+http://shiyanjun.cn/archives/469.html  ZooKeeper-3.3.4集群安装配置
+http://blog.csdn.net/unix21/article/details/18990123  ZooKeeper集群环境安装与配置
+
+                                                                                     |
+ZooKeeper Standalone模式                                                             |
+ 从Apache网站上（zookeeper.apache.org）下载ZooKeeper软件包，我选择了3.3.4版本的（    |
+ zookeeper-3.3.4.tar.gz），在一台Linux机器上安装非常容易，只需要解压缩后，简单配置一 |
+ 下即可以启动ZooKeeper服务器进程。                                                   |
+ 将zookeeper-3.3.4/conf目录下面的 zoo_sample.cfg修改为zoo.cfg，配置文件内容如下所示：|
+ +----> zoo.cfg
+ |tickTime=2000
+ |dataDir=/home/hadoop/storage/zookeeper
+ |clientPort=2181
+ |initLimit=5
+ |syncLimit=2
+ 上面各个配置参数的含义也非常简单，引用如下所示：
+ tickTime: the basic time unit in milliseconds used by ZooKeeper. It is used to do h-
+ eartbeats and the minimum session timeout will be twice the tickTime.
+ dataDir: the location to store the in-memory database snapshots and, unless specifi-
+ ed otherwise, the transaction log of updates to the database.
+ clientPort: the port to listen for client connections
+ 下面启动ZooKeeper服务器进程：
+ > cd zookeeper-3.3.4/
+ > bin/zkServer.sh start
+ 通过jps命令可以查看ZooKeeper服务器进程，名称为QuorumPeerMain。
+ 在客户端连接ZooKeeper服务器，执行如下命令：
+ > bin/zkCli.sh -server dynamic:2181
+ 上面dynamic是我的主机名，如果在本机执行，则执行如下命令即可：
+ > bin/zkCli.sh
+ 客户端连接信息如下所示：
+  shirdrn@master:~/installation/zookeeper-3.3.4$ bin/zkCli.sh -server dynamic:2181
+   Connecting to dynamic:2181
+   2013-10-28 21:30:06,178 - INFO  [main:Environment@97] - Client environment:zookeeper.version=3.3.3-1203054, built on 11/17/2011 05:47 GMT
+   2013-10-28 21:30:06,188 - INFO  [main:Environment@97] - Client environment:host.name=master
+   2013-10-28 21:30:06,191 - INFO  [main:Environment@97] - Client environment:java.version=1.6.0_30
+   2013-10-28 21:30:06,194 - INFO  [main:Environment@97] - Client environment:java.vendor=Sun Microsystems Inc.
+   2013-10-28 21:30:06,200 - INFO  [main:Environment@97] - Client environment:java.home=/home/hadoop/installation/jdk1.6.0_30/jre
+ 
+   ...
+  
+   2013-10-28 21:30:06,339 - INFO  [main-SendThread():ClientCnxn$SendThread@1061] - Opening socket connection to server dynamic/192.168.0.107:2181
+   Welcome to ZooKeeper!
+   2013-10-28 21:30:06,397 - INFO  [main-SendThread(dynamic:2181):ClientCnxn$SendThread@950] - Socket connection established to dynamic/192.168.0.107:2181, initiating session
+   JLine support is enabled
+   2013-10-28 21:30:06,492 - INFO  [main-SendThread(dynamic:2181):ClientCnxn$SendThread@739] - Session establishment complete on server dynamic/192.168.0.107:2181, sessionid = 0x134b9b714f9000c, negotiated timeout = 30000
+   WATCHER::
+   WatchedEvent state:SyncConnected type:None path:null
+   [zk: dynamic:2181(CONNECTED) 0]
+ 接着，可以使用help查看Zookeeper客户端可以使用的基本操作命令。
+
+ZooKeeper Distributed模式                                                            |
+ 首先要明确的是，ZooKeeper集群是一个独立的分布式协调服务集群，“独立”的含义就是说，如 |
+ 果想使用ZooKeeper实现分布式应用的协调与管理，简化协调与管理，任何分布式应用都可以使 |
+ 用，这就要归功于Zookeeper的数据模型（Data Model）和层次命名空间（Hierarchical       |
+ Namespace）结构，详细可以参考http://zookeeper.apache.org/doc/trunk/zookeeperOver.html
+ 。在设计你的分布式应用协调服务时，首要的就是考虑如何组织层次命名空间。              |
+ 下面说明分布式模式的安装配置，过程如下所示：                                        |
+ 第一步：主机名称到IP地址映射配置                                                    |
+  ZooKeeper集群中具有两个关键的角色：Leader和Follower。集群中所有的结点作为一个整体对|
+  分布式应用提供服务，集群中每个结点之间都互相连接，所以，在配置的ZooKeeper集群的时候|
+  ，每一个结点的host到IP地址的映射都要配置上集群中其它结点的映射信息。例如，我的     |
+  ZooKeeper集群中每个结点的配置，以zk-01为例，/etc/hosts内容如下所示:                |
+  192.168.0.179   zk-01
+  192.168.0.178   zk-02
+  192.168.0.177   zk-03                                                              |
+  ZooKeeper采用一种称为Leader election的选举算法。在整个集群运行过程中，只有一个Leader
+  ，其他的都是Follower，如果ZooKeeper集群在运行过程中Leader出了问题，系统会采用该算法|
+  重新选出一个Leader。因此，各个结点之间要能够保证互相连接，必须配置上述映射。
+  ZooKeeper集群启动的时候，会首先选出一个Leader，在Leader election过程中，某一个满足 |
+  选举算的结点就能成为Leader。整个集群的架构可以参考
+  http://zookeeper.apache.org/doc/trunk/zookeeperOver.html#sc_designGoals        
+
+ 第二步：修改ZooKeeper配置文件                                                       |
+  在其中一台机器（zk-01）上，解压缩zookeeper-3.3.4.tar.gz，修改配置文件conf/zoo.cfg，|
+  内容如下所示：
+  +----> zoo.cfg
+  |tickTime=2000
+  |dataDir=/home/hadoop/storage/zookeeper
+  |clientPort=2181
+  |initLimit=5
+  |syncLimit=2
+  |server.1=zk-01:2888:3888
+  |server.2=zk-02:2888:3888
+  |server.3=zk-03:2888:3888
+  上述配置内容说明，可以参考
+  http://zookeeper.apache.org/doc/trunk/zookeeperStarted.html#sc_RunningReplicatedZooKeeper。
+                                                                                     |
+ 第三步：远程复制分发安装文件
+  上面已经在一台机器zk-01上配置完成ZooKeeper，现在可以将该配置好的安装文件远程拷贝到 |
+  集群中的各个结点对应的目录下：
+  > cd /home/hadoop/installation/
+  > scp -r zookeeper-3.3.4/ shirdrn@zk-02:/home/hadoop/installation/
+  > scp -r zookeeper-3.3.4/ shirdrn@zk-03:/home/hadoop/installation/
+ 
+ 第四步：设置myid
+  在我们配置的dataDir指定的目录下面，创建一个myid文件，里面内容为一个数字，用来标识当|
+  前主机，conf/zoo.cfg文件中配置的server.X中X是什么数字，则myid文件中就输入这个数字，|
+  例如：
+  > shirdrn@zk-01:~/installation/zookeeper-3.3.4$ echo "1" > /home/hadoop/storage/zookeeper/myid
+  > shirdrn@zk-02:~/installation/zookeeper-3.3.4$ echo "2" > /home/hadoop/storage/zookeeper/myid
+  > shirdrn@zk-03:~/installation/zookeeper-3.3.4$ echo "3" > /home/hadoop/storage/zookeeper/myid
+  按照上述进行配置即可。
+
+ 第五步：启动ZooKeeper集群
+  在ZooKeeper集群的每个结点上，执行启动ZooKeeper服务的脚本，如下所示：
+  > shirdrn@zk-01:~/installation/zookeeper-3.3.4$ bin/zkServer.sh start
+  > shirdrn@zk-02:~/installation/zookeeper-3.3.4$ bin/zkServer.sh start
+  > shirdrn@zk-03:~/installation/zookeeper-3.3.4$ bin/zkServer.sh start
+  以结点zk-01为例，日志如下所示：
+  shirdrn@zk-01:~/installation/zookeeper-3.3.4$ tail -500f zookeeper.out             |
+   2013-10-28 06:51:19,117 - INFO  [main:QuorumPeerConfig@90] - Reading configuration from: /home/hadoop/installation/zookeeper-3.3.4/bin/../conf/zoo.cfg
+   2013-10-28 06:51:19,133 - INFO  [main:QuorumPeerConfig@310] - Defaulting to majority quorums
+   2013-10-28 06:51:19,167 - INFO  [main:QuorumPeerMain@119] - Starting quorum peer
+   2013-10-28 06:51:19,227 - INFO  [main:NIOServerCnxn$Factory@143] - binding to port 0.0.0.0/0.0.0.0:2181
+   2013-10-28 06:51:19,277 - INFO  [main:QuorumPeer@819] - tickTime set to 2000
+   2013-10-28 06:51:19,278 - INFO  [main:QuorumPeer@830] - minSessionTimeout set to -1
+   2013-10-28 06:51:19,279 - INFO  [main:QuorumPeer@841] - maxSessionTimeout set to -1
+   2013-10-28 06:51:19,281 - INFO  [main:QuorumPeer@856] - initLimit set to 5
+   2013-10-28 06:51:19,347 - INFO  [Thread-1:QuorumCnxManager$Listener@473] - My election bind port: 3888
+   2013-10-28 06:51:19,393 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumPeer@621] - LOOKING
+   2013-10-28 06:51:19,396 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FastLeaderElection@663] - New election. My id =  1, Proposed zxid = 0
+   2013-10-28 06:51:19,400 - INFO  [WorkerReceiver Thread:FastLeaderElection@496] - Notification: 1 (n.leader), 0 (n.zxid), 1 (n.round), LOOKING (n.state), 1 (n.sid), LOOKING (my state)
+   2013-10-28 06:51:19,416 - WARN  [WorkerSender Thread:QuorumCnxManager@384] - Cannot open channel to 2 at election address zk-02/192.168.0.178:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.toSend(QuorumCnxManager.java:340)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection$Messenger$WorkerSender.process(FastLeaderElection.java:360)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection$Messenger$WorkerSender.run(FastLeaderElection.java:333)
+        at java.lang.Thread.run(Thread.java:662)
+   2013-10-28 06:51:19,420 - WARN  [WorkerSender Thread:QuorumCnxManager@384] - Cannot open channel to 3 at election address zk-03/192.168.0.177:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.toSend(QuorumCnxManager.java:340)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection$Messenger$WorkerSender.process(FastLeaderElection.java:360)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection$Messenger$WorkerSender.run(FastLeaderElection.java:333)
+        at java.lang.Thread.run(Thread.java:662)
+   2013-10-28 06:51:19,612 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 2 at election address zk-02/192.168.0.178:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:19,615 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 3 at election address zk-03/192.168.0.177:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:19,616 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FastLeaderElection@697] - Notification time out: 400
+   2013-10-28 06:51:20,019 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 2 at election address zk-02/192.168.0.178:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:20,021 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 3 at election address zk-03/192.168.0.177:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:20,022 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FastLeaderElection@697] - Notification time out: 800
+   2013-10-28 06:51:20,825 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 2 at election address zk-02/192.168.0.178:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:20,827 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 3 at election address zk-03/192.168.0.177:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:20,828 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FastLeaderElection@697] - Notification time out: 1600
+   2013-10-28 06:51:22,435 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 2 at election address zk-02/192.168.0.178:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:22,439 - WARN  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumCnxManager@384] - Cannot open channel to 3 at election address zk-03/192.168.0.177:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectAll(QuorumCnxManager.java:404)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection.lookForLeader(FastLeaderElection.java:688)
+        at org.apache.zookeeper.server.quorum.QuorumPeer.run(QuorumPeer.java:622)
+   2013-10-28 06:51:22,441 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FastLeaderElection@697] - Notification time out: 3200
+   2013-10-28 06:51:22,945 - INFO  [WorkerReceiver Thread:FastLeaderElection@496] - Notification: 2 (n.leader), 0 (n.zxid), 1 (n.round), LOOKING (n.state), 2 (n.sid), LOOKING (my state)
+   2013-10-28 06:51:22,946 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FastLeaderElection@721] - Updating proposal
+   2013-10-28 06:51:22,949 - WARN  [WorkerSender Thread:QuorumCnxManager@384] - Cannot open channel to 3 at election address zk-03/192.168.0.177:3888
+   java.net.ConnectException: Connection refused
+        at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:567)
+        at sun.nio.ch.SocketAdaptor.connect(SocketAdaptor.java:100)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.connectOne(QuorumCnxManager.java:371)
+        at org.apache.zookeeper.server.quorum.QuorumCnxManager.toSend(QuorumCnxManager.java:340)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection$Messenger$WorkerSender.process(FastLeaderElection.java:360)
+        at org.apache.zookeeper.server.quorum.FastLeaderElection$Messenger$WorkerSender.run(FastLeaderElection.java:333)
+        at java.lang.Thread.run(Thread.java:662)
+   2013-10-28 06:51:22,951 - INFO  [WorkerReceiver Thread:FastLeaderElection@496] - Notification: 2 (n.leader), 0 (n.zxid), 1 (n.round), LOOKING (n.state), 1 (n.sid), LOOKING (my state)
+   2013-10-28 06:51:23,156 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:QuorumPeer@643] - FOLLOWING
+   2013-10-28 06:51:23,170 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Learner@80] - TCP NoDelay set to: true
+   2013-10-28 06:51:23,206 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:zookeeper.version=3.3.3-1203054, built on 11/17/2011 05:47 GMT
+   2013-10-28 06:51:23,207 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:host.name=zk-01
+   2013-10-28 06:51:23,207 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.version=1.6.0_30
+   2013-10-28 06:51:23,208 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.vendor=Sun Microsystems Inc.
+   2013-10-28 06:51:23,208 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.home=/home/hadoop/installation/jdk1.6.0_30/jre
+   2013-10-28 06:51:23,209 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.class.path=/home/hadoop/installation/zookeeper-3.3.4/bin/../build/classes:/home/hadoop/installation/zookeeper-3.3.4/bin/../build/lib/*.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../zookeeper-3.3.4.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/log4j-1.2.15.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/jline-0.9.94.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/commons-lang-2.4.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/commons-collections-3.2.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/commons-cli-1.1.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/apache-rat-tasks-0.6.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/apache-rat-core-0.6.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../src/java/lib/*.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../conf:/home/hadoop/installation/jdk1.6.0_30/lib/*.jar:/home/hadoop/installation/jdk1.6.0_30/jre/lib/*.jar
+   2013-10-28 06:51:23,210 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.library.path=/home/hadoop/installation/jdk1.6.0_30/jre/lib/i386/client:/home/hadoop/installation/jdk1.6.0_30/jre/lib/i386:/home/hadoop/installation/jdk1.6.0_30/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib
+   2013-10-28 06:51:23,210 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.io.tmpdir=/tmp
+   2013-10-28 06:51:23,212 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:java.compiler=<NA>
+   2013-10-28 06:51:23,212 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:os.name=Linux
+   2013-10-28 06:51:23,212 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:os.arch=i386
+   2013-10-28 06:51:23,213 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:os.version=3.0.0-14-generic
+   2013-10-28 06:51:23,213 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:user.name=hadoop
+   2013-10-28 06:51:23,214 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:user.home=/home/hadoop
+   2013-10-28 06:51:23,214 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Environment@97] - Server environment:user.dir=/home/hadoop/installation/zookeeper-3.3.4
+   2013-10-28 06:51:23,223 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:ZooKeeperServer@151] - Created server with tickTime 2000 minSessionTimeout 4000 maxSessionTimeout 40000 datadir /home/hadoop/storage/zookeeper/version-2 snapdir /home/hadoop/storage/zookeeper/version-2
+   2013-10-28 06:51:23,339 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Learner@294] - Getting a snapshot from leader
+   2013-10-28 06:51:23,358 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:Learner@325] - Setting leader epoch 1
+   2013-10-28 06:51:23,358 - INFO  [QuorumPeer:/0:0:0:0:0:0:0:0:2181:FileTxnSnapLog@254] - Snapshotting: 0
+   2013-10-28 06:51:25,511 - INFO  [WorkerReceiver Thread:FastLeaderElection@496] - Notification: 3 (n.leader), 0 (n.zxid), 1 (n.round), LOOKING (n.state), 3 (n.sid), FOLLOWING (my state)
+   2013-10-28 06:51:42,584 - INFO  [WorkerReceiver Thread:FastLeaderElection@496] - Notification: 3 (n.leader), 0 (n.zxid), 2 (n.round), LOOKING (n.state), 3 (n.sid), FOLLOWING (my state)
+  我启动的顺序是zk-01>zk-02>zk-03，由于ZooKeeper集群启动的时候，每个结点都试图去连接 |
+  集群中的其它结点，先启动的肯定连不上后面还没启动的，所以上面日志前面部分的异常是可 |
+  以忽略的。通过后面部分可以看到，集群在选出一个Leader后，最后稳定了。其他结点可能也 |
+  出现类似问题，属于正常。                                                           |
+
+ 第六步：安装验证
+  可以通过ZooKeeper的脚本来查看启动状态，包括集群中各个结点的角色（或是Leader，或是  |
+  Follower），如下所示，是在ZooKeeper集群中的每个结点上查询的结果：
+  > shirdrn@zk-01:~/installation/zookeeper-3.3.4$ bin/zkServer.sh status
+  JMX enabled by default
+  Using config: /home/hadoop/installation/zookeeper-3.3.4/bin/../conf/zoo.cfg
+  Mode: follower
+  shirdrn@zk-02:~/installation/zookeeper-3.3.4$  bin/zkServer.sh status
+  JMX enabled by default
+  Using config: /home/hadoop/installation/zookeeper-3.3.4/bin/../conf/zoo.cfg
+  Mode: leader
+  > shirdrn@zk-03:~/installation/zookeeper-3.3.4$  bin/zkServer.sh status
+  JMX enabled by default
+  Using config: /home/hadoop/installation/zookeeper-3.3.4/bin/../conf/zoo.cfg
+  Mode: follower                                                                     |
+  通过上面状态查询结果可见，zk-02是集群的Leader，其余的两个结点是Follower。          |
+  另外，可以通过客户端脚本，连接到ZooKeeper集群上。对于客户端来说，ZooKeeper是一个整 |
+  体（ensemble），连接到ZooKeeper集群实际上感觉在独享整个集群的服务，所以，你可以在任|
+  何一个结点上建立到服务集群的连接，例如：                                           |
+  shirdrn@zk-03:~/installation/zookeeper-3.3.4$ bin/zkCli.sh -server zk-01:2181
+   Connecting to zk-01:2181
+   2013-10-28 07:14:21,068 - INFO  [main:Environment@97] - Client environment:zookeeper.version=3.3.3-1203054, built on 11/17/2011 05:47 GMT
+   2013-10-28 07:14:21,080 - INFO  [main:Environment@97] - Client environment:host.name=zk-03
+   2013-10-28 07:14:21,085 - INFO  [main:Environment@97] - Client environment:java.version=1.6.0_30
+   2013-10-28 07:14:21,089 - INFO  [main:Environment@97] - Client environment:java.vendor=Sun Microsystems Inc.
+   2013-10-28 07:14:21,095 - INFO  [main:Environment@97] - Client environment:java.home=/home/hadoop/installation/jdk1.6.0_30/jre
+   2013-10-28 07:14:21,104 - INFO  [main:Environment@97] - Client environment:java.class.path=/home/hadoop/installation/zookeeper-3.3.4/bin/../build/classes:/home/hadoop/installation/zookeeper-3.3.4/bin/../build/lib/*.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../zookeeper-3.3.4.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/log4j-1.2.15.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/jline-0.9.94.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/commons-lang-2.4.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/commons-collections-3.2.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/commons-cli-1.1.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/apache-rat-tasks-0.6.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../lib/apache-rat-core-0.6.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../src/java/lib/*.jar:/home/hadoop/installation/zookeeper-3.3.4/bin/../conf:/home/hadoop/installation/jdk1.6.0_30/lib/*.jar:/home/hadoop/installation/jdk1.6.0_30/jre/lib/*.jar
+   2013-10-28 07:14:21,111 - INFO  [main:Environment@97] - Client environment:java.library.path=/home/hadoop/installation/jdk1.6.0_30/jre/lib/i386/client:/home/hadoop/installation/jdk1.6.0_30/jre/lib/i386:/home/hadoop/installation/jdk1.6.0_30/jre/../lib/i386:/usr/java/packages/lib/i386:/lib:/usr/lib
+   2013-10-28 07:14:21,116 - INFO  [main:Environment@97] - Client environment:java.io.tmpdir=/tmp
+   2013-10-28 07:14:21,124 - INFO  [main:Environment@97] - Client environment:java.compiler=<NA>
+   2013-10-28 07:14:21,169 - INFO  [main:Environment@97] - Client environment:os.name=Linux
+   2013-10-28 07:14:21,175 - INFO  [main:Environment@97] - Client environment:os.arch=i386
+   2013-10-28 07:14:21,177 - INFO  [main:Environment@97] - Client environment:os.version=3.0.0-14-generic
+   2013-10-28 07:14:21,185 - INFO  [main:Environment@97] - Client environment:user.name=hadoop
+   2013-10-28 07:14:21,188 - INFO  [main:Environment@97] - Client environment:user.home=/home/hadoop
+   2013-10-28 07:14:21,190 - INFO  [main:Environment@97] - Client environment:user.dir=/home/hadoop/installation/zookeeper-3.3.4
+   2013-10-28 07:14:21,197 - INFO  [main:ZooKeeper@379] - Initiating client connection, connectString=zk-01:2181 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@bf32c
+   2013-10-28 07:14:21,305 - INFO  [main-SendThread():ClientCnxn$SendThread@1061] - Opening socket connection to server zk-01/192.168.0.179:2181
+   Welcome to ZooKeeper!
+   2013-10-28 07:14:21,376 - INFO  [main-SendThread(zk-01:2181):ClientCnxn$SendThread@950] - Socket connection established to zk-01/192.168.0.179:2181, initiating session
+   JLine support is enabled
+   [zk: zk-01:2181(CONNECTING) 0] 2013-10-28 07:14:21,872 - INFO  [main-SendThread(zk-01:2181):ClientCnxn$SendThread@739] - Session establishment complete on server zk-01/192.168.0.179:2181, sessionid = 0x134bdcd6b730000, negotiated timeout = 30000
+   WATCHER::
+   WatchedEvent state:SyncConnected type:None path:null
+  
+  [zk: zk-01:2181(CONNECTED) 0] ls /
+  [zookeeper]
+  当前根路径为/zookeeper。 
+
+

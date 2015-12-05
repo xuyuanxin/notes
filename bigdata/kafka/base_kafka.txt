@@ -1,0 +1,66 @@
+http://my.oschina.net/ielts0909/blog/117489   kafka系列文章索引
+
+
+----> Introduction
+ Kafka is a distributed, partitioned, replicated commit log service. First let's rev-
+ iew some basic messaging terminology:
+ Kafka maintains feeds of messages in categories called @topics.
+ We'll call processes that publish messages to a Kafka topic @producers.
+ We'll call processes that subscribe to topics and process the feed of published mes-
+ sages @consumers..
+ Kafka is run as a cluster comprised of one or more servers each of which is called a 
+ @broker.
+ 
+ at a high level, producers send messages over the network to the Kafka cluster which 
+ in turn serves them up to consumers like this:
+ 
+              producer    producer   producer
+			      |           |          | 
+			     \|/         \|/        \|/
+                  +-----------|----------+	
+                              |
+                   kafka cluster (broker)
+						      |
+							 \|/
+				  +-----------|----------+
+			      |           |          |
+			     \|/         \|/        \|/
+			  consumer    consumer    consumer
+				  
+ Communication between the clients and the servers is done with a simple, high-perfo-
+ rmance, language agnostic TCP protocol. We provide a Java client for Kafka, but cli-
+ ents are available in many languages.
+ 
+ Topics and Logs
+  A topic is a category or feed name to which messages are published. For each topic, 
+  the Kafka cluster maintains a partitioned log that looks like this:
+  
+  Each partition is an ordered, immutable sequence of messages that is continually a-
+  ppended to—a commit log. The messages in the partitions are each assigned a sequen-
+  tial id number called the offset that uniquely identifies each message within the -
+  partition. This offset is controlled by the consumer, For example a consumer can r-
+  eset to an older offset to reprocess.
+  
+ Distribution
+  The partitions of the log are distributed over the servers in the Kafka cluster wi-
+  th each server handling data and requests for a share of the partitions. Each part-
+  ition is replicated across a configurable number of servers for fault tolerance. E-
+  ach partition has one server which acts as the "leader" and zero or more servers w-
+  hich act as "followers". The leader handles all read and write requests for the pa-
+  rtition while the followers passively replicate the leader. If the leader fails, o-
+  ne of the followers will automatically become the new leader. Each server acts as -
+  a leader for some of its partitions and a follower for others so load is well bala-
+  nced within the cluster.
+  
+ Producers Consumers
+  Kafka only provides a total order over messages within a partition, not between di-
+  fferent partitions in a topic. Per-partition ordering combined with the ability  to 
+  partition data by key is sufficient for most applications. However, if you  require 
+  a total order over messages this can be achieved with a topic that has only one pa-
+  rtition, though this will mean only one consumer process per consumer group.
+
+
+ 
+ 
+ 
+ 
