@@ -1,24 +1,27 @@
 
+----> 模块和包
+ module_py.py
+
 ----> 命令空间
-在python模块中讲述
+ 在python模块中讲述
 
 ----> 文件操作
-文件基本概念放在 file_objects_py.py
-关于python文件操作 http://www.cnblogs.com/rollenholt/archive/2012/04/23/2466179.html
+ 文件基本概念放在 file_objects_py.py
+ 关于python文件操作 http://www.cnblogs.com/rollenholt/archive/2012/04/23/2466179.html
 
-fileinput: Iterate over lines from multiple input streams
+ fileinput: Iterate over lines from multiple input streams
 
-file_io_py.py
+ file_io_py.py
 
 ----> 文件系统
-os
-os.path
+ os
+ os.path
 
 ----> 多线程
-thread_pylib_eg.py
+ thread_pylib_eg.py
 
 PEP
-http://legacy.python.org/dev/peps/
+ http://legacy.python.org/dev/peps/
 
 universal newlines
     A manner of interpreting text streams in which all of the following are recogniz-

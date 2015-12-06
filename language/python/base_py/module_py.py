@@ -2,61 +2,108 @@
 Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
 
 
+----> What Are Modules?
+ Modules are a means to organize Python code, and packages help you organize modules. 
+ A module allows you to logically organize your Python code. When code gets to be la-
+ rge enough, the tendency is to break it up into organized pieces that can still int-
+ eract with one another at a functioning level. These pieces generally have attribut-
+ es that have some relation to one another, perhaps a single class with its member d-
+ ata variables and methods, or maybe a group of related, yet independently  operating 
+ functions. These pieces should be shared, so Python allows a module the ability to -
+ "bring in" and use attributes from other modules to take advantage of work that  has 
+ been done, maximizing code reusability. This process of associating attributes  from 
+ other modules with your module is called importing. In a nutshell, modules are     -
+ self-contained and organized pieces of Python code that can be shared.
 
-Modules are a means to organize Python code, and packages help you organize modules. 
+----> Modules and Files
+ If modules represent a logical way to organize your Python code, then files are a w-
+ ay to physically organize modules. To that end, each file is considered an individu-
+ al module, and vice versa. The filename of a module is the module name appended with 
+ the.py file extension.
 
-If modules represent a logical way to organize your Python code, then files
-are a way to physically organize modules. To that end, each file is considered
-an individual module, and vice versa. The filename of a module is the module
-name appended with the.py file extension.
+----> Search Path and Path Search
+ The process of importing a module requires a process called a path search. This is -
+ the procedure of checking "predefined areas" of the file system to look for your   -
+ mymodule.py file in order to load the mymodule module. These predefined areas are no 
+ more than a set of directories that are part of your Python search path. 
+ 
+ A default search path is automatically defined either in the compilation or install-
+ ation process. This search path may be modified in one of two places.
+ One is the PYTHONPATH environment variable set in the shell or commandline interpre-
+ ter that invokes. 
+ Once the interpreter has started, you can access the path itself, which is stored in 
+ the sys module as the sys.path variable. If you know of a module you want to import, 
+ yet its directory is not in the search path, by all means use the list’s append() m-
+ ethod to add it to the path, like so:
+ > sys.path.append('/home/wesc/py/lib')
+ 
+ To find out what modules have been successfully imported (and loaded) as well as fr-
+ om where, take a look at sys.modules. sys.modules is a dictionary where the keys are 
+ the module names with their physical location as the values. Finally,  site-packages
+ is where third-party or external modules or packages are installed
+ 
+----> Namespaces versus Variable Scope
+ A namespace is a mapping of names (identifiers) to objects. The process of adding  a 
+ name to a namespace consists of binding the identifier to the object (and increasing 
+ the reference count to the object by one). The Python Language Reference also inclu-
+ des the following definitions: "changing the mapping of a name is called rebinding -
+ [, and] removing a name is unbinding."
 
-sys.path.append('/home/wesc/py/lib')
+ there are either two or three active namespaces at any given time during  execution. 
+ These three namespaces are the local, global, and built-ins namespaces, but local  -
+ name-spaces come and go during execution, hence the "two or three" we just alluded -
+ to. The names accessible from these namespaces are dependent on their loading order, 
+ or the order in which the namespaces are brought into the system.
+ 
+ The Python interpreter loads the built-ins namespace first. This consists of the na-
+ mes in the __builtins__ module. Then the global namespace for the executing module -
+ is loaded, which then becomes the active namespace when the module begins execution. 
+ Thus we have our two active namespaces. When a function call is made during executi-
+ on, the third, a local, namespace is created. We can use the globals() and  locals() 
+ built-in functions to tell us which names are in which namespaces.
+  
+ ---->  __builtins__
+  The __builtins__ module consists of a set of built-in names for the built-ins name-
+  space. Most, if not all, of these names come from the __builtin__ module, which  is 
+  a module of the built-in functions, exceptions, and other attributes. In standard -
+  Python execution, __builtins__ contains all the names from __builtin__. 
 
+ ----> Namespaces versus Variable Scope
+  Namespaces are purely mappings between names and objects, but scope dictates how, -
+  or rather where, one can access these names based on the physical location from wi-
+  thin your code. Notice that each of the namespaces is a self-contained unit. But l-
+  ooking at the namespaces from the scoping point of view, things appear different. -
+  All names within the local namespace are within my local scope. Any name outside my 
+  local scope is in my global scope. Our final thought to you in this section is, wh-
+  en it comes to namespaces, ask yourself the question, "Does it have it?" And for v-
+  ariable scope, ask, "Can I see it?"
 
+ ----> Name Lookup, Scoping, and Overriding
+  When accessing an attribute, the interpreter must find it in one of the three name-
+  spaces. The search begins with the local namespace. If the attribute is not found -
+  there, then the global namespace is searched. If that is also unsuccessful, the fi-
+  nal frontier is the built-ins namespace. If the exhaustive search fails, you get t-
+  he familiar:
+  >>> foo
+  Traceback (innermost last):
+  File "<stdin>", line 1, in ?
+  NameError: foo
 
-Namespaces versus Variable Scope
-
-The __builtins__ module consists of a set of built-in
-names for the built-ins namespace. Most, if not all, of these names come
-from the __builtin__ module, which is a module of the built-in
-functions, exceptions, and other attributes. In standard Python execution,__builtins__ contains all the names from __builtin__. 
-
-
-A namespace is a mapping of names (identifiers) to objects. The process of adding a name to a namespace consists of binding the identifier to the object (and
-increasing the reference count to the object by one). The Python Language
-Reference also includes the following definitions: “changing the mapping of a
-name is called rebinding [, and] removing a name is unbinding.”
- there are either two or three active
-namespaces at any given time during execution. These three namespaces are
-the local, global, and built-ins namespaces, but local name-spaces come and
-go during execution, hence the “two or three” we just alluded to. The names
-accessible from these namespaces are dependent on their loading order, or the
-order in which the namespaces are brought into the system.
-The Python interpreter loads the built-ins namespace first. This consists of
-the names in the __builtins__ module. Then the global namespace for the
-executing module is loaded, which then becomes the active namespace when
-the module begins execution. Thus we have our two active namespaces.
-When a function call is made during execution, the third, a local, namespace
-is created. We can use the globals() and locals() built-in functions to
-tell us which names are in which namespaces.
-
-Namespaces are purely mappings between names and objects, but scope
-dictates how, or rather where, one can access these names based on the physical location from within your code. 
-
-
-So how do scoping rules work in relationship to namespaces? It all has to do
-with name lookup. When accessing an attribute, the interpreter must find it
-in one of the three namespaces. The search begins with the local namespace.
-If the attribute is not found there, then the global namespace is searched. If
-that is also unsuccessful, the final frontier is the built-ins namespace. If the
-exhaustive search fails, you get the familiar:
->>> foo
-Traceback (innermost last):
-File "<stdin>", line 1, in ?
-NameError: foo
-
-names found in the local
-namespace will hide access to objects in the global or built-ins namespaces.
+  overriding
+  names found in the local namespace will hide access to objects in the global or   -
+  built-ins namespaces. This is the process whereby names may be taken out of scope -
+  because a more local namespace contains a name.
+  
+ ----> Namespaces for Free!
+  One of Python’s most useful features is the ability to get a namespace almost anyw-
+  here you need a place to put things. 
+  |class MyUltimatePythonStorageDevice(object):
+  |    pass
+  |bag = MyUltimatePythonStorageDevice()
+  |bag.x = 100
+  |bag.y = 200
+  |bag.version = 0.1
+  |bag.completed = False
 
 
 

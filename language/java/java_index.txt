@@ -6,4 +6,5 @@ ArrayList java.util
 Class     java.lang.Class
 reflect   import java.lang.reflect.*;
 Scanner   java.util.Scanner
-System    java.lang.System 
+System    java.lang.System
+Thread    java.lang.Thread 

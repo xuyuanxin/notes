@@ -1,0 +1,8 @@
+
+
+@FunctionalInterface
+public interface Runnable
+{
+}
+
+
