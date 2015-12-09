@@ -105,182 +105,338 @@ Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
   |bag.version = 0.1
   |bag.completed = False
 
+----> What are variables, really? 
+ What are variables, really? You can think of them as names referring to values.  So, 
+ after the assignment x = 1, the name x refers to the value 1. It’s almost like usin-
+ g dictionaries, where keys refer to values, except that you’re using an  “invisible” 
+ dictionary. Actually, this isn’t far from the truth. There is a built-in function c-
+ alled vars, which returns this dictionary:
+ >>> x = 1
+ >>> scope = vars()
+ >>> scope['x']
+ 1
+ >>> scope['x'] += 1
+ >>> x
+ 2
+ This sort of “invisible dictionary” is called a namespace or scope. So, how many na-
+ mespaces are there? In addition to the global scope, each function call creates a n-
+ ew one:
+ >>> def foo(): x = 42
+ ...
+ >>> x = 1
+ >>> foo()
+ >>> x
+ 1
+ Here foo changes (rebinds) the variable x, but when you look at it in the end, it h-
+ asn’t changed after all. That’s because when you call foo, a new namespace is creat-
+ ed, which is used for the block inside foo. The assignment x = 42 is performed in t-
+ his inner scope (the local namespace), and therefore it doesn’t affect the x in  the 
+ outer (global) scope. 
+ 
+ But what if you want to access the global variables inside a function? As long as y-
+ ou only want to read the value of the variable (that is, you don’t want to rebind i-
+ t), there is generally no problem:
+ >>> def combine(parameter): print parameter + external
+ ...
+ >>> external = 'berry'
+ >>> combine('Shrub')
+ Shrubberry
+ Reading the value of global variables is not a problem in general, but one thing ma-
+ y make it problematic. If a local variable or parameter exists with the same name as 
+ the global variable you want to access, you can’t do it directly. The global variab-
+ le is shadowed by the local one.
+ 
+ If needed, you can still gain access to the global variable by using the function g-
+ lobals, a close relative of vars, which returns a dictionary with the global variab-
+ les. (locals returns a dictionary with the local variables.)
+ >>> def combine(parameter):
+ print parameter + globals()['parameter']
+ ...
+ >>> parameter = 'berry'
+ >>> combine('Shrub')
+ Shrubberry 
+ 
+ Rebinding global variables (making them refer to some new value) is another  matter. 
+ If you assign a value to a variable inside a function, it automatically becomes loc-
+ al unless you tell Python otherwise. And how do you think you can tell it to make  a 
+ variable global?
+ >>> x = 1
+ >>> def change_global():
+       global x
+       x = x + 1
+ >>> change_global()
+ >>> x
+ 2
+ 
+ 
+----> The import Statement
+ Importing a module requires the use of the import statement, whose syntax is:
+ > import module1
+ > import module2
+ > :
+ > import moduleN
+ It is also possible to import multiple modules on the same line like this ...
+ > import module1[, module2[,... moduleN]]  # not preferred form
 
+ When this statement is encountered by the interpreter, the module is imported if fo-
+ und in the search path. Scoping rules apply, so if imported from the top level of  a 
+ module, it has global scope; if imported from a function, it has local scope. When a 
+ module is imported the first time, it is loaded and executed.
 
-The import Statement
-Importing a module requires the use of the import statement, whose syntax is:
-import module1
-import module2
-:
-import moduleN
-It is also possible to import multiple modules on the same line like this . . .
-import module1[, module2[,... moduleN]]  # not preferred form
-. . . but the resulting code is not as readable as having multiple import
-statements. Also, there is no performance hit and no change in the way that
-the Python bytecode is generated, so by all means, use the first form, which is
-the preferred form.
-When this statement is encountered by the interpreter, the module is
-imported if found in the search path. Scoping rules apply, so if imported from
-the top level of a module, it has global scope; if imported from a function, it
-has local scope.
-When a module is imported the first time, it is loaded and executed.
+ Module ordering for import statements
+ 1 Python Standard Library modules
+ 2 Python third party modules
+ 3 Application-specific modules
+ 
+ The from-import Statement
+ It is possible to import specific module elements into your own module. By this,  we 
+ really mean importing specific names from the module into the current namespace. For 
+ this purpose, we can use the from-import statement, whose syntax is:
+ > from module import name1[, name2[,... nameN]]
 
-The from-import Statement
-It is possible to import specific module elements into your own module. By
-this, we really mean importing specific names from the module into the current namespace. For this purpose, we can use the from-import statement,
-whose syntax is:
-from module import name1[, name2[,... nameN]]
+ Extended Import Statement (as)
+ > import Tkinter as tk
+ > from cgi import FieldStorage as form
 
-Extended Import Statement (as)
-Using extended import, you can change
-the locally bound name for what you are importing. Statements like . . .
-import Tkinter
-from cgi import FieldStorage
-. . . can be replaced by . . .
-import Tkinter as tk
-from cgi import FieldStorage as form
+----> 
+ One effect of loading a module is that the imported module is “executed,”
+ that is, the top-level portion of the imported module is directly executed.
+ This usually includes setting up of global variables as well as performing the
+ class and function declarations. If there is a check for __name__ to do more
+ on direct script invocation, that is executed, too.Of course, this type of execution may or may not be the desired effect. If
+ not, you will have to put as much code as possible into functions. 
 
+ A module is loaded only once, regardless of the number of times it is
+ imported. This prevents the module “execution” from happening over and
+ over again if multiple imports occur. 
+ 
+ Calling from-import brings the name into the current namespace, meaning
+ that you do not use the attribute/dotted notation to access the module identifier. For example, to access a variable named var in module module that
+ was imported with:
+ from module import var
+ we would use “var” by itself. There is no need to reference the module since
+ you imported var into your namespace. It is also possible to import all the
+ names from the module into the current namespace using the following
+ from-import statement:
+ from module import *
 
-One effect of loading a module is that the imported module is “executed,”
-that is, the top-level portion of the imported module is directly executed.
-This usually includes setting up of global variables as well as performing the
-class and function declarations. If there is a check for __name__ to do more
-on direct script invocation, that is executed, too.Of course, this type of execution may or may not be the desired effect. If
-not, you will have to put as much code as possible into functions. 
+ CORE STYLE: Restrict your use of “from module import *”
+ In practice, using from module import * is considered poor style
+ because it “pollutes” the current namespace and has the potential of
+ overriding names in the current namespace; however, it is extremely
+ convenient if a module has many variables that are often accessed, or if
+ the module has a very long name.
+ We recommend using this form in only two situations. The first is where the
+ target module has many attributes that would make it inconvenient to type
+ in the module name over and over again. Two prime examples of this are
+ the Tkinter (Python/Tk) and NumPy (Numeric Python) modules, and
+ perhaps the socket module. The other place where it is acceptable to use
+ from module import * is within the interactive interpreter, to save on
+ the amount of typing.
 
-A module is loaded only once, regardless of the number of times it is
-imported. This prevents the module “execution” from happening over and
-over again if multiple imports occur. 
+ Names Imported into Importer’s Scope
+ Another side effect of importing just names from modules is that those
+ names are now part of the local namespace. A side effect is possibly hiding or
+ overriding an existing object or built-in with the same name. Also, changes to
+ the variable affect only the local copy and not the original in the imported
+ module’s namespace. In other words, the binding is now local rather than
+ across namespaces.
+ Here we present the code to two modules: an importer, impter.py, and
+ an importee, imptee.py. Currently, impter.py uses the from-import
+ statement, which creates only local bindings.
+ #############
+ # imptee.py #
+ #############
+ foo = 'abc'
+ def show():
+ print 'foo from imptee:', foo
+ #############
+ # impter.py #
+ #############
+ from imptee import foo, show
+ show()
+ foo = 123
+ print 'foo from impter:', foo
+ show()
+ Upon running the importer, we discover that the importee’s view of its foo
+ variable has not changed even though we modified it in the importer.
+ foo from imptee: abc
+ foo from impter: 123
+ foo from imptee: abc
+ The only solution is to use import and fully qualified identifier names
+ using the attribute/dotted notation.
+ #############
+ # impter.py #
+ #############
+ import imptee
+ imptee.show()
+ imptee.foo = 123
+ print 'foo from impter:', imptee.foo
+ imptee.show()
+ Once we make the update and change our references accordingly, we now
+ have achieved the desired effect.
+ foo from imptee: abc
+ foo from impter: 123
+ foo from imptee: 123 
 
-Calling from-import brings the name into the current namespace, meaning
-that you do not use the attribute/dotted notation to access the module identifier. For example, to access a variable named var in module module that
-was imported with:
-from module import var
-we would use “var” by itself. There is no need to reference the module since
-you imported var into your namespace. It is also possible to import all the
-names from the module into the current namespace using the following
-from-import statement:
-from module import *
+----> package
+ 包（Package）可以看成模块的集合，只要一个文件夹下面有个__init__.py文件，那么这个文件|
+ 夹就可以看做是一个包。包下面的文件夹还可以成为包（子包）。更进一步，多个较小的包可以|
+ 聚合成一个较大的包，通过包这种结构，方便了类的管理和维护，也方便了用户的使用。包导入|
+ 的过程和模块的基本一致，只是导入包的时候会执行此包目录下的__init__.py而不是模块里面 |
+ 的语句了。另外，如果只是单纯的导入包，而包的__init__.py中又没有明确的其他初始化操作 |
+ ，那么此包下面的模块是不会自动导入的。                                              |
+ 
+ |-- PA
+ |  |-- __init__.py
+ |  |-- wave.py
+ |  |-- PB1
+ |  |  |-- __init__.py
+ |  |  |-- pb1_m.py
+ |  |-- PB2
+ |  |  |-- __init__.py
+ |  |  |-- pb2_m.py
+ 
+ __init__.py都为空，如果有以下程序：
 
-CORE STYLE: Restrict your use of “from module import *”
-In practice, using from module import * is considered poor style
-because it “pollutes” the current namespace and has the potential of
-overriding names in the current namespace; however, it is extremely
-convenient if a module has many variables that are often accessed, or if
-the module has a very long name.
-We recommend using this form in only two situations. The first is where the
-target module has many attributes that would make it inconvenient to type
-in the module name over and over again. Two prime examples of this are
-the Tkinter (Python/Tk) and NumPy (Numeric Python) modules, and
-perhaps the socket module. The other place where it is acceptable to use
-from module import * is within the interactive interpreter, to save on
-the amount of typing.
+ > import sys
+ > import PA.wave  #1
+ > import PA.PB1   #2
+ > import PA.PB1.pb1_m as m1  #3
+ > import PA.PB2.pb2_m #4
+ > PA.wave.getName() #5
+ > m1.getName() #6
+ > PA.PB2.pb2_m.getName() #7
+                                                                                     |
+ 当执行#1后                                                                          |
+  sys.modules会同时存在PA、PA.wave两个模块，此时可以调用PA.wave的任何类或函数了。但不|
+  能调用PA.PB1(2)下的任何模块。当前Local中有了PA名字。                               |
+ 当执行#2后，
+  只是将PA.PB1载入内存，sys.modules中会有PA、PA.wave、PA.PB1三个模块，但是PA.PB1下的 |
+  任何模块都没有自动载入内存，此时如果直接执行PA.PB1.pb1_m.getName()则会出错，因为   |
+  PA.PB1中并没有pb1_m。当前Local中还是只有PA名字，并没有PA.PB1名字。                 |
+ 当执行#3后，
+  会将PA.PB1下的pb1_m载入内存，sys.modules中会有PA、PA.wave、PA.PB1、PA.PB1.pb1_m四个|
+  模块，此时可以执行PA.PB1.pb1_m.getName()了。由于使用了as，当前Local中除了PA名字，另|
+  外添加了m1作为PA.PB1.pb1_m的别名。
+ 当执行#4后，
+  会将PA.PB2、PA.PB2.pb2_m载入内存，sys.modules中会有PA、PA.wave、PA.PB1、           |
+  PA.PB1.pb1_m、PA.PB2、PA.PB2.pb2_m六个模块。当前Local中还是只有PA、m1。
+ 下面的#5，#6，#7都是可以正确运行的。
+ 注意的是：如果PA.PB2.pb2_m想导入PA.PB1.pb1_m、PA.wave是可以直接成功的。最好是采用明 |
+ 确的导入路径，对于./..相对导入路径还是不推荐用。
+ 
+ A package is a hierarchical file directory structure that defines a single Python a-
+ pplication environment that consists of modules and subpackages. Packages were added 
+ to Python 1.5 to aid with a variety of problems including:
+ • Adding hierarchical organization to flat namespace
+ • Allowing developers to group related modules
+ • Allowing distributors to ship directories vs. bunch of files
+ • Helping resolve conflicting module names
+ Along with classes and modules, packages use the familiar attribute/dotted attribut-
+ e notation to access their elements. Importing modules within packages use the stan-
+ dard import and from-import statements.
 
+ For our package examples, we will assume the directory structure below:
+ Phone/
+     __init__.py
+     common_util.py
+     Voicedta/
+         __init__.py
+         Pots.py
+         Isdn.py
+     Fax/
+         __init__.py
+         G3.py
+     Mobile/
+         __init__.py
+         Analog.py
+         Digital.py
+     Pager/
+         __init__.py
+         Numeric.py
+ Phone is a top-level package and Voicedta, etc., are subpackages. Import subpackages 
+ by using import like this:
+ > import Phone.Mobile.Analog
+ > Phone.Mobile.Analog.dial()
+ 
+ Alternatively, you can use from-import in a variety of ways:
+ > from Phone import Mobile
+ > Mobile.Analog.dial('555-1212')
 
+ > from Phone.Mobile import Analog
+ > Analog.dial('555-1212')
 
+ > from Phone.Mobile.Analog import dial
+ > dial('555-1212')
 
+ In our above directory structure hierarchy, we observe a number of __init__.py file-
+ s. These are initializer modules that are required when using from-import to  import 
+ subpackages but they can be empty if not used. Quite often, developers forget to add 
+ __init__.py files to their package directories, so starting in Python 2.5, this tri-
+ ggers an ImportWarning message. However, it is silently ignored unless the -Wd opti-
+ on is given when launching the interpreter.
+ 
+ Using from-import with Packages
+ Packages also support the from-import all statement:
+ > from package.module import *
+ However, such a statement is dependent on the operating system’s filesystem for Pyt-
+ hon to determine which files to import. Thus the __all__ variable in __init__.py  is 
+ required. This variable contains all the module names that should be imported when -
+ the above statement is invoked if there is such a thing. It consists of a list of m-
+ odule names as strings.
+ 
+ Absolute Import Relative Import
+ all imports are now classified as absolute, meaning that names must be packages or -
+ modules accessible via the Python path (sys.path or PYTHONPATH). Because the @import 
+ statements are always absolute, relative imports only apply to from-import statemen-
+ ts.
+ The following will either still work in older versions of Python, generate a warnin-
+ g, or will not work in more contemporary versions of Python:
+ > import Analog
+ > from Analog import dial
+ This is due to the absolute import limitation. You have to use either the absolute -
+ or relative imports. Below are some valid imports:
+ > from Phone.Mobile.Analog import dial
+ > from .Analog import dial
+ > from ..common_util import setup
+ > from ..Fax import G3.dial
+ 
+----> __init__.py
+ http://www.cnblogs.com/BeginMan/p/3183629.html                                      |
+ python的每个模块的包中，都有一个__init__.py文件，有了这个文件，我们才能导入这个目录 |
+ 下的module。那么，__init__.py还有什么别的功能呢？其实，__init__.py里面还是可以有内容|
+ 的，我们在导入一个包时，实际上导入了它的__init__.py文件。我们可以再__init__.py文件中|
+ 再导入其他的包，或者模块。
+ [python]
+ import readers 
+ import writers 
+ import commands 
+ import users 
+ import meta 
+ import auth 
+ import admin 
+                                                                                     |
+ 这样，当我们导入这个包的时候，__init__.py文件自动运行。帮我们导入了这么多个模块，我 |
+ 们就不需要将所有的import语句写在一个文件里了，也可以减少代码量。不需要一个个去导入  |
+ module了。
 
-Names Imported into Importer’s Scope
-Another side effect of importing just names from modules is that those
-names are now part of the local namespace. A side effect is possibly hiding or
-overriding an existing object or built-in with the same name. Also, changes to
-the variable affect only the local copy and not the original in the imported
-module’s namespace. In other words, the binding is now local rather than
-across namespaces.
-Here we present the code to two modules: an importer, impter.py, and
-an importee, imptee.py. Currently, impter.py uses the from-import
-statement, which creates only local bindings.
-#############
-# imptee.py #
-#############
-foo = 'abc'
-def show():
-print 'foo from imptee:', foo
-#############
-# impter.py #
-#############
-from imptee import foo, show
-show()
-foo = 123
-print 'foo from impter:', foo
-show()
-Upon running the importer, we discover that the importee’s view of its foo
-variable has not changed even though we modified it in the importer.
-foo from imptee: abc
-foo from impter: 123
-foo from imptee: abc
-The only solution is to use import and fully qualified identifier names
-using the attribute/dotted notation.
-#############
-# impter.py #
-#############
-import imptee
-imptee.show()
-imptee.foo = 123
-print 'foo from impter:', imptee.foo
-imptee.show()
-Once we make the update and change our references accordingly, we now
-have achieved the desired effect.
-foo from imptee: abc
-foo from impter: 123
-foo from imptee: 123
+ __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使出一招“全部导入”，也就是|
+ 这样：
+ > from PackageName import *
+ 这时 import 就会把注册在包 __init__.py 文件中 __all__ 列表中的子模块和子包导入到当前|
+ 作用域中来。比如：
+ +----#文件 __init__.py
+ |__all__ = ["Module1", "Module2", "subPackage1", "subPackage2"]
 
-
-
-A package is a hierarchical file directory structure that defines a single Python
-application environment that consists of modules and subpackages. Packages
-were added to Python 1.5 to aid with a variety of problems including:
-• Adding hierarchical organization to flat namespace
-• Allowing developers to group related modules
-• Allowing distributors to ship directories vs. bunch of files
-• Helping resolve conflicting module names
-Along with classes and modules, packages use the familiar attribute/dotted
-attribute notation to access their elements. Importing modules within packages use the standard import and from-import statements.
-
-For our package examples, we will assume the directory structure below:
-Phone/
-    __init__.py
-    common_util.py
-    Voicedta/
-        __init__.py
-        Pots.py
-        Isdn.py
-    Fax/
-        __init__.py
-        G3.py
-    Mobile/
-        __init__.py
-        Analog.py
-        Digital.py
-    Pager/
-        __init__.py
-        Numeric.py
-
-Phone is a top-level package and Voicedta, etc., are subpackages. Import
-subpackages by using import like this:
-import Phone.Mobile.Analog
-Phone.Mobile.Analog.dial()
-Alternatively, you can use from-import in a variety of ways:
-The first way is importing just the top-level subpackage and referencing
-down the subpackage tree using the attribute/dotted notation:
-from Phone import Mobile
-Mobile.Analog.dial('555-1212')
-Furthermore, we can go down one more subpackage for referencing:
-from Phone.Mobile import Analog
-Analog.dial('555-1212')
-In fact, you can go all the way down in the subpackage tree structure:
-from Phone.Mobile.Analog import dial
-dial('555-1212')
-
-Using from-import with Packages
-Packages also support the from-import all statement:
-from package.module import *
-However, such a statement is dependent on the operating system’s filesystem
-for Python to determine which files to import. Thus the __all__ variable in
-__init__.py is required. This variable contains all the module names that
-should be imported when the above statement is invoked if there is such a
-thing. It consists of a list of module names as strings.
-
+ 如：在一个包里有foo.py、__init__.py
+ +----#__init__.py
+ |import os
+ |import datetime
+ +----#foo.py
+ |from __init__ import *
+ |print datetime.datetime.now() 
+ 则输出：2013-07-11 11:34:41.250000
 
 python中sys.path使用
 时间 2014-02-27 18:14:44  CSDN博客

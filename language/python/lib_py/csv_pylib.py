@@ -12,3 +12,15 @@ Monty Python's The Meaning Of Life,1983,Terry Jones
 
 
 '''
+
+def reader(csvfile, dialect='excel', **fmtparams) # csv.reader
+  '''
+  >>> import csv
+  >>> with open('eggs.csv', 'rb') as csvfile:
+  ...     spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+  ...     for row in spamreader:
+  ...         print ', '.join(row)
+  Spam, Spam, Spam, Spam, Spam, Baked Beans
+  Spam, Lovely Spam, Wonderful Spam
+  '''
+  pass

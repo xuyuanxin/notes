@@ -1,3 +1,31 @@
+
+# class frozenset([iterable])
+class set([iterable]):
+  '''
+  Return a new set or frozenset object whose elements are taken from iterable. The e-
+  lements of a set must be hashable. To represent sets of sets, the inner sets must -
+  be frozenset objects. If iterable is not specified, a new empty set is returned.
+  
+  Instances of set and frozenset provide the following operations:
+
+  len(s)
+    Return the cardinality of set s.
+
+  x in s
+    Test x for membership in s.
+
+  x not in s
+    Test x for non-membership in s.  
+  
+  '''
+
+  def add(elem):
+    # Add element elem to the set.
+    pass
+
+
+
+
 # http://blog.csdn.net/business122/article/details/7541486
 
 '''                                                                                  |

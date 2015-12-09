@@ -57,6 +57,9 @@ Membership:
 
 '''
 
+class dict():
+
+
 '''
 The @clear method removes all items from the dictionary. This is an in-place operati-
 on (like list.sort), so it returns nothing (or, rather, None):
@@ -74,19 +77,20 @@ None
 def clear():
     pass
 
-'''
-The @copy method returns a new dictionary with the same key-value pairs (a shallow c-
-opy, since the values themselves are the same, not copies):
->>> x = {'username': 'admin', 'machines': ['foo', 'bar', 'baz']}
->>> y = x.copy()
->>> y['username'] = 'mlh'
->>> y['machines'].remove('bar')
->>> y
-{'username': 'mlh', 'machines': ['foo', 'baz']}
->>> x
-{'username': 'admin', 'machines': ['foo', 'baz']}
-'''
-def copy():
+
+  def copy():
+    '''
+    The @copy method returns a new dictionary with the same key-value pairs (a shallow c-
+    opy, since the values themselves are the same, not copies):
+    >>> x = {'username': 'admin', 'machines': ['foo', 'bar', 'baz']}
+    >>> y = x.copy()
+    >>> y['username'] = 'mlh'
+    >>> y['machines'].remove('bar')
+    >>> y
+    {'username': 'mlh', 'machines': ['foo', 'baz']}
+    >>> x
+    {'username': 'admin', 'machines': ['foo', 'baz']}
+    '''
     pass
 	
 '''
@@ -144,6 +148,10 @@ def get():
     pass
 
 
-
-
+  def setdefault(key[, default]):
+    '''
+	If key is in the dictionary, return its value. If not, insert key with a value of 
+	default and return default. default defaults to None.
+    '''
+    pass
 
