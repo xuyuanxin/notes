@@ -12,10 +12,9 @@ The largest year number allowed in a date or datetime object. MAXYEAR is 9999.
 
 '''
 
-
-
 class date:      # class datetime.date
-    def 
+    pass 
+
 
 class datetime:  # datetime.datetime
 
@@ -33,7 +32,16 @@ class datetime:  # datetime.datetime
     2015-11-29
     '''
     pass
-  
+
+  def strftime(format): # datetime.strftime(format)
+    ''' 
+    Return a string representing the date and time, controlled by an explicit       -
+	@format string.
+    >>> t.strftime("%H:%M:%S %Z")
+    '12:10:30 Europe/Prague'
+    '''
+    pass	
+	
   def strptime(date_string, format):
     ''' classmethod datetime.strptime(date_string, format)
     Return a @datetime corresponding to @date_string, parsed according to @format. 
@@ -42,6 +50,7 @@ class datetime:  # datetime.datetime
     datetime.datetime(2006, 11, 21, 16, 30)
     '''
     pass
+
 
 class timedelta: # class datetime.timedelta
   '''
@@ -60,17 +69,21 @@ class timedelta: # class datetime.timedelta
     1
 	'''
 	pass
+
+
+
+
+
+
+
+
+
     
 	
 	
 	
-''' datetime.strftime(format)
-Return a string representing the date and time, controlled by an explicit @format string.
->>> t.strftime("%H:%M:%S %Z")
-'12:10:30 Europe/Prague'
-'''
-def strftime(format):
-    pass
+
+
 
 
 

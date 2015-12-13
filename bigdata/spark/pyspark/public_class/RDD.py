@@ -101,6 +101,25 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     '''
     pass
 
+  def randomSplit(weights, seed=None): 
+    '''
+    @weights: weights for splits, will be normalized if they don’t sum to 1
+    @seed: random seed
+    @Returns: split RDDs in a list
+	
+    Randomly splits this RDD with the provided weights.
+
+    >>> rdd = sc.parallelize(range(500), 1)
+    >>> rdd1, rdd2 = rdd.randomSplit([2, 3], 17)
+    >>> len(rdd1.collect() + rdd2.collect())
+    500
+    >>> 150 < rdd1.count() < 250
+    True
+    >>> 250 < rdd2.count() < 350
+    True
+    '''
+	pass
+
   def reduceByKey(func, numPartitions=None):
     '''
     Merge the values for each key using an associative reduce function. This will al-
@@ -134,6 +153,8 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     
     result:
     [[['a1','a2'],'a3'],'a4']
+	
+	如果key只有一个，这个key不会触发回调函数
     ---------------------------------------------------------------------------------
     '''
     pass
@@ -148,3 +169,20 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     '''
     pass
   
+  def zip(other)
+    '''
+    Zips this RDD with another one, returning key-value pairs with the first  element 
+	in each RDD second element in each RDD, etc. Assumes that the two RDDs have the -
+	same number of partitions and the same number of elements in each partition (e.g. 
+	one was made through a map on the other).
+
+    >>> x = sc.parallelize(range(0,5))
+    >>> y = sc.parallelize(range(1000, 1005))
+    >>> x.zip(y).collect()
+    [(0, 1000), (1, 1001), (2, 1002), (3, 1003), (4, 1004)]
+    '''
+    pass
+	
+	
+	
+

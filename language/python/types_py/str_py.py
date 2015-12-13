@@ -54,9 +54,25 @@ str.strip([chars])
 >>> 'www.example.com'.strip('cmowz.')
 'example'
 
-def rfind(sub[, start[, end]]):
-    '''str.rfind(sub[, start[, end]])
-    Return the highest index in the string where substring @sub is found, such that -
-    @sub is contained within s[start:end]. Optional arguments @start and @end are  i-
-    nterpreted as in slice notation. Return -1 on failure. '''
-    pass    
+def rfind(sub[, start[, end]]): #str.rfind
+  '''
+  Return the highest index in the string where substring @sub is found,such that @sub 
+  is contained within s[start:end]. Optional arguments @start and @end are  interpre-
+  ted as in slice notation. Return -1 on failure. 
+  
+  #!/usr/bin/python
+  str = "this is really a string example....wow!!!";
+  str = "is";
+
+  print str.rfind(str);         # 5
+  print str.rfind(str, 0, 10);  # 5
+  print str.rfind(str, 10, 0);  # -1 
+ 
+  print str.find(str);          # 2
+  print str.find(str, 0, 10);   # 2
+  print str.find(str, 10, 0);   # -1
+  '''
+  pass
+
+
+  

@@ -23,7 +23,20 @@ class set([iterable]):
     # Add element elem to the set.
     pass
 
-
+  def update(other, ...)
+    '''
+	set |= other | ...
+    Update the set, adding elements from all others.
+	>>> a
+    set([1, 2])
+    >>> b
+    set([1, 3])
+    >>> a.update(b)
+    >>> a
+    set([1, 2, 3])
+    >>>
+    '''
+    pass
 
 
 # http://blog.csdn.net/business122/article/details/7541486
