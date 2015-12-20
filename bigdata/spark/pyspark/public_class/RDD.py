@@ -60,6 +60,10 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     used to merge all the resulting objects together.
     '''
 
+  def cache():
+    #Persist this RDD with the default storage level (MEMORY_ONLY_SER).	
+    pass
+
   def distinct(numPartitions=None):
     '''
     Return a new RDD containing the distinct elements in this RDD.
@@ -155,6 +159,7 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     [[['a1','a2'],'a3'],'a4']
 	
 	如果key只有一个，这个key不会触发回调函数
+    注意会有归并后的两个值，再次归并。
     ---------------------------------------------------------------------------------
     '''
     pass
@@ -168,7 +173,11 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     [1, 1, 2, 3, 1, 1, 2, 3]
     '''
     pass
-  
+
+  def unpersist():
+    #Mark the RDD as non-persistent, and remove all blocks for it from memory and disk.
+    pass
+	
   def zip(other)
     '''
     Zips this RDD with another one, returning key-value pairs with the first  element 

@@ -1,4 +1,197 @@
 
+--> What Are Functions
+ declaration/definition     def foo(): print 'bar'
+ function object/reference  foo
+ function call/invocation   foo()
+ 
+ In short, when no items are explicitly returned or if None is returned, then  Python 
+ returns None. If the function returns exactly one object, then that is the object t-
+ hat Python returns and the type of that object stays the same. If the function retu-
+ rns multiple objects, Python gathers them all together and returns them in a tuple. 
+
+--> Calling Functions
+ Functions are called using the same pair of parentheses,  any input parameters or a-
+ rguments must be placed between these calling parentheses. Parentheses are also used
+ as part of function declarations to define those arguments. the function operator is 
+ also used in Python for class instantiation.
+ 
+ Keyword Arguments
+ Default Arguments
+ Grouped Arguments
+
+--> Creating Functions
+
+ Functions are created using the def statement, with a syntax like the following:
+ 
+ def function_name(arguments):
+    "function_documentation_string"
+    function_body_suite
+
+ Declaration versus Definition
+  Python does not make a distinction between the two, as a function clause is made u-
+  p of a declarative header line immediately followed by its defining suite.
+ 
+ Forward References
+  Like some other high-level languages, Python does not permit you to reference or c-
+  all a function before it has been declared. 
+  
+  def foo():
+      print 'in foo()'
+  bar()
+      def bar():
+      print 'in bar()'
+  >>> foo()
+  in foo()
+  in bar()
+  
+  This piece of code is fine because even though a call to bar() (from foo()) appears 
+  before bar()’s definition, foo() itself is not called before bar() is declared.  In 
+  other words, we declared foo(), then bar(), and then called foo(),but by that time, 
+  bar() existed already, so the call succeeds.
+  
+ Inner or Nested Functions
+  It is perfectly legitimate to create function (object)s inside other functions. Th-
+  at is the definition of an inner or nested function.	
+
+  The (obvious) way to create an inner function is to define a function from within -
+  an outer function’s definition (using the def keyword), as in:  
+  -------------------inner.py
+  def foo():
+      def bar():
+          print 'bar() called'
+      print 'foo() called'
+      bar()
+  foo()
+  bar()
+  ------------------
+  > python inner.py
+  > foo() called
+  > bar() called
+  > Traceback (most recent call last):
+  >   File "inner.py", line 11, in ?
+  >     bar()
+  > NameError: name 'bar' is not defined  
+  One interesting aspect of inner functions is that they are wholly contained  inside 
+  the outer function’s scope If there are no outside references to bar(), it cannot -
+  be called from anywhere else except inside the outer function, hence the reason for 
+  the exception you see at the end of execution in the above code snippet.
+  
+  Inner functions turn into something special called closures if the definition of an 
+  inner function contains a reference to an object defined in an outer function. 
+	  
+ Function (and Method) Decorators	  
+  Decorators are just “overlays” on top of function calls. These overlays are just a-
+  dditional calls that are applied when a function or method is declared. The  syntax 
+  for decorators uses a leading “at-sign” ( @ ) followed by the decorator function n-
+  ame and optional arguments. It looks something like this:
+
+  @decorator(dec_opt_args)
+  def func2Bdecorated(func_opt_args):
+       : 	   
+  
+  class MyClass(object):
+      def staticFoo():
+          :
+      staticFoo = staticmethod(staticFoo)
+          :
+		  
+  With decorators, you can now replace that piece of code with the following:
+
+  class MyClass(object):
+      @staticmethod
+      def staticFoo():
+          :
+  Furthermore, decorators can be “stacked” like function calls, so here is a more ge-
+  neral example with multiple decorators:
+
+  @deco2
+  @deco1
+  def func(arg1, arg2, ...): pass
+
+  This is equivalent to creating a composite function:
+  def func(arg1, arg2, ...): pass
+  func = deco2(deco1(func))
+  
+  Decorators With and Without Arguments
+  
+  @decomaker(deco_args)
+  def foo(): pass
+
+--> Passing Functions
+ Python Functions can be referenced (accessed or aliased to other variables),  passed 
+ as arguments to functions, be elements of container objects such as lists and dicti-
+ onaries, etc. The one unique characteristic of functions which may set them apart f-
+ rom other objects is that they are callable, i.e., they can be invoked via the func-
+ tion operator.	  
+ 
+ functions can be aliases to other variables. Because all objects are passed by refe-
+ rence, functions are no different. When assigning to another variable, you are assi-
+ gning the reference to the same object; and if that object is a function, then all -
+ aliases to that same object are callable:
+ 
+ >>> def foo():
+ ...     print 'in foo()'
+ ...
+ >>> bar = foo
+ >>> bar()
+ in foo()
+ 
+ we can even pass functions in as arguments to other functions for invocation:
+ >>> def bar(argfunc):
+ ...     argfunc()
+ ...
+ >>> bar(foo)
+ in foo()
+
+--> Argument
+ -->--> Positional Arguments, Default arguments
+  Positional arguments must be passed in the exact order in which they are defined f-
+  or the functions that are called. The syntax for declaring variables with default -
+  values in Python is such that all positional arguments must come before any default 
+  arguments:
+  
+  def func(posargs, defarg1=dval1, defarg2=dval2,...):
+      "function_documentation_string"
+      function_body_suite
+
+  Each default argument is followed by an assignment statement of its default  value. 
+  If no value is given during a function call, then this assignment is realized.
+  
+ -->--> Collecting Parameters
+
+  def print_params(*params):
+     print params
+	 
+  The star in front of the parameter puts all the values into the same tuple. It gat-
+  hers them up, so to speak.
+  
+  >>> print_params(1, 2, 3)
+  (1, 2, 3)
+
+  def print_params_3(**params):
+     print params
+ 
+  >>> print_params_3(x=1, y=2, z=3)
+  {'z': 3, 'x': 1, 'y': 2}
+  
+  Yep, we get a dictionary rather than a tuple. 
+
+  Reversing the Process
+  Now you’ve learned about gathering up parameters in tuples and dictionaries, but  it 
+  is in fact possible to do the "opposite" as well, with the same two operators, * and 
+  **. This is simply done by using the * or ** operator at the "other end" — that is ,
+  when calling the function rather than when defining it. 
+  def add(x, y): return x + y
+  params = (1, 2) 
+  >>> add(*params)
+  3
+  You can use the same technique with dictionaries, using the ** operator.
+  def print_params_3(**params): print params
+  >>> params = {'name': 'Sir Robin', 'greeting': 'Well met'}
+  >>> hello_3(**params)
+  Well met, Sir Robin!	  
+
+
 '''
 ----> positional parameters, Keyword Parameters
  |def hello_1(greeting, name):

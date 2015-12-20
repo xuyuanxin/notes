@@ -167,7 +167,10 @@ Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
  >>> change_global()
  >>> x
  2
- 
+
+ To specifically reference a named global variable, one must use the @global stateme-
+ nt. The syntax for global is:
+ global var1[, var2[, ... varN]]]
  
 ----> The import Statement
  Importing a module requires the use of the import statement, whose syntax is:

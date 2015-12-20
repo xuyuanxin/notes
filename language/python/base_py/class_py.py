@@ -4,6 +4,295 @@
 ---->====>####> 1.1.1
 
 
+--> Creating Classes
+ Python classes are created using the @class keyword. 
+ |class ClassName(bases):
+ |    'class documentation string'
+ |    class_suite
+ 
+ 类是创建实例的模板，实例是具体的对象。                                              |
+                                                                                     |
+ |class Student(object):                                                             |
+ |    pass	                                                                         |
+ class后是类名Student，类名通常是大写开头的单词。紧接着是(object)，表示该类是从哪个类|
+ 继承下来的，通常，如果没有合适的继承类，就使用object类，这是所有类最终都会继承的类。|
+ 创建实例是通过 类名+() 实现的                                                       |
+ bart = Student() #创建了一个类的实例bart                                            |
+ 
+ 复杂一些的例子
+ -------------------------------
+ class Student(object):
+ 
+     def __init__(self, name, score):
+         self.name = name
+         self.score = score
+ 		
+     def print_score(self):
+         print '%s: %s' % (self.name, self.score)		                             
+ --------------------------------
+ 
+--> Class Attributes
+ An attribute is a data or functional element that belongs to another object and is -
+ accessed via the familiar dotted-attribute notation. One interesting side note about 
+ attributes is that when you are accessing an attribute, it is also an object and may 
+ have attributes of its own which you can then access, leading to a chain of attribu-
+ tes, i.e., myThing.subThing.subSubThing, etc. 
+ 
+ -->--> Class Data Attributes
+  Data attributes are simply variables of the class we are defining. Such  attributes 
+  are better known to OO programmers as static members, class variables, or static d-
+  ata. They represent data that is tied to the class object they belong to and are i-
+  ndependent of any class instances. 
+  
+  Here is an example of using a class data attribute (foo):
+  >>> class C(object):
+  ... foo = 100
+  >>> print C.foo
+  100
+  >>> C.foo = C.foo + 1
+  >>> print C.foo
+  101
+  Note that nowhere in the code above do you see any references to class instances.
+
+ -->--> Methods (Bound and Unbound Methods)
+  In keeping with OOP tradition, Python imposes the restriction that methods cannot -
+  be invoked without instances. An instance must be used to perform method calls. Th-
+  is restriction describes Python’s concept of binding, where methods must be bound -
+  (to an instance) in order to be invoked directly. Unbound methods may also be call-
+  ed, but an instance object must be provided explicitly in order for the  invocation 
+  to succeed. However, regardless of binding, methods are inherently attributes of t-
+  he class they are defined in, even if they are almost always invoked via an instan-
+  ce. 
+
+ -->--> Determining Class Attributes
+   dir(C)
+   C.__dict__
+   C.__name__ String name of class C
+   C.__doc__ Documentation string for class C
+   C.__bases__ Tuple of class C’s parent classes
+   C.__dict__ Attributes of C
+   C.__module__ Module where C is defined (new in 1.5)
+   C.__class__ Class of which C is an instance (new-style classes only)
+  
+--> Instances
+ Instantiation is realized with use of the function operator, as in the following ex-
+ ample:
+ >>> class MyClass(object): # define class
+ ... pass
+ >>> mc = MyClass() # instantiate class  
+ As you can see, creating instance @mc of class MyClass consists of “calling” the cl-
+ ass: MyClass(). The returned object is an instance of the class you called. When you 
+ “call” a class using the functional notation, the interpreter instantiates the obje-
+ ct, and calls the closest thing Python has to a constructor (if you have written one 
+ ) to perform any final customization such as setting instance attributes, and final-
+ ly returns the instance to you.
+ 
+ -->--> __init__() “Constructor ” Method
+  When the class is invoked, the first step in the instantiation process is to create 
+  the instance object. Once the object is available, Python checks if an __init__() -
+  method has been implemented. By default, no special actions are enacted on the ins-
+  tance without the definition of (or the overriding) of the special method         -
+  __init__(). __init__() should not return any object (or return None);
+  
+ -->--> __new__() “Constructor ” Method
+  todo
+ -->--> __del__() “Destructor ” Method
+  todo
+  
+--> Instance Attributes
+ Instances have only data attributes (methods are strictly class attributes) and  are 
+ simply data values that you want to be associated with a particular instance of  any 
+ class and are accessible via the familiar dotted-attribute notation. These values a-
+ re independent of any other instance or of the class it was instantiated from.  When 
+ an instance is deallocated, so are its attributes. 
+ 
+ Instance attributes can be set any time after an instance has been created, in any -
+ piece of code that has access to the instance. However, one of the key places  where 
+ such attributes are set is in the constructor, __init__().
+ 
+ dir(I)
+ >>> class C(object):
+ ... pass
+ >>> c = C()
+ >>> c.foo = 'roger'
+ >>> c.bar = 'shrubber'
+ >>> dir(c)
+ ['__class__', '__delattr__', '__dict__', '__doc__',
+ '__getattribute__', '__hash__', '__init__', '__module__',
+ '__new__', '__reduce__', '__reduce_ex__', '__repr__',
+ '__setattr__', '__str__', '__weakref__', 'bar', 'foo']
+ 
+ I.__class__  Class from which I is instantiated
+ I.__dict__   Attributes of I
+ 
+ >>> class C(object): # define class
+ ... pass
+ ...
+ >>> c = C() # create instance
+ >>> dir(c) # instance has no attributes
+ []
+ >>> c.__dict__ # yep, definitely no attributes
+ {}
+ >>> c.__class__ # class that instantiated us
+ <class '__main__.C'>
+ >>> c.foo = 1
+ >>> c.bar = 'SPAM'
+ >>> '%d can of %s please' % (c.foo, c.bar)
+ '1 can of SPAM please'
+ >>> c.__dict__
+ {'foo': 1, 'bar': 'SPAM'}
+
+--> Instance Attributes versus Class Attributes
+ Classes and instances are both namespaces. Classes are namespaces for class attribu-
+ tes. Instances are namespaces for instance attributes. 
+
+ Class attribute changes are reflected across all instances 
+ 
+ Class attributes can be accessed via a class or an instance. In the example below, -
+ when class C is created with the version class attribute, naturally access is allow-
+ ed using the class object, i.e., C.version. When instance c is created, access to  -
+ c.version fails for the instance, and then Python initiates a search for the name  -
+ version first in the instance, then the class, and then the base classes in the inh-
+ eritance tree. In this case, it is found in the class:
+ >>> class C(object): # define class
+ ... version = 1.2 # static member
+ ...
+ >>> c = C() # instantiation
+ >>> C.version # access via class
+ 1.2 
+ >>> c.version # access via instance
+ 1.2
+ >>> C.version += 0.1 # update (only) via class
+ >>> C.version # class access
+ 1.3
+ >>> c.version # instance access, which
+ 1.3 # also reflected change
+ However, we can only update the value when referring to it using the class, as in t-
+ he C.version increment statement above. Attempting to set or update the class attri-
+ bute using the instance name will create an instance attribute that “shadows” access 
+ to the class attribute, effectively hiding it from scope until or unless that shadow 
+ is removed.
+ 
+ Any type of assignment of a local attribute will result in the creation and assignm-
+ ent of an instance attribute, just like a regular Python variable. If a class attri-
+ bute exists with the same name, interesting side effects can occur.
+ >>> class Foo(object):
+ ... x = 1.5
+ ...
+ >>> foo = Foo()
+ >>> foo.x
+ 1.5
+ >>> foo.x = 1.7 # try to update class attr
+ >>> foo.x # looks good so far...
+ 1.7
+ >>> Foo.x # nope, just created a new inst attr
+ 1.5
+ >>> del foo.x # delete instance attribute
+ >>> foo.x # can now access class attr again
+ 1.5 
+ 
+ >>> foo.x += .2 # foo.x = Foo.x + 0.2
+ >>> foo.x
+ 1.7
+ >>> Foo.x # nope, same thing
+ 1.5
+ 
+ But… all of this changes if the class attribute is mutable:
+ >>> class Foo(object):
+ ... x = {2003: 'poe2'}
+ ...
+ >>> foo = Foo()
+ >>> foo.x
+ {2003: 'poe2'}
+ >>> foo.x[2004] = 'valid path'
+ >>> foo.x
+ {2003: 'poe2', 2004: 'valid path'}
+ >>> Foo.x # it works!!!
+ {2003: 'poe2', 2004: 'valid path'}
+ >>> del foo.x # no shadow so cannot delete
+ Traceback (most recent call last):
+ File "<stdin>", line 1, in ?
+ del foo.x
+ AttributeError: x
+ >>>
+ 
+--> Binding and Method Invocation
+ First, a method is simply a function defined as part of a class. (This means that  -
+ methods are class attributes and not instance attributes). 
+ 
+ Second, methods can be called only when there is an instance of the class upon whic-
+ h the method was invoked. When there is an instance present, the method is consider-
+ ed bound (to that instance). Without an instance, a method is considered unbound.
+ 
+ And finally, the first argument in any method definition is the variable @self, whi-
+ ch represents the instance object invoking the method.
+ 
+ @self
+ The variable @self is used in class instance methods to reference the instance to w-
+ hich the method is bound. Because a method’s instance is always passed as the  first 
+ argument in any method call, @self is the name that was chosen to represent the ins-
+ tance. You are required to put @self in the method declaration but do not need to a-
+ ctually use the instance (self) within the method.
+
+--> Static Methods and Class Methods
+
+ Static methods are exactly what they are if you are coming from C++ or Java. They a-
+ re simply functions (no instance required) that are part of class definitions. Using 
+ module functions is still far more common than using static class methods.
+ 
+ Recall that regular methods require an instance (self) as the first argument, and u-
+ pon (bound) method invocation, @self is automagically passed to the method. Well, f-
+ or class methods, instead of the instance, the class is required as the first argum-
+ ent, and it is passed in to the method by the interpreter. The class does not need -
+ to be specifically named like self, but most people use @cls as the variable name.
+
+ Now let us look at some examples of these types of methods using classic classes (y-
+ ou can also use new-style classes if you want to):
+ |class TestStaticMethod:
+ |    def foo():
+ |        print 'calling static method foo()'
+ |    foo = staticmethod(foo)
+ |
+ |class TestClassMethod:
+ |    def foo(cls):
+ |        print 'calling class method foo()'
+ |        print 'foo() is part of class:', cls.__name__
+ |    foo = classmethod(foo)
+ The corresponding built-in functions are converted into their respective types and -
+ are reassigned back to the same variable name.
+ >>> tsm = TestStaticMethod()
+ >>> TestStaticMethod.foo()
+ calling static method foo()
+ >>> tsm.foo()
+ calling static method foo()
+ >>>
+ >>> tcm = TestClassMethod()
+ >>> TestClassMethod.foo()
+ calling class method foo()
+ foo() is part of class: TestClassMethod
+ >>> tcm.foo()
+ calling class method foo()
+ foo() is part of class: TestClassMethod
+ 
+ By using decorators, we can avoid the reassignment above:
+ |class TestStaticMethod:
+ |    @staticmethod
+ |    def foo():
+ |        print 'calling static method foo()'
+ |
+ |class TestClassMethod:
+ |    @classmethod
+ |    def foo(cls):
+ |        print 'calling class method foo()'
+ |        print 'foo() is part of class:', cls.__name__
+
+
+
+
+
+
+
+ 
 ----> Attributes, Functions, and Methods
 The self parameter is, in fact, what distinguishes methods from functions. Methods (-
 or, more technically, bound methods) have their first parameter bound to the instance 

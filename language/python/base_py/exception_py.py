@@ -7,23 +7,25 @@ http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a0
  Exceptions can be detected by incorporating them as part of a @try statement. Any c-
  ode suite of a try statement will be monitored for exceptions. There are two main f-
  orms of the try statement: try-except and try-finally.
+ -----------------------------------------------------
+ try:
+     try_suite
+ except Exception1:
+     suite_for_Exception1
+ except (Exception2, Exception3, Exception4):
+     suite_for_Exceptions_2_3_and_4
+ except Exception5, Argument5:
+     suite_for_Exception5_plus_argument
+ except (Exception6, Exception7), Argument67:
+     suite_for_Exceptions6_and_7_plus_argument
+ except:
+     suite_for_all_other_exceptions
+ else:
+     no_exceptions_detected_suite
+ finally:
+     always_execute_suite
+ -----------------------------------------------------
 
- |try:
- |    try_suite
- |except Exception1:
- |    suite_for_Exception1
- |except (Exception2, Exception3, Exception4):
- |    suite_for_Exceptions_2_3_and_4
- |except Exception5, Argument5:
- |    suite_for_Exception5_plus_argument
- |except (Exception6, Exception7), Argument67:
- |    suite_for_Exceptions6_and_7_plus_argument
- |except:
- |    suite_for_all_other_exceptions
- |else:
- |    no_exceptions_detected_suite
- |finally:
- |    always_execute_suite
  ----> try-except Statement
   |try:
   |    try_suite # watch for exceptions here
@@ -82,17 +84,20 @@ http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a0
   |    raise # reraise back to caller
   |except Exception:
   |    # handle real errors
- ----> ¡°Exceptional Arguments¡± 
+ 
+ ----> "Exceptional Arguments" 
   an exception may have an argument or reason passed along to the exception handler -
   when they are raised. Although reasons for exceptions are optional, the standard  -
   built-in exceptions do provide at least one argument, an error string indicating t-
   he cause of the exception.
-  |# single exception
-  |except Exception[, reason]:
-  |    suite_for_Exception_with_Argument
-  |# multiple exceptions
-  |except (Exception1, Exception2, ..., ExceptionN)[, reason]:
-  |    suite_for_Exception1_to_ExceptionN_with_Argument
+  ------------------------------------------------------------
+  # single exception
+  except Exception[, reason]:
+      suite_for_Exception_with_Argument
+  # multiple exceptions
+  except (Exception1, Exception2, ..., ExceptionN)[, reason]:
+      suite_for_Exception1_to_ExceptionN_with_Argument
+  ------------------------------------------------------------
   reason is a class instance containing diagnostic information from the code  raising 
   the exception. The exception arguments themselves go into a tuple that is stored as 
   an attribute of the class instance, an instance of the exception class from which -
@@ -103,9 +108,9 @@ http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a0
   tion, resulting in a TypeError exception:
   
   >>> try:
-  ... float(['float() does not', 'like lists', 2])
+  ...     float(['float() does not', 'like lists', 2])
   ... except TypeError, diag:# capture diagnostic info
-  ... pass
+  ...     pass
   ...
   >>> type(diag)
   <class 'exceptions.TypeError'>
@@ -149,7 +154,32 @@ http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a0
   ons occur. We know that the @finally suite executes regardless of an exception bei-
   ng triggered within the @try suite.
 
-   
+----> raise  
+ The raise statement allows the programmer to force a specified exception to occur. -
+ For example:
+ >>> raise NameError('HiThere')
+ Traceback (most recent call last):
+   File "<stdin>", line 1, in ?
+ NameError: HiThere
+ 
+ The sole argument to raise indicates the exception to be raised. This must be either 
+ an exception instance or an exception class (a class that derives from Exception).
+
+ If you need to determine whether an exception was raised but don¡¯t intend to  handle 
+ it, a simpler form of the raise statement allows you to re-raise the exception:
+ >>> try:
+ ...     raise NameError('HiThere')
+ ... except NameError:
+ ...     print 'An exception flew by!'
+ ...     raise
+ ...
+ An exception flew by!
+  Traceback (most recent call last):
+   File "<stdin>", line 2, in ?
+ NameError: HiThere
+
+
+ 
 ----> What Is an Exception?
 To represent exceptional conditions, Python uses exception objects. When it encounte-
 rs an error, it raises an exception. If such an exception object is not handled (or -

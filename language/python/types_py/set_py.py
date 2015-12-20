@@ -16,14 +16,20 @@ class set([iterable]):
 
   x not in s
     Test x for non-membership in s.  
-  
   '''
 
   def add(elem):
     # Add element elem to the set.
     pass
 
-  def update(other, ...)
+  def difference(other, ...):
+    '''
+    set - other - ...
+    Return a new set with elements in the set that are not in the others. 
+    '''
+    pass
+	
+  def update(other, ...):
     '''
 	set |= other | ...
     Update the set, adding elements from all others.
