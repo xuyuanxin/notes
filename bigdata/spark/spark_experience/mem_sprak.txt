@@ -1,0 +1,47 @@
+https://github.com/JerryLead/MyNotes/blob/master/Grind/OOM-Cases-in-Spark-Users.md
+http://www.tuicool.com/articles/YVFVRf3Spark                           On YARN内存分配
+http://support.huawei.com/ecommunity/bbs/10263446.html?p=1#p10597350  【Spark】FusionInsight-Spark-FAQ
+http://support.huawei.com/ecommunity/bbs/10242473.html                 关于spark内存大小需求的一些总结
+http://www.csdn123.com/html/topnews201408/34/9034.htm     spark job运行参数优化    使用spark join两张表（5000w*500w）总是出错，报的异常显示是在shuffle阶段。
+http://www.wdong.org/wordpress/blog/2015/01/08/spark-on-yarn-where-have-all-my-memory-gone/   
+
+
+
+
+
+
+                                                                                     |
+关于spark内存大小需求的一些总结                                                      |
+  官方网站只是要求内存在8GB之上即可（Impala推荐要求机器配置在128GB）。 但：spark job |
+  运行效率主要取决于：数据量大小，内存消耗，内核数（确定并发运行的task数量）。由于FI |
+  的spark运行在yarn模式上，提交spark作业到yarn上的时候，会启动executor（jvm）去执行任|
+  务。启动的executor数量和每个executor使用的内核数可在执行spark作业时候指定
+
+  如果Executor的数量和内存大小受机器物理配置影响相对固定，那么你就需要合理规划每个分 |
+  区任务的数据规模。（简单理解就是：如果发现内存不够大，gc时间比较长，可以增加任务数 |
+  量（数据总量不变的情况下，每个任务分析的数据量会变小）） 一般情况下任务的数量可以为|
+  分配内核数的4倍。
+
+  假设如果有10台worker机器，每台机器规划给spark job的内存为40g，每个机器规划给spark  |
+  job的内核数为10。默认情况下：executor中可用于存放rdd的阀值设定为                   |
+  spark.storage.memoryFraction=0.6。这样用于分析的文件大小为: 
+    10机器*40g*0.6内存*4倍的可分配内核数=960G
+  如果内存和内核数不够的情况下，可加大任务数量，可分析更大的文件，同样分析时间也会增 |
+  加。  
+
+具体分析：
+=======================================
+1. spark内存的消耗跟数据量的大小是直接关系，由于FI使用基于Yarn的资源调度运行Spark。
+   假设排查其它服务占用内存后，spark 服务及job 可用内存大小为40G
+   FI给出的其它组件内存最小要求为（关注数据节点）：
+   操作系统 1GB
+   Hbase RS（HRegionServer） 6GB 
+   HDFS DN（DataNode） 4GB 
+   MapReduce NM（NodeManager） 2GB
+
+2. Spark虽然是in memory的运算平台，但从官方资料看，似乎本身对内存的要求并不是特别苛刻。官方网站只是要求内存在8GB之上即可（Impala要求机器配置在128GB）Spark建议需要提供至少75%的内存空间分配给Spark，至于其余的内存空间，则分配给操作系统与buffer cache。Spark对内存的消耗主要分为三部分（即取决于你的应用程序的需求）：
+      数据集中对象的大小；
+      访问这些对象的内存消耗；
+      垃圾回收GC的消耗。
+
+3. spark executor都是装载在container里运行，container默认的内存是1G（参数yarn.scheduler.minimum-allocation-mb定义），executor分配的内存是executor-memory，所以向YARN申请的内存是（executor-memory + 1）* num-executors。 Executor 内存的大小，和性能本身当然并没有直接的关系，但是几乎所有运行时性能相关的内容都或多或少间接和内存大小相关。这个参数最终会被设置到Executor的JVM的heap尺寸上。如果Executor的数量和内存大小受机器物理配置影响相对固定，那么你就需要合理规划每个分区任务的数据规模，例如采用更多的分区，用增加任务数量（进而需要更多的批次来运算所有的任务）的方式来减小每个任务所需处理的数据大小。

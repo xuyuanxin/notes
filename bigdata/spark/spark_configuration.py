@@ -1,4 +1,4 @@
-http://spark.apache.org/docs/latest/configuration.html Spark Configuration
+http://spark.apache.org/docs/latest/configuration.html     Spark Configuration
 
 Spark Properties
   Dynamically Loading Spark Properties
@@ -24,8 +24,6 @@ Spark Properties
 Environment Variables
 Configuring Logging
 Overriding configuration directory
-
-
 
 Spark provides three locations to configure the system:
 1 Spark properties control most application parameters and can be set by using a    -
@@ -72,17 +70,6 @@ Spark provides three locations to configure the system:
   tly on the SparkConf take highest precedence, then flags passed to spark-submit  or 
   spark-shell, then options in the spark-defaults.conf file. 
 
-
-
-
-
-
-
-
-
-
-
-  
 --> Available Properties  
  The application web UI at http://<driver>:4040 lists Spark properties in the       -
  ¡°Environment¡± tab. This is a useful place to check to make sure that your properties 
@@ -93,22 +80,26 @@ Spark provides three locations to configure the system:
  Most of the properties that control internal settings have reasonable default value-
  s. Some of the most common options to set are: 
 
- Application Properties
+ -->--> Application Properties
+  Property Name    Default    Meaning
+  spark.app.name    (none)    The name of your application. This will appear in the UI and in log data.
+  spark.driver.cores    1    Number of cores to use for the driver process, only in cluster mode.
+  spark.driver.maxResultSize    1g    Limit of total size of serialized results of all partitions for each Spark action (e.g. collect). Should be at least 1M, or 0 for unlimited. Jobs will be aborted if the total size is above this limit. Having a high limit may cause out-of-memory errors in driver (depends on spark.driver.memory and memory overhead of objects in JVM). Setting a proper limit can protect the driver from out-of-memory errors.
+  "spark.driver.memory"    1g    
+   Amount of memory to use for the driver process, i.e. where SparkContext is initia-
+   lized. (e.g. 1g, 2g). Note: In client mode, this config must not be set through t-
+   he SparkConf directly in your application, because the driver JVM has already sta-
+   rted at that point. Instead, please set this through the --driver-memory command -
+   line option or in your default properties file.
+  "spark.executor.memory"    1g    
+   Amount of memory to use per executor process (e.g. 2g, 8g).
+  spark.extraListeners    (none)    A comma-separated list of classes that implement SparkListener; when initializing SparkContext, instances of these classes will be created and registered with Spark's listener bus. If a class has a single-argument constructor that accepts a SparkConf, that constructor will be called; otherwise, a zero-argument constructor will be called. If no valid constructor can be found, the SparkContext creation will fail with an exception.
+  spark.local.dir    /tmp    Directory to use for "scratch" space in Spark, including map output files and RDDs that get stored on disk. This should be on a fast, local disk in your system. It can also be a comma-separated list of multiple directories on different disks. NOTE: In Spark 1.0 and later this will be overriden by SPARK_LOCAL_DIRS (Standalone, Mesos) or LOCAL_DIRS (YARN) environment variables set by the cluster manager.
+  spark.logConf    false    Logs the effective SparkConf as INFO when a SparkContext is started.
+  spark.master    (none)    The cluster manager to connect to. See the list of allowed master URL's.
+  Apart from these, the following properties are also available, and may be useful in some situations:
 
-Property Name    Default    Meaning
-spark.app.name    (none)    The name of your application. This will appear in the UI and in log data.
-spark.driver.cores    1    Number of cores to use for the driver process, only in cluster mode.
-spark.driver.maxResultSize    1g    Limit of total size of serialized results of all partitions for each Spark action (e.g. collect). Should be at least 1M, or 0 for unlimited. Jobs will be aborted if the total size is above this limit. Having a high limit may cause out-of-memory errors in driver (depends on spark.driver.memory and memory overhead of objects in JVM). Setting a proper limit can protect the driver from out-of-memory errors.
-spark.driver.memory    1g    Amount of memory to use for the driver process, i.e. where SparkContext is initialized. (e.g. 1g, 2g). 
-Note: In client mode, this config must not be set through the SparkConf directly in your application, because the driver JVM has already started at that point. Instead, please set this through the --driver-memory command line option or in your default properties file.
-spark.executor.memory    1g    Amount of memory to use per executor process (e.g. 2g, 8g).
-spark.extraListeners    (none)    A comma-separated list of classes that implement SparkListener; when initializing SparkContext, instances of these classes will be created and registered with Spark's listener bus. If a class has a single-argument constructor that accepts a SparkConf, that constructor will be called; otherwise, a zero-argument constructor will be called. If no valid constructor can be found, the SparkContext creation will fail with an exception.
-spark.local.dir    /tmp    Directory to use for "scratch" space in Spark, including map output files and RDDs that get stored on disk. This should be on a fast, local disk in your system. It can also be a comma-separated list of multiple directories on different disks. NOTE: In Spark 1.0 and later this will be overriden by SPARK_LOCAL_DIRS (Standalone, Mesos) or LOCAL_DIRS (YARN) environment variables set by the cluster manager.
-spark.logConf    false    Logs the effective SparkConf as INFO when a SparkContext is started.
-spark.master    (none)    The cluster manager to connect to. See the list of allowed master URL's.
-Apart from these, the following properties are also available, and may be useful in some situations:
-
-Runtime Environment
+ -->--> Runtime Environment
 
 Property Name    Default    Meaning
 spark.driver.extraClassPath    (none)    Extra classpath entries to prepend to the classpath of the driver. 
@@ -131,7 +122,7 @@ spark.python.profile    false    Enable profiling in Python worker, the profile 
 spark.python.profile.dump    (none)    The directory which is used to dump the profile result before driver exiting. The results will be dumped as separated file for each RDD. They can be loaded by ptats.Stats(). If this is specified, the profile result will not be displayed automatically.
 spark.python.worker.memory    512m    Amount of memory to use per python worker process during aggregation, in the same format as JVM memory strings (e.g. 512m, 2g). If the memory used during aggregation goes above this amount, it will spill the data into disks.
 spark.python.worker.reuse    true    Reuse Python worker or not. If yes, it will use a fixed number of Python workers, does not need to fork() a Python process for every tasks. It will be very useful if there is large broadcast, then the broadcast will not be needed to transfered from JVM to Python worker for every task.
-Shuffle Behavior
+ -->--> Shuffle Behavior
 
 Property Name    Default    Meaning
 spark.reducer.maxSizeInFlight    48m    Maximum size of map outputs to fetch simultaneously from each reduce task. Since each output requires us to create a buffer to receive it, this represents a fixed memory overhead per reduce task, so keep it small unless you have a large amount of memory.
@@ -150,7 +141,7 @@ spark.shuffle.service.port    7337    Port on which the external shuffle service
 spark.shuffle.sort.bypassMergeThreshold    200    (Advanced) In the sort-based shuffle manager, avoid merge-sorting data if there is no map-side aggregation and there are at most this many reduce partitions.
 spark.shuffle.spill    true    If set to "true", limits the amount of memory used during reduces by spilling data out to disk. This spilling threshold is specified by spark.shuffle.memoryFraction.
 spark.shuffle.spill.compress    true    Whether to compress data spilled during shuffles. Compression will use spark.io.compression.codec.
-Spark UI
+ -->--> Spark UI
 
 Property Name    Default    Meaning
 spark.eventLog.compress    false    Whether to compress logged events, if spark.eventLog.enabled is true.
@@ -164,7 +155,7 @@ spark.worker.ui.retainedExecutors    1000    How many finished executors the Spa
 spark.worker.ui.retainedDrivers    1000    How many finished drivers the Spark UI and status APIs remember before garbage collecting.
 spark.sql.ui.retainedExecutions    1000    How many finished executions the Spark UI and status APIs remember before garbage collecting.
 spark.streaming.ui.retainedBatches    1000    How many finished batches the Spark UI and status APIs remember before garbage collecting.
-Compression and Serialization
+ -->--> Compression and Serialization
 
 Property Name    Default    Meaning
 spark.broadcast.compress    true    Whether to compress broadcast variables before sending them. Generally a good idea.
@@ -184,7 +175,7 @@ spark.serializer    org.apache.spark.serializer.
 JavaSerializer (org.apache.spark.serializer.
 KryoSerializer when using Spark SQL Thrift Server)    Class to use for serializing objects that will be sent over the network or need to be cached in serialized form. The default of Java serialization works with any Serializable Java object but is quite slow, so we recommend using org.apache.spark.serializer.KryoSerializer and configuring Kryo serialization when speed is necessary. Can be any subclass of org.apache.spark.Serializer.
 spark.serializer.objectStreamReset    100    When serializing using org.apache.spark.serializer.JavaSerializer, the serializer caches objects to prevent writing redundant data, however that stops garbage collection of those objects. By calling 'reset' you flush that info from the serializer, and allow old objects to be collected. To turn off this periodic reset set it to -1. By default it will reset the serializer every 100 objects.
-Execution Behavior
+ -->--> Execution Behavior
 
 Property Name    Default    Meaning
 spark.broadcast.blockSize    4m    Size of each piece of a block for TorrentBroadcastFactory. Too large a value decreases parallelism during broadcast (makes it slower); however, if it is too small, BlockManager might take a performance hit.
@@ -209,10 +200,14 @@ spark.storage.unrollFraction    0.2    Fraction of spark.storage.memoryFraction 
 spark.externalBlockStore.blockManager    org.apache.spark.storage.TachyonBlockManager    Implementation of external block manager (file system) that store RDDs. The file system's URL is set by spark.externalBlockStore.url.
 spark.externalBlockStore.baseDir    System.getProperty("java.io.tmpdir")    Directories of the external block store that store RDDs. The file system's URL is set by spark.externalBlockStore.url It can also be a comma-separated list of multiple directories on Tachyon file system.
 spark.externalBlockStore.url    tachyon://localhost:19998 for Tachyon    The URL of the underlying external blocker file system in the external block store.
-Networking
 
-Property Name    Default    Meaning
-spark.akka.frameSize    128    Maximum message size to allow in "control plane" communication; generally only applies to map output size information sent between executors and the driver. Increase this if you are running jobs with many thousands of map and reduce tasks and see messages about the frame size.
+ -->--> Networking
+  Property Name           Default    Meaning
+  "spark.akka.frameSize"    128    
+   Maximum message size to allow in "control plane" communication; generally only ap-
+   plies to map output size information sent between executors and the driver. Incre-
+   ase this if you are running jobs with many thousands of map and reduce tasks and -
+   see messages about the frame size.
 spark.akka.heartbeat.interval    1000s    This is set to a larger value to disable the transport failure detector that comes built in to Akka. It can be enabled again, if you plan to use this feature (Not recommended). A larger interval value reduces network overhead and a smaller value ( ~ 1 s) might be more informative for Akka's failure detector. Tune this in combination of `spark.akka.heartbeat.pauses` if you need to. A likely positive use case for using failure detector would be: a sensistive failure detector can help evict rogue executors quickly. However this is usually not the case as GC pauses and network lags are expected in a real Spark cluster. Apart from that enabling this leads to a lot of exchanges of heart beats between nodes leading to flooding the network with those.
 spark.akka.heartbeat.pauses    6000s    This is set to a larger value to disable the transport failure detector that comes built in to Akka. It can be enabled again, if you plan to use this feature (Not recommended). Acceptable heart beat pause for Akka. This can be used to control sensitivity to GC pauses. Tune this along with `spark.akka.heartbeat.interval` if you need to.
 spark.akka.threads    4    Number of actor threads to use for communication. Can be useful to increase on large clusters when the driver has a lot of CPU cores.
@@ -253,7 +248,7 @@ spark.speculation.multiplier    1.5    How many times slower a task is than the 
 spark.speculation.quantile    0.75    Percentage of tasks which must be complete before speculation is enabled for a particular stage.
 spark.task.cpus    1    Number of cores to allocate for each task.
 spark.task.maxFailures    4    Number of individual task failures before giving up on the job. Should be greater than or equal to 1. Number of allowed retries = this value - 1.
-Dynamic Allocation
+ -->--> Dynamic Allocation
 
 Property Name    Default    Meaning
 spark.dynamicAllocation.enabled    false    Whether to use dynamic resource allocation, which scales the number of executors registered with this application up and down based on the workload. Note that this is currently only available on YARN mode. For more detail, see the description here. 
@@ -266,7 +261,7 @@ spark.dynamicAllocation.maxExecutors    infinity    Upper bound for the number o
 spark.dynamicAllocation.minExecutors    0    Lower bound for the number of executors if dynamic allocation is enabled.
 spark.dynamicAllocation.schedulerBacklogTimeout    1s    If dynamic allocation is enabled and there have been pending tasks backlogged for more than this duration, new executors will be requested. For more detail, see this description.
 spark.dynamicAllocation.sustainedSchedulerBacklogTimeout    schedulerBacklogTimeout    Same as spark.dynamicAllocation.schedulerBacklogTimeout, but used only for subsequent executor requests. For more detail, see this description.
-Security
+ -->--> Security
 
 Property Name    Default    Meaning
 spark.acls.enable    false    Whether Spark acls should are enabled. If enabled, this checks to see if the user has access permissions to view or modify the job. Note this requires the user to be known, so if the user comes across as null no checks are done. Filters can be used with the UI to authenticate and set the user.
@@ -284,7 +279,7 @@ For example:
 -Dspark.ui.filters=com.test.filter1 
 -Dspark.com.test.filter1.params='param1=foo,param2=testing'
 spark.ui.view.acls    Empty    Comma separated list of users that have view access to the Spark web ui. By default only the user that started the Spark job has view access.
-Encryption
+ -->--> Encryption
 
 Property Name    Default    Meaning
 spark.ssl.enabled    false    
@@ -301,7 +296,7 @@ spark.ssl.keyStorePassword    None    A password to the key-store.
 spark.ssl.protocol    None    A protocol name. The protocol must be supported by JVM. The reference list of protocols one can find on this page.
 spark.ssl.trustStore    None    A path to a trust-store file. The path can be absolute or relative to the directory where the component is started in.
 spark.ssl.trustStorePassword    None    A password to the trust-store.
-Spark Streaming
+ -->--> Spark Streaming
 
 Property Name    Default    Meaning
 spark.streaming.backpressure.enabled    false    Enables or disables Spark Streaming's internal backpressure mechanism (since 1.5). This enables the Spark Streaming to control the receiving rate based on the current batch scheduling delays and processing times so that the system receives only as fast as the system can process. Internally, this dynamically sets the maximum receiving rate of receivers. This rate is upper bounded by the values `spark.streaming.receiver.maxRate` and `spark.streaming.kafka.maxRatePerPartition` if they are set (see below).
@@ -312,14 +307,14 @@ spark.streaming.unpersist    true    Force RDDs generated and persisted by Spark
 spark.streaming.kafka.maxRatePerPartition    not set    Maximum rate (number of records per second) at which data will be read from each Kafka partition when using the new Kafka direct stream API. See the Kafka Integration guide for more details.
 spark.streaming.kafka.maxRetries    1    Maximum number of consecutive retries the driver will make in order to find the latest offsets on the leader of each partition (a default value of 1 means that the driver will make a maximum of 2 attempts). Only applies to the new Kafka direct stream API.
 spark.streaming.ui.retainedBatches    1000    How many batches the Spark Streaming UI and status APIs remember before garbage collecting.
-SparkR
+ -->--> SparkR
 
 Property Name    Default    Meaning
 spark.r.numRBackendThreads    2    Number of threads used by RBackend to handle RPC calls from SparkR package.
 spark.r.command    Rscript    Executable for executing R scripts in cluster modes for both driver and workers.
 spark.r.driver.command    spark.r.command    Executable for executing R scripts in client modes for driver. Ignored in cluster modes. 
   
-Cluster Managers
+ -->--> Cluster Managers
 
 Each cluster manager in Spark has additional configuration options. Configurations can be found on the pages for each mode:
 

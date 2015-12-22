@@ -191,6 +191,38 @@
   >>> hello_3(**params)
   Well met, Sir Robin!	  
 
+--> Closures
+ If references are made from inside an inner function to an object defined in any ou-
+ ter scope (but not in the global scope), the inner function then is known as a     -
+ @closure. The variables defined in the outer function but used or referred to by the 
+ inner function are called free variables. A closure combines an inner function’s own 
+ code and scope along with the scope of an outer function. closure variables live  in 
+ a function’s namespace and scope.
+ 
+ Simple Closure Example
+ 
+ By using the variable @count inside it, we have created a closure because it now ca-
+ rries with it the scope of counter().
+ 
+ def counter(start_at=0):
+     count = [start_at]
+     def incr():
+         count[0] += 1
+         return count[0]
+     return incr
+	 
+ >>> count = counter(5)
+ >>> print count()
+ 6
+ >>> print count()
+ 7
+ >>> count2 = counter(100)
+ >>> print count2()
+ 101
+ >>> print count()
+ 8	 
+	 
+
 
 '''
 ----> positional parameters, Keyword Parameters

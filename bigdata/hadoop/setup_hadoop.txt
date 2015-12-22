@@ -5,8 +5,8 @@ http://IP:8042   NodeManager运行状态
 http://IP:19888  JobHistory中的任务执行历史信息
 
 jps
-xxxx DataNode             <-- slave  sbin/start-hdfs.sh(在master上执行)
-xxxx NodeManager          <-- slave  sbin/start-yarn.sh(在master上执行)
+xxxx DataNode             <-- slave  sbin/start-hdfs.sh(在master上执行，自动启动slave上的脚本)
+xxxx NodeManager          <-- slave  sbin/start-yarn.sh(在master上执行，自动启动slave上的脚本)
 xxxx NameNode             <-- master sbin/start-hdfs.sh stop-hdfs.sh
 xxxx SecondaryNameNode    <-- master sbin/start-hdfs.sh stop-hdfs.sh
 xxxx ResourceManager      <-- master sbin/start-yarn.sh stop-yarn.sh
