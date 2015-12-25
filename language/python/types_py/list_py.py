@@ -1,57 +1,42 @@
 http://my.oschina.net/syc2013/blog/333265?p=1   Python List数据的遍历
 
+清空列表
+ del list[:]
+ list=[]
+ list[:]=[]
 
-方式一：
-
-
-app_list = [1234, 5677, 8899]
-<!-- lang: python -->
-for app_id in app_list:
-<!-- lang: python -->
-    print app_id
-输出： 
-1234 
-5677 
-8899
-
-方式二：
-
-
-app_list = [1234, 5677, 8899]
-<!-- lang: python -->
-for index,app_id in enumerate(app_list):
-<!-- lang: python -->
-    print index, app_id
-输出： 
-0 1234 
-1 5677 
-2 8899
-
-方式三： 使用range()或xrange()
-
+Python List数据的遍历
+ app_list = [1234, 5677, 8899]
+ for app_id in app_list:
+     print app_id
+ 输出： 
+ 1234 
+ 5677 
+ 8899
 
  app_list = [1234, 5677, 8899]
-<!-- lang: python -->
-    for i in range(len(app_list)):
-<!-- lang: python -->
-          print i,app_list[i]
-输出： 
-0 1234 
-1 5677 
-2 8899
+ for index,app_id in enumerate(app_list):
+     print index, app_id
+ 输出： 
+ 0 1234 
+ 1 5677 
+ 2 8899
 
-方式四： 使用iter()
+ app_list = [1234, 5677, 8899]
+ for i in range(len(app_list)):
+     print i,app_list[i]
+ 输出： 
+ 0 1234 
+ 1 5677 
+ 2 8899
 
-
-app_list = [1234, 5677, 8899]
-<!-- lang: python -->
-for app_id in iter(app_list):
-<!-- lang: python -->
-    print app_id
-输出： 
-1234 
-5677 
-8899
+ app_list = [1234, 5677, 8899]
+ for app_id in iter(app_list):
+     print app_id
+ 输出： 
+ 1234 
+ 5677 
+ 8899
 
 
 ----> @list

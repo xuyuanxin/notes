@@ -97,6 +97,7 @@ class RandomForestModel(java_model): # pyspark.mllib.tree.RandomForestModel
 
   @classmethod
   def load(sc, path):
+    pass
 
   def numTrees():
     #Get number of trees in ensemble.
