@@ -1,6 +1,25 @@
 '''
 28. Python Runtime Services
 28.1. sys — System-specific parameters and functions
+'''
+
+  def sys.getsizeof(object[, default]):
+    '''
+	Return the size of an object in bytes. The object can be any type of object. All built-in objects will return correct results, but this does not have to hold true for third-party extensions as it is implementation specific.
+
+The default argument allows to define a value which will be returned if the object type does not provide means to retrieve the size and would cause a TypeError.
+
+getsizeof calls the object’s sizeof method and adds an additional garbage collector overhead if the object is managed by the garbage collector.
+
+    import sys
+
+v = 1
+print sys.getsizeof(v)
+
+s = 'abc'
+print sys.getsizeof(s)
+	'''
+
 
 
 This module provides access to some variables used or maintained by the interpreter -

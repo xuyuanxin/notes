@@ -1,9 +1,9 @@
-'''
-http://wiki.scipy.org/Tentative_NumPy_Tutorial   Tentative NumPy Tutorial
+
+http://wiki.scipy.org/Tentative_NumPy_Tutorial            Tentative NumPy Tutorial
 https://docs.scipy.org/doc/numpy-dev/user/quickstart.html Quickstart tutorial
 http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  chinese edition
 
-----> The Basics
+--> The Basics
  NumPy's main object is the homogeneous multidimensional array. It is a table of ele-
  ments (usually numbers), all of the same type, indexed by a tuple of positive integ-
  ers. In Numpy dimensions are called axes. The number of axes is rank. For example, -
@@ -69,7 +69,7 @@ http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  c
  numpy.ndarray
  ---------------------------------
 
-----> Array Creation
+--> Array Creation
  you can create an array from a regular Python list or tuple using the array function
  . The type of the resulting array is deduced from the type of the elements in the s-
  equences.
@@ -95,11 +95,11 @@ http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  c
        [0.,  0.,  0.,  0.]])
  >>> ones( (2,3,4), dtype=int16 )                # dtype can also be specified
  array([[[ 1, 1, 1, 1],
-        [ 1, 1, 1, 1],
-        [ 1, 1, 1, 1]],
-       [[ 1, 1, 1, 1],
-        [ 1, 1, 1, 1],
-        [ 1, 1, 1, 1]]], dtype=int16)
+         [ 1, 1, 1, 1],
+         [ 1, 1, 1, 1]],
+        [[ 1, 1, 1, 1],
+         [ 1, 1, 1, 1],
+         [ 1, 1, 1, 1]]], dtype=int16)
  >>> empty( (2,3) )
  array([[  3.73603959e-262,   6.02658058e-154,   6.55490914e-260],
        [  5.30498948e-313,   3.14673309e-307,   1.00000000e+000]])
@@ -114,63 +114,62 @@ http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  c
  >>> x = linspace( 0, 2*pi, 100 )   # useful to evaluate function at lots of points
  >>> f = sin(x) 
 
-----> Printing Arrays
-One-dimensional arrays are then printed as rows, bidimensionals as matrices and trid-
-imensionals as lists of matrices.
->>> a = arange(6)                         # 1d array
->>> print a
-[0 1 2 3 4 5]
->>>
->>> b = arange(12).reshape(4,3)           # 2d array
->>> print b
-[[ 0  1  2]
- [ 3  4  5]
- [ 6  7  8]
- [ 9 10 11]]
->>>
->>> c = arange(24).reshape(2,3,4)         # 3d array
->>> print c
-[[[ 0  1  2  3]
-  [ 4  5  6  7]
-  [ 8  9 10 11]]
+ -->--> Printing Arrays
+  One-dimensional arrays are then printed as rows, bidimensionals as matrices and tr-
+  idimensionals as lists of matrices.
+  >>> a = arange(6)                         # 1d array
+  >>> print a
+  [0 1 2 3 4 5]
+  >>>
+  >>> b = arange(12).reshape(4,3)           # 2d array
+  >>> print b
+  [[ 0  1  2]
+   [ 3  4  5]
+   [ 6  7  8]
+   [ 9 10 11]]
+  >>>
+  >>> c = arange(24).reshape(2,3,4)         # 3d array
+  >>> print c
+  [[[ 0  1  2  3]
+    [ 4  5  6  7]
+    [ 8  9 10 11]]
 
- [[12 13 14 15]
-  [16 17 18 19]
-  [20 21 22 23]]]
-  
-  
-  
-----> Indexing
+   [[12 13 14 15]
+    [16 17 18 19]
+    [20 21 22 23]]]
 
----->----> Single element indexing
-Single element indexing for a 1-D array is what one expects. It work exactly like th-
-at for other standard Python sequences. It is 0-based, and accepts negative indices -
-for indexing from the end of the array.
->>> x = np.arange(10)
->>> x
-array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
->>> x[2]
-2
->>> x[-2]
-8
-Unlike lists and tuples, numpy arrays support multidimensional indexing for multidim-
-ensional arrays. That means that it is not necessary to separate each dimension’s in-
-dex into its own set of square brackets.
->>> x.shape = (2,5)   # now x is 2-dimensional
->>> x
-array([[0, 1, 2, 3, 4],
-       [5, 6, 7, 8, 9]])
->>> x[1,3]
-8
->>> x[1,-1]
-9
-Note that if one indexes a multidimensional array with fewer indices than dimensions, 
-one gets a subdimensional array. For example:
->>>
->>> x[0]
-array([0, 1, 2, 3, 4])
+--> Indexing
+ -->--> Single element indexing
+  Single element indexing for a 1-D array is what one expects. It work exactly like -
+  that for other standard Python sequences. It is 0-based, and accepts negative indi-
+  ces for indexing from the end of the array.
+  >>> x = np.arange(10)
+  >>> x
+  array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+  >>> x[2]
+  2
+  >>> x[-2]
+  8
+  
+  Unlike lists and tuples, numpy arrays support multidimensional indexing for multid-
+  imensional arrays. That means that it is not necessary to separate each dimension’s 
+  index into its own set of square brackets.
+  >>> x.shape = (2,5)   # now x is 2-dimensional
+  >>> x
+  array([[0, 1, 2, 3, 4],
+         [5, 6, 7, 8, 9]])
+  >>> x[1,3]
+  8
+  >>> x[1,-1]
+  9
 
-'''
+  Note that if one indexes a multidimensional array with fewer indices than dimensio-
+  ns, one gets a subdimensional array. For example:
+  >>>
+  >>> x[0]
+  array([0, 1, 2, 3, 4])
+
+
 
 
 

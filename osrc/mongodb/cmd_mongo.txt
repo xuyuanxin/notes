@@ -1,6 +1,8 @@
 http://www.cnblogs.com/wufengtinghai/p/3801697.html   MongoDB新增及查询数据(一)
 http://blog.csdn.net/xyz_lmn/article/details/8072621  MongoDB shell操作
 
+成功启动MongoDB后，再打开一个命令行窗口输入mongo，就可以进行数据库的一些操作。
+
 > show dbs; #查询本地所有数据库名称        
 > use mydb; #切换至指定数据库环境（若无指定的数据库，则创建新的库）
 > show collections; #查询当前库下的所有聚集集合collection（相当于table）

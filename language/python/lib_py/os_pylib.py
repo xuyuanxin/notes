@@ -54,6 +54,13 @@ def walk(top, topdown=True, onerror=None, followlinks=False):
   '''
   pass
 
+os.sep
+  The character used by the operating system to separate pathname components. This is 
+  '/' for POSIX and '\\' for Windows. Note that knowing this is not sufficient to  be 
+  able to parse or concatenate pathnames ！ use os.path.split() and os.path.join() ！ 
+  but it is occasionally useful. Also available via os.path.   
+ 
+
 ''' os.system(command)
 Execute the command (a string) in a subshell. 
 '''
@@ -63,9 +70,5 @@ def system(command):
 '''
 15.1.6. Miscellaneous System Information
 
-os.sep
-  The character used by the operating system to separate pathname components. This is 
-  '/' for POSIX and '\\' for Windows. Note that knowing this is not sufficient to  be 
-  able to parse or concatenate pathnames ！ use os.path.split() and os.path.join() ！ 
-  but it is occasionally useful. Also available via os.path.
+
 '''	

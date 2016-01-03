@@ -1,14 +1,24 @@
 http://blog.csdn.net/u011203602/article/details/48006029   MongoDB数据库安装及测试
 http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/  
 
-'''
-----> mongodb windows install
+
+--> mongodb windows install
   1) Determine which MongoDB build you need
     -> wmic os get caption
     -> wmic os get osarchitecture
-  
+
   2) Download MongoDB for Windows. 
-    MongoDB for Windows 64-bit
+    MongoDB for Windows 64-bit, runs only on Windows Server 2008 R2,Windows 7 64-bit, 
+	and newer versions of Windows. This build takes advantage of recent  enhancements 
+	to the Windows Platform and cannot operate on older versions of Windows.
+
+    MongoDB for Windows 32-bit,runs on any 32-bit version of Windows newer than Wind-
+	ows Vista. 32-bit versions of MongoDB are only intended for older systems and for 
+	use in testing and development systems. 32-bit versions of MongoDB only support -
+	databases smaller than 2GB.
+
+    MongoDB for Windows 64-bit Legacy, runs on Windows Vista, Windows Server 2003, a-
+	nd Windows Server 2008 and does not include recent performance enhancements.
 
   3) Double-click the .msi file
     You may specify an installation directory if you choose the "Custom" installatio-
@@ -55,7 +65,9 @@ http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
     Run all of the following commands in Command Prompt with "Administrative Privile-
 	ges". Install the MongoDB service by starting mongod.exe with the --install opti-
 	on and the config option to specify the previously created configuration file.
+	
     -> "C:\mongodb\bin\mongod.exe" --config "C:\mongodb\mongod.cfg" --install
+	
     To use an alternate dbpath, specify the path in the configuration file (e.g.    -
     C:\mongodb\mongod.cfg) or on the command line with the --dbpath option. If neede-
 	d, you can install services for multiple instances of mongod.exe or mongos.exe. -
@@ -73,6 +85,58 @@ http://docs.mongodb.org/manual/tutorial/install-mongodb-on-windows/
   6 test
     http://localhost:27017/
 
+--> Manually Create a Windows Service for MongoDB
+ You can set up the MongoDB server as a Windows Service that starts automatically  at 
+ boot time. The following procedure assumes you have installed MongoDB using the .msi 
+ installer with the path C:\mongodb\. If you have installed in an alternative direct-
+ ory, you will need to adjust the paths as appropriate.
+
+ 1 Open an Administrator command prompt.
+  Press the Win key, type cmd.exe, and press Ctrl + Shift + Enter to run the  Command 
+  Prompt as Administrator. Execute the remaining steps from the Administrator command 
+  prompt.
+
+ 2 Create directories.
+  Create directories for your database and log files:
+
+  mkdir c:\data\db
+  mkdir c:\data\log
+
+ 3 Create a configuration file.
+  Create a configuration file. The file must set systemLog.path. Include additional -
+  configuration options as appropriate. For example, create a file at               -
+  C:\mongodb\mongod.cfg that specifies both systemLog.path and storage.dbPath:
+  ---- mongod.cfg
+  systemLog:
+    destination: file
+    path: c:\data\log\mongod.log
+  storage:
+    dbPath: c:\data\db
+  ----
+
+ 4 Create the MongoDB service.
+  
+  > sc.exe create MongoDB binPath= "D:\MongoDB\Server\3.0\bin\mongod.exe --service --config=\"D:\MongoDB\mongod.cfg\"" DisplayName= "MongoDB" start= "auto"
+
+  sc.exe requires a space between “=” and the configuration values ( eg “binPath= ”), 
+  and a “\” to escape double quotes. If successfully created, the following log mess-
+  age will display:
+  [SC] CreateService SUCCESS
+
+ 5 Start the MongoDB service.
+  > net start MongoDB
+
+ 6 Stop or remove the MongoDB service as needed.
+  To stop the MongoDB service, use the following command:
+  > net stop MongoDB
+  To remove the MongoDB service, first stop the service and then run the following c-
+  ommand:
+  > sc.exe delete MongoDB
+
+--> run client
+ http://localhost:27017/
+	
+	
 ----> client
 pip install pymongo
 

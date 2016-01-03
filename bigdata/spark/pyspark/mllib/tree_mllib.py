@@ -105,6 +105,7 @@ class RandomForestModel(java_model): # pyspark.mllib.tree.RandomForestModel
 
   def predict(x):
     '''
+    @x ¨C Data point (feature vector), or an RDD of data points (feature vectors).
     Predict values for a single data point or an RDD of points using the model train-
 	ed. In Python, predict cannot currently be used within an RDD transformation or -
 	action. Call predict directly on the RDD instead.

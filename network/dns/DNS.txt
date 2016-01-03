@@ -1,52 +1,121 @@
-----> Domain Name System (DNS)
-The Domain Name System (DNS) is the system that provides name to address mapping  for 
-the Internet. DNS has two conceptually independent aspects. The first is abstract: it 
-specifies the name syntax and rules for delegating authority over names. The second -
-is concrete: it specifies the implementation of a distributed computing system that -
-efficiently maps names to addresses.
 
-The Domain Name System uses a hierarchical naming scheme known as domain names. As in 
-our earlier examples, a domain name consists of a sequence of subnames separated by a 
-delimiter character, the dot. In our examples, we said that individual sections of t-
-he name might represent sites or groups, but DNS simply calls each section a label. -
-Thus, the domain name:
-                 cs.purdue .edu
-contains three labels: cs, purdue, and edu. Any suffix of a label in a domain name is
-also called a domain. In the above example, the lowest-level domain is cs.purdue.edu,
-(the domain name for the Computer Science department at Purdue University), the seco-
-nd level domain is purdue.edu (the domain name for Purdue University), and the      -
-top-level domain is edu (the domain name for educational institutions). As the examp-
-le shows, domain names are written with the local label first and the top domain las-
-t. As we will see, writing them in this order makes it possible to compress  messages 
-that contain multiple domain names.
+--> Domain Name System (DNS)
+ The Domain Name System (DNS) is the system that provides name to address mapping for 
+ the Internet. DNS has two conceptually independent aspects. The first is abstract:it 
+ specifies the name syntax and rules for delegating authority over names. The  second
+ is concrete: it specifies the implementation of a distributed computing system  that
+ efficiently maps names to addresses.
 
-domain name comparisons are insensitive to case, so COM is equivalent to com.
+ The Domain Name System uses a hierarchical naming scheme known as domain names. As -
+ in our earlier examples, a domain name consists of a sequence of subnames  separated 
+ by a delimiter character, the dot. In our examples, we said that individual sections 
+ of the name might represent sites or groups, but DNS simply calls each section a   -
+ "label". Thus, the domain name:
+                 cs.purdue.edu
+ contains three labels: cs, purdue, and edu. Any suffix of a label in a domain name -
+ is also called a domain. In the above example, the lowest-level domain is          -
+ cs.purdue.edu, (the domain name for the Computer Science department at Purdue Unive-
+ rsity), the second level domain is purdue.edu (the domain name for Purdue Universit-
+ y), and the top-level domain is edu ( the domain name for educational institutions). 
+ As the example shows, domain names are written with the local label first and the t-
+ op domain last. As we will see, writing them in this order makes it possible to com-
+ press messages that contain multiple domain names.
 
-----> top-level domin
-Conceptually, the top-level names permit two different naming hierarchies: geographic 
-and organizational. 
+ domain name comparisons are insensitive to case, so COM is equivalent to com.
 
-aero            Air transport industry
-arpa            Infrastructure domain
-asia            Regional domain for Asia
-biz             Businesses
-cat             Catalan language and cultural
-com             Commercial organization
-coop            Cooperative associations
-edu             Educational institution (4-year)
-gov             United States government
-info            Information
-int             International treaty organizations
-jobs            Human resource management
-mil             United States military
-museum          Museums
-name            Individuals
-net             Major network support centers
-org             Organizations other than those above
-pro             Credentialed professionals
-travel          Travel industry
-xxx             Internet pornography
-country code    Each country (geographic scheme)
+--> The DNS Name Space
+ The set of all names used with DNS constitutes the DNS "name space". This space is -
+ partitioned hierarchically and is case insensitive. The current DNS name space is  a 
+ tree of domains with an unnamed root at the top. The top echelons of the tree are t-
+ he so-called top-level domains (TLDs), which include generic TLDs (gTLDs),         -
+ country-code TLDs(ccTLDs), and internationalized country-code TLDs (IDN ccTLDs), pl-
+ us a special infrastructure TLD called, for historical reasons, ARPA [RFC3172]. 
+ 
+ There are five commonly used groups of TLDs, and one group of specialized domains b-
+ eing used for internationalized domain names (IDNs).
+ 
+ The DNS name space forms a hierarchy with an unnamed root at the top. The  top-level 
+ domains (TLDs) include generic TLDs (gTLDs), countrycode TLDs (ccTLDs), internation-
+ alized TLDs (IDN ccTLDs), and a special infrastructure TLD called ARPA.
+ 
+ -->--> gTLDs
+  The gTLDs are grouped into categories: generic, generic-restricted, and  sponsored.
+  The generic gTLDs (generic appears twice) are open for unrestricted use. The others
+  (generic-restricted and sponsored) are limited to various sorts of uses or are con-
+  strained as to what entity may assign names from the domain. For example, EDU is u-
+  sed for educational institutions, MIL and GOV are used for military and  government 
+  institutions of the United States, and INT is used for international  organizations 
+  (such as NATO). 
+  
+  There is a "new gTLD" program in the works that may significantly expand the curre-
+  nt set, possibly to several hundred or even thousand. This program and policies re-
+  lating to TLD management in general are maintained by the Internet Corporation  for 
+  Assigned Names and Numbers (ICANN) [ICANN].
+
+  The generic top-level domains (gTLDs), circa 2011
+  TLD     First Use (est.)    Use                        Example
+  AERO    December 21, 2001   Air-transport industry     www.sita.aero
+  ARPA    January 1, 1985     Infrastructure             18.in-addr.arpa
+  ASIA    May 2, 2007         Pan-Asia and Asia Pacific  www.seo.asia
+  BIZ     June 26, 2001       Business uses              neustar.biz
+  CAT     December 19, 2005   Catalan linguistic/cultural community www.domini.cat
+  COM     January 1, 1985     Generic                    icanhascheezburger.com
+  COOP    December 15, 2001   Cooperative associations   www.ems.coop
+  EDU     January 1, 1985     Post-secondary educational institutions recognized by U.S.A.  hpu.edu
+  GOV     January 1, 1985     U.S. government            whitehouse.gov
+  INFO    June 25, 2001       Generic                    germany.info
+  INT     November 3, 1988    International treaty organizations nato.int
+  JOBS    September 8, 2005   Human resource managers    intel.jobs
+  MIL     January 1, 1985     U.S. military              dtic.mil
+  MOBI    October 30, 2005    Customers/providers of mobile products/services flowers.mobi
+  MUSEUM  October 30, 2001    Museums                    icom.museum
+  NAME    August 16, 2001     Individuals                www.name
+  NET     January 1, 1985     Generic                    ja.net
+  ORG     December 9, 2002    Generic                    slashdot.org
+  PRO     May 6, 2002         Credentialed professionals/entities nic.pro
+  TEL     March 1, 2007       Contact data for businesses/individuals telnic.tel
+  TRAVEL  July 27, 2005       Travel industry            cancun.travel
+  XXX     April 15, 2011      Adult entertainment industry whois.nic.xxx
+ 
+ -->--> ccTLDs
+  The ccTLDs include the two-letter country codes specified by the ISO 3166  standard 
+  [ISO3166], plus five that are not: uk, su, ac, eu, and tp (the last one is being p-
+  hased out). Because some of these two-letter codes are suggestive of other uses and 
+  meanings, various countries have been able to find commercial windfalls from selli-
+  ng names within their ccTLDs. For example, the domain name cnn.tv is really a regi-
+  stration in the Pacific island of Tuvalu, which has been selling domain names asso-
+  ciated with the television entertainment industry. Creating a name in such an unco-
+  nventional way is sometimes called a "domain hack".
+
+--> top-level domin
+ Conceptually, the top-level names permit two different naming hierarchies: geographic 
+ and organizational. 
+
+ aero            Air transport industry
+ arpa            Infrastructure domain
+ asia            Regional domain for Asia
+ biz             Businesses
+ cat             Catalan language and cultural
+ com             Commercial organization
+ coop            Cooperative associations
+ edu             Educational institution (4-year)
+ gov             United States government
+ info            Information
+ int             International treaty organizations
+ jobs            Human resource management
+ mil             United States military
+ museum          Museums
+ name            Individuals
+ net             Major network support centers
+ org             Organizations other than those above
+ pro             Credentialed professionals
+ travel          Travel industry
+ xxx             Internet pornography
+ country code    Each country (geographic scheme)
+
+--> fully qualified domain names (FQDNs)
+
+
 
 ----> Domain Name Resolution
 A client must know how to contact at least one name server. To ensure that a domain -

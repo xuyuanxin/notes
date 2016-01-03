@@ -1,6 +1,6 @@
 
 
-def train_test_split(*arrays, **options):
+def train_test_split(*arrays, **options): # sklearn.cross_validation.train_test_split
     """Split arrays or matrices into random train and test subsets
     Quick utility that wraps input validation and
     ``next(iter(ShuffleSplit(n_samples)))`` and application to input

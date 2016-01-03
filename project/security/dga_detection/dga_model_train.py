@@ -21,6 +21,9 @@ import numpy as np
 import tldextract
 import math
 
+DGA_DATA_PATH  = "F:\\mygit\\data\\dga\\data"
+DGA_MODEL_PATH = "F:\\mygit\\data\\dga\\models"
+
 
 # Version printing is always a good idea
 print 'Scikit Learn version: %s' % sklearn.__version__
@@ -54,7 +57,7 @@ def show_cm(cm, labels):
         for j, label_j in enumerate(labels):
             print "%s/%s: %.2f%% (%d/%d)" % (label_i, label_j, (percent[i][j]), cm[i][j], cm[i].sum())
 
-def save_model_to_disk(name, model, model_dir='models'):
+def save_model_to_disk(name, model, model_dir=DGA_MODEL_PATH):
     ''' Serialize and save a model to disk'''
 
     # First serialized the model
@@ -67,7 +70,7 @@ def save_model_to_disk(name, model, model_dir='models'):
     print 'Storing Serialized Model to Disk (%s:%.2fMeg)' % (name, len(serialized_model)/1024.0/1024.0)
     open(model_path,'wb').write(serialized_model)
 
-def load_model_from_disk(name, model_dir='models'):
+def load_model_from_disk(name, model_dir=DGA_MODEL_PATH):
 
     # Model directory is relative to this file
     model_path = os.path.join(model_dir, name+'.model')
@@ -89,7 +92,7 @@ def main():
 
     # Handle command-line arguments
     parser = optparse.OptionParser()
-    parser.add_option('--alexa-file', default='data/alexa_100k.csv', help='Alexa file to pull from.  Default: %default')
+    parser.add_option('--alexa-file', default=DGA_DATA_PATH + os.sep+'alexa_100k.csv', help='Alexa file to pull from.  Default: %default')
     (options, arguments) = parser.parse_args()
     print options, arguments
 
@@ -120,7 +123,7 @@ def main():
 
 
         # Read in the DGA domains
-        dga_dataframe = pd.read_csv('data/dga_domains.txt', names=['raw_domain'], header=None, encoding='utf-8')
+        dga_dataframe = pd.read_csv(DGA_DATA_PATH + os.sep+'dga_domains.txt', names=['raw_domain'], header=None, encoding='utf-8')
 
         # We noticed that the blacklist values just differ by captilization or .com/.org/.info
         dga_dataframe['domain'] = dga_dataframe.applymap(lambda x: x.split('.')[0].strip().lower())
@@ -180,7 +183,8 @@ def main():
 
 
         # We're also going to throw in a bunch of dictionary words
-        word_dataframe = pd.read_csv('data/words.txt', names=['word'], header=None, dtype={'word': np.str}, encoding='utf-8')
+        word_dataframe = pd.read_csv(DGA_DATA_PATH + os.sep+'words.txt', names=['word'], \
+		                            header=None, dtype={'word': np.str}, encoding='utf-8')
 
         # Cleanup words from dictionary
         word_dataframe = word_dataframe[word_dataframe['word'].map(lambda x: str(x).isalpha())]
@@ -271,8 +275,8 @@ def main():
 
         # Random Forest is a popular ensemble machine learning classifier.
         # http://scikit-learn.org/dev/modules/generated/sklearn.ensemble.RandomForestClassifier.html
-        clf = sklearn.ensemble.RandomForestClassifier(n_estimators=20, compute_importances=True) # Trees in the forest
-
+        #clf = sklearn.ensemble.RandomForestClassifier(n_estimators=20, compute_importances=True) # Trees in the forest
+        clf = sklearn.ensemble.RandomForestClassifier(n_estimators=20) # Trees in the forest
 
         # Train on a 80/20 split
         from sklearn.cross_validation import train_test_split
@@ -334,3 +338,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+	
+
+

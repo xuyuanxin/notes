@@ -1,0 +1,43 @@
+http://docs.scipy.org/doc/scipy/reference/scipy-optimize-modindex.html
+
+
+scipy	
+    scipy.cluster	
+    scipy.cluster.hierarchy	
+    scipy.cluster.vq	
+    scipy.constants	
+    scipy.fftpack	
+    scipy.fftpack.convolve	
+    scipy.integrate	
+    scipy.interpolate	
+    scipy.io	
+    scipy.io.arff	
+    scipy.io.netcdf	
+    scipy.io.wavfile	
+    scipy.linalg	
+    scipy.linalg.blas	
+    scipy.linalg.cython_blas	
+    scipy.linalg.cython_lapack	
+    scipy.linalg.interpolative	
+    scipy.linalg.lapack	
+    scipy.misc	
+    scipy.ndimage	
+    scipy.ndimage.filters	
+    scipy.ndimage.fourier	
+    scipy.ndimage.interpolation	
+    scipy.ndimage.measurements	
+    scipy.ndimage.morphology	
+    scipy.odr	
+    scipy.optimize	
+    scipy.optimize.nonlin	
+    scipy.signal	
+    scipy.sparse	
+    scipy.sparse.csgraph	
+    scipy.sparse.linalg	
+    scipy.spatial	
+    scipy.spatial.distance	
+    scipy.special	
+    scipy.stats	
+    scipy.stats.mstats	
+    scipy.weave	
+    scipy.weave.ext_tools
