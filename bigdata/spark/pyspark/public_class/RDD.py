@@ -74,6 +74,22 @@ class RDD: # class pyspark.RDD(jrdd, ctx, jrdd_deserializer=AutoBatchedSerialize
     '''
     pass
 
+  def flatMap(f, preservesPartitioning=False):
+    '''
+    Return a new RDD by first applying a function to all elements of this RDD, and t-
+	hen flattening the results.
+
+	>>> a = range(1,3)
+    >>> a
+    [1, 2]
+    >>> rdd = sc.parallelize([2, 3, 4])
+    >>> sorted(rdd.flatMap(lambda x: range(1, x)).collect())
+    [1, 1, 1, 2, 2, 3]
+    >>> sorted(rdd.flatMap(lambda x: [(x, x), (x, x)]).collect())
+    [(2, 2), (2, 2), (3, 3), (3, 3), (4, 4), (4, 4)]
+    '''
+    pass
+	
   def foreach(f):
     '''
     Applies a function to all elements of this RDD.

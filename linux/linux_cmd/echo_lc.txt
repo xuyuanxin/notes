@@ -1,14 +1,18 @@
-echo is the basic command for printing in the terminal.
-echo puts a newline at the end of every invocation by default:
+echo is the basic command for printing in the terminal. echo puts a newline at the e-
+nd of every invocation by default:
 
 $ echo "Welcome to Bash"
 Welcome to Bash
-
 $ echo Welcome to Bash
 Welcome to Bash
-
 $ echo 'text in quote'
 text in quote
+
+These methods may look similar, but some of them have got a specific purpose and side
+effects too. Consider the following command:
+$ echo "cannot include exclamation - ! within double quotes"
+This will return the following:
+bash: !: event not found error
 
 $ echo "cannot include exclamation - ! within double quotes"
 cannot include exclamation - ! within double quotes
@@ -19,23 +23,21 @@ $ echo Hello world !
 Or:
 $ echo 'Hello world !'
 Or:
-$ echo "Hello world \!" #Escape character \ prefixed.
+$ echo "Hello world \!" # Escape character \ prefixed.
 
-The side effects of each of the methods are as follows:
+--> The side effects of each of the methods are as follows:
 When using echo without quotes, we cannot use a semicolon as it acts as a delimiter -
-between commands in the bash shell.
-$echo hello;hello #takes echo hello as one command and the second hello as the second 
-                  #command.
+between commands in the bash shell. $echo hello;hello takes echo hello as one command 
+and the second hello as the second command.
 
 When using echo with single quotes, the variables (for example, $var will not be exp-
 anded) inside the quotes will not be interpreted by Bash,but will be displayed as is.
 This means:
-$ echo '$var' #will return $var
+$ echo '$var' # will return $var
 #whereas
 $ echo $var   #will return the value of the variable $var if defined or nothing at a-
               #ll if it is not defined.
-			  
-			  
+
 By default, echo has a newline appended at the end of its output text. This can be a-
 voided by using the -n flag.
 
@@ -46,10 +48,24 @@ echo -e "1\t2\t3"
 123
 
 
+Printing colored output
+Producing colored output on the terminal is very interesting stuff. We produce colored output
+using escape sequences.
+Color codes are used to represent each color. For example, reset=0, black=30, red=31,
+green=32, yellow=33, blue=34, magenta=35, cyan=36, and white=37.
+In order to print colored text, enter the following:
+echo -e "\e[1;31m This is red text \e[0m"
+Here \e[1;31 is the escape string that sets the color to red and \e[0m resets the color back.
+Replace 31 with the required color code.
+For a colored background, reset = 0, black = 40, red = 41, green = 42, yellow = 43, blue = 44,
+magenta = 45, cyan = 46, and white=47, are the color code that are commonly used.
+In order to print a colored background, enter the following:
+echo -e "\e[1;42m Green Background \e[0m"
+
+
 
 
 
 
  
-			  
 			  

@@ -1,0 +1,65 @@
+
+
+
+
+http://blog.csdn.net/zmxiangde_88/article/details/8026649
+
+tee命令的作用像字母T一样，很形象的表示了它的功能：它把输出的一个副本输送到标准输出，另一个副本拷贝到相应的文件中。如果需要在输出到文件的同时，也把信息显示到屏幕上输出，那这个命令就再合适不过了。
+
+一般格式如下：
+
+[html] view plaincopy
+tee -a files  
+
+-a选项表示追加到文件末尾。
+如：
+
+[html] view plaincopy
+[root@localhost practise]# who | tee who.log  
+root     :0           2012-09-27 07:13  
+root     pts/1        2012-09-27 07:13 (:0.0)  
+此时目录下会包含一个who.log文件，如下：
+[html] view plaincopy
+[root@localhost practise]# cat who.log   
+root     :0           2012-09-27 07:13  
+root     pts/1        2012-09-27 07:13 (:0.0)  
+
+再执行以下命令：
+[html] view plaincopy
+[root@localhost practise]# who | tee -a who.log  
+root     :0           2012-09-27 07:13  
+root     pts/1        2012-09-27 07:13 (:0.0)  
+[root@localhost practise]# cat who.log   
+root     :0           2012-09-27 07:13  
+root     pts/1        2012-09-27 07:13 (:0.0)  
+root     :0           2012-09-27 07:13  
+root     pts/1        2012-09-27 07:13 (:0.0)  
+
+
+
+
+
+http://codingstandards.iteye.com/blog/833695
+格式：tee
+只输出到标准输出，因为没有指定文件嘛。
+ 
+格式：tee file
+输出到标准输出的同时，保存到文件file中。如果文件不存在，则创建；如果已经存在，则覆盖之。（If a file being written to does not already exist, it is created. If a file being written to already exists, the data it previously
+contained is overwritten unless the `-a' option is used.）
+ 
+格式：tee -a file
+输出到标准输出的同时，追加到文件file中。如果文件不存在，则创建；如果已经存在，就在末尾追加内容，而不是覆盖。
+ 
+格式：tee -
+输出到标准输出两次。（A FILE of `-' causes `tee' to send another copy of input to standard output, but this is typically not that useful as the copies are interleaved.）
+ 
+格式：tee file1 file2 -
+输出到标准输出两次，同时保存到file1和file2中。
+
+
+
+
+
+
+
+

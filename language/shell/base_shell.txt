@@ -1,0 +1,304 @@
+--> Introduction
+ Shell scripts are files in which we write a sequence of commands that we need to pe-
+ rform. And the script file is executed using the shell utility.
+ 
+ When opened, in a terminal, a prompt is available. It is usually in the following f-
+ ormat:
+ > username@hostname$
+ Or:
+ > root@hostname#
+ Or simply as $ or #.
+ $ represents regular users and # represents the administrative user root.
+ 
+ A shell script is a text file that typically begins with a shebang, as follows:
+ #!/bin/bash
+ For any scripting language in a Linux environment, a script starts with a special l-
+ ine called shebang. Shebang is a line for which #! is prefixed to the interpreter p-
+ ath. /bin/bash is the interpreter command path for Bash.
+ 
+ The script can be run with the filename as a command-line argument as follows:
+ $ sh script.sh # Assuming script is in the current directory.
+ Or:
+ $ sh /home/path/script.sh # Using full path of script.sh.
+ If a script is run as a command-line argument for sh, the shebang in the script is -
+ of no use.
+ 
+ In order to self execute a shell script, it requires executable permission.
+ $ chmod a+x script.sh
+ The script can be executed as:
+ $ ./script.sh #./ represents the current directory
+ Or:
+ $ /home/path/script.sh # Full path of the script is used
+ The shell program will read the first line and see that the shebang is  #!/bin/bash. 
+ It will identify the /bin/bash and execute the script internally as:
+ $ /bin/bash script.sh
+ 
+ In Bash, each command or command sequence is delimited by using a semicolon or a new
+ line. For example:
+ $ cmd1 ; cmd2
+ This is equivalent to:
+ $ cmd1
+ $ cmd2
+ 
+ Finally, the # character is used to denote the beginning of unprocessed comments.  A
+ comment section starts with # and proceeds up to the end of that line. 
+ 
+ -->--> print in the terminal
+  echo
+  printf
+ -->--> variables and environment variables
+  Scripting languages usually do not require variable type declaration before its us-
+  e. It can be assigned directly. In Bash, the value for every variable is string. If 
+  we assign variables with quotes or without quotes, they are stored as string. There 
+  are special variables used by the shell environment and the operating system envir-
+  onment to store special values, which are called environment variables.
+ 
+  A variable can be assigned as follows:
+  var=value
+  var is the name of a variable and value is the value to be assigned. If value  does 
+  not contain any white space characters (like a space), it need not be enclosed in -
+  quotes, else it must be enclosed in single or double quotes. Note that  var = value 
+  and var=value are different. It is a common mistake to write var =value instead  of 
+  var=value. The later is the assignment operation, whereas the former is an equality 
+  operation.
+  
+  Printing the contents of a variable is done using by prefixing $ with the  variable 
+  name as follows:
+  var="value" #Assignment of value to variable var.
+  echo $var
+  Or:
+  echo ${var}
+  The output is as follows:
+  value
+  We can use variable values inside printf or echo in double quotes.
+  #!/bin/bash
+  #Filename :variables.sh
+  fruit=apple
+  count=5
+  echo "We have $count ${fruit}(s)"
+  The output is as follows:
+  We have 5 apple(s)
+  
+  Finding length of string  length=${#var}
+  $ var=12345678901234567890
+  $ echo ${#var}
+  20
+  
+  Identifying the current shell
+  echo $SHELL
+  echo $0
+
+ -->--> Doing math calculations with the shell
+  The Bash shell environment can perform basic arithmetic operations using the comma-
+  nds let, (( )), and []. The two utilities expr and bc are also very helpful in per-
+  forming advanced operations.
+ 
+  A numeric value can be assigned as a regular variable assignment, which is stored -
+  as string. However, we use methods to manipulate as numbers.
+  
+  #!/bin/bash
+  no1=4;
+  no2=5;
+  let result=no1+no2
+  echo $result
+  let no1++
+  let no1--
+  let no+=6
+  let no-=6
+  
+  The [] operator can be used similar to the let command as follows:
+  result=$[ no1 + no2 ]
+  Using $ prefix inside [] operators are legal, for example:
+  result=$[ $no1 + 5 ]
+  
+  (( )) can also be used. $ prefixed with a variable name is used when the (( )) ope-
+  rator is used, as follows:
+  result=$(( no1 + 50 ))
+  
+  expr can also be used for basic operations:
+  result=`expr 3 + 4`
+  result=$(expr $no1 + 5)
+
+--> file descriptors and redirection
+ File descriptors are integers associated with an opened file or data stream. File d-
+ escriptors 0, 1, and 2 are reserved as follows:
+ 0 – stdin (standard input)      /dev/stdin
+ 1 – stdout (standard output)    /dev/stdout
+ 2 – stderr (standard error)     /dev/stderr 
+                                 /dev/null
+ 
+ $ cmd 2>stderr.txt 1>stdout.txt
+ 
+ It is also possible to redirect stderr and stdout to a single file by converting   -
+ stderr to stdout using this preferred method:
+ $ cmd 2>&1 output.txt
+ or an alternate approach:
+ $ cmd &> output.txt
+ 
+ tee
+ 
+ By using redirection, we can read data from a file as stdin as follows:
+ $ cmd < file
+ 
+ -->--> Custom file descriptors
+  A file descriptor is an abstract indicator for accessing a file. Each file access -
+  is associated with a special number called a file descriptor. 0, 1, and 2 are rese-
+  rved descriptor numbers for stdin, stdout, and stderr. We can create our own custom 
+  file descriptors using the exec command. 
+  
+  Create a file descriptor for reading a file, as follows:
+  $ exec 3<input.txt # open for reading with descriptor number 3
+  We could use it as follows:
+  $ echo this is a test line > input.txt
+  $ exec 3<input.txt
+  Now you can use file descriptor 3 with commands. For example, cat <&3 as follows:
+  $ cat <&3
+  this is a test line
+  
+  Create a file descriptor for writing (truncate mode) as follows:
+  $ exec 4>output.txt # open for writing
+  For example:
+  $ exec 4>output.txt
+  $ echo newline >&4
+  $ cat output.txt
+  newline
+  Create a file descriptor for writing (append mode) as follows:
+  $ exec 5>>input.txt
+  
+  For example:
+  $ exec 5>>input.txt
+  $ echo appended line >&5
+  $ cat input.txt
+  newline
+  appended line
+
+
+--> control
+ http://www.runoob.com/linux/linux-shell-process-control.html
+ http://www.cnblogs.com/chengmo/archive/2010/10/14/1851434.html
+ 
+ -->--> if
+  if condition1
+  then
+      command1
+  elif condition2
+      command2
+  else
+      commandN
+  fi
+  
+  if condition
+  then
+      command
+  else
+      command 
+  fi
+  
+  if condition
+  then
+      command
+  fi
+  
+  if [ $(ps -ef | grep -c "ssh") -gt 1 ]; then echo "true"; fi
+  
+  条件测试有：[[]],[],test 这几种，注意：[[]] 与变量之间用空格分开。
+  
+  ---- test.sh
+  #!/bin/sh
+  scores=40;
+  if [[ $scores -gt 90 ]]; then
+      echo "very good!";
+  elif [[ $scores -gt 80 ]]; then
+      echo "good!";
+  elif [[ $scores -gt 60 ]]; then
+      echo "pass!";
+  else
+      echo "no pass!";
+  fi;
+  
+  num1=$[2*3]
+  num2=$[1+5]
+  if test $[num1] -eq $[num2]
+  then
+      echo '两个数字相等!'
+  else
+      echo '两个数字不相等!'
+  fi
+  ----
+ 
+ -->-->for 循环
+  for循环一般格式为：
+  for var in item1 item2 ... itemN
+  do
+      command1
+      command2
+      ...
+      commandN
+  done
+  写成一行：
+  for var in item1 item2 ... itemN; do command1; command2… done;
+                                                                                     |
+  当变量值在列表里，for循环即执行一次所有命令，使用变量名获取列表中的当前取值。命令可|
+  为任何有效的shell命令和语句。in列表可以包含替换、字符串和文件名。 in列表是可选的， |
+  如果不用它，for循环使用命令行的位置参数。
+
+  for loop in 1 2 3 4 5
+  do
+      echo "The value is: $loop"
+  done 
+  
+  输出结果：
+  The value is: 1
+  The value is: 2
+  The value is: 3
+  The value is: 4
+  The value is: 5
+
+  for str in 'This is a string'
+  do
+      echo $str
+  done
+  
+  输出结果：
+  This is a string
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+
+1 $表示普通用户 #表示超级用户
+2 shell脚本以#！开始，例如#！/bin/bash。后面是bash的路径。
+3 运行一个脚本
+  $ sh script.sh         #运行当前目录下的script.sh脚本，也可以标出路径。
+  $ chmod a+x scritp.sh  #赋予所有用户script.sh文件的可执行权限。
+  $ ./script.sh          #./表示当前目录，shell程序读取脚本的首行，看是否为#!/bin/bash。
+                         #他会识别/bin/bash，并在内部以 /bin/bash script.sh 命令执行该脚本。
+
+  
+
+Finding length of string
+Get the length of a variable value as follows:
+length=${#var}
+For example:
+$ var=12345678901234567890
+$ echo ${#var}
+20
+length is the number of characters in the string.
+
+Identifying the current shell
+Display the currently used shell as follows:
+echo $SHELL
+Or, you can also use:
+echo $0 
+For example:
+$ echo $SHELL
+/bin/bash
+$ echo $0
+bash 

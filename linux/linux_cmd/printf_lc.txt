@@ -1,0 +1,18 @@
+printf uses the same arguments as the printf command in the C programming language. -
+For example:
+$ printf "Hello world"
+printf takes quoted text or arguments delimited by spaces. We can use formatted stri-
+ngs with printf. We can specify string width, left or right alignment, and so on.  By 
+default, printf does not have newline as in the echo command. We have to specify a  -
+newline when required, as shown in the following script:
+#!/bin/bash
+#Filename: printf.sh
+printf "%-5s %-10s %-4s\n" No Name Mark
+printf "%-5s %-10s %-4.2f\n" 1 Sarath 80.3456
+printf "%-5s %-10s %-4.2f\n" 2 James 90.9989
+printf "%-5s %-10s %-4.2f\n" 3 Jeff 77.564
+We will receive the formatted output:
+No Name Mark
+1 Sarath 80.35
+2 James 91.00
+3 Jeff 77.56
