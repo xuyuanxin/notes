@@ -1,0 +1,233 @@
+http://www.cnblogs.com/zhuyp1015/archive/2012/07/11/2586985.html
+http://bbs.chinaunix.net/thread-1797847-1-1.html  发个自己写的AWK简单教程
+
+--> The structure of an awk
+ awk ' BEGIN{ print "start" } pattern { commands } END{ print "end" } file
+
+ The awk command works in the following manner:
+ 1. Execute the statements in the BEGIN { commands } block.
+ 2. Read one line from the file or stdin, and execute pattern { commands }. Repeat t-
+    his step until the end of the file is reached.
+ 3. When the end of the input stream is reached, execute the END { commands } block.
+ 
+ The BEGIN block is executed before awk starts reading lines from the input stream. -
+ It is an optional block. The statements such as variable initialization, printing t-
+ he output header for an output table, and so on are common statements that are writ-
+ ten in the BEGIN block.
+ 
+ The END block is similar to the BEGIN block. The END block gets executed when awk h-
+ as completed reading all the lines from the input stream.
+ 
+ The most important block is the common commands with the pattern block. This block -
+ is also optional. If this block is not provided, by default { print } gets  executed 
+ so as to print each of the lines read. This block gets executed for each line read -
+ by awk. When a line is read, it checks whether the provided pattern matches the lin-
+ e. The pattern can be a regular expression match, conditions, range of lines  match, 
+ and so on. If the current read line matches with the pattern, it executes the state-
+ ments enclosed in { }. The pattern is optional. If pattern is not used, all the lin-
+ es are matched and statements inside { } are executed.
+ 
+ $ echo -e "line1\nline2" | awk 'BEGIN{ print "Start" } { print } END{ print "End" } '
+ Start
+ line1
+ line2
+ End
+ 
+ When print is used without an argument, it will print the current line. 
+ 
+ $ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; \print var1,var2,var3 ; }'
+ The above statement will print the values of the variables as follows:
+ v1 v2 v3
+ The echo command writes a single line into the standard output. Hence the statements 
+ in the { } block of awk are executed once. If standard input to awk contains multip-
+ le lines, the commands in awk will be executed multiple times. Concatenation can  be 
+ used as follows:
+ $ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; print var1"-"var2"-"var3 ; }'
+ The output will be:
+ v1-v2-v3
+ { } is like a block in a loop iterating through each line of a file
+
+--> Special variables
+ Some special variables that can be used with awk are as follows:
+ NR: It stands for number of records and corresponds to current line number under ex-
+     ecution.
+ NF: It stands for number of fields and corresponds to number of fields in the curre-
+     nt line under execution (Fields are delimited by space).
+ $0: It is a variable that contain the text content of current line under execution.
+ $1: It is a variable that holds the text of the first field.
+ $2: It is the variable that holds the test of the second field text.
+ 
+ $ echo -e "line1 f2 f3\nline2 f4 f5\nline3 f6 f7" | \
+ awk '{
+ print "Line no:"NR",No of fields:"NF, "$0="$0, "$1="$1,"$2="$2,"$3="$3
+ }'
+ 
+ Line no:1,No of fields:3 $0=line1 f2 f3 $1=line1 $2=f2 $3=f3
+ Line no:2,No of fields:3 $0=line2 f4 f5 $1=line2 $2=f4 $3=f5
+ Line no:3,No of fields:3 $0=line3 f6 f7 $1=line3 $2=f6 $3=f7
+ 
+ We can print last field of a line as print $NF,last but second as $(NF-1) and so on.
+
+
+
+
+
+
+
+
+
+
+
+
+awk 也是一个非常棒的数据处理工具！sed 常常用于一整个行的处理， awk 则比较倾向于一行当中分成数个『栏位』（或者称为一个域，也就是一列）来处理。因此，awk 相当的适合处理小型的数据数据处理呢！awk 通常运行的模式是这样的：
+
+[root@www ~]# awk '条件类型1{动作1} 条件类型2{动作2} ...' filename
+
+awk 后面接两个单引号并加上大括号 {} 来配置想要对数据进行的处理动作。 awk 可以处理后续接的文件，也可以读取来自前个命令的 standard output 。 但如前面说的， awk 主要是处理『每一行的栏位内的数据』，而默认的『栏位的分隔符号为 "空白键" 或 "[tab]键" 』！举例来说，我们用 last 可以将登陆者的数据取出来，结果如下所示：
+
+ 
+
+[root@www ~]# last -n 5 <==仅取出前五行
+root     pts/1   192.168.1.100  Tue Feb 10 11:21   still logged in
+root     pts/1   192.168.1.100  Tue Feb 10 00:46 - 02:28  (01:41)
+root     pts/1   192.168.1.100  Mon Feb  9 11:41 - 18:30  (06:48)
+dmtsai   pts/1   192.168.1.100  Mon Feb  9 11:41 - 11:41  (00:00)
+root     tty1                   Fri Sep  5 14:09 - 14:10  (00:01)
+ 
+
+若我想要取出帐号与登陆者的 IP ，且帐号与 IP 之间以 [tab] 隔开，则会变成这样：
+
+[root@www ~]# last -n 5 | awk '{print $1 "\t" $3}'
+root    192.168.1.100
+root    192.168.1.100
+root    192.168.1.100
+dmtsai  192.168.1.100
+root    Fri
+
+上表是 awk 最常使用的动作！透过 print 的功能将栏位数据列出来！栏位的分隔则以空白键或 [tab] 按键来隔开。 因为不论哪一行我都要处理，因此，就不需要有 "条件类型" 的限制！我所想要的是第一栏以及第三栏， 但是，第五行的内容怪怪的～这是因为数据格式的问题啊！所以罗～使用 awk 的时候，请先确认一下你的数据当中，如果是连续性的数据，请不要有空格或 [tab] 在内，否则，就会像这个例子这样，会发生误判喔！
+
+另外，由上面这个例子你也会知道，在每一行的每个栏位都是有变量名称的，那就是 $1, $2... 等变量名称。以上面的例子来说， root 是 $1 ，因为他是第一栏嘛！至於 192.168.1.100 是第三栏， 所以他就是 $3 啦！后面以此类推～呵呵！还有个变量喔！那就是 $0 ，$0 代表『一整列数据』的意思～以上面的例子来说，第一行的 $0 代表的就是『root .... 』那一行啊！ 由此可知，刚刚上面五行当中，整个 awk 的处理流程是：
+
+读入第一行，并将第一行的数据填入 $0, $1, $2.... 等变量当中；
+依据 "条件类型" 的限制，判断是否需要进行后面的 "动作"；
+做完所有的动作与条件类型；
+若还有后续的『行』的数据，则重复上面 1~3 的步骤，直到所有的数据都读完为止。
+经过这样的步骤，你会晓得， awk 是『以行为一次处理的单位』， 而『以栏位为最小的处理单位』。好了，那么 awk 怎么知道我到底这个数据有几行？有几栏呢？这就需要 awk 的内建变量的帮忙啦～
+
+变量名称	代表意义
+NF	每一行 ($0) 拥有的栏位总数
+NR	目前 awk 所处理的是『第几行』数据
+FS	目前的分隔字节，默认是空白键
+我们继续以上面 last -n 5 的例子来做说明，如果我想要：
+
+列出每一行的帐号(就是 $1)；
+列出目前处理的行数(就是 awk 内的 NR 变量)
+并且说明，该行有多少栏位(就是 awk 内的 NF 变量)
+则可以这样：
+
+Tips:
+要注意喔，awk 后续的所有动作是以单引号『 ' 』括住的，由於单引号与双引号都必须是成对的， 所以， awk 的格式内容如果想要以 print 列印时，记得非变量的文字部分，包含上一小节 printf 提到的格式中，都需要使用双引号来定义出来喔！因为单引号已经是 awk 的命令固定用法了！	鸟哥的图示
+
+[root@www ~]# last -n 5| awk '{print $1 "\t lines: " NR "\t columns: " NF}'
+root     lines: 1        columns: 10
+root     lines: 2        columns: 10
+root     lines: 3        columns: 10
+dmtsai   lines: 4        columns: 10
+root     lines: 5        columns: 9
+# 注意喔，在 awk 内的 NR, NF 等变量要用大写，且不需要有钱字号 $ 啦！
+ 
+这样可以了解 NR 与 NF 的差别了吧？好了，底下来谈一谈所谓的 "条件类型" 了吧！
+ 
+ 
+注：$0 表示整行，$1 代表第一项
+
+ 
+awk 的逻辑运算字节
+既然有需要用到 "条件" 的类别，自然就需要一些逻辑运算罗～例如底下这些：
+
+运算单元	代表意义
+>	大於
+<	小於
+>=	大於或等於
+<=	小於或等於
+==	等於
+!=	不等於
+值得注意的是那个『 == 』的符号，因为：
+
+逻辑运算上面亦即所谓的大於、小於、等於等判断式上面，习惯上是以『 == 』来表示；
+如果是直接给予一个值，例如变量配置时，就直接使用 = 而已。
+好了，我们实际来运用一下逻辑判断吧！举例来说，在 /etc/passwd 当中是以冒号 ":" 来作为栏位的分隔， 该文件中第一栏位为帐号，第三栏位则是 UID。那假设我要查阅，第三栏小於 10 以下的数据，并且仅列出帐号与第三栏， 那么可以这样做：
+
+[root@www ~]# cat /etc/passwd | \
+> awk '{FS=":"} $3 < 10 {print $1 "\t " $3}'
+root:x:0:0:root:/root:/bin/bash
+bin      1
+daemon   2
+....(以下省略)....
+
+有趣吧！不过，怎么第一行没有正确的显示出来呢？这是因为我们读入第一行的时候，那些变量 $1, $2... 默认还是以空白键为分隔的，所以虽然我们定义了 FS=":" 了， 但是却仅能在第二行后才开始生效。那么怎么办呢？我们可以预先配置 awk 的变量啊！ 利用 BEGIN 这个关键字喔！这样做：
+
+[root@www ~]# cat /etc/passwd | \
+> awk 'BEGIN {FS=":"} $3 < 10 {print $1 "\t " $3}'
+root     0
+bin      1
+daemon   2
+......(以下省略)......
+
+很有趣吧！而除了 BEGIN 之外，我们还有 END 呢！另外，如果要用 awk 来进行『计算功能』呢？以底下的例子来看， 假设我有一个薪资数据表档名为 pay.txt ，内容是这样的：
+
+Name    1st     2nd     3th
+VBird   23000   24000   25000
+DMTsai  21000   20000   23000
+Bird2   43000   42000   41000
+
+
+如何帮我计算每个人的总额呢？而且我还想要格式化输出喔！我们可以这样考虑：
+
+第一行只是说明，所以第一行不要进行加总 (NR==1 时处理)；
+第二行以后就会有加总的情况出现 (NR>=2 以后处理)
+[root@www ~]# cat pay.txt | \
+> awk 'NR==1{printf "%10s %10s %10s %10s %10s\n",$1,$2,$3,$4,"Total" }
+NR>=2{total = $2 + $3 + $4
+printf "%10s %10d %10d %10d %10.2f\n", $1, $2, $3, $4, total}'
+      Name        1st        2nd        3th      Total
+     VBird      23000      24000      25000   72000.00
+    DMTsai      21000      20000      23000   64000.00
+     Bird2      43000      42000      41000  126000.00
+
+上面的例子有几个重要事项应该要先说明的：
+
+awk 的命令间隔：所有 awk 的动作，亦即在 {} 内的动作，如果有需要多个命令辅助时，可利用分号『;』间隔， 或者直接以 [Enter] 按键来隔开每个命令，例如上面的范例中，鸟哥共按了三次 [enter] 喔！
+逻辑运算当中，如果是『等於』的情况，则务必使用两个等号『==』！
+格式化输出时，在 printf 的格式配置当中，务必加上 \n ，才能进行分行！
+与 bash shell 的变量不同，在 awk 当中，变量可以直接使用，不需加上 $ 符号。
+利用 awk 这个玩意儿，就可以帮我们处理很多日常工作了呢！真是好用的很～ 此外， awk 的输出格式当中，常常会以 printf 来辅助，所以， 最好你对 printf 也稍微熟悉一下比较好啦！另外， awk 的动作内 {} 也是支持 if (条件) 的喔！ 举例来说，上面的命令可以修订成为这样：
+
+[root@www ~]# cat pay.txt | \
+> awk '{if(NR==1) printf "%10s %10s %10s %10s %10s\n",$1,$2,$3,$4,"Total"}
+NR>=2{total = $2 + $3 + $4
+printf "%10s %10d %10d %10d %10.2f\n", $1, $2, $3, $4, total}'
+
+你可以仔细的比对一下上面两个输入有啥不同～从中去了解两种语法吧！我个人是比较倾向於使用第一种语法， 因为会比较有统一性啊！ ^_^
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

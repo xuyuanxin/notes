@@ -1,7 +1,7 @@
 ---->JavaËõÂÔÓï
 
 ---->Ë÷Òý
-Array     java.util
+Arrays    java.util
 ArrayList java.util
 Class     java.lang.Class
 reflect   import java.lang.reflect.*;

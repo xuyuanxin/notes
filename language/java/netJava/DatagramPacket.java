@@ -4,8 +4,8 @@ public final class DatagramPacket extends Object
 DatagramPacket(byte[] buf, int length);
 
 /*----------------------------------------------------------------------------------- 
- Constructs a datagram packet for sending packets of length length to the specified -
- port number on the specified host. 
+ Constructs a datagram packet for sending packets of length @length to the  specified 
+ @port number on the specified @host. 
  -----------------------------------------------------------------------------------*/
 DatagramPacket(byte[] buf, int length, InetAddress address, int port);
 
