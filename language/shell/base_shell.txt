@@ -1,3 +1,6 @@
+http://bbs.chinaunix.net/thread-2033675-1-1.html   shell Ê®ÈýÎÊ
+
+
 --> Introduction
  Shell scripts are files in which we write a sequence of commands that we need to pe-
  rform. And the script file is executed using the shell utility.

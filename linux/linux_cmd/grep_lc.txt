@@ -1,3 +1,10 @@
+
+--> 排除多个
+ 排除掉aaaa和排除bbbb，使用如下代码：
+ grep -v 'aaaa\|bbbb'  file
+
+
+
 # It will return lines of text that contain the given match_pattern.
 $ grep match_pattern filename
 #Or:

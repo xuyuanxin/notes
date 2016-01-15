@@ -1,3 +1,13 @@
+
+--> 目录到目录
+ 假设目录a有两个文件 /xxx/a/a1.txt /xxx/a/a2.txt
+ mv /xxx/a /xxx/c/b
+ 如果目录b存在  ：目录a整体移动到目录b下 /xxx/c/b/a/a1.txt /xxx/c/b/a/a2.txt
+ 如果目录b不存在：创建目录b，把a里面的文件移动到b里。/xxx/c/b/a1.txt /xxx/c/b/a2.txt
+ 如果目录c不存在：出错
+
+
+
 -------------------------------------------------------------------------------------|
 http://www.cnblogs.com/peida/archive/2012/10/27/2743022.html                         |
 mv命令是move的缩写，可以用来移动文件或者将文件改名（move (rename) files），是Linux系 |
