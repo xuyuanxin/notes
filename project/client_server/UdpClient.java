@@ -6,11 +6,20 @@ public class UdpClient
 {  
     private byte[] buffer = new byte[1024];
     private DatagramSocket ds = null;
+    private String servip = null;
+    private int servport = 0;
    
     public UdpClient() throws Exception 
     {  
         ds = new DatagramSocket();  
-    }  
+    }
+
+    public UdpClient(String serv, int port) throws Exception 
+    {
+	   ds = new DatagramSocket(servport, InetAddress.getByName(servip));
+       servip = serv;
+       servport = port;
+    }
 
 	public final void setSoTimeout(final int timeout) throws Exception 
 	{  
@@ -39,7 +48,7 @@ public class UdpClient
 	}	
 
     /* int strlen str */
-    public final DatagramPacket send(final String host, final int port, final String msg) throws IOException 
+    public final DatagramPacket send(final String msg) throws IOException 
     {
         byte[] msg_str = msg.getBytes("US-ASCII");
 		int msg_len = msg.getBytes("US-ASCII").length;
@@ -49,12 +58,13 @@ public class UdpClient
 		System.arraycopy(intToBytes(msg_len),0,data,4,4);
 		System.arraycopy(msg_str,0,data,8,msg_len);
 
-        DatagramPacket dp = new DatagramPacket(data, data.length, InetAddress.getByName(host), port);  
+        DatagramPacket dp = new DatagramPacket(data, data.length, InetAddress.getByName(servip), servport); 
+		//DatagramPacket dp = new DatagramPacket(data, data.length); 
         ds.send(dp);
         return dp;  
-    }  
+    }
  
-    public final String receive(final String lhost, final int lport)  throws Exception 
+    public final int receive()  throws Exception 
 	{
 	    byte[] str = new byte[1024];
         String str2 ;
@@ -73,16 +83,25 @@ public class UdpClient
 		DataInputStream din = new DataInputStream(in);
 		int mgc1 = din.readInt();
 		int mgc2 = din.readInt();
-		din.readFully(str,8,4);
+		//din.readFully(str,8,4);
 		str2 = new String(dp.getData(), 8, dp.getLength()-8, "US-ASCII");
 
 		System.out.printf("mgc1: 0x%x\n",mgc1);
 		System.out.printf("mgc2: 0x%x\n",mgc2);
-		System.out.printf("str : %s\n",str.toString());
+		//System.out.printf("str : %s\n",str.toString());
 		System.out.println("str : " + str2);
 
-        return "tmp";
+        return 1;
     }  
+
+    public final int getflags(String str) throws Exception 
+    {
+        int flags = -1;
+        setSoTimeout(2);
+        send(str);
+        flags = receive();
+        return flags;
+    }
  
     public final void close() 
 	{  
@@ -94,19 +113,23 @@ public class UdpClient
     }  
  
     public static void main(String[] args) throws Exception 
-	{  
-        UdpClient client = new UdpClient();
-        String serverHost = "127.0.0.1";  
-        int serverPort = 9877; 
+	{
+        UdpClient client = new UdpClient("127.0.0.1",9877);
+        int flags = -100;
+        int cnt = 0;
 
 		//("client").getBytes()
         
-		//while(true)
+		while(true)
 		{
-		client.send(serverHost, serverPort, "abcdefg");
-        String info = client.receive(serverHost, serverPort); 
+            flags = client.getflags("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			cnt++;
+	        if(cnt>1000)
+                break;
 		}
-        //System.out.println("serv ack:" + info);  
+        //System.out.println("serv ack:" + info);
+
+        client.close();
     }  
 }  
 
