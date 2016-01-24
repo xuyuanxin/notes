@@ -1,0 +1,18 @@
+基于Passive DNS的恶意域名识别研究 (2014 北京大学硕士论文) 作者：陈恺 导师：陈萍
+
+
+Alexa
+ 
+
+botnet域名
+ Abuse.ch的四个Botnet域名阻止列表： ZeuS SpyEye Palevo Feodo
+ http://www.abuse.ch/
+ 
+恶意域名
+ 有些域名是botnet
+ 
+ Malware Domain List  http://www.malwaredomainlist.com/hostslist/hosts.txt
+ Malware Domain       http://mirror1.malwaredomains.com/files/domains.txt
+ PhishTank            http://data.phishtank.com/data/online-valid.csv
+ hpHosts              http://hphosts.gt500.org/hosts.txt
+ CyberCrime Tracker   http://cybercrime-tracker.net/all.php

@@ -1,4 +1,15 @@
 '''
+
+
+
+
+
+
+
+
+
+
+
 File Iterators
   In current versions of Python (from version 2.2), files are iterable, which means -
   that you can use them directly in for loops to iterate over their lines. 

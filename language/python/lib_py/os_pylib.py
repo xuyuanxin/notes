@@ -1,6 +1,14 @@
 # os.
 
 
+def listdir(path) # os.listdir
+  '''
+  Return a list containing the names of the entries(file or directory) in the direct-
+  ory given by @path. The list is in arbitrary order. It does not include the special 
+  entries '.' and  '..' even if they are present in the directory.
+  '''
+  pass
+
 def walk(top, topdown=True, onerror=None, followlinks=False):
   '''
   @top

