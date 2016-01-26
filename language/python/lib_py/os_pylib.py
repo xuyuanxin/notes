@@ -9,6 +9,14 @@ def listdir(path) # os.listdir
   '''
   pass
 
+def mkdir(path[, mode]) # os.mkdir
+  '''
+  Create a directory named @path with numeric @mode mode. The default @mode is 0777 -
+  (octal). On some systems, mode is ignored. Where it is used, the current umask val-
+  ue is first masked out. If the directory already exists, OSError is raised. 
+  '''
+  pass
+  
 def walk(top, topdown=True, onerror=None, followlinks=False):
   '''
   @top

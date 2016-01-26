@@ -19,6 +19,14 @@ def dirname(path):
   '''
   pass
 
+def exists(path):
+  '''
+  Return True if @path refers to an existing path. Returns False for broken  symbolic 
+  links. On some platforms, this function may return False if permission is not gran-
+  ted to execute os.stat() on the requested file, even if the path physically exists.
+  '''
+  pass
+
 def isfile(path) # os.path.isfile
   '''
   Return True if path is an existing regular file. This follows symbolic links, so b-
