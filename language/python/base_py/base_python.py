@@ -1,3 +1,38 @@
+introduction
+setup
+
+operators
+types
+file_io
+function
+module
+class
+namespace
+
+object
+
+
+
+
+
+
+--> primary prompt, secondary prompt
+ In all interactive examples, you will see the Python primary ( >>> ) and secondary -
+ ( ... ) prompts. The primary prompt is a way for the interpreter to let you know th-
+ at it is expecting the next Python statement, while the secondary prompt indicates -
+ that the interpreter is waiting for additional input to complete the current statem-
+ ent.
+ 
+ 
+Functions that do not explicitly
+return a value by the programmer automatically return None
+
+--> print
+ 
+
+
+
+
 
 ----> Ä£¿éºÍ°ü
  module_py.py
