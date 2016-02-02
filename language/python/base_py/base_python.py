@@ -1,3 +1,233 @@
+
+--> comments
+ As with most scripting and Unix-shell languages, the hash or pound ( # ) sign signa-
+ ls that a comment begins from the # and continues until the end of the line.
+ >>> # one comment
+ ... print 'Hello World!' # another comment
+ Hello World!
+ 
+ -->--> documentation strings
+  There are special comments called documentation strings, or "doc strings" for shor-
+  t. You can add a "comment" at the beginning of a module, class, or function  string 
+  that serves as a doc string, a feature familiar to Java programmers:
+
+  def foo():
+    "This is a doc string."
+    return True
+  
+  Unlike regular comments, however, doc strings can be accessed at runtime and be us-
+  ed to automatically generate documentation.
+
+--> operators
+  xx
+  
+--> variables and Assignments
+ variable are simply identifier names with an alphabetic first character¡ª"alphabetic" 
+ meaning upper or lowercase letters, including the underscore ( _ ). Any additional -
+ characters may be alphanumeric or underscore. 
+
+ Python is case-sensitive, meaning that the identifier "cAsE" is different from     -
+ "CaSe."
+
+ Python is dynamically typed, meaning that no pre-declaration of a variable or its t-
+ ype is necessary. The type (and value) are initialized on assignment.
+
+ Assignments are performed using the equal sign.
+ >>> counter = 0
+ >>> miles = 1000.0
+ >>> name = 'Bob'
+
+ Python also supports "augmented assignment", statements that both refer to and assi-
+ gn values to variables. You can take the following expression . . .
+ n = n * 10
+ . . . and use this shortcut instead:
+ n *= 10
+
+ Python does not support increment and decrement operators like the ones in C: n++ o-
+ r --n. Because + and - are also unary operators, Python will interpret --n as      -
+ -(-n) == n, and the same is true for ++n.
+ 
+ -->--> Assignment Operator
+  The equal sign ( = ) is the main Python assignment operator.
+  
+  anInt = -12
+  aString = 'cart'
+  aFloat = -3.1415 * (5.0 ** 2)
+  anotherString = 'shop' + 'ping'
+  aList = [3.14e10, '2nd elmt of a list', 8.82-4.371j]
+  
+  In Python, objects are referenced, so on assignment, a reference (not a value) to -
+  an object is what is being assigned, whether the object was just created or was a -
+  pre-existing object. 
+  
+  Also, if you are familiar with C, you know that assignments are treated as express-
+  ions. This is not the case in Python, where assignments do not have inherent value-
+  s. Statements such as the following are invalid in Python:
+  
+  >>> x = 1
+  >>> y = (x = x + 1) # assignments not expressions!
+  File "<stdin>", line 1
+  y = (x = x + 1) 
+  ^
+  SyntaxError: invalid syntax
+  
+  Chaining together assignments is okay, though (more on this later):
+  
+  >>> y = x = x + 1
+  >>> x, y
+  (2, 2)
+
+ -->--> Augmented Assignment
+  Beginning in Python 2.0, the equal sign can be combined with an arithmetic operati-
+  on and the resulting value reassigned to the existing variable. Known as  augmented 
+  assignment, statements such as . .
+
+  x = x + 1
+  . . . can now be written as . . .
+  x += 1
+
+  +=  -=  *=  /=  %=  **=  <<=  >>=  &=  ^=  |=
+  
+  >>> m = 12
+  >>> m %= 7
+  >>> m
+  5
+  >>> m **= 2
+  >>> m
+  25
+  >>> aList = [123, 'xyz']
+  >>> aList += [45.6e7]
+  >>> aList
+  [123, 'xyz', 456000000.0]
+ 
+ -->--> Multiple Assignment
+  >>> x = y = z = 1
+  >>> x
+  1
+  >>> y
+  1
+  >>> z
+  1
+  
+  In the above example, an integer object (with the value 1) is created, and x, y,  -
+  and z are all assigned the same reference to that object. This is the process of a-
+  ssigning a single object to multiple variables. It is also possible in Python to a-
+  ssign multiple objects to multiple variables.
+  
+  Another way of assigning multiple variables is using what we shall call the       -
+  "multuple assignment". This is not an official Python term, but we use "multuple" -
+  here because when assigning variables this way, the objects on both sides of the e-
+  qual sign are tuples, a Python standard type we introduced in Section 2.8.
+  
+  >>> x, y, z = 1, 2, 'a string'
+  >>> x  
+  1
+  >>> y
+  2
+  >>> z
+  'a string'
+  
+  In the above example, two integer objects (with values 1 and 2) and one string obj-
+  ect are assigned to x, y, and z respectively. Parentheses are normally used to den-
+  ote tuples, and although they are optional, we recommend them anywhere they make t-
+  he code easier to read:
+
+  >>> (x, y, z) = (1, 2, 'a string')
+  
+  One interesting side effect of Python¡¯s "multuple" assignment is that we no  longer 
+  need a temporary variable to swap the values of two variables.
+  
+  # swapping variables in Python
+  >>> x, y = 1, 2
+  >>> x
+  1
+  >>> y 
+  2
+  >>> x, y = y, x
+  >>> x
+  2
+  >>> y
+  1
+
+  Obviously, Python performs evaluation before making assignments.
+
+--> numbers
+ Python supports five basic numerical types, three of which are integer types.
+ 
+ -->--> int (signed integers)
+  long (long integers)
+  bool (Boolean values)
+  
+  Moving forward, ints and longs are in the process of becoming unified into a single 
+  integer type. Beginning in version 2.3, overflow errors are no longer reported¡ª the 
+  result is automagically converted to a long. In Python 3, there is no distinction -
+  as both int and long have been unified into a single integer type, and the "L" will 
+  no longer be valid Python syntax.
+  
+  Boolean values are a special case of integer. Although represented by the constant-
+  s True and False, if put in a numeric context such as addition with other numbers , 
+  True is treated as the integer with value 1, and False has a value of 0.
+  
+  -->--> float (floating point real numbers)
+  
+  -->--> complex (complex numbers)
+
+--> strings
+ Strings in Python are identified as a contiguous set of characters in between quota-
+ tion marks. Python allows for either pairs of single or double quotes. Triple quotes 
+ (three consecutive single or double quotes) can be used to escape special character-
+ s. Subsets of strings can be taken using the index ( [ ] ) and slice ( [ : ] ) oper-
+ ators, which work with indexes starting at 0 in the beginning of the string and wor-
+ king their way from -1 at the end. The plus ( + ) sign is the string concatenation -
+ operator, and the asterisk ( * ) is the repetition operator. 
+
+--> Statements and Syntax
+ Hash mark ( # ) indicates Python comments
+ NEWLINE ( \n ) is the standard line separator (one statement per line)
+ Backslash ( \ ) continues a line
+ Semicolon ( ; ) joins two statements on a line
+ Colon ( : ) separates a header line from its suite
+ Statements (code blocks) grouped as suites
+ Suites delimited via indentation
+ Python files organized as modules
+ 
+--> Identifiers
+ Identifiers are the set of valid strings that are allowed as names in a computer la-
+ nguage. 
+ 
+ 1 First character must be a letter or underscore ( _ )
+ 2 Any additional characters can be alphanumeric or underscore
+ 3 Case-sensitive
+ 
+ -->--> Python Keywords
+  and as assert break
+  class continue def del
+  elif else except exec
+  finally for from global
+  if import in is
+  lambda not or pass
+  print raise return try
+  while with yield None
+  
+ -->--> Built-ins
+  In addition to keywords, Python has a set of "built-in" names available at any lev-
+  el of Python code that are either set and/or used by the interpreter. Although  not 
+  keywords, built-ins should be treated as "reserved for the system" and not used for 
+  any other purpose. 
+  
+  built-ins are members of the __builtins__ module, which is automatically imported -
+  by the interpreter before your program begins or before you are given the >>> prom-
+  pt in the interactive interpreter. 
+  
+ -->--> Special Underscore Identifiers
+  Python designates (even more) special variables with underscores both prefixed  and 
+  suffixed. Here is a summary of the special underscore usage in Python:
+ 
+  1 _xxx      Do not import with 'from module import *'
+  2 __xxx__   System-defined name
+  3 __xxx     Request private name mangling in classes
+
+
 introduction
 setup
 
@@ -10,10 +240,6 @@ class
 namespace
 
 object
-
-
-
-
 
 
 --> primary prompt, secondary prompt

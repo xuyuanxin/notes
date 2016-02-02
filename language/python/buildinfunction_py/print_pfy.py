@@ -1,3 +1,6 @@
+Python’s print statement (2.x) or function (3.x) is the tool for displaying program -
+output to your users, similar to C’s printf() and echo for shell scripts. 
+
 
 >>> print "%s is number %d!" % ("Python", 1)
 Python is number 1!
@@ -15,10 +18,6 @@ ther to a log file:
   logfile = open('/tmp/mylog.txt', 'a')
   print >> logfile, 'Fatal error: invalid input!'
   logfile.close()
-
-
-
-  
 
 print is changing to a function [print()] in Python 3.0. This is a significant chang-
 e, so starting in Python 2.6, you can start coding against the new function by addin-

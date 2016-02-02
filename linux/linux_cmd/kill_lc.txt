@@ -1,0 +1,21 @@
+
+
+kill -l # list all the signals available
+
+The kill command issues a TERM signal by default. The process ID list is to be speci-
+fied with space as a delimiter between process IDs.
+$ kill PROCESS_ID_LIST
+
+In order to specify a signal to be sent to a process via the kill command use:
+$ kill -s SIGNAL PID
+
+SIGHUP 1！hangup detection on death of controlling process or terminal
+SIGINT 2！signal which is emitted when Ctrl + C is pressed
+SIGKILL 9！signal used to force kill the process
+SIGTERM -15！signal used to terminate a process by default
+SIGTSTP 20！signal emitted when Ctrl + Z is pressed
+
+We frequently use force kill for processes. In order to force kill a process, use:
+$ kill -s SIGKILL PROCESS_ID
+Or:
+$ kill -9 PROCESS_ID

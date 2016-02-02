@@ -1,3 +1,43 @@
+
+$ ps [OTHER OPTIONS] -o parameter1,parameter2,parameter3 ..
+
+$ ps -eo comm,pcpu | head
+COMMAND       %CPU
+init          0.0
+kthreadd      0.0
+migration/0   0.0
+ksoftirqd/0   0.0
+watchdog/0    0.0
+events/0      0.0
+cpuset        0.0
+khelper       0.0
+netns         0.0
+
+Parameter Description
+pcpu      Percentage of CPU
+pid       Process ID
+ppid      Parent Process ID
+pmem      Percentage of Memory
+comm      Executable file name
+cmd       Simple command
+user      The user who started process
+nice      The priority (niceness)
+time      Cumulative CPU time
+etime     Elapsed time since the process started
+tty       The associated TTY device
+euid      The effective user
+stat      Process state
+
+
+
+
+
+
+
+
+
+
+
 ********************************************************************************
 Linux中的ps命令是Process Status的缩写。ps命令用来列出系统中当前运行的那些进程。
 ps工具标识进程的5种状态码: 
