@@ -14,7 +14,7 @@ Scheduling Within an Application
   Default Behavior of Pools
   Configuring Pool Properties
 
-Overview
+--> Overview
   Spark has several facilities for scheduling resources between computations.  First, 
   recall that, as described in the "cluster mode overview", each Spark application (-
   instance of SparkContext) runs an independent set of executor processes. The clust-
@@ -24,7 +24,7 @@ Overview
   your application is serving requests over the network. Spark includes a fair sched-
   uler to schedule resources within each SparkContext.
 
-Scheduling Across Applications
+--> Scheduling Across Applications
   When running on a cluster, each Spark application gets an independent set of execu-
   tor JVMs that only run tasks and store data for that application. If multiple users 
   need to share your cluster, there are different options to manage allocation, depe-
@@ -54,7 +54,7 @@ Scheduling Across Applications
   control the resources per executor.
   
   
-  
+--> http://www.iteblog.com/archives/1223   Spark:Yarn-cluster和Yarn-client区别与联系 
 
 
 

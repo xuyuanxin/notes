@@ -81,18 +81,31 @@ Spark provides three locations to configure the system:
  s. Some of the most common options to set are: 
 
  -->--> Application Properties
-  Property Name    Default    Meaning
-  spark.app.name    (none)    The name of your application. This will appear in the UI and in log data.
-  spark.driver.cores    1    Number of cores to use for the driver process, only in cluster mode.
-  spark.driver.maxResultSize    1g    Limit of total size of serialized results of all partitions for each Spark action (e.g. collect). Should be at least 1M, or 0 for unlimited. Jobs will be aborted if the total size is above this limit. Having a high limit may cause out-of-memory errors in driver (depends on spark.driver.memory and memory overhead of objects in JVM). Setting a proper limit can protect the driver from out-of-memory errors.
-  "spark.driver.memory"    1g    
+  Property Name                 Default    Meaning
+
+  spark.app.name                (none)    
+    The name of your application. This will appear in the UI and in log data.
+
+  spark.driver.cores            1    
+    Number of cores to use for the driver process, only in cluster mode.
+
+  spark.driver.maxResultSize    1g    
+    Limit of total size of serialized results of all partitions for each Spark action 
+	(e.g. collect). Should be at least 1M, or 0 for unlimited. Jobs will be aborted -
+	if the total size is above this limit.Having a high limit may cause out-of-memory 
+	errors in driver (depends on spark.driver.memory and memory overhead of objects -
+	in JVM). Setting a proper limit can protect the driver from out-of-memory errors.
+	
+  spark.driver.memory           1g    
    Amount of memory to use for the driver process, i.e. where SparkContext is initia-
    lized. (e.g. 1g, 2g). Note: In client mode, this config must not be set through t-
    he SparkConf directly in your application, because the driver JVM has already sta-
    rted at that point. Instead, please set this through the --driver-memory command -
    line option or in your default properties file.
-  "spark.executor.memory"    1g    
-   Amount of memory to use per executor process (e.g. 2g, 8g).
+
+  spark.executor.memory         1g    
+    Amount of memory to use per executor process (e.g. 2g, 8g).
+
   spark.extraListeners    (none)    A comma-separated list of classes that implement SparkListener; when initializing SparkContext, instances of these classes will be created and registered with Spark's listener bus. If a class has a single-argument constructor that accepts a SparkConf, that constructor will be called; otherwise, a zero-argument constructor will be called. If no valid constructor can be found, the SparkContext creation will fail with an exception.
   spark.local.dir    /tmp    Directory to use for "scratch" space in Spark, including map output files and RDDs that get stored on disk. This should be on a fast, local disk in your system. It can also be a comma-separated list of multiple directories on different disks. NOTE: In Spark 1.0 and later this will be overriden by SPARK_LOCAL_DIRS (Standalone, Mesos) or LOCAL_DIRS (YARN) environment variables set by the cluster manager.
   spark.logConf    false    Logs the effective SparkConf as INFO when a SparkContext is started.

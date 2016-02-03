@@ -103,19 +103,23 @@ YARN_CONF_DIR
 
 
 --> Spark Properties
-  Property Name             Default        
-  "spark.yarn.am.memory"    512m    
+  Property Name           Default        
+  
+  spark.yarn.am.memory    512m    
     Amount of memory to use for the YARN Application Master in client mode, in the s-
 	ame format as JVM memory strings (e.g. 512m, 2g). In cluster mode, use          -
 	spark.driver.memory instead.
-  "spark.driver.cores"      1    
+
+  spark.driver.cores      1    
     Number of cores used by the driver in YARN cluster mode. Since the driver is  run 
 	in the same JVM as the YARN Application Master in cluster mode, this also contro-
 	ls the cores used by the YARN AM. In client mode, use spark.yarn.am.cores to con-
 	trol the number of cores used by the YARN AM instead.
-  "spark.yarn.am.cores"     1    
+
+  spark.yarn.am.cores     1    
     Number of cores to use for the YARN Application Master in client mode. In cluste-
 	r mode, use spark.driver.cores instead.
+	
   spark.yarn.am.waitTime    100s    In `yarn-cluster` mode, time for the application master to wait for the SparkContext to be initialized. In `yarn-client` mode, time for the application master to wait for the driver to connect to it.
   spark.yarn.submit.file.replication    The default HDFS replication (usually 3)    HDFS replication level for the files uploaded into HDFS for the application. These include things like the Spark jar, the app jar, and any distributed cache files/archives.
   spark.yarn.preserve.staging.files    false    Set to true to preserve the staged files (Spark jar, app jar, distributed cache files) at the end of the job rather than delete them.
