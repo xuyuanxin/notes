@@ -1,6 +1,37 @@
 
 --> cpuinfo
- cat cat /proc/cpuinfo
+ http://www.educity.cn/linux/1575173.html
+ 
+ cat /proc/cpuinfo
+                                                                                     |
+ -->--> 物理CPU 
+  实际Server中插槽上的CPU个数，物理cpu数量，可以数不重复的 physical id 有几个
+
+ -->--> 逻辑CPU
+  Linux用户对 /proc/cpuinfo 这个文件肯定不陌生. 它是用来存储cpu硬件信息的。信息内容分|
+  别列出了processor 0 – n 的规格。这里需要注意，如果你认为n就是真实的cpu数的话, 就大 |
+  错特错了。一般情况，我们认为一颗cpu可以有多核，加上intel的超线程技术(HT), 可以在逻 |
+  辑上再分一倍数量的cpu core出来
+    逻辑CPU数量 = 物理cpu数量 x cpu cores 这个规格值 x 2(如果支持并开启ht)
+  备注一下：Linux下top查看的CPU也是逻辑CPU个数
+
+ -->--> CPU核数
+  一块CPU上面能处理数据的芯片组的数量、比如现在的i5 760,是双核心四线程的CPU、而      |
+  i5 2250 是四核心四线程的CPU。一般来说，物理CPU个数×每颗核数 就应该等于逻辑CPU的个数|
+  ，如果不相等的话，则表示服务器的CPU支持超线程技术
+
+ -->--> 查看CPU信息
+  当我们 cat /proc/cpuinfo 时、具有相同core id的CPU是同一个core的超线程。具有相同    |
+  physical id的CPU是同一个CPU封装的线程或核心。
+
+  cat /proc/cpuinfo |grep "physical id"|sort |uniq|wc -l  # 查看物理CPU的个数
+  2
+  cat /proc/cpuinfo |grep "processor"|wc -l  # 查看逻辑CPU的个数
+  24
+  cat /proc/cpuinfo |grep "cores"|uniq # 查看CPU是几核
+  6
+  
+  我这里应该是2个Cpu,每个Cpu有6个core,应该是Intel的U,支持超线程,所以显示24
 
 --> 查看suse版本号
  http://www.2cto.com/os/201303/196063.html
@@ -35,7 +66,7 @@
  http://unix.stackexchange.com/questions/89714/easy-way-to-determine-virtualization-technology
  
  $ sudo lshw -class system
- dmidecode -s system-product-name
+ $ dmidecode -s system-product-name
 
 
 
