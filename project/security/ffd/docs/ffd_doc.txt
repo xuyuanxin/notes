@@ -1,0 +1,85 @@
+基于Passive DNS的恶意域名识别研究 (2014 北京大学硕士论文) 作者：陈恺 导师：陈萍
+
+--> botnet域名
+ Abuse.ch的四个Botnet域名阻止列表：ZeuS SpyEye Palevo Feodo
+ http://www.abuse.ch/
+ 
+ init_domain_set("../resources/hosts_badzeus.txt", sus_domain_set)
+ init_domain_set("../resources/hosts_spyeye.txt", sus_domain_set)
+ init_domain_set("../resources/hosts_palevo.txt", sus_domain_set)
+ init_domain_set("../resources/hosts_feodo.txt", sus_domain_set)
+ init_domain_set("../resources/hosts_cybercrime.txt", sus_domain_set) # 增加一个域名列表，其实是恶意域名
+ 
+--> 恶意域名(包括botnet域名)
+ Malware Domain List  http://www.malwaredomainlist.com/hostslist/hosts.txt
+ Malware Domain       http://mirror1.malwaredomains.com/files/domains.txt
+ PhishTank            http://data.phishtank.com/data/online-valid.csv
+ hpHosts              http://hphosts.gt500.org/hosts.txt
+ CyberCrime Tracker   http://cybercrime-tracker.net/all.php
+
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_badzeus.txt", sus_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_spyeye.txt", sus_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_palevo.txt", sus_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_feodo.txt", sus_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_cybercrime.txt", sus_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_malwaredomains.txt", sus_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_malwaredomainlist.txt", sus_domain_set)
+                                        ../resources/hosts_phishtank.csv
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\hosts_hphosts.txt", sus_domain_set) 
+
+--> 例外域名 
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\domain_whitelist.txt", outlier_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\cdn.txt", outlier_domain_set)
+ init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\cdn_new.txt", outlier_domain_set)
+ 
+--> 模型训练
+ -->--> 白样本
+  Alexa排名在10000到15000之间的域名。
+  http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
+  
+ -->--> 黑样本
+  1 botnet域名
+  2 恶意域名中满足条件的
+  
+ -->--> 不可作为训练数据的域名
+  1 例外域名(cdn)
+  2 即是白样本又是黑样本的域名
+  
+ -->--> 恶意域名作为黑样本的条件(参数来自论文源码，论文没有体现)
+  botnet直接作为黑样本
+  botnet域名以外的恶意域名要想作为黑样本必须满足如下条件
+  1 ip_nums > 8   and
+  2 net_div > 0.2 and
+  3 ttl_min < 3000
+  
+ -->--> 训练条件(参数来自论文源码，论文没有体现)
+  1 黑样本大于200
+  2 黑样本/白样本 大于0.08  
+
+
+--> 预处理(参数来自论文，论文源码没有体现)
+ 检测的时候同时满足下面的条件，才会进一步的处理
+ 1 min_ttl < 20000  ttl小，可能是ff域名
+ 2 ip_nums > 2      ip个数很多，可能是ff域名
+ 3 net_div > 0.1    网络前缀丰富，可能是ff域名
+ 
+ 训练时，预处理执行如下操作
+ 1 过滤outlier域名
+ 2 过滤同时是malware和train_w的域名
+ 3 过滤不满足条件的malware域名(botnet域名以外的恶意域名要想作为黑样本，特征上必需满足一些条件)
+ 
+ 注意net_div和计算特征时表示的意思不一样
+ 计算特征时用网络前缀熵表示
+ 作为检查条件时用 网络前缀个数/ip_nums 来表示
+
+--> 特征
+ 1 ip_nums
+
+
+
+--
+
+
+
+
+  

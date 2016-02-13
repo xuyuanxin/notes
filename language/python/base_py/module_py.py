@@ -2,6 +2,49 @@
 Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
 
 
+
+Why Use Modules?
+In short, modules provide an easy way to organize components into a system by serving
+as self-contained packages of variables known as namespaces. All the names defined at
+the top level of a module file become attributes of the imported module object. As we
+saw in the last part of this book, imports give access to names in a module’s global
+scope. That is, the module file’s global scope morphs into the module object’s attribute
+namespace when it is imported. 
+
+
+the central concepts of Python modules, imports, and object attributes.
+
+
+Load the file b.py (unless it’s already loaded), and give me access to all its attributes
+through the name b.
+To satisfy such goals, import (and, as you’ll see later, from) statements execute and load
+other files on request. More formally, in Python, cross-file module linking is not resolved until such import statements are executed at runtime; their net effect is to assign
+module names—simple variables like b—to loaded module objects. In fact, the module
+name used in an import statement serves two purposes: it identifies the external file to
+be loaded, but it also becomes a variable assigned to the loaded module.
+
+
+How Imports Work
+Some C programmers like to compare the Python module import operation to a C
+#include, but they really shouldn’t—in Python, imports are not just textual insertions
+of one file into another. They are really runtime operations that perform three distinct
+steps the first time a program imports a given file:
+1. Find the module’s file.
+2. Compile it to byte code (if needed).
+3. Run the module’s code to build the objects it defines.
+To better understand module imports, we’ll explore these steps in turn. Bear in mind
+that all three of these steps are carried out only the first time a module is imported
+during a program’s execution; later imports of the same module in a program run
+bypass all of these steps and simply fetch the already loaded module object in memory.
+Technically, Python does this by storing loaded modules in a table named sys.mod
+ules and checking there at the start of an import operation. If the module is not present,
+a three-step process begins.
+
+
+
+
+
+
 ----> What Are Modules?
  Modules are a means to organize Python code, and packages help you organize modules. 
  A module allows you to logically organize your Python code. When code gets to be la-
@@ -332,15 +375,18 @@ Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
  A package is a hierarchical file directory structure that defines a single Python a-
  pplication environment that consists of modules and subpackages. Packages were added 
  to Python 1.5 to aid with a variety of problems including:
- • Adding hierarchical organization to flat namespace
- • Allowing developers to group related modules
- • Allowing distributors to ship directories vs. bunch of files
- • Helping resolve conflicting module names
+ 
+ 1 Adding hierarchical organization to flat namespace
+ 2 Allowing developers to group related modules
+ 3 Allowing distributors to ship directories vs. bunch of files
+ 4 Helping resolve conflicting module names
+
  Along with classes and modules, packages use the familiar attribute/dotted attribut-
  e notation to access their elements. Importing modules within packages use the stan-
  dard import and from-import statements.
 
  For our package examples, we will assume the directory structure below:
+
  Phone/
      __init__.py
      common_util.py
@@ -358,12 +404,15 @@ Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
      Pager/
          __init__.py
          Numeric.py
+
  Phone is a top-level package and Voicedta, etc., are subpackages. Import subpackages 
  by using import like this:
+
  > import Phone.Mobile.Analog
  > Phone.Mobile.Analog.dial()
  
  Alternatively, you can use from-import in a variety of ways:
+
  > from Phone import Mobile
  > Mobile.Analog.dial('555-1212')
 

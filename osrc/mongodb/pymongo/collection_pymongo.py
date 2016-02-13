@@ -79,6 +79,49 @@ class Collection(database, name, create=False, **kwargs): # pymongo.collection.C
     '''
     pass
 
+  def replace_one(filter, replacement, upsert=False, bypass_document_validation=False):
+    '''
+	@filter: A query that matches the document to replace.
+    @replacement: The new document.
+    @upsert (optional): If True, perform an insert if no documents match the filter.
+    @bypass_document_validation: (optional) If True, allows the write to opt-out of -
+	document level validation. Default is False.
+    @Returns: An instance of UpdateResult.
+
+	Note bypass_document_validation requires server version >= 3.2. 
+	Changed in version 3.2: Added bypass_document_validation support
+    New in version 3.0.
+  
+    Replace a single document matching the filter.
+
+    >>> for doc in db.test.find({}):
+    ...     print(doc)
+    ...
+    {u'x': 1, u'_id': ObjectId('54f4c5befba5220aa4d6dee7')}
+    >>> result = db.test.replace_one({'x': 1}, {'y': 1})
+    >>> result.matched_count
+    1
+    >>> result.modified_count
+    1
+    >>> for doc in db.test.find({}):
+    ...     print(doc)
+    ...
+    {u'y': 1, u'_id': ObjectId('54f4c5befba5220aa4d6dee7')}
+    
+	The upsert option can be used to insert a new document if a matching document do-
+	es not exist.
+
+    >>> result = db.test.replace_one({'x': 1}, {'x': 1}, True)
+    >>> result.matched_count
+    0
+    >>> result.modified_count
+    0
+    >>> result.upserted_id
+    ObjectId('54f11e5c8891e756a6e1abd4')
+    >>> db.test.find_one({'x': 1})
+    {u'x': 1, u'_id': ObjectId('54f11e5c8891e756a6e1abd4')}
+    '''
+
   def update(spec, document, upsert=False, manipulate=False, multi=False, check_keys=True, **kwargs):
     #Update a document(s) in this collection.
     pass

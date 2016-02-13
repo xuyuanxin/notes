@@ -28,6 +28,21 @@ class set([iterable]):
     Return a new set with elements in the set that are not in the others. 
     '''
     pass
+
+  def intersection(other, ...):
+    '''
+	set & other & ...
+    Return a new set with elements common to the set and all others.
+	
+    >>> a
+    set([1, 2])
+    >>> b
+    set([1, 3])
+    >>> c=a.intersection(b)
+    >>> c
+    set([1])	
+    '''
+    pass
 	
   def update(other, ...):
     '''
@@ -41,6 +56,28 @@ class set([iterable]):
     >>> a
     set([1, 2, 3])
     >>>
+    '''
+    pass
+	
+  def union():
+    '''
+    set | other | ...
+    Return a new set with elements from the set and all others.
+
+    Changed in version 2.6: Accepts multiple input iterables.
+	
+    >>> a = set([1,2])
+    >>> b = set([1,3])
+    >>> c = a | b
+    >>> d = a.union(b)
+    >>> a
+    set([1, 2])
+    >>> b
+    set([1, 3])
+    >>> c
+    set([1, 2, 3])
+    >>> d
+    set([1, 2, 3])
     '''
     pass
 

@@ -1,0 +1,75 @@
+
+
+--> 问题 
+ 1 vmware 已将该虚拟机配置为使用 64 位客户机操作系统。但是，无法执行 64 位操作。
+  http://www.cnblogs.com/guohu/p/4723194.html
+ 
+  错误提示：
+  已将该虚拟机配置为使用 64 位客户机操作系统。但是，无法执行 64 位操作。
+
+  此主机支持 Intel VT-x，但 Intel VT-x 处于禁用状态。
+  如果已在 BIOS/固件设置中禁用 Intel VT-x，或主机自更改此设置后从未重新启动，则 Intel VT-x 可能被禁用。
+  (1) 确认 BIOS/固件设置中启用了 Intel VT-x 并禁用了“可信执行”。
+  (2) 如果这两项 BIOS/固件设置有一项已更改，请重新启动主机。
+  (3) 如果您在安装 VMware Workstation 之后从未重新启动主机，请重新启动。
+  (4) 将主机的 BIOS/固件更新至最新版本。
+
+  解决办法：
+  (1)在bios中将虚拟化设置为可用。Intel Virtualization Technology设置为enable。
+
+  (2)如果安装了360安全卫士，禁用针对64位cpu的核晶防护。
+     http://www.bubuko.com/infodetail-794242.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+http://www.zdfans.com/5928.html
+
+VMware V12.1 专业版以及永久密钥
+
+2015-12-09    分类：安全软件、虚拟机    评论：120人气：38,786   
+
+ 
+热门虚拟机软件VMware Workstation 现已更新至v12.1 专业版！12.0属于大型更新，专门为Win10的安装和使用做了优化，支持DX10、4K高分辨率显示屏、OpenGL 3.3、7.1声道，以及各种新硬件和新技术。下面附上永久许可证密钥及最新注册机！v11已抛弃了对32位系统支持，安装包体积大幅减小。
+VMware是功能最强大的虚拟机软件，用户可在虚拟机同时运行各种操作系统，进行开发、测试、演示和部署软件，虚拟机中复制服务器、台式机和平板环境，每个虚拟机可分配多个处理器核心、主内存和显存。
+
+vmware12,vm12,vm11,vm10,vmware精简版,vmware绿色精简版,vmware11,vmware10,vmware安装版,vmware激活,vmware注册机
+
+VMware Workstation™12 Pro延续了VMware的传统，即提供专业技术人员每天在使用虚拟机时所依赖的领先功能和性能。借助对最新版本的Windows和Linux、最新的处理器和硬件的支持以及连接到VMware vSphere和vCloud Air的能力，它是提高工作效率、节省时间和征服云计算的完美工具。
+
+vmware12.0
+
+vmware10.11.12
+
+VMware 12 Pro 12.1 发行说明
+
+http://pubs.vmware.com/Release_Notes/cn/workstation/12pro/workstation-121-release-notes.html
+
+VMware 12 官方功能特性介绍：
+
+http://vmware.com/cn/products/workstation
+
+VMware 12 专业版永久许可证密钥
+
+5A02H-AU243-TZJ49-GTC7K-3C61N
+
+VMware Workstation 12 官方专业版 + 注册机
+
+VMware v11.x + 10.x  官方简体中文版+注册机 
+
+v12.1.0 Build 3272444  官方本地下载  ,293.25M
+
+http://pan.baidu.com/s/1bnxurk7 访问密码ia8d
+
+注意：新版不支持32位系统，系统是32位的请用10

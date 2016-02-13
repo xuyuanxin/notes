@@ -1,4 +1,6 @@
-'''                                                                                  |
+'''
+https://docs.python.org/2/library/time.html
+                                                                               |
 This module provides various time-related functions. For related functionality, see -
 also the datetime and calendar modules. Although this module is always available, not 
 all functions are available on all platforms. Most of the functions defined in this -
@@ -56,6 +58,15 @@ def time(): # time.time()
   provide time with a better precision than 1 second. While this function normally r-
   eturns non-decreasing values, it can return a lower value than a previous call if -
   the system clock has been set back between the two calls.
+  
+  #!/usr/bin/python
+  import time;  # This is required to include time module.
+
+  ticks = time.time()
+  print "Number of ticks since 12:00am, January 1, 1970:", ticks
+  
+  output:
+  Number of ticks since 12:00am, January 1, 1970: 7186862.73399
   '''
   pass
 

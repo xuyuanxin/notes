@@ -45,27 +45,36 @@ API
     errors ¨C Exceptions raised by the gridfs package
     grid_file ¨C Tools for representing files stored in GridFS
 
---> Making a Connection with MongoClient
+-------------------------------------------------------------------------------
+
+--> tutorial
+
+ http://api.mongodb.org/python/current/tutorial.html	
+	
+ -->--> Making a Connection with MongoClient
   The first step when working with PyMongo is to create a MongoClient to the  running 
   mongod instance. Doing so is easy:
+
   >>> from pymongo import MongoClient
   >>> client = MongoClient() # connect on the default host and port
   >>> client = MongoClient('localhost', 27017) # specify the host and port explicitly
   >>> client = MongoClient('mongodb://localhost:27017/') #use the MongoDB URI format
 
---> Getting a Database
+ -->--> Getting a Database
   A single instance of MongoDB can support multiple independent databases. When work-
   ing with PyMongo you access databases using attribute style access on MongoClient -
   instances: 
+
   >>> db = client.test_database  # test_database is database name
   # If your database name is such that using attribute style access won't work ( like  
   # test-database), you can use dictionary style access instead:
   >>> db = client['test-database']
 
-----> Getting a Collection
+ -->--> Getting a Collection
   A collection is a group of documents stored in MongoDB, and can be thought of as r-
   oughly the equivalent of a table in a relational database. Getting a collection  in 
   PyMongo works the same as getting a database:
+
   >>> collection = db.test_collection # test_collection is collection name
   # or (using dictionary style access):
   >>> collection = db['test-collection']
@@ -75,7 +84,7 @@ API
   # ocument is inserted into them.
   >>>
 
---> Documents
+ -->--> Documents
   Data in MongoDB is represented (and stored) using JSON-style documents. In  PyMongo 
   we use dictionaries to represent documents. As an example, the following dictionary 
   might be used to represent a blog post:
@@ -87,7 +96,7 @@ API
   Note that documents can contain native Python types (like datetime.datetime instan-
   ces) which will be automatically converted to and from the appropriate BSON types.
 
---> Inserting a Document
+ -->--> Inserting a Document
   To insert a document into a collection we can use the insert_one() method: 
   >>> posts = db.posts # posts is collection name
   >>> post_id = posts.insert_one(post).inserted_id
@@ -103,15 +112,17 @@ API
   >>> db.collection_names(include_system_collections=False)
   [u'posts']
 
---> Getting a Single Document With find_one() 
+ -->--> Getting a Single Document With find_one() 
   The most basic type of query that can be performed in MongoDB is find_one(). This -
   method returns a single document matching a query (or None if there are no matches)
   . It is useful when you know there is only one matching document, or are only inte-
   rested in the first match. Here we use find_one() to get the first document from t-
   he posts collection:
+  
   >>> posts.find_one()
   {u'date': datetime.datetime(...), u'text': u'My first blog post!', u'_id': ObjectId\
    ('...'), u'author': u'Mike', u'tags': [u'mongodb', u'python', u'pymongo']}
+
   The result is a dictionary matching the one that we inserted previously. Note The -
   returned document contains an "_id", which was automatically added on insert.     -
   find_one() also supports querying on specific elements that the resulting  document 
@@ -125,6 +136,9 @@ API
   
   >>> posts.find_one({"author": "Eliot"})
   >>>
+
+  
+  
 
 -------------------------------------------------------------------------------------  
   
@@ -193,143 +207,188 @@ API
 --> Find or Query Data with PyMongo
  https://docs.mongodb.org/getting-started/python/query/
 
- --> Overview
-  You can use the find() method to issue a query to retrieve data from a collection in MongoDB. All queries in MongoDB have the scope of a single collection.
+ -->--> Overview
+  You can use the find() method to issue a query to retrieve data from a collection -
+  in MongoDB. All queries in MongoDB have the scope of a single collection.
 
- Queries can return all documents in a collection or only the documents that match a specified filter or criteria. You can specify the filter or criteria in a document and pass as a parameter to the find() method.
+  Queries can return all documents in a collection or only the documents that match -
+  a specified filter or criteria. You can specify the filter or criteria in a docume-
+  nt and pass as a parameter to the find() method.
 
- The find() method returns query results in a cursor, which is an iterable object that yields documents.
+  The find() method returns query results in a cursor, which is an iterable object t-
+  hat yields documents.
 
- Prerequisites
+ -->--> Prerequisites
+  The examples in this section use the restaurants collection in the test database. -
+  For instructions on populating the collection with the sample dataset, see Import -
+  Example Dataset.
 
- The examples in this section use the restaurants collection in the test database. For instructions on populating the collection with the sample dataset, see Import Example Dataset.
+  From a Python Shell or IDLE, use MongoClient to connect to the running mongod inst-
+  ance, and switch to the test database.
 
- From a Python Shell or IDLE, use MongoClient to connect to the running mongod instance, and switch to the test database.
+  > from pymongo import MongoClient
+  
+  > client = MongoClient()
+  > db = client.test
 
- from pymongo import MongoClient
+ -->--> Query for All Documents in a Collection
+  To return all documents in a collection, call the find() method without a  criteria 
+  document. For example, the following operation queries for all documents in the re-
+  staurants collection.
 
- client = MongoClient()
- db = client.test
- Query for All Documents in a Collection
+  > cursor = db.restaurants.find()
+  
+  Iterate the cursor and print the documents.
 
- To return all documents in a collection, call the find() method without a criteria document. For example, the following operation queries for all documents in the restaurants collection.
-
- cursor = db.restaurants.find()
- Iterate the cursor and print the documents.
-
- for document in cursor:
-     print(document)
+  > for document in cursor:
+  >    print(document)
+  
  The result set contains all documents in the restaurants collection.
 
- Specify Equality Conditions
+ -->--> Specify Equality Conditions
+  The query condition for an equality match on a field has the following form:
 
- The query condition for an equality match on a field has the following form:
+  { <field1>: <value1>, <field2>: <value2>, ... }
+ 
+  If the <field> is in an embedded document or an array, use dot notation to access -
+  the field.
 
- { <field1>: <value1>, <field2>: <value2>, ... }
- If the <field> is in an embedded document or an array, use dot notation to access the field.
+  1 Query by a Top Level Field
+  The following operation finds documents whose borough field equals "Manhattan".
 
- Query by a Top Level Field
- The following operation finds documents whose borough field equals "Manhattan".
+  > cursor = db.restaurants.find({"borough": "Manhattan"})
+ 
+  Iterate the cursor and print the matching documents.
 
- cursor = db.restaurants.find({"borough": "Manhattan"})
- Iterate the cursor and print the matching documents.
+  > for document in cursor:
+  >    print(document)
+  
+  The result set includes only the matching documents.
 
- for document in cursor:
-     print(document)
- The result set includes only the matching documents.
+  2 Query by a Field in an Embedded Document
+  To specify a condition on a field within an embedded document, use the dot notatio-
+  n. Dot notation requires quotes around the whole dotted field name. The following -
+  operation specifies an equality condition on the zipcode field in the address embe-
+  dded document.
 
- Query by a Field in an Embedded Document
- To specify a condition on a field within an embedded document, use the dot notation. Dot notation requires quotes around the whole dotted field name. The following operation specifies an equality condition on the zipcode field in the address embedded document.
+  > cursor = db.restaurants.find({"address.zipcode": "10075"})
+  
+  Iterate the cursor and print the matching documents.
 
- cursor = db.restaurants.find({"address.zipcode": "10075"})
- Iterate the cursor and print the matching documents.
+  > for document in cursor:
+  >   print(document)
+ 
+  The result set includes only the matching documents.
 
- for document in cursor:
-     print(document)
- The result set includes only the matching documents.
+  For more information on querying on fields within an embedded document, see Embedd-
+  ed Documents.
 
- For more information on querying on fields within an embedded document, see Embedded Documents.
+  3 Query by a Field in an Array
+  The grades array contains embedded documents as its elements. To specify a conditi-
+  on on a field in these documents, use the dot notation. Dot notation requires quot-
+  es around the whole dotted field name. The following queries for documents whose g-
+  rades array contains an embedded document with a field grade equal to "B".
 
- Query by a Field in an Array
- The grades array contains embedded documents as its elements. To specify a condition on a field in these documents, use the dot notation. Dot notation requires quotes around the whole dotted field name. The following queries for documents whose grades array contains an embedded document with a field grade equal to "B".
+  > cursor = db.restaurants.find({"grades.grade": "B"})
+  
+  Iterate the cursor and print the matching documents.
 
- cursor = db.restaurants.find({"grades.grade": "B"})
- Iterate the cursor and print the matching documents.
+  > for document in cursor:
+  >    print(document)
+ 
+  The result set includes only the matching documents.
 
- for document in cursor:
-     print(document)
- The result set includes only the matching documents.
+  For more information on querying on arrays, such as specifying multiple  conditions 
+  on array elements, see Arrays and $elemMatch.
 
- For more information on querying on arrays, such as specifying multiple conditions on array elements, see Arrays and $elemMatch.
+ -->--> Specify Conditions with Operators
+  MongoDB provides operators to specify query conditions, such as comparison operato-
+  rs. Although there are some exceptions, such as the $or and $and conditional opera-
+  tors, query conditions using operators generally have the following form:
 
- Specify Conditions with Operators
+  { <field1>: { <operator1>: <value1> } }
+  
+  For a complete list of the operators, see query operators.
 
- MongoDB provides operators to specify query conditions, such as comparison operators. Although there are some exceptions, such as the $or and $and conditional operators, query conditions using operators generally have the following form:
+  1 Greater Than Operator ($gt)
+  Query for documents whose grades array contains an embedded document with a field -
+  score greater than 30.
 
- { <field1>: { <operator1>: <value1> } }
- For a complete list of the operators, see query operators.
+  > cursor = db.restaurants.find({"grades.score": {"$gt": 30}})
+ 
+  Iterate the cursor and print the matching documents.
 
- Greater Than Operator ($gt)
- Query for documents whose grades array contains an embedded document with a field score greater than 30.
+  > for document in cursor:
+  >    print(document)
+  
+  The result set includes only the matching documents.
 
- cursor = db.restaurants.find({"grades.score": {"$gt": 30}})
- Iterate the cursor and print the matching documents.
+  2 Less Than Operator ($lt)
+  Query for documents whose grades array contains an embedded document with a field -
+  score less than 10.
 
- for document in cursor:
-     print(document)
- The result set includes only the matching documents.
+  > cursor = db.restaurants.find({"grades.score": {"$lt": 10}})
+ 
+  Iterate the cursor and print the matching documents.
 
- Less Than Operator ($lt)
- Query for documents whose grades array contains an embedded document with a field score less than 10.
+  > for document in cursor:
+  >    print(document)
+ 
+  The result set includes only the matching documents.
 
- cursor = db.restaurants.find({"grades.score": {"$lt": 10}})
- Iterate the cursor and print the matching documents.
+ -->--> Combine Conditions
+  You can combine multiple query conditions in logical conjunction (AND) and  logical 
+  disjunctions (OR).
 
- for document in cursor:
-     print(document)
- The result set includes only the matching documents.
+  1 Logical AND
+  You can specify a logical conjunction (AND) for a list of query conditions by sepa-
+  rating the conditions with a comma in the conditions document.
 
- Combine Conditions
+  > cursor = db.restaurants.find({"cuisine": "Italian", "address.zipcode": "10075"})
+ 
+  Iterate the cursor and print the matching documents.
 
- You can combine multiple query conditions in logical conjunction (AND) and logical disjunctions (OR).
+  > for document in cursor:
+  >    print(document)
+  
+  The result set includes only the documents that matched all specified criteria.
 
- Logical AND
- You can specify a logical conjunction (AND) for a list of query conditions by separating the conditions with a comma in the conditions document.
+  2 Logical OR
+  You can specify a logical disjunction (OR) for a list of query conditions by  using 
+  the $or query operator.
 
- cursor = db.restaurants.find({"cuisine": "Italian", "address.zipcode": "10075"})
- Iterate the cursor and print the matching documents.
+  > cursor = db.restaurants.find(
+      {"$or": [{"cuisine": "Italian"}, {"address.zipcode": "10075"}]})
+  Iterate the cursor and print the matching documents.
 
- for document in cursor:
-     print(document)
- The result set includes only the documents that matched all specified criteria.
+  > for document in cursor:
+  >    print(document)
+ 
+  The result set includes only the documents that match either conditions.
 
- Logical OR
- You can specify a logical disjunction (OR) for a list of query conditions by using the $or query operator.
+ -->--> Sort Query Results
+  To specify an order for the result set, append the sort() method to the query. Pass 
+  to sort() method a document which contains the field(s) to sort by and the corresp-
+  onding sort type, e.g. pymongo.ASCENDING for ascending and pymongo.DESCENDING for -
+  descending.
 
- cursor = db.restaurants.find(
-     {"$or": [{"cuisine": "Italian"}, {"address.zipcode": "10075"}]})
- Iterate the cursor and print the matching documents.
+  To sort by multiple keys, pass a list of keys and sort type pairs. For example, th-
+  e following operation returns all documents in the restaurants collection, sorted -
+  first by the borough field in ascending order, and then, within each borough, by t-
+  he "address.zipcode" field in ascending order:
 
- for document in cursor:
-     print(document)
- The result set includes only the documents that match either conditions.
+  > import pymongo
+  > cursor = db.restaurants.find().sort([
+      ("borough", pymongo.ASCENDING),
+      ("address.zipcode", pymongo.DESCENDING)
+    ])
+ 
+  Iterate the cursor and print the matching documents.
 
- Sort Query Results
-
- To specify an order for the result set, append the sort() method to the query. Pass to sort() method a document which contains the field(s) to sort by and the corresponding sort type, e.g. pymongo.ASCENDING for ascending and pymongo.DESCENDING for descending.
-
- To sort by multiple keys, pass a list of keys and sort type pairs. For example, the following operation returns all documents in the restaurants collection, sorted first by the borough field in ascending order, and then, within each borough, by the "address.zipcode" field in ascending order:
-
- import pymongo
- cursor = db.restaurants.find().sort([
-     ("borough", pymongo.ASCENDING),
-     ("address.zipcode", pymongo.DESCENDING)
-  ])
- Iterate the cursor and print the matching documents.
-
- for document in cursor:
-     print(document)
- The operation returns the results sorted in the specified order.
+  > for document in cursor:
+  >    print(document)
+ 
+  The operation returns the results sorted in the specified order.
 
 --> Update Data with PyMongo
  https://docs.mongodb.org/getting-started/python/update/
@@ -339,9 +398,11 @@ API
   collection. The update_one() method updates a single document. Use update_many() to 
   update all documents that match the criteria. The methods accept the following par-
   ameters:
-  a filter document to match the documents to update,
-  an update document to specify the modification to perform, and
-  an optional upsert parameter.
+  
+  1 a filter document to match the documents to update,
+  2 an update document to specify the modification to perform, and
+  3 an optional upsert parameter.
+  
   To specify the update filter, use the same structure and syntax as the query condi-
   tions. See Find or Query Data with PyMongo for an introduction to query conditions.
 
@@ -362,76 +423,78 @@ API
   To change a field value, MongoDB provides update operators, such as $set to  modify 
   values. Some update operators, such as $set, will create the field if the field do-
   es not exist. See the individual update operators reference.
-
- -->--> Update Top-Level Fields
-  The following operation updates the first document with name equal to "Juni", using 
-  the $set operator to update the cuisine field and the $currentDate operator to upd-
-  ate the lastModified field with the current date.
   
-  result = db.restaurants.update_one(
-    {"name": "Juni"},
-    {
-        "$set": {
-            "cuisine": "American (New)"
-        },
-        "$currentDate": {"lastModified": True}
-    }
-  )
+  update operators: https://docs.mongodb.org/manual/reference/operator/update/
 
-  The operation returns a UpdateResult object that reports the count of documents ma-
-  tched and modified.
-
-  To see the number of documents that matched the filter condition, access the      -
-  matched_count attribute of the returned UpdateResult object.
-
-  result.matched_count
-  The matched_count is :
-  1
-
- -->--> Update an Embedded Field
-  To update a field within an embedded document, use the dot notation. When using the 
-  dot notation, enclose the whole dotted field name in quotes. The following  updates 
-  the street field in the embedded address document.
-
-  result = db.restaurants.update_one(
-    {"restaurant_id": "41156888"},
-    {"$set": {"address.street": "East 31st Street"}}
-  )
+  -->-->--> Update Top-Level Fields
+   The following operation updates the first document with name equal to "Juni", usi-
+   ng the $set operator to update the cuisine field and the $currentDate operator  to 
+   update the lastModified field with the current date.
   
-  The operation returns a UpdateResult object that reports the count of documents ma-
-  tched and modified.
+   result = db.restaurants.update_one(
+     {"name": "Juni"},
+     {
+         "$set": {
+             "cuisine": "American (New)"
+         },
+         "$currentDate": {"lastModified": True}
+     }
+   )
 
-  To see the number of documents that matched the filter condition, access the      -
-  matched_count attribute of the returned UpdateResult object.
+   The operation returns a UpdateResult object that reports the count of documents m-
+   atched and modified.
 
-  result.matched_count
-  The matched_count is:
-  1
+   To see the number of documents that matched the filter condition, access the     - 
+   matched_count attribute of the returned UpdateResult object.
 
- -->--> Update Multiple Documents
-  The update_one() method updates a single document. To update multiple documents, u-
-  se the update_many() method. The following operation updates all documents that ha-
-  ve address.zipcode field equal to "10016" and cuisine field equal to "Other", sett-
-  ing the cuisine field to "Category To Be Determined" and the lastModified field  to 
-  the current date.
+   > result.matched_count
+   The matched_count is :
+   > 1
 
-  result = db.restaurants.update_many(
-    {"address.zipcode": "10016", "cuisine": "Other"},
-    {
-        "$set": {"cuisine": "Category To Be Determined"},
-        "$currentDate": {"lastModified": True}
-    }
-  )
+  -->-->--> Update an Embedded Field
+   To update a field within an embedded document, use the dot notation. When using t-
+   he dot notation, enclose the whole dotted field name in quotes. The following upd-
+   ates the street field in the embedded address document.
+
+   result = db.restaurants.update_one(
+     {"restaurant_id": "41156888"},
+     {"$set": {"address.street": "East 31st Street"}}
+   )
   
-  The operation returns a UpdateResult object that reports the count of documents ma-
-  tched and modified.
+   The operation returns a UpdateResult object that reports the count of documents m-
+   atched and modified.
 
-  To see the number of documents that matched the filter condition, access the      -
-  matched_count attribute of the returned UpdateResult object.
+   To see the number of documents that matched the filter condition, access the     -
+   matched_count attribute of the returned UpdateResult object.
 
-  result.matched_count
-  The matched_count is:
-  20
+   > result.matched_count
+   The matched_count is:
+   > 1
+
+  -->-->--> Update Multiple Documents
+   The update_one() method updates a single document. To update multiple documents, -
+   use the update_many() method. The following operation updates all documents that -
+   have address.zipcode field equal to "10016" and cuisine field equal to "Other", s-
+   etting the cuisine field to "Category To Be Determined" and the lastModified field  
+   to the current date.
+
+   result = db.restaurants.update_many(
+     {"address.zipcode": "10016", "cuisine": "Other"},
+     {
+         "$set": {"cuisine": "Category To Be Determined"},
+         "$currentDate": {"lastModified": True}
+     }
+   )
+  
+   The operation returns a UpdateResult object that reports the count of documents m-
+   atched and modified.
+
+   To see the number of documents that matched the filter condition, access the     -
+   matched_count attribute of the returned UpdateResult object.
+
+   > result.matched_count
+   The matched_count is:
+   > 20
 
  -->--> Replace a Document
   To replace the entire document except for the _id field, pass an entirely new docu-
@@ -485,5 +548,79 @@ API
   For all available update operators, see the Update Operators reference page in  the 
   MongoDB Manual.
 
+--> Remove Data with PyMongo
+ -->--> Overview
+  You can use the delete_one() method and the delete_many() method to remove documen-
+  ts from a collection. The method takes a conditions document that determines the d-
+  ocuments to remove.
 
+  To specify a remove condition, use the same structure and syntax as the query cond-
+  itions.See Find or Query Data with PyMongo for an introduction to query conditions.
+
+ -->--> Prerequisites
+  The examples in this section use the restaurants collection in the test database. -
+  For instructions on populating the collection with the sample dataset, see Import -
+  Example Dataset.
+
+  From a Python Shell or IDLE, use MongoClient to connect to the running mongod inst-
+  ance, and switch to the test database.
+
+  from pymongo import MongoClient
+
+  client = MongoClient()
+  db = client.test
+  
+ -->--> Procedures
+  -->-->--> Remove All Documents That Match a Condition
+   The following operation removes all documents that match the specified condition.
+
+   > result = db.restaurants.delete_many({"borough": "Manhattan"})
+   
+   The operation returns a DeleteResult which reports the number of documents remove-
+   d.
+
+   To see the number of documents deleted, access the deleted_count attribute of  the 
+   returned DeleteResult object.
+
+   > result.deleted_count
+   The deleted_count is:
+   > 10259
+
+   If you have inserted or updated documents, such as specified in the Insert Data or 
+   Update Data sections of the Getting Started guide, your count may differ.
+
+  -->-->--> Remove All Documents
+   To remove all documents from a collection, pass an empty conditions document {} to 
+   the delete_many() method.
+
+   > result = db.restaurants.delete_many({})
+
+   The operation returns a DeleteResult which reports the number of documents removed.
+
+   To see the number of documents deleted, access the deleted_count attribute of  the 
+   returned DeleteResult object.
+
+   > result.deleted_count
+   The deleted_count is:
+   > 15100
+  
+   If you have inserted or updated documents, such as specified in the Insert Data or 
+   Update Data sections of the Getting Started guide, your count may differ.
+
+  -->-->--> Drop a Collection
+   The remove all operation only removes the documents from the collection. The coll-
+   ection itself, as well as any indexes for the collection, remain. To remove all d-
+   ocuments from a collection, it may be more efficient to drop the entire collectio-
+   n, including the indexes, and then recreate the collection and rebuild the indexe-
+   s. Use the drop() method to drop a collection, including any indexes.
+
+   > db.restaurants.drop()
+
+ -->--> Additional Information
+  In the PyMongo documentation, see delete_one(), delete_many() and drop().
+
+  In MongoDB, write operations are atomic on the level of a single document. If a si-
+  ngle remove operation removes multiple documents from a collection, the operation -
+  can interleave with other write operations on that collection. In the MongoDB Manu-
+  al, see Atomicity.
 

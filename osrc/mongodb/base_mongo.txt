@@ -1,3 +1,5 @@
+http://www.cnblogs.com/no7dw/archive/2013/05/17/3083419.html  Mongodb基本知识和常用语法
+
 http://www.cnblogs.com/wufengtinghai/p/3793829.html  MongoDB基本概念
                                                                                      |
 ----> MongoDB基本概念                                                                |
