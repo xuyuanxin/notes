@@ -37,11 +37,12 @@ def updata_db(dbclient, dbname, collname, data_cache):
             
             coll.replace_one({'KEY': key}, data)
 
-def dcache(f, type, condition=None):
+def dcache(f, type, condition=None, domains=None):
     '''
     @f: log file name(with full path)
     @type: domain or ip
     @condition: 域名集合
+    @domains: domains类， 训练时使用
 	
     list: 200s
     set : 47s, but mongodb not support
@@ -53,6 +54,11 @@ def dcache(f, type, condition=None):
     d_cache = dict()
     number  = 0
     ticks   = time.time()
+
+    outlier_set       = set()
+    conflit_set       = set()
+    outlier_cnt       = 0
+    train_conflit_cnt = 0
 
     for line in open(f):
         number += 1
@@ -88,8 +94,18 @@ def dcache(f, type, condition=None):
             key = ip
             items = domain
         else:
-            logger.error("type is not support")
+            logger.error("logdb.dcache, type is not support")
             return None
+
+        if None != domains:
+            if domain in domains.outlier:
+                outlier_cnt += 1
+                outlier_set.add(domain)
+                continue
+            if domain in domains.train_w and domain in domains.malware:
+                conflit_set.add(domain)
+                train_conflit_cnt += 1
+                continue
 
         if None!=condition and key not in condition:
             continue
@@ -125,8 +141,10 @@ def dcache(f, type, condition=None):
 
             d_cache[key]["COUNT"] = d_cache[key]["COUNT"] + count
 
-    logger.info("data line: %d, %s: %d."%(number,type,len(d_cache)))
-    logger.info("build %s cache, eclipse: %f s"%(type, time.time() - ticks))
+    logger.info("logdb.dcache, pre filter, outlier: %d(%d), train confilt: %d(%d)."%\
+	           (len(outlier_set),outlier_cnt,len(conflit_set),train_conflit_cnt))
+    logger.info("logdb.dcache, data line: %d, %s: %d."%(number,type,len(d_cache)))
+    logger.info("logdb.dcache, build %s cache, eclipse: %f s"%(type, time.time() - ticks))
 
     return d_cache
 			
@@ -147,9 +165,9 @@ def log_db(f, dbname, cnt=3000000):
 
     ticks = time.time()
     result = coll.insert_many(domain_cache.values(),ordered=False)
-    logger.info("insert db, eclipse: %f s"%(time.time() - ticks))
+    logger.info("logdb.log_db, insert db, eclipse: %f s"%(time.time() - ticks))
 
-    logger.info("insert nums: %d"%(len(result.inserted_ids)))    
+    logger.info("logdb.log_db, insert nums: %d"%(len(result.inserted_ids)))    
 
 def coll_clean(dbclient, dbname, collname):
     dbclient[dbname][collname].drop()
@@ -227,7 +245,7 @@ def get_rd(dcache, condition=None):
                 rd_cnt += 1
                 dset.add(key)
 
-    logger.info("get rd %d, eclipse: %fs."%(rd_cnt,time.time() - ticks))
+    logger.info("logdb.get_rd, get rd %d, eclipse: %fs."%(rd_cnt,time.time() - ticks))
 
     return dset		
 

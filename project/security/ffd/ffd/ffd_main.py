@@ -40,25 +40,24 @@ if __name__ == '__main__':
     logger.addHandler(console)
 
     logger.info("------------------------------------------------------------")
-    logger.info("domain path   : %s "%(domain_path))
-    logger.info("data path     : %s "%(data_path))
-    logger.info("run log path  : %s "%(data_path))
-    logger.info("tlow,thigh,dlow,dhigh: %d,%d,%d,%d "%(tlow,thigh,dlow,dhigh))
+    logger.info("main, domain path   : %s "%(domain_path))
+    logger.info("main, data path     : %s "%(data_path))
+    logger.info("main, run log path  : %s "%(data_path))
+    logger.info("main, tlow,thigh: %d, %d; dlow,dhigh: %d, %d "%(tlow,thigh,dlow,dhigh))
 
     data_file = os.path.join(data_path, '2014-01-08')
 
     d = domains.Domains(domain_path,tlow,thigh,dlow,dhigh)
     d.load_all()
-    d.info()
 
-    all_domain_info  = logdb.dcache(data_file,'domain')
+    all_domain_info  = logdb.dcache(data_file,'domain',domains=d)
 
     domain_all       = logdb.get_keys(all_domain_info)
     domain_train_all = logdb.get_keys(all_domain_info,d.malware|d.train_w)
     relative_ips     = logdb.get_rip(all_domain_info,domain_train_all)
     domain_train_r   = logdb.get_rd(all_domain_info,relative_ips)
 	
-    logger.info("relative ips : %d"%(len(relative_ips)))
+    logger.info("main, relative ips : %d"%(len(relative_ips)))
 
     d.stat(domain_all,'all domains')
     d.stat(domain_train_all,'train domains before pre process')
@@ -77,7 +76,7 @@ if __name__ == '__main__':
     detect_domains = feature.detect_preproc(detect_feature_base, d, params)	
     d.stat(detect_domains,'detect domains after pre process')
 	
-    logger.info("total eclipse: %fs"%(time.time() - ticksbeg))
+    logger.info("main, total eclipse: %fs"%(time.time() - ticksbeg))
     exit(0)
 
     mclient = MongoClient()
@@ -98,7 +97,117 @@ user = ann
 url = http://prod.namenode:port
 root = /jobs/
 
---> 
+
+--> all (prefilter)
+ Mon, 15 Feb 2016 22:12:32 ffd_main.py[line:42] INFO ------------------------------------------------------------
+ Mon, 15 Feb 2016 22:12:32 ffd_main.py[line:43] INFO main, domain path   : F:\\mygit\\data\\ffd\\domains\\2014 
+ Mon, 15 Feb 2016 22:12:32 ffd_main.py[line:44] INFO main, data path     : F:\\mygit\\data\\ffd\\dnslog 
+ Mon, 15 Feb 2016 22:12:32 ffd_main.py[line:45] INFO main, run log path  : F:\\mygit\\data\\ffd\\dnslog 
+ Mon, 15 Feb 2016 22:12:32 ffd_main.py[line:46] INFO main, tlow,thigh: 10000, 15000; dlow,dhigh: 0, 10000 
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:89] INFO domains._info, domains load from data files: 
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:90] INFO   botnet_r : 172
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:91] INFO   botnet_e : 3181
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:92] INFO    malware : 123180
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:93] INFO    mal2bot : 0
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:94] INFO      white : 10000
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:95] INFO    outlier : 68
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:96] INFO    train_w : 5001
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:97] INFO    train_b : 0
+ Mon, 15 Feb 2016 22:12:39 domains.py[line:109] INFO domains.load_all, load domains, eclipse: 7.188000 s
+ Mon, 15 Feb 2016 22:13:29 logdb.py[line:145] INFO logdb.dcache, pre filter, outlier: 39(83972), train confilt: 153(3613).
+ Mon, 15 Feb 2016 22:13:29 logdb.py[line:146] INFO logdb.dcache, data line: 3457537, domain: 256512.
+ Mon, 15 Feb 2016 22:13:29 logdb.py[line:147] INFO logdb.dcache, build domain cache, eclipse: 50.193000 s
+ Mon, 15 Feb 2016 22:13:30 logdb.py[line:248] INFO logdb.get_rd, get rd 18400, eclipse: 0.315000s.
+ Mon, 15 Feb 2016 22:13:30 ffd_main.py[line:60] INFO main, relative ips : 74951
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:162] INFO domains.stat, all domains total 256512
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:163] INFO        botnet_r : 7
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:164] INFO        botnet_e : 71
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:165] INFO         malware : 3587
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:166] INFO         mal2bot : 0(0)
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:167] INFO           white : 5610
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:168] INFO         outlier : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:169] INFO         train_w : 1794
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:170] INFO         train_b : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:172] INFO     tw&botnet_r : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:173] INFO     tw&botnet_e : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:174] INFO      tw&malware : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:175] INFO      w&botnet_r : 3
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:176] INFO      w&botnet_e : 9
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:177] INFO       w&malware : 885
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:179] INFO domains.stat, stat all domains, eclipse: 0.311000s.
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:162] INFO domains.stat, train domains before pre process total 5381
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:163] INFO        botnet_r : 7
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:164] INFO        botnet_e : 71
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:165] INFO         malware : 3587
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:166] INFO         mal2bot : 0(0)
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:167] INFO           white : 886
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:168] INFO         outlier : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:169] INFO         train_w : 1794
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:170] INFO         train_b : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:172] INFO     tw&botnet_r : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:173] INFO     tw&botnet_e : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:174] INFO      tw&malware : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:175] INFO      w&botnet_r : 3
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:176] INFO      w&botnet_e : 9
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:177] INFO       w&malware : 885
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:179] INFO domains.stat, stat train domains before pre process, eclipse: 0.019000s.
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:162] INFO domains.stat, relative domains of train domain(before preproc) total 18400
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:163] INFO        botnet_r : 7
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:164] INFO        botnet_e : 71
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:165] INFO         malware : 3587
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:166] INFO         mal2bot : 0(0)
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:167] INFO           white : 1545
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:168] INFO         outlier : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:169] INFO         train_w : 1794
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:170] INFO         train_b : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:172] INFO     tw&botnet_r : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:173] INFO     tw&botnet_e : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:174] INFO      tw&malware : 0
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:175] INFO      w&botnet_r : 3
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:176] INFO      w&botnet_e : 9
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:177] INFO       w&malware : 885
+ Mon, 15 Feb 2016 22:13:30 domains.py[line:179] INFO domains.stat, stat relative domains of train domain(before preproc), eclipse: 0.037000s.
+ Mon, 15 Feb 2016 22:13:33 feature.py[line:48] INFO feature.base_features, get base features, eclipse: 2.878000 s
+ Mon, 15 Feb 2016 22:13:33 feature.py[line:102] INFO feature.train_preproc, train filter, outerlier: 0, conflit: 0, not botnet: 3207, not train: 251131 
+ Mon, 15 Feb 2016 22:13:33 feature.py[line:103] INFO feature.train_preproc, train pre process, eclipse: 0.131000 s
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:162] INFO domains.stat, train domains after pre process total 2174
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:163] INFO        botnet_r : 7
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:164] INFO        botnet_e : 71
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:165] INFO         malware : 380
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:166] INFO         mal2bot : 309(309)
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:167] INFO           white : 185
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:168] INFO         outlier : 0
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:169] INFO         train_w : 1794
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:170] INFO         train_b : 0
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:172] INFO     tw&botnet_r : 0
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:173] INFO     tw&botnet_e : 0
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:174] INFO      tw&malware : 0
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:175] INFO      w&botnet_r : 3
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:176] INFO      w&botnet_e : 9
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:177] INFO       w&malware : 184
+ Mon, 15 Feb 2016 22:13:33 domains.py[line:179] INFO domains.stat, stat train domains after pre process, eclipse: 0.012000s.
+ Mon, 15 Feb 2016 22:13:35 feature.py[line:48] INFO feature.base_features, get base features, eclipse: 1.532000 s
+ Mon, 15 Feb 2016 22:13:35 feature.py[line:134] INFO feature.detect_preproc, detect, pass by white: 5610, pass by f: 233163
+ Mon, 15 Feb 2016 22:13:35 feature.py[line:135] INFO feature.detect_preproc, detect pre process, eclipse: 0.197000 s
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:162] INFO domains.stat, detect domains after pre process total 17739
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:163] INFO        botnet_r : 3
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:164] INFO        botnet_e : 17
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:165] INFO         malware : 656
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:166] INFO         mal2bot : 127(309)
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:167] INFO           white : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:168] INFO         outlier : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:169] INFO         train_w : 496
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:170] INFO         train_b : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:172] INFO     tw&botnet_r : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:173] INFO     tw&botnet_e : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:174] INFO      tw&malware : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:175] INFO      w&botnet_r : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:176] INFO      w&botnet_e : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:177] INFO       w&malware : 0
+ Mon, 15 Feb 2016 22:13:35 domains.py[line:179] INFO domains.stat, stat detect domains after pre process, eclipse: 0.038000s.
+ Mon, 15 Feb 2016 22:13:35 ffd_main.py[line:79] INFO main, total eclipse: 63.234000s
+
+--> all(not prefilter)
  Sat, 13 Feb 2016 22:21:55 ffd_main.py[line:42] INFO ------------------------------------------------------------
  Sat, 13 Feb 2016 22:21:55 ffd_main.py[line:43] INFO domain path   : F:\\mygit\\data\\ffd\\domains\\2014 
  Sat, 13 Feb 2016 22:21:55 ffd_main.py[line:44] INFO data path     : F:\\mygit\\data\\ffd\\dnslog 

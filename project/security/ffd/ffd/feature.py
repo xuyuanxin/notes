@@ -45,7 +45,7 @@ def base_features(dinfo,istrain=True):
             fcache[key]['net_div'] = round(float(len(set(prefix16)))/len(ips),5)
         fcache[key]['min_ttl'] = round(min(ttls),5)
 		
-    logger.info("get base features, eclipse: %f s"%(time.time() - ticks))
+    logger.info("feature.base_features, get base features, eclipse: %f s"%(time.time() - ticks))
 
     return fcache
 	
@@ -98,9 +98,9 @@ def train_preproc(finfo,domains,params):
         else:
             not_train_cnt += 1
 
-    logger.info("train filter, outerlier: %d, conflit: %d, not botnet: %d, not train: %d "%\
+    logger.info("feature.train_preproc, train filter, outerlier: %d, conflit: %d, not botnet: %d, not train: %d "%\
 	           (outlier_cnt, conflict_cnt, filter_by_f,not_train_cnt))
-    logger.info("train pre process, eclipse: %f s"%(time.time() - ticks))
+    logger.info("feature.train_preproc, train pre process, eclipse: %f s"%(time.time() - ticks))
 
     return dset	
 
@@ -131,8 +131,8 @@ def detect_preproc(finfo,domains,params):
         else:
             filter_by_f += 1
 
-    logger.info("detect, pass by white: %d, pass by f: %d"%(filter_by_w, filter_by_f))
-    logger.info("detect pre process, eclipse: %f s"%(time.time() - ticks))
+    logger.info("feature.detect_preproc, detect, pass by white: %d, pass by f: %d"%(filter_by_w, filter_by_f))
+    logger.info("feature.detect_preproc, detect pre process, eclipse: %f s"%(time.time() - ticks))
 
     return dset
 

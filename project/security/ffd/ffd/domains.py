@@ -13,16 +13,16 @@ class Domains:
 
     def __init__(self, datapath,t_low,t_high,w_low,w_high):
         self.dpath = datapath   # domain path
-        self.alexa_t = [t_low,t_high]
-        self.alexa_w = [w_low,w_high]
-        self.botnet_r = set([]) # 四个botnet阻止列表
-        self.botnet_e = set([]) # 加上一个恶意域名列表
-        self.malware = set([])  # 恶意域名，包括botnet域名
-        self.mal2bot = set([])  # 恶意域名，包括botnet域名
-        self.white = set([])    # 免检域名(不包括outlier)
-        self.outlier = set([])  # cdn等域名
-        self.train_w = set([])
-        self.train_b = set([])
+        self.alexa_t  = [t_low,t_high] # 训练白样本alexa排名
+        self.alexa_w  = [w_low,w_high] # 免检域名alexa排名
+        self.botnet_r = set([])  # real 四个botnet阻止列表
+        self.botnet_e = set([])  # extend 加上一个恶意域名列表
+        self.malware  = set([])  # 恶意域名，包括botnet域名
+        self.mal2bot  = set([])  # 恶意域名中满足botnet特征的域名
+        self.white    = set([])  # 免检域名(不包括outlier)
+        self.outlier  = set([])  # cdn等域名
+        self.train_w  = set([])  # 训练时的白样本
+        self.train_b  = set([])  # 训练时的黑样本
 
     def _load_file(self,f, dset):
         '''
@@ -45,7 +45,7 @@ class Domains:
         df = pd.read_csv(self.dpath+os.sep+"top-1m.csv", names=['rank', 'domain'], header=None, encoding='utf-8')
         return set(list(df[(df['rank'] <= end) & (df['rank'] >= begin)]['domain']))
 
-    def _load_botnet_r(self):
+    def _load_botnet_r(self): 
         self._load_file(self.dpath+os.sep+"hosts_badzeus.txt", self.botnet_r)
         self._load_file(self.dpath+os.sep+"hosts_spyeye.txt", self.botnet_r)
         self._load_file(self.dpath+os.sep+"hosts_palevo.txt", self.botnet_r)
@@ -63,10 +63,12 @@ class Domains:
         self._load_file(self.dpath+os.sep+"hosts_spyeye.txt", self.malware)
         self._load_file(self.dpath+os.sep+"hosts_palevo.txt", self.malware)
         self._load_file(self.dpath+os.sep+"hosts_feodo.txt", self.malware)
+
         self._load_file(self.dpath+os.sep+"hosts_cybercrime.txt", self.malware)
         self._load_file(self.dpath+os.sep+"hosts_malwaredomains.txt", self.malware)
         self._load_file(self.dpath+os.sep+"hosts_malwaredomainlist.txt", self.malware)
         self._load_file(self.dpath+os.sep+"hosts_hphosts.txt", self.malware)
+
         self._load_phishtank(self.malware)
 
     def _load_outlier(self):
@@ -81,6 +83,18 @@ class Domains:
     def _load_train_w(self):
         w = self._load_alexa(self.alexa_t[0],self.alexa_t[1])
         self.train_w |= w
+
+    def _info(self):
+        logger = logging.getLogger("ffd")
+        logger.info('domains._info, domains load from data files: ')
+        logger.info("%10s : %d"%('botnet_r',len(self.botnet_r)))
+        logger.info("%10s : %d"%('botnet_e',len(self.botnet_e)))
+        logger.info("%10s : %d"%('malware',len(self.malware)))
+        logger.info("%10s : %d"%('mal2bot',len(self.mal2bot)))
+        logger.info("%10s : %d"%('white',len(self.white)))
+        logger.info("%10s : %d"%('outlier',len(self.outlier)))
+        logger.info("%10s : %d"%('train_w',len(self.train_w)))
+        logger.info("%10s : %d"%('train_b',len(self.train_b)))
 		
     def load_all(self):
         logger = logging.getLogger("ffd")
@@ -91,19 +105,8 @@ class Domains:
         self._load_outlier()
         self._load_white()
         self._load_train_w()
-        logger.info("load domains, eclipse: %f s"%(time.time() - ticks))
-		
-    def info(self):
-        logger = logging.getLogger("ffd")
-        logger.info('domains predefine')
-        logger.info("%10s : %d"%('botnet_r',len(self.botnet_r)))
-        logger.info("%10s : %d"%('botnet_e',len(self.botnet_e)))
-        logger.info("%10s : %d"%('malware',len(self.malware)))
-        logger.info("%10s : %d"%('mal2bot',len(self.mal2bot)))
-        logger.info("%10s : %d"%('white',len(self.white)))
-        logger.info("%10s : %d"%('outlier',len(self.outlier)))
-        logger.info("%10s : %d"%('train_w',len(self.train_w)))
-        logger.info("%10s : %d"%('train_b',len(self.train_b)))
+        self._info()
+        logger.info("domains.load_all, load domains, eclipse: %f s"%(time.time() - ticks))
 
     def stat(self,dset,info):
         botnet_r_cnt = 0
@@ -156,7 +159,7 @@ class Domains:
             if domain in self.white and domain in self.malware:
                 w_malware += 1
 				
-        logger.info("%s : %d"%(info,len(dset)))
+        logger.info("domains.stat, %s total %d"%(info,len(dset)))
         logger.info("%15s : %d"%('botnet_r',botnet_r_cnt))
         logger.info("%15s : %d"%('botnet_e',botnet_e_cnt))
         logger.info("%15s : %d"%('malware',malware_cnt))
@@ -173,7 +176,7 @@ class Domains:
         logger.info("%15s : %d"%('w&botnet_e',w_botnet_e))
         logger.info("%15s : %d"%('w&malware',w_malware))
 
-        logger.info("stat %s, eclipse: %fs."%(info, time.time() - ticks))
+        logger.info("domains.stat, stat %s, eclipse: %fs."%(info, time.time() - ticks))
 		
 	
 		
