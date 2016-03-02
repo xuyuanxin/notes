@@ -43,5 +43,29 @@ NetBeans
     Oracle's integrated development environment
 
 
+--> install
+With Windows or Linux, you need to choose between the x86 (32-bit) and x64 (64-bit) -
+versions.
+
+1 You want the JDK (Java SE Development Kit), not the JRE.
+2 Windows or Linux: Choose x86 for 32 bit, x64 for 64 bit.
+3 Linux: Pick the .tar.gz version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,12 +1,13 @@
 import java.util.*;
 
-/*-----------------------------------------------------------------------------------
+--> Defining Your Own Classes
  Now the time has come to show you how to write the kind of "workhorse classes"  that 
  are needed for more sophisticated applications. These classes typically do not  have 
  a main method. Instead, they have their own instance fields and methods. To build  a 
  complete program, you combine several classes, one of which has a main method.
 
  The simplest form for a class definition in Java is
+ 
  class ClassName
  {
      field1
@@ -35,7 +36,7 @@ import java.util.*;
  The bytecode interpreter starts running the code in the main method in the         -
  EmployeeTest class.
 
- ----> Use of Multiple Source Files
+--> Use of Multiple Source Files
  The program has two classes in a single source file . Many programmers prefer to put 
  each class into its own source file. For example, you can place the Employee class -
  into a file Employee.java and the EmployeeTest class into EmployeeTest.java.
@@ -57,7 +58,275 @@ import java.util.*;
  If you are familiar with the make facility of UNIX (or one of its Windows cousins, -
  such as nmake), then you can think of the Java compiler as having the make function-
  ality already built in.
- ----------------------------------------------------------------------------------*/
+
+--> public private
+ The keyword public means that any method in any class can call the method. The priv-
+ ate keyword makes sure that the only methods that can access these instance fields -
+ are the methods of the Employee class itself. No outside method can read or write t-
+ o these fields. The @name and @hireDay fields are references to @String and @Date o-
+ bjects. This is quite usual: Classes will often contain instance fields of class ty-
+ pe.
+
+--> constructor
+ A constructor has the same name as the class.
+ A class can have more than one constructor.
+ A constructor can take zero, one, or more parameters.
+ A constructor has no return value.
+ A constructor is always called with the new operator.
+ 
+ -->--> Default Field Initialization
+  If you don’t set a field explicitly in a constructor, it is automatically set to  a 
+  default value:numbers to 0, boolean values to false, and object references to null. 
+  
+ -->--> The Constructor with No Arguments
+  Please keep in mind that you get a free no-argument constructor only when your cla-
+  ss has no other constructors. If you write your class with even a single construct-
+  or of your own and you want the users of your class to have the ability to create -
+  an instance by a call to
+  > new ClassName()
+  then you must provide a no-argument constructor. Of course, if you are happy with -
+  the default values for all fields, you can simply supply
+  public ClassName()
+  {
+  }
+ 
+ -->--> Explicit Field Initialization
+  You can simply assign a value to any field in the class definition. For example:
+
+  class Employee
+  {
+      private String name = "";
+      . . .
+  }
+  
+  This assignment is carried out before the constructor executes.
+
+ -->--> Calling Another Constructor
+  The keyword this refers to the implicit parameter of a method. However, this keywo-
+  rd has a second meaning. If the first statement of a constructor has the form     -
+  this(. . .), then the constructor calls another constructor of the same class. Here 
+  is a typical example:
+
+  public Employee(double s)
+  {
+      // calls Employee(String, double)
+      this("Employee #" + nextId, s);
+      nextId++;
+  }
+
+  When you call new Employee(60000), the Employee(double) constructor calls the     -
+  Employee(String,double) constructor. Using the this keyword in this manner is usef-
+  ul, you only need to write common construction code once.
+ 
+ -->--> initialization block
+  Class declarations can contain arbitrary blocks of code. These blocks are  executed 
+  whenever an object of that class is constructed. For example:
+
+  class Employee
+  {
+      private static int nextId;
+      private int id;
+      private String name;
+      private double salary;
+      // object initialization block
+      {
+      id = nextId;
+      nextId++;
+      }
+      public Employee(String n, double s)
+      {
+          name = n;
+          salary = s;
+      }
+      public Employee()
+      {
+          name = "";
+          salary = 0;
+      }
+      . . .
+  }
+  
+  In this example, the id field is initialized in the object initialization block, no
+  matter which constructor is used to construct an object. The initialization block -
+  runs first, and then the body of the constructor is executed.
+
+ With so many ways of initializing data fields, it can be quite confusing to give all
+ possible pathways for the construction process. Here is what happens in detail  when 
+ a constructor is called:
+ 1. All data fields are initialized to their default values (0, false, or null).
+ 2. All field initializers and initialization blocks are executed, in the order in w-
+    hich they occur in the class declaration.
+ 3. If the first line of the constructor calls a second constructor, then the body of
+    the second constructor is executed.
+ 4. The body of the constructor is executed.
+ 
+ -->--> initialize a static field
+  To initialize a static field, either supply an initial value or use a static initi-
+  alization block. You have already seen the first mechanism:
+  > private static int nextId = 1;
+  If the static fields of your class require complex initialization code, use a stat-
+  ic initialization block.
+  
+  Place the code inside a block and tag it with the keyword static. Here is an examp-
+  le. We want the employee ID numbers to start at a random integer less than 10,000.
+
+  // static initialization block
+  static 
+  {
+      Random generator = new Random();
+      nextId = generator.nextInt(10000);
+  }
+
+  Static initialization occurs when the class is first loaded. Like instance  fields,
+  static fields are 0, false, or null unless you explicitly set them to another valu-
+  e. All static field initializers and static initialization blocks are executed in -
+  the order in which they occur in the class declaration.
+  
+  
+  Amazingly enough, up to JDK 6, it was possible to write a “Hello, World” program in 
+  Java without ever writing a main method.
+
+  public class Hello
+  {
+      static
+      {
+          System.out.println("Hello, World");
+      }
+  }
+  
+  When you invoked the class with java Hello, the class was loaded, the static initi-
+  alization block printed “Hello, World” , and only then was a message displayed that 
+  main is not defined. Since Java SE 7, the java program first checks that there is a 
+  main method.
+  
+ -->--> Object Destruction and the finalize Method
+  Since Java does automatic garbage collection, manual memory reclamation is not nee-
+  ded, so Java does not support destructors. You can add a finalize method to any cl-
+  ass. The finalize method will be called before the garbage collector sweeps away t-
+  he object. 
+ 
+--> Implicit and Explicit Parameters
+ In every method, the keyword this refers to the implicit parameter. If you like, yo-
+ u can write the raiseSalary method as follows:
+
+ public void raiseSalary(double byPercent)
+ {
+     double raise = this.salary * byPercent / 100;
+     this.salary += raise;
+ }
+
+--> Final Instance Fields
+ You can define an instance field as final. Such a field must be initialized when the
+ object is constructed. That is, you must guarantee that the field value has been set
+ after the end of every constructor. Afterwards, the field may not be modified again. 
+ For example, the name field of the Employee class may be declared as final because -
+ it never changes after the object is constructed.
+    class Employee
+    {
+        private final String name;
+        . . .
+    }
+ The final modifier is particularly useful for fields whose type is primitive or an -
+ immutable class. (A class is immutable if none of its methods ever mutate its objec-
+ ts. For example, the String class is immutable.) For mutable classes, the final mod-
+ ifier is likely to confuse the reader. For example,
+     private final Date hiredate;
+ merely means that the object reference stored in the hiredate variable doesn't get -
+ changed after the object is constructed. That does not mean that the hiredate object 
+ is constant. Any method is free to invoke the setTime mutator on the object to which
+ hiredate refers.
+
+--> Static Fields
+ If you define a field as static, then there is only one such field per class. For e-
+ xample, We add an instance field id and a static field nextId to the Employee class:
+	 class Employee
+	 {
+		 private static int nextId = 1;
+		 private int id;
+		 . . .
+	 }
+ Every employee object now has its own id field, but there is only one nextId field -
+ that is shared among all instances of the class . Let's put it another way. If there 
+ are 1,000 objects of the Employee class, then there are 1,000 instance fields id, o-
+ ne for each object. But there is a single static field nextId . Even if there are no 
+ employee objects, the static field nextId is present. It belongs to the class, not -
+ to any individual object.
+
+ ----> Static Constants 
+ Static variables are quite rare. However, static constants are more common. For exa-
+ mple, the Math class defines a static constant:
+	 public class Math
+	 {
+		 . . .
+		 public static final double PI = 3.14159265358979323846;
+		 . . .
+	 }
+ You can access this constant in your programs as Math.PI .
+
+ -->--> Static Methods
+  Static methods are methods that do not operate on objects. For example, the pow me-
+  thod of the Math class is a static method. The expression
+	  Math.pow(x, a)
+  computes the power x^a. It does not use any Math object to carry out its task. In -
+  other words, it has no implicit parameter.
+
+  It is legal to use an object to call a static method. For example, if harry is  an
+  Employee object,then you can call harry.getNextId() instead of Employee.getnextId(). 
+  However, we find that notation confusing. The getNextId method doesn't look at har-
+  ry at all to compute the result. We recommend that you use class names, not object-
+  s, to invoke static methods.
+
+ -->--> Use static methods in two situations:
+ * When a method doesn't need to access the object state because all needed paramete-
+   rs are supplied as explicit parameters (example: Math.pow).
+ * When a method only needs to access static fields of the class.
+ 
+--> The main Method
+ Note that you can call static methods without having any objects. For example, you -
+ never construct any objects of the Math class to call Math.pow. For the same reason, 
+ the main method is a static method. The main method does not operate on any objects. 
+ In fact, when a program starts, there aren’t any objects yet. The static main metho-
+ d executes, and constructs the objects that the program needs.
+ 
+ Every class can have a main method. That is a handy trick for unit testing of class-
+ es. For example, you can add a main method to the Employee class:
+
+ class Employee
+ {
+     public Employee(String n, double s, int year, int month, int day)
+     {
+         name = n;
+         salary = s;
+         LocalDate hireDay = LocalDate.now(year, month, day);
+     }
+     . . .
+	 
+     public static void main(String[] args) // unit test
+     {
+         Employee e = new Employee("Romeo", 50000, 2003, 3, 31);
+         e.raiseSalary(10);
+         System.out.println(e.getName() + " " + e.getSalary());
+     }
+     . . .
+ }
+ 
+ If you want to test the Employee class in isolation, simply execute
+ > java Employee
+ If the Employee class is a part of a larger application, you start the application -
+ with
+ > java Application
+ and the main method of the Employee class is never executed.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 public class classBase // EmployeeTest
 {
 /*-----------------------------------------------------------------------------------
@@ -123,62 +392,15 @@ public class classBase // EmployeeTest
    }
 }
 
-/*-----------------------------------------------------------------------------------
- ----> public private
- The keyword public means that any method in any class can call the method. The priv-
- ate keyword makes sure that the only methods that can access these instance fields -
- are the methods of the Employee class itself. No outside method can read or write t-
- o these fields. The @name and @hireDay fields are references to @String and @Date o-
- bjects. This is quite usual: Classes will often contain instance fields of class ty-
- pe.
------------------------------------------------------------------------------------*/
+
+
+
 class EmployeeL // employee local
 {
 /*-----------------------------------------------------------------------------------
- ----> Static Fields
- If you define a field as static, then there is only one such field per class. For e-
- xample, We add an instance field id and a static field nextId to the Employee class:
-	 class Employee
-	 {
-		 private static int nextId = 1;
-		 private int id;
-		 . . .
-	 }
- Every employee object now has its own id field, but there is only one nextId field -
- that is shared among all instances of the class . Let's put it another way. If there 
- are 1,000 objects of the Employee class, then there are 1,000 instance fields id, o-
- ne for each object. But there is a single static field nextId . Even if there are no 
- employee objects, the static field nextId is present. It belongs to the class, not -
- to any individual object.
  
- ----> Static Constants 
- Static variables are quite rare. However, static constants are more common. For exa-
- mple, the Math class defines a static constant:
-	 public class Math
-	 {
-		 . . .
-		 public static final double PI = 3.14159265358979323846;
-		 . . .
-	 }
- You can access this constant in your programs as Math.PI .
-
- ----> Static Methods
- Static methods are methods that do not operate on objects. For example, the pow met-
- hod of the Math class is a static method. The expression
-	 Math.pow(x, a)
- computes the power x^a. It does not use any Math object to carry out its task. In o-
- ther words, it has no implicit parameter.
-
- It is legal to use an object to call a static method. For example, if harry is an	-
- Employee object,then you can call harry.getNextId() instead of Employee.getnextId(). 
- However, we find that notation confusing. The getNextId method doesn't look at harry 
- at all to compute the result. We recommend that you use class names, not objects, to 
- invoke static methods.
-
- ----> Use static methods in two situations:
- * When a method doesn't need to access the object state because all needed paramete-
-   rs are supplied as explicit parameters (example: Math.pow).
- * When a method only needs to access static fields of the class.
+ 
+ 
 -----------------------------------------------------------------------------------*/
     private static int nextId = 1; /* Static Fields */
 	private int id;
@@ -202,11 +424,7 @@ class EmployeeL // employee local
  ply a constructor to an existing object to reset the instance fields. For example,
     james.Employee("James Bond", 250000, 1950, 1, 1) // compile-time error
 
- A constructor has the same name as the class.
- A class can have more than one constructor.
- A constructor can take zero, one, or more parameters.
- A constructor has no return value.
- A constructor is always called with the new operator.
+
 
  all Java objects are constructed on the heap and that a constructor must be combine-
  d with @new. 
@@ -329,25 +547,6 @@ class EmployeeL // employee local
 
 /*-----------------------------------------------------------------------------------
 
- ----> Final Instance Fields
- You can define an instance field as final. Such a field must be initialized when the
- object is constructed. That is, you must guarantee that the field value has been set
- after the end of every constructor. Afterwards, the field may not be modified again. 
- For example, the name field of the Employee class may be declared as final because -
- it never changes after the object is constructed.
-    class Employee
-    {
-        private final String name;
-        . . .
-    }
- The final modifier is particularly useful for fields whose type is primitive or an -
- immutable class. (A class is immutable if none of its methods ever mutate its objec-
- ts. For example, the String class is immutable.) For mutable classes, the final mod-
- ifier is likely to confuse the reader. For example,
-     private final Date hiredate;
- merely means that the object reference stored in the hiredate variable doesn't get -
- changed after the object is constructed. That does not mean that the hiredate object 
- is constant. Any method is free to invoke the setTime mutator on the object to which
- hiredate refers.
+
 -----------------------------------------------------------------------------------*/
 

@@ -16,37 +16,51 @@ xxxx JobHistory(不确定)   <-- master sbin/mr-jobhistory-daemon.sh start historys
 http://www.powerxing.com/install-hadoop/    Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04
 http://www.powerxing.com/install-hadoop-cluster/  Hadoop集群安装配置教程_Hadoop2.6.0/Ubuntu 14.04
 
-----------------> Hadoop伪分布式配置
-1 创建Hadoop用户:
-sudo useradd -m hadoop -s /bin/bash     # 创建hadoop用户
-sudo passwd hadoop                      # 修改密码
-sudo adduser hadoop sudo                # 增加管理员权限
 
-2 安装SSH, 配置无密码登录:
-sudo apt-get install openssh-server
-cd ~                               #
-mkdir .ssh                         # 可能该文件已存在，不影响
-cd ~/.ssh/                         #
-ssh-keygen -t rsa                  # 会有提示，都按回车就可以
-cat id_rsa.pub >> authorized_keys  # 加入授权
+--> 准备工作
+ 更新apt
+  $ sudo apt-get update                                                              |
+  若出现如下 “Hash校验和不符” 的提示，可通过更改软件源来解决。若没有该问题，则不需要 |
+  更改。
+  
+  如何更改软件源
+  点击左侧任务栏的【系统设置】（齿轮图标），选择【软件和更新】
+  点击 “下载自” 右侧的方框，选择【其他节点】
+  在列表中选中【mirrors.aliyun.com】，并点击右下角的【选择服务器】，会要求输入用户密码，输入即可。
+  接着点击关闭。
+  此时会提示列表信息过时，点击【重新载入】，
+  最后耐心等待更新缓存即可。更新完成会自动关闭【软件和更新】这个窗口。如果还是提示错误，请选择其他服务器节点如 mirrors.163.com 再次进行尝试。更新成功后，再次执行 sudo apt-get update 就正常了。
 
-3 安装Java环境:
-sudo apt-get install openjdk-7-jre openjdk-7-jdk
-vim ~/.bashrc                      # 设置JAVA_HOME, 在文件最前面添加如下单独一行:
+ 安装vim
+  $ sudo apt-get install vim
+
+--> Hadoop伪分布式配置
+ 1 创建Hadoop用户:
+  sudo useradd -m hadoop -s /bin/bash     # 创建hadoop用户
+  sudo passwd hadoop                      # 修改密码
+  sudo adduser hadoop sudo                # 增加管理员权限
+
+ 2 安装SSH, 配置无密码登录:
+  sudo apt-get install openssh-server
+  cd ~/.ssh/                     # 若没有该目录，请先执行一次ssh localhost
+  ssh-keygen -t rsa              # 会有提示，都按回车就可以
+  cat ./id_rsa.pub >> ./authorized_keys  # 加入授权
+
+ 3 安装Java环境:
+  sudo apt-get install openjdk-7-jre openjdk-7-jdk
+  vim ~/.bashrc                      # 设置JAVA_HOME, 在文件最前面添加如下单独一行:
                                    # export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-source ~/.bashrc                   # 使变量设置生效
+  source ~/.bashrc                   # 使变量设置生效
 
-4 安装 Hadoop 2:
-sudo tar -zxvf ./hadoop-2.6.0.tar.gz -C /usr/local  # 解压到/usr/local中
-cd /usr/local/                              #
-sudo mv ./hadoop-2.6.0/ ./hadoop            # 将文件夹名改为hadoop
-sudo chown -R hadoop:hadoop ./hadoop        # 修改文件权限
-                                            # 解压后把Hadoop路径添加到PATH中, 本例中的路径是
-                                            # /usr/local/hadoop/bin:/usr/local/hadoop/sbin
+ 4 安装 Hadoop 2:
+  sudo tar -zxvf ./hadoop-2.6.0.tar.gz -C /usr/local  # 解压到/usr/local中
+  cd /usr/local/                              #
+  sudo mv ./hadoop-2.6.0/ ./hadoop            # 将文件夹名改为hadoop
+  sudo chown -R hadoop:hadoop ./hadoop        # 修改文件权限
 
-5 进行伪分布式配置
-5.1 修改配置文件core-site.xml (vim /usr/local/hadoop/etc/hadoop/core-site.xml)
-<configuration>
+ 5 进行伪分布式配置
+  5.1 修改配置文件core-site.xml (vim /usr/local/hadoop/etc/hadoop/core-site.xml)
+  <configuration>
     <property>
         <name>hadoop.tmp.dir</name>
         <value>file:/usr/local/hadoop/tmp</value>
@@ -56,11 +70,11 @@ sudo chown -R hadoop:hadoop ./hadoop        # 修改文件权限
         <name>fs.defaultFS</name>
         <value>hdfs://localhost:9000</value>
     </property>
-</configuration>
+  </configuration>
 
-5.2 修改配置文件 hdfs-site.xml 
-(最好提前建立/usr/local/hadoop/tmp, 重新初始化时如果失败, 尝试删除/dfs/data再初始化)
-<configuration>
+  5.2 修改配置文件 hdfs-site.xml 
+  (最好提前建立/usr/local/hadoop/tmp, 重新初始化时如果失败, 尝试删除/dfs/data再初始化)
+  <configuration>
     <property>
         <name>dfs.replication</name>
         <value>1</value>
@@ -73,14 +87,42 @@ sudo chown -R hadoop:hadoop ./hadoop        # 修改文件权限
         <name>dfs.datanode.data.dir</name>
         <value>file:/usr/local/hadoop/tmp/dfs/data</value>
     </property>
-</configuration>
+  </configuration>
+                                                                                     |
+  关于Hadoop配置项的一点说明
+  虽然只需要配置 fs.defaultFS 和 dfs.replication 就可以运行（官方教程如此），不过若没|
+  有配置 hadoop.tmp.dir 参数，则默认使用的临时目录为 /tmp/hadoo-hadoop，而这个目录在 |
+  重启时有可能被系统清理掉，导致必须重新执行 format 才行。所以我们进行了设置，同时也 |
+  指定 dfs.namenode.name.dir 和 dfs.datanode.data.dir，否则在接下来的步骤中可能会出错。
 
-6 启动 Hadoop:
-cd /usr/local/hadoop
-bin/hdfs namenode -format       # namenode 格式化
-sbin/start-dfs.sh               # 开启守护进程
-jps                             # 判断是否启动成功
-                                # 若成功启动, jps会列出如下进程: NameNode、DataNode和SecondaryNameNode。
+ 6 格式化namenode
+  bin/hdfs namenode -format       # namenode format                                  |
+  成功的话，会看到 “successfully formatted” 和 “Exitting with status 0” 的提示，若为 |
+  “Exitting with status 1” 则是出错。
+  在这一步时若提示 Error: JAVA_HOME is not set and could not be found. 的错误，则需要|
+  在文件 ./etc/hadoop/hadoop-env.sh 中设置 JAVA_HOME 变量，即在该文件中找到：
+  export JAVA_HOME=${JAVA_HOME}
+  将这一行改为JAVA安装位置：
+  export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+  再重新尝试格式化即可。
+  
+ 7 开启 NameNode 和 DataNode 守护进程
+  ./sbin/start-dfs.sh
+  若出现如下SSH提示，输入yes即可。
+  启动完成后，可以通过命令 jps 来判断是否成功启动，若成功启动则会列出如下进程:        |
+  “NameNode”、”DataNode” 和 “SecondaryNameNode”（如果 SecondaryNameNode 没有启动，请运|
+  行 sbin/stop-dfs.sh 关闭进程，然后再次尝试启动尝试）。如果没有 NameNode 或 DataNode |
+  ，那就是配置不成功，请仔细检查之前步骤，或通过查看启动日志排查原因。
+
+  一般情况下，若是 DataNode 没有启动，可尝试如下的方法（注意这会删除 HDFS 中原有的所有|
+  数据，如果原有的数据很重要请不要这样做）：
+  
+  ./sbin/stop-dfs.sh   # 关闭
+  rm -r ./tmp 删除 tmp 文件，注意这会删除 HDFS 中原有的所有数据
+  ./bin/hdfs namenode -format 重新格式化 NameNode
+  ./sbin/start-dfs.sh  # 重启
+  
+  jps # 若成功启动, jps会列出如下进程: NameNode、DataNode和SecondaryNameNode。
 
 7 运行 WordCount 实例:
 bin/hdfs dfs -mkdir -p /user/hadoop       # 创建HDFS目录

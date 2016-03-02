@@ -1,48 +1,5 @@
 /*-----------------------------------------------------------------------------------
- two packages: The PackageTest class belongs to the default package, and the Employee 
- class belongs to the com.horstmann.corejava package. Therefore, the Employee.java f-
- ile must be in a subdirectory com/horstmann/corejava.
-     .(base directory)
-     |-- PackageTest.java
-     |-- PackageTest.class
-     |-- com/
-         |-- horstmann/
-             |-- corejava/
-                 |-- Employee.java
-                 |-- Employee.class
- To compile this program, simply change to the base directory and run the command
-     javac PackageTest.java
- The compiler automatically finds the file com/horstmann/corejava/Employee.java and -
- compiles it.
-
-     Let's look at a more realistic example, in which we don't use the default packa-
- ge but have classes distributed over several packages (com.horstmann.corejava and  -
- com.mycompany)
-     .(base directory)
-     |-- com/
-         |-- horstmann/
-         |   |-- corejava/
-         |   |   |-- Employee.java
-         |   |   |-- Employee.class 
-         |-- mycompany/
-             |-- PayrollApp.java
-             |-- PayrollApp.class
- In this situation, you still must compile and run classes from the base directory, -
- that is, the directory containing the com directory:
-     javac com/mycompany/PayrollApp.java
-     java com.mycompany.PayrollApp
-
- ----> Caution 
- The compiler does not check the directory structure when it compiles source files. -
- For example, suppose you have a source file that starts with the directive 
-     package com.mycompany; 
- You can compile the file even if it is not contained in a subdirectory com/mycompany. 
- The source file will compile without errors if it doesn't depend on other  packages. 
- However, the resulting program will not run . The virtual machine won't find the re-
- sulting classes when you try to run the program.
-
- classes are stored in subdirectories of the file system. The path to  the class must 
- match the package name.
+ 
  ----------------------------------------------------------------------------------*/
 import com.horstmann.corejava.*; // the Employee class is defined in that package
 import static java.lang.System.*;

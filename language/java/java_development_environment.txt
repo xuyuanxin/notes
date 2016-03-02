@@ -1,4 +1,6 @@
 http://www.oracle.com/technetwork/java/javase/downloads/index.html  
+http://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html  安装
+
 ----> linux
 a) chmod 755 jdk-7u4-linux-xxx.rpm
 b) rpm   -i  jdk-7u4-linux-xxx.rpm
@@ -9,70 +11,78 @@ CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
 PATH=$JAVA_HOME/bin:$PATH
 export JAVA_HOME,PATH,CLASSPATH 
     
-----linux
-Download File and Instructions    Architecture              Who Can Install
-jdk-8uversion-linux-x64.tar.gz    64-bit                    anyone
-jdk-8uversion-linux-i586.tar.gz   32-bit                    anyone
-jdk-8uversion-linux-x64.rpm       64-bit RPM-based Linux    root
-jdk-8uversion-linux-i586.rpm      32-bit RPM-based Linux    root
+--> linux JDK 8 Installation Instructions
+ -->--> Installation Instructions Notation and Files
+  For instructions containing the notation version, substitute the appropriate JDK u-
+  pdate version number. For example, if you are installing update JDK 8 update relea-
+  se 2, the following string representing the name of the bundle:
+  jdk-8uversion-linux-i586.tar.gz
+  becomes:
+  jdk-8u2-linux-i586.tar.gz
 
-Installation can be performed using either of the following:
-1 Installation of Oracle Linux JDK using archive binaries (.tar.gz) allows you to in-
+  Note that, as in the preceding example, the version number is sometimes preceded w-
+  ith the letter u, for example, 8u2, and sometimes it is preceded with an  underbar, 
+  for example, jdk1.8.0_02.
+  
+  Download File and Instructions    Architecture              Who Can Install
+  jdk-8uversion-linux-x64.tar.gz    64-bit                    anyone
+  jdk-8uversion-linux-i586.tar.gz   32-bit                    anyone
+  jdk-8uversion-linux-x64.rpm       64-bit RPM-based Linux    root
+  jdk-8uversion-linux-i586.rpm      32-bit RPM-based Linux    root
+
+  Installation can be performed using either of the following:
+  1 Installation of Oracle Linux JDK using archive binaries (.tar.gz) allows you to in-
   stall a private version of the JDK for the current user into any location,  without 
   affecting other JDK installations. However, it may involve manual steps to get some 
   of the features to work (for example, the -version:release option of the java comm-
   and, which allows you to specify the release to be used to run the specified class, 
   requires the correct path to the JDK release under /usr/jdk).
-2 Installation of Oracle Linux JDK using RPM packages allows you to perform a system-
+  2 Installation of Oracle Linux JDK using RPM packages allows you to perform a system-
   wide installation of the JDK for all users, and requires root access. RPM-based Li-
   nux platforms are based on Red Hat and SuSE.
 
-Note:
+  Note:
     When you download and install the Java Development Kit (JDK), the associated Jav-
 	a Runtime Environment (JRE) is also installed.
 
-----> Installation of the 64-bit JDK on Linux Platforms
-This procedure installs the Java Development Kit (JDK) for 64-bit Linux, using an ar-
-chive binary file (.tar.gz). These instructions use the following file:
-jdk-8uversion-linux-x64.tar.gz
-1 Download the file.
+ --> Installation of the 64-bit JDK on Linux Platforms
+  This procedure installs the Java Development Kit (JDK) for 64-bit Linux, using an -
+  archive binary file (.tar.gz). These instructions use the following file:
+  jdk-8uversion-linux-x64.tar.gz
+  
+  1 Download the file.
   Before the file can be downloaded, you must accept the license agreement. The arch-
   ive binary can be installed by anyone (not only root users), in any location that -
   you can write to. However, only the root user can install the JDK into the system -
   location.
-2 Change directory to the location where you would like the JDK to be installed, the-
-  n move the .tar.gz archive binary to the current directory.
-3 Unpack the tarball and install the JDK.
+  
+  2 Change directory to the location where you would like the JDK to be installed, t-
+  hen move the .tar.gz archive binary to the current directory.
+
+  3 Unpack the tarball and install the JDK.
   % tar zxvf jdk-8uversion-linux-x64.tar.gz
   The Java Development Kit files are installed in a directory called jdk1.8.0_version 
   in the current directory.
-4 Delete the .tar.gz file if you want to save disk space.
+ 
+  4 Delete the .tar.gz file if you want to save disk space.
 
-----> Installation of the 64-bit JDK on RPM-based Linux Platforms
-This procedure installs the Java Development Kit (JDK) for 64-bit RPM-based Linux pl-
-atforms, such as Red Hat and SuSE, using an RPM binary file (.rpm) in the system loc-
-ation. You must be root to perform this installation. These instructions use the fol-
-lowing file:
-jdk-8uversion-linux-x64.rpm
-1 Download the file. 
+ --> Installation of the 64-bit JDK on RPM-based Linux Platforms
+  This procedure installs the Java Development Kit (JDK) for 64-bit RPM-based Linux -
+  platforms, such as Red Hat and SuSE, using an RPM binary file (.rpm) in the  system 
+  location. You must be root to perform this installation. These instructions use the 
+  following file:
+  jdk-8uversion-linux-x64.rpm
+  1 Download the file. 
   Before the file can be downloaded, you must accept the license agreement.
-2 Become root by running su and entering the super-user password.
-3 Uninstall any earlier installations of the JDK packages.
+  2 Become root by running su and entering the super-user password.
+  3 Uninstall any earlier installations of the JDK packages.
   # rpm -e package_name
-4 Install the package.
+  4 Install the package.
   # rpm -ivh jdk-8uversion-linux-x64.rpm
   To upgrade a package:
   # rpm -Uvh jdk-8uversion-linux-x64.rpm
-5 Delete the .rpm file if you want to save disk space.
-6 Exit the root shell. No need to reboot.
-
-Starting with version 8u40, the JDK installation is integrated with the alternatives framework and after installation, the alternatives framework is updated to reflect the binaries from the recently installed JDK. Java commands such as java, javac, javadoc, and javap can be invoked from the command line.
-
-Using the java -version command, users can confirm the default (recently installed) JDK version.
-
-In addition, users can now check which specific RPM package provides the java files:
-
-rpm -q --whatprovides java	
+  5 Delete the .rpm file if you want to save disk space.
+  6 Exit the root shell. No need to reboot.
 	
 ----> windows
 1 下载安装jdk
