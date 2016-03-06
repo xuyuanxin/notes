@@ -5,12 +5,23 @@
  existing class. The existing class is called the superclass, base class, or parent -
  class. The new class is called the subclass, derived class, or child class. The ter-
  ms superclass and subclass are those most commonly used by Java programmers.
- +----
- |class Manager extends Employee
- |{
- |  added methods and fields
- |}
- +----
+ 
+ class Manager extends Employee
+ {
+   added methods and fields
+ }
+ 
+ Our Manager class has a new field to store the bonus, and a new method to set it:
+ 
+ public class Manager extends Employee
+ {
+     private double bonus;
+     . . .
+     public void setBonus(double bonus)
+     {
+         this.bonus = bonus;
+     }
+ }
  
  you can use methods such as getName and getHireDay with Manager objects. Even though 
  these methods are not explicitly defined in the Manager class, they are automatical-
@@ -22,7 +33,7 @@
  a subclass can add fields, and it can add methods or override the methods of the su-
  perclass. However, inheritance can never take away any fields or methods.
  
----->  override super
+-->  override super
  However, some of the superclass methods are not appropriate for the Manager subclass. 
  In particular, the getSalary method should return the sum of the base salary and the 
  bonus. You need to supply a new method to override the superclass method:
@@ -71,13 +82,14 @@
  er constructor. The constructor parameters are either passed  to another constructor 
  of the same class (this) or a constructor of the superclass (super). 
  
-----> constructor
+--> constructor
 
      public Manager(String n, double s, int year, int month, int day)
      {
          super(n, s, year, month, day);
          bonus = 0;
      }
+	 
  Here, the keyword super has a different meaning. The instruction
      super(n, s, year, month, day);
  is shorthand for "call the constructor of the Employee superclass with n, s, year, -
@@ -94,7 +106,9 @@
  ve a no-argument constructor and the subclass constructor does not call another sup-
  erclass constructor explicitly, the Java compiler reports an error. 
 
-----> polymorphism, dynamic binding
+--> Inheritance Hierarchies
+ 
+--> polymorphism, dynamic binding
  We make a new manager and set the manager's bonus:
      Manager boss = new Manager("Carl Cracker", 80000, 1987, 12, 15);
      boss.setBonus(5000);
@@ -130,21 +144,27 @@
  the Employee class. 
 
  For example, you can assign a subclass object to a superclass variable. 
+ 
      Employee e;
      e = new Employee(. . .);  // Employee object expected
      e = new Manager(. . .); // OK, Manager can be used as well
+	 
  In the Java programming language, object variables are polymorphic. A variable of t-
  ype Employee can refer to an object of type Employee or to an object of any subclass 
  of the Employee class (such as Manager, Executive, Secretary, and so on).
+ 
+ 
      Manager boss = new Manager(. . .);
      Employee[] staff = new Employee[3];
      staff[0] = boss;
- In this case, the variables staff[0] and boss refer to the same object. However, 
+	 
+ In this case, the variables staff[0] and boss refer to the same object. However,   -
  staff[0] is considered to be only an Employee object by the compiler. That means yo-
  u can call
      boss.setBonus(5000); // OK
  but you can't call
      staff[0].setBonus(5000); // ERROR
+	 
  The declared type of staff[0] is Employee, and the setBonus method is not a method -
  of the Employee class. However, you cannot assign a superclass reference to a subcl-
  ass variable. For example, it is not legal to make the assignment
@@ -175,4 +195,4 @@
  
  
  
- 
+--> 

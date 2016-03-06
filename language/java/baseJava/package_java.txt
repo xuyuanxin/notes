@@ -137,6 +137,7 @@
 
 
 ----> The Class Path
+ classes are stored in subdirectories of the file system.
  Class files can also be stored in a JAR (Java archive) file. A JAR file contains mu-
  ltiple class files and subdirectories in a compressed format, saving space and impr-
  oving performance. When you use a third-party library in your programs, you will us-
@@ -158,9 +159,7 @@
      /home/user/classdir:.:/home/user/archives/archive.jar
  In Windows, they are separated by semicolons:
      c:\classdir;.;c:\archives\archive.jar
- In both cases, the period denotes the current directory.
- 
- This class path contains
+ In both cases, the period denotes the current directory. This class path contains
  1 The base directory /home/user/classdir or c:\classdir;
  2 The current directory (.); and
  3 The JAR file /home/user/archives/archive.jar or c:\archives\archive.jar.
@@ -224,8 +223,7 @@
      java -classpath /home/user/classdir:.:/home/user/archives/archive.jar MyProg
  or
      java -classpath c:\classdir;.;c:\archives\archive.jar MyProg
- The entire command must be typed onto a single line. It is a good idea to place such
- a long command line into a shell script or a batch file.
+
  Using the -classpath option is the preferred approach for setting the class path. An
  alternate approach is the CLASSPATH environment variable. The details depend on your
  shell. With the Bourne Again shell (bash), use the command
