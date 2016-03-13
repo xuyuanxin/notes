@@ -138,7 +138,7 @@
  1 Java does not support multiple inheritance.
  2 every manager is an employee. not every employee is a manager.
 
-----> you can use a subclass object whenever the program expects a superclass object. 
+--> you can use a subclass object whenever the program expects a superclass object. 
  every object of the subclass is an object of the superclass. For example, every man-
  ager is an employee. Thus, it makes sense for the Manager class to be a subclass  of 
  the Employee class. 
@@ -192,7 +192,83 @@
  it is an array of managers. Attempting to store an Employee reference causes an    -
  ArrayStore Exception.
  
+--> final
+ Classes that cannot be extended are called final classes, and you use the @final mo-
+ difier in the definition of the class to indicate this. For example, suppose we want 
+ to prevent others from subclassing the Executive class. Simply declare the class us-
+ ing the final modifier, as follows:
  
+ public final class Executive extends Manager
+ {
+     . . .
+ } 
  
+ Recall that fields can also be declared as final. A final field cannot be changed a-
+ fter the object has been constructed. However, if a class is declared final, only t-
+ he methods, not the fields, are automatically final.
  
+--> abstract
+ If you use the @abstract keyword, you do not need to implement the method at all.
+ 
+ public abstract String getDescription(); // no implementation required
+ 
+ For added clarity, a class with one or more abstract methods must itself be declared
+ abstract.
+
+ public abstract class Person
+ {
+     . . .
+     public abstract String getDescription();
+ }
+
+ In addition to abstract methods, abstract classes can have fields and concrete meth-
+ ods. A class can even be declared as abstract though it has no abstract methods.
+ 
+ Abstract methods act as placeholders for methods that are implemented in the subcla-
+ sses. When you extend an abstract class, you have two choices. You can leave some or 
+ all of the abstract methods undefined; then you must tag the subclass as abstract as 
+ well. Or you can define all methods, and the subclass is no longer abstract.
+ 
+ Abstract classes cannot be instantiated. Note that you can still create object vari-
+ ables of an abstract class, but such a variable must refer to an object of a nonabs-
+ tract subclass. For example:
+ 
+ Person p = new Student("Vince Vu", "Economics");
+
+--> protected
+  Any features declared private won’t be visible to other classes. 
+  A subclass cannot access the private fields of its superclass.
+  
+  There are times, however, when you want to restrict a method to subclasses only or, 
+  less commonly, to allow subclass methods to access a superclass field. In that cas-
+  e, you declare a class feature as protected. 
+  
+  Here is a summary of the four access modifiers in Java that control visibility:
+  1. Visible to the class only (private).
+  2. Visible to the world (public).
+  3. Visible to the package and all subclasses (protected).
+  4. Visible to the package—the (unfortunate) default. No modifiers are needed
+
+
+
 --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
