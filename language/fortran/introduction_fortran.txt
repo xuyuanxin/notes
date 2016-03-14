@@ -4,17 +4,59 @@ Fortran源自于"公式翻译”(英语: Formula Translation)的缩写, 是一�
 功能在数值, 科学和工程计算领域发挥着重要作用. Fortran 90之前的版本是人们所知晓的     |
 FORTRAN(全部字母大写), 从Fortran 90以及以后的版本都写成Fortran(仅有第一个字母大写).  |
                                                                                      |
----->编译器                                                                          |
---------> Linux操作系统下:                                                           |
-PGI Fortran                                                                          |
-Intel Fortran  英特尔公司的开发的Linux平台Fortran编译器.                             |
-G77            GNU的Fortran77编译器, 集成在GCC中.                                    |
-GFORTRAN       GNU的最新的Fortran编译器, 集成在GCC 4.0中, 目的是支持Fortran 95和一部 |
-               分Fortran 2003的功能, 以替代G77.                                      |
-G95            跟GFortran同为开放源代码的Fortran95编译器.                            |
+-->编译器                                                                            |
+ -->--> gfortran (linux)
+  the GNU Fortran compiler, part of GCC. Gfortran is the name of the GNU Fortran pro-
+  ject, developing a free Fortran 95/2003/2008 compiler for GCC, the GNU Compiler Co-
+  llection. The gfortran development effort uses an open development environment in -
+  order to attract a larger team of developers and to ensure that gfortran can work -
+  on multiple architectures and diverse environments.
+  
+ -->--> PGI Fortran (linux)
+ 
+ -->--> Intel Fortran (linux)
+  英特尔公司的开发的Linux平台Fortran编译器.                             
+  
+ -->--> G77 (linux)          
+  GNU的Fortran77编译器, 集成在GCC中.                                    
 
-----> 几个著名的Fortran程序包: 
-IMSL     国际数学和统计链接库
-BLAS     Basic Linear Algebra Subroutines
-LAPACK   Linear Algebra PACKage
+ -->--> G95 (linux)            
+  跟GFortran同为开放源代码的Fortran95编译器.                            
 
+--> 几个著名的Fortran程序包: 
+ IMSL     国际数学和统计链接库
+ BLAS     Basic Linear Algebra Subroutines
+ LAPACK   Linear Algebra PACKage
+
+--> Fortran语言的发展概况
+ http://micro.ustc.edu.cn/Fortran/ZJDing/
+ 本节介绍Fortran的起源与发展历史，讲述Fortran由产生到形成标准FortranIV、Fortran77，并进一步形成新标准Fortran90/95的发展历程。
+ -->--> Fortran的历史
+
+a)    FortranIªFortranIV
+
+Fortran是目前国际上广泛流行的一种高级语言，适用于科学计算。Fortran是英文FORmula TRANslation的缩写，意为“公式翻译”。它是为科学、工程问题中的那些能够用数学公式表达的问题而设计的语言，主要用于数值计算。这种语言简单易学，因为可以像抄写数学教科书里的公式一样书写数学公式，它比英文书写的自然语言更接近数学语言。Fortran语言是第一个真正推广的高级语言。至今它已有四十多年历史，但仍历久不衰，始终是数值计算领域所使用的主要语言。Fortran语言问世以来，根据需要几经发展，先后推出形成了很多版本。
+第一代Fortran语言是在1954年提出来的，称为FortranI。它于1956年在IBM 704计算机上得以实现。在此之前编写计算机程序是极为繁琐的，程序员需要详细了解为之编写代码的计算机的指令、寄存器和中央处理器(CPU)等方面的知识。源程序本身是用数学符号(八进制码)编写的，后来采用了助记符，即所谓机器码或汇编码，这些编码由汇编程序转换为指令字。在50年代书写和调试一个程序要很长时间，因为用这种方式编写程序显然是很不方便的，尽管它能使CPU高效地工作。正是这些原因，促使由John Backus率领的IBM公司的一个小组研究开发最早的高级程序设计语言Fortran。其目的是开发一种容易理解、简单易学又能几乎像汇编一样高效运行的语言，他们取得了极大的成功。Fortran语言作为第一种高级语言不仅是一次创新，也是一次革命。它使程序员摆脱了使用汇编语言的冗长乏味的负担，而且它使得不再只是计算机专家才能编写计算机程序，任何一名科学家或工程技术人员，只要稍加努力学习和使用Fortran，就能按自己的意图编写出用于科学计算的程序。
+经过不断发展，FortranI形成了很多不同版本，其中最为流行的是1958年出现的FortranII，它对FortranI进行了很多扩充(如引进了子程序)，FortranII在很多机器上得以实现。其后出现的FortranIII未在任何计算机上实现。1962年出现的FortranIV对原来的Fortran作了一些改变，使得FortranII源程序在FortranIV编译程序下不能全部直接使用，导致了语言不兼容的问题。这样就形成了当时同时使用FortranII和FortranIV两种程序设计语言的局面。
+正因为Fortran满足了现实的需要，所以它传播得很快，在传播和使用过程中不可避免地产生了多种版本。各种Fortran语言的语义和语法的规定又不完全一致，这给用户带来了极大的不便。用户迫切希望有能在各种机型上能互换通用的Fortran语言。因此Fortran语言的标准化工作变得十分迫切。1962年5月，当时的美国标准化协会ASA(American Standard Association)(后来改名为ANSI—American National Standards Institute，现名为NIST—National Institute of Standards and Technology)成立了工作组开展此项工作，1966年正式公布了两个美国标准文本：标准基本Fortran X3.10-1966(相当于FortranII)和标准Fortran X3.9-1966(相当于FortranIV)。
+由于Fortran语言在国际上的广泛使用，1972年国际标准化组织(International Standard Organization、简称ISO)公布了ISO Fortran标准，即《程序设计语言FortranISO 1539-1972》，它分为三级，一级Fortran相当于FortranIV，二级Fortran介于FortranII和FortranIV之间，三级Fortran相当于FortranII。
+FortranIV(即Fortran66)流行了十几年，几乎统治了所有的数值计算领域。许多应用程序和程序库都是用FortranIV编写的。但很多编译程序并不向这一标准靠拢，它们往往为实现一些有用的功能而忽略标准；另外，在结构化程序设计方法提出以后，人们开始感到FortranIV已不能满足要求。FortranIV不是结构化的语言，没有直接实现三种基本结构的语句，在程序中往往需要用一些以GOTO语句以实现特定的算法；而且为了使非标准的Fortran源程序能够交换移植，产生了“预处理程序”，通过预处理程序读入非标准的Fortran源程序，生成标准的Fortran文本，从而实现了源程序的交换移植，但这种自动生成的Fortran程序通常让人难以理解。
+b)    Fortran77ªFortran90
+
+美国标准化协会在1976年对ANSI X3.9-1966 Fortran进行了修订，基本上把各厂家行之有效的功能都吸收了进去，此外又增加了不少新的内容，1978年4月美国标准化协会正式公布将它作为美国国家标准，即ANSI X3.9-1978 Fortran，称作Fortran77。1980年，Fortran77被接受为国际标准，即《程序设计语言FortranISO 1539-1980》，这种新标准并不是各非标准Fortran的公共子集，而是自成一体的新语言。我国制订的Fortran标准，基本采用了国际标准(即Fortran77)，于1983年5月公布执行，标准号为GB3057-82。Fortran77还不是完全结构化的语言，但由于增加了一些结构化的语句，使Fortran77能用于编写结构化程序。此外，还扩充了字符处理功能。使Fortran不仅可用于数值计算领域．还可以适用于非数值运算领域。
+因为Fortran77有着明显的局限性，为了引入一些新的功能，适应语言的发展，ANSI在80年代初期开始准备制定Fortran8x标准。当初为了与前一标准相对应，设想是x=8。由于要将Fortran77作为一个子集，同时又要确保程序的高效率，其标准化的工作花了十几年，最终在1991年通过了Fortran90新标准ANSI X3.198-1991，相应的国际化标准组织的编号为ISO/IEC1539:1991。新的Fortran标准废弃了过时的严格的源程序书写格式，改善了语言的正规性，并提高了程序的安全性，功能有更大的扩充，是一个能适应现代程序设计思想的现代程序设计语言。为了保护对Fortran77用户在软件开发上的巨大投资，整个Fortran77被作为Fortran90的一个严格子集。
+1.1.2 Fortran的新发展
+
+随着其他程序设计语言的迅速发展，Fortran语言不再是惟一适用的程序设计语言。然而，尽管在一些特殊领域，使用其他程序语言更为合适，但在数值计算、科学和工程技术领域，Fortran仍具有强大的优势。其强大的生命力在于它能紧跟时代的发展，不断更新标准，每次新的文本推出都在功能上有一次突破性进展。Fortran90不仅仅是将已有的语言进行标准化，更重要的是发展了Fortran语言，吸取了一些其他语言的优点。所以，虽然Fortran语言历史悠久，但仍在日新月异地发展。
+随着巨型计算机(向量机和并行机)的异军突起，出现了新的高性能Fortran语言(HPF)，它是Fortran90的一个扩展子集，主要用于分布式内存计算机上的编程，以减轻用户编写消息传递程序的负担。HPF-1.0的语言定义是在1992年的超级计算国际会议上作出的，正式文本是在1993年公布的。其后几年的会议上又对它进行了修改、重定义、注释等工作，于1997年发布了HPF2.0语言定义。Fortran95包含了许多HPF的新功能。在Fortran90出现之前，在并行机上运行程序需要结合专门的矢量化子程序库，或者是依赖Fortran编译系统进行自动矢量化。而Fortran90之后，程序员在编程时可有目的的控制并行化。
+在当前程序设计语言层出不穷的今天，学习Fortran语言的意义在于继承传统和紧跟时代。不仅一些爱好者推崇Fortran语言[A Real Programmer] ，而且科学计算编程的专家也认为，科学与工程相关专业的学生应该采用Fortran而非C和C++编程［F90 for Science Student］。这是因为，Fortran90具有C++所有的重要功能（尚不具备的预计将在Fortran2k版本中推出），然而C语言主要是用于微机上的廉价开发，而Fortran的目的是为了产生高效最优化运行的可执行程序，用Fortran编写的大型科学计算软件较C语言编写的通常要快一个量级，其程序编写更为自然和高效，且易学易懂。尤其是在高性能并行计算逐渐成为时代必然的今天，不仅巨型机而且微机和工作站也有了多处理器，其串行机上的线性内存模式已不再适用，而只有Fortran具备处理相应问题的标准并行化语言，其独特的数组操作充分体现了它的先进性。Fortran90和C++语言的比较可参看: http://csep1.phy.ornl.gov/csep.html。
+a)    Fortran77 ?
+
+既然已经有了Fortran90，那么是否就不用学习Fortran77了？事实上，由于很多用户在Fortran程序上作了巨大的投资，许多大型科学计算Fortran程序(有些长达数十万条语句)，如分子动力学模拟计算(C60-C240的碰撞：10eV，100eV，300eV)等程序仍在频繁地使用。在科技领域内某些标准程序库（International Mathematics and Statics Library, Numerical Algorithms Group）内有数千以上的子程序是用Fortran写的，特别是早期的程序都是用Fortran77编写的，这些程序库已通过长期使用验证了稳定性。科学研究经常需要使用或改编以前的程序，这时必须了解Fortran77的编程手法。
+因此，本教程仍然将Fortran77作为基础，但随时与Fortran90比较不同之处。
+b)    Fortran90 !
+
+Fortran90并没有删去任何Fortran77的功能，而只是将某些功能看成是将要摒弃的。在Fortran95中则是已被删去的，但考虑到历史，厂家推出的Fortran90/95编译软件仍是支持这些功能的。在新编的程序中，应尽量避免使用过时的F77语句或功能。目前已有一些软件可将这些功能除去并自动转换成并行化的程序。Fortran90/95是具有强烈现代特色的语言，总结了现代软件的要求与算法应用的发展，增加了许多现代特征的新概念、新功能、新结构、新形式。Fortran90的现代特性表现在：
+加强了程序的可读性、可维护性：淘汰所有转移语句，用新的控制结构实现选择分叉与重复操作，使程序结构化。同时增加了结构块、模块及过程的调用灵活形式，使程序易读易维护，新的模块装配取代了Fortran77的许多旧语句，使程序员更为清晰明确地定义全局数据。增加了新的数据种别说明，使得Fortran程序在不同计算机编译环境下有更自由的移植性。
+发展了现代算法功能：加强了数组的算法功能，引进了多种数组操作功能与概念，使数组像一个变量一样自由操作，使数组的并行化运算成为可能。增加了适于操作数据结构的派生类型，提高了文字处理功能，胜任信息管理系统、办公自动化的任务。特别是动态存储功能的引进极大地加强了它在数值计算领域中应用的威力。
+扩大与编程者的友好界面：新的编程形式减少了烦琐与格式束缚，接近自然语言与公式演算。允许在字符数据中选取不同种别，在字符串中可使用各国文字（例如汉字），还可任意使用化学、物理、数学的各种专业字符。

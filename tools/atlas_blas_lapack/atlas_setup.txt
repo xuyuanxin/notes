@@ -9,27 +9,27 @@ http://blog.sina.com.cn/s/blog_4c4668bb01013gsv.html   安装ALTAS,LAPACK, SCALAPA
 
 -------------------------------------------------------------------------------------+
 ----> blas (Fortran)                                                                 |
-BLAS, 全称Basic Linear Algebra Subprograms, 即基础线性代数子程序库, 里面拥有大量已经 |
-编写好的关于线性代数运算的程序. BLAS的源码可以从 http://www.netlib.org/blas/ 下载, 但|
-实际上LAPACK中已经包含了BLAS.                                                        |
---------> install                                                                    |
-0 依赖                                                                               |
-  需要gfortran编译器, 不依赖其它库                                                   |
-1 解压
-  tar -xvzf blas.tgz
-2 cd BLAS
-3 修改 make.inc 中的编译选项:
-  PLAT = _LINUX
-  FORTRAN  = gfortran
-  OPTS     = -O2 -m64 -fPIC
-  NOOPT    = -O0 -m64 -fPIC
-  LOADER   = gfortran
-4 编译BLAS
-  make       # 编译完成后, 会生成blas_LINUX.a文件
-5 拷贝
-  mv blas_LINUX.a /usr/lib64/libblas.a
+ BLAS, 全称Basic Linear Algebra Subprograms, 即基础线性代数子程序库, 里面拥有大量已经|
+ 编写好的关于线性代数运算的程序. BLAS的源码可以从 http://www.netlib.org/blas/ 下载, 但|
+ 实际上LAPACK中已经包含了BLAS.                                                        |
+ -->--> install                                                                    
+  0 依赖                                                                               
+    需要gfortran编译器, 不依赖其它库                                                   
+  1 解压
+    tar -xvzf blas.tgz
+  2 cd BLAS
+  3 修改 make.inc 中的编译选项:
+    PLAT = _LINUX
+    FORTRAN  = gfortran
+    OPTS     = -O2 -m64 -fPIC
+    NOOPT    = -O0 -m64 -fPIC
+    LOADER   = gfortran
+  4 编译BLAS
+    make       # 编译完成后, 会生成blas_LINUX.a文件
+  5 拷贝
+    mv blas_LINUX.a /usr/lib64/libblas.a
   
-blas-3.1.1-64.33.x86_64.rpm
+  blas-3.1.1-64.33.x86_64.rpm
 -------------------------------------------------------------------------------------+
 ----> Lapack                                                                         |
 LAPACK, 其名为Linear Algebra PACKage的缩写, 是一以Fortran编程语言写就, 用于数值计算的|
