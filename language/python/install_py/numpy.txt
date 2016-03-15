@@ -1,8 +1,11 @@
 --> install
- 依赖：python(with zlib) 
+ 依赖：python(with zlib), 未发现其他依赖(ubuntu)
  
  -->--> src
-  
+  tar -zxvf xxx.tar.gz
+  python setup.py build
+   编译前会检查是否有blas lapack库，如果没有也不影响编译，不确定是否影响使用。
+  python setup.py install
 
  -->--> 方法2
   1 把whl文件拷贝到 C:\Python27\Scripts
@@ -16,26 +19,110 @@
   numpy-1.8.1-win32-superpack-python2.7.exe
   exe文件, 双击安装即可.
 
-----> 资源
-http://www.lfd.uci.edu/~gohlke/pythonlibs/        下载.whl文件
-http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy  
-http://sourceforge.net/projects/numpy/files/NumPy/1.8.1/   下载.exe文件
+--> 资源
+ http://www.lfd.uci.edu/~gohlke/pythonlibs/        下载.whl文件
+ http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy  
+ http://sourceforge.net/projects/numpy/files/NumPy/1.8.1/   下载.exe文件
 
-----> 安装问题
-http://stackoverflow.com/questions/11200137/installing-numpy-on-64bit-windows-7-with-python-2-7-3
-http://www.goldencui.org/2014/10/02/windows64%E4%BD%8D%E7%8E%AF%E5%A2%83%E4%B8%8Bpython%E5%AE%89%E8%A3%85numpy%E3%80%81scipy%E5%92%8Cmatplotlib/   windows64位环境下python安装numpy、scipy和matplotlib
-
-
+--> 安装问题
+ http://stackoverflow.com/questions/11200137/installing-numpy-on-64bit-windows-7-with-python-2-7-3
+ http://www.goldencui.org/2014/10/02/windows64%E4%BD%8D%E7%8E%AF%E5%A2%83%E4%B8%8Bpython%E5%AE%89%E8%A3%85numpy%E3%80%81scipy%E5%92%8Cmatplotlib/   windows64位环境下python安装numpy、scipy和matplotlib
 
 
+ numpy :http://sourceforge.net/projects/numpy/files/NumPy/1.8.1/ 
+ scipy:http://sourceforge.net/projects/scipy/files/
+ matplotlib:matplotlib-1.1.0.win32-py2.7
+ 以上都是exe文件，双击安装即可。
 
 
+--> 如何编译不依赖lapack和atlas库的NumPy包
+ http://blog.csdn.net/slvher/article/details/44833107
 
-numpy :http://sourceforge.net/projects/numpy/files/NumPy/1.8.1/ 
-scipy:http://sourceforge.net/projects/scipy/files/
-matplotlib:matplotlib-1.1.0.win32-py2.7
-以上都是exe文件，双击安装即可。
+ NumPy是科学计算方面的一个Python库，在数据挖掘或机器学习或科学统计等领域经常被用到，官网在这里。
+ 在实际业务中，为发挥NumPy的高性能，在编译NumPy时会依赖一些经过特别优化的第三方科学计算库。对于初次接触NumPy的新手来说，从源码编译安装依赖外部库的NumPy通常不是一个简单的任务。
+ 事实上，NumPy这个Python包本身不需依赖任何第三方库就能完成编译和安装使用，只不过其计算性能会受到影响。
+ 本篇笔记记录的是如何在不依赖外部库的情况下来编译使用NumPy，这样做为了理清NumPy与第三方库的关系（相信很多NumPy初学者会分不清NumPy和几个生僻第三方库的关系，以为没有第三方库就不能编译使用NumPy）。
 
+ 备注1：下面关于NumPy包的安装过程是借助virtualenv在一个隔离的Python环境下实验的，所以，假定我们已经通过"virtualenv numpy-env"命令创建并通过activate操作进入了隔离环境。
+ 备注2：本篇笔记用到的gcc版本是gcc version 3.4.5，很旧的版本，不过依然可以编译最新版的NumPy v1.9.2。
+ 1. 高性能NumPy包通常会依赖LAPACK和ATLAS库
+ lapack和atlas是科学计算领域的两个针对线性代数运算的经过特别优化的非常强大的工具库，关于它们的说明，可以分别查看lapack官网和atlas官网的说明。
+ 经常与这两个库一起出现的还有个BLAS库，其官网在这里。
+ 关于这3个库之间的关系，可以参考StackOverflow的这篇问答贴What is the relation between BLAS, LAPACK and ATLAS。
+
+ 2. 如何不依赖第三方计算库编译NumPy
+ 根据NumPy官方文档Building and installing NumPy在Building from source部分关于Linear Algebra libraries的说明，这两个库对于安装NumPy包来说并不是强制依赖的。
+ 下面就是不依赖lapack和atlas库的情况下，源码编译/安装NumPy包的步骤。
+ 从官网下载NumPy源码（以最新版numpy-1.9.2.tar.gz为例），解压并cd至解压目录后，可以通过下面的方法安装未经优化的NumPy库：
+ [plain] view plain copy 在CODE上查看代码片派生到我的代码片
+ $ export BLAS=None  
+ $ export LAPACK=None  
+ $ export ATLAS=None  
+ $ python setup.py build > bld.log  
+ $ python setup.py install  
+ 编译/安装完成后，可以这样来验证：
+ [python] view plain copy 在CODE上查看代码片派生到我的代码片
+ >>> import numpy  
+ >>> numpy.__version__  
+ '1.9.2'  
+ 复杂点的例子：
+ [python] view plain copy 在CODE上查看代码片派生到我的代码片
+ >>> import numpy as np          
+ >>> from numpy.linalg import *  
+ >>>   
+ >>> a = np.array([[1.0, 2.0], [3.0, 4.0]])  
+ >>> print a  
+ [[ 1.  2.]  
+  [ 3.  4.]]  
+ >>> a.transpose()  
+ array([[ 1.,  3.],  
+        [ 2.,  4.]])  
+ >>> inv(a)  
+ array([[-2. ,  1. ],  
+        [ 1.5, -0.5]])  
+ 可见，不依赖任何第三方计算库的NumPy确实是可以正常使用的。
+ 3. 不依赖第三方计算库对NumPy有何影响
+ 目前为止，虽然确实成功编译并能正常使用NumPy，但仔细查看编译过程输出的bld.log日志文件，可以发现这样一段提示：
+
+ [plain] view plain copy 在CODE上查看代码片派生到我的代码片
+ building extension "numpy.linalg.lapack_lite" sources  
+ creating build/src.linux-x86_64-2.7/numpy/linalg  
+ ### Warning:  Using unoptimized lapack ###  
+   adding 'numpy/linalg/lapack_litemodule.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/python_xerbla.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/zlapack_lite.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/dlapack_lite.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/blas_lite.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/dlamch.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/f2c_lite.c' to sources.  
+ building extension "numpy.linalg._umath_linalg" sources  
+ ### Warning:  Using unoptimized lapack ###  
+   adding 'numpy/linalg/umath_linalg.c.src' to sources.  
+   adding 'numpy/linalg/lapack_lite/python_xerbla.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/zlapack_lite.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/dlapack_lite.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/blas_lite.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/dlamch.c' to sources.  
+   adding 'numpy/linalg/lapack_lite/f2c_lite.c' to sources.  
+ conv_template:> build/src.linux-x86_64-2.7/numpy/linalg/umath_linalg.c  
+ 其中，"Warning:  Using unoptimized lapack"表明编译numpy相关的线性代数库(linalg)时，所依赖的lapack函数库是NumPy源码自带的一份未经优化的实现。
+ 几点说明如下：
+ 1) 查看numpy-1.9.2/numpy/linalg目录下的源码可看到，lapack_litemodule.c文件是NumPy为Python实现的C语言扩展库的“接口”文件，该文件定义了一系列Python与C交互的接口函数。写过Python C扩展的话，应该很容易就能看出来，这里不赘
+ 2) linalg/lapack_lite目录下的几个C文件是NumPy自带的未经优化的线性代数算法的实现文件
+ 3) 安装前将BLAS/LAPACK/ATLAS几个环境变量export为None后，NumPy的setup脚本就不会尝试在其它路径下搜索这几个库的优化版本，此时，编译脚本会用自带的linalg/lapack_lite目录下的未优化实现编译出动态库lapack_lite.so供上层的Python应用程序调用
+ 总之，NumPy是否依赖lapack和atlas库，主要影响的是其性能，其功能不受影响。
+ 另外，在实际开发环境中，用到Numpy的地方通常也会用到SciPy，而SciPy是必须依赖lapack和atlas库的，所以，实际项目中使用的NumPy库通常会依赖lapack和atlas。
+ 而从源码编译依赖lapack和atlas库的numpy库通常需要一些注意事项，下篇笔记将会给出说明。
+ 【参考资料】
+ 1. NumPy官网 
+ 2. LAPACK官网
+ 3. ATLAS官网 
+ 4. BLAS官网 
+ 5. StackOverflow - What is the relation between BLAS, LAPACK and ATLAS  
+ 6. Building and installing NumPy  
+ 7. SciPy.org - Building From Source on Linux 
+
+ ====================== EOF ======================
 
 
 

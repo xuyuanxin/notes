@@ -1,0 +1,263 @@
+--> install                                                                         |
+ 依赖: gfortran blas
+
+ 1 解压
+    tar xvzf lapack-3.4.0.gz 
+ 2 修改编译脚本(参考blas)
+   cp make.inc.example make.inc                                                                  
+ 3 修改makefile文件
+   lib: lapacklib tmglib                     # 提前安装blas, 用这个(默认)
+   #lib: blaslib variants lapacklib tmglib   # 没有安装blas, 用这个. 会自动编译出blas.  
+ 4 编译
+   make # 生成liblapack.a librefblas.a libtmglib.a
+        # 实际安装中发现都要编译blas(无论是否安装过blas, 可能是blas没有安装正确)
+ 5 拷贝 
+   liblapack.a librefblas.a libtmglib.a 三个文件到/usr/lib /usr/local/lib两个文件夹中.
+   64位系统, 拷贝到/usr/lib64
+ 6 编译动态库(如果需要)
+   reference: http://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=908
+
+----> Lapack windows
+http://icl.cs.utk.edu/lapack-for-windows/index.html
+
+--> introduction
+ LAPACK, 其名为Linear Algebra PACKage的缩写, 是一以Fortran编程语言写就, 用于数值计算的|
+ 函式集. LAPACK提供了丰富的工具函式, 可用于诸如解多元线性方程式, 线性系统方程组的最小 |
+ 平方解, 计算特征向量, 用于计算矩阵QR分解的Householder转换, 以及奇异值分解等问题.     |
+ LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.           |
+
+
+ 
+ 
+--> 在fedora 15下从源代码安装numpy与scipy 
+ https://www.douban.com/note/203828349/
+ 准备文件：
+numpy, scipy 最新源码
+netlib-lapack, atlas
+可选：
+UMFPACK, AMD,  UFconfig， CHOLMOD
+
+说明：
+numpy 和 scipy 的最新源码可以用git获得：
+    git clone git://github.com/numpy/numpy.git
+    git clone git://github.com/scipy/scipy.git
+如果在本地已有一份clone，可以用git pull 更新至最新版
+
+安装scipy要求提供BLAS以及LAPACK这两个线性代数函数库，提供了这两个库的常用实现有netlib-blas, netlib-lapack(这两个都是netlib公司的实现版本), atlas(实现了BLAS及部分LAPACK), MKL(intel 的实现版本，对个人非商业用户免费，epd包中的numpy/scipy即是使用该库，麻烦的地方在于需使用inter提供的fortran与C编译器进行编译，虽然对非商业也是免费，但总觉的没gcc/gfortran来得痛快), 以及OS X上的Accelerate/vecLib。scipy官网[1][2]上提供了两种组合的安装教程，即netlib-lapack+netlib-blas和netlib-lapack+atlas。我采用后者，因为atlas要比netlib-blas更快。
+netlib-lapack可以从http://www.netlib.org/lapack/#_previous_release下载最新版本
+而atlas的下载在这里：http://sourceforge.net/projects/math-atlas/files/Stable/
+
+UMFPACK, AMD,  UFconfig， CHOLMOD这几个都是与稀疏矩阵计算相关的函数库，scikits里会用到，不安装对scipy并没有太大影响。
+它们可以在这里获取: http://www.cise.ufl.edu/research/sparse/
+
+假设我们接下来所有的翻云覆雨都将在/home/sexy/src下进行，而我们造成的不良后果都将被放到/home/sexy/local/lib以及/home/sexy/local/include 这两个目录中， 所以请先建好这几个目录(你当然可以有你自己的私密目录，它就像是你逃避他人的避难所:-P)，当前它们的结构如下：
+
+/home/sexy/src:
+     numpy/
+     scipy/
+     atlas3.8.4.tar.bz2
+     lapack-3.4.0.tgz
+     UMFPACK.tar.gz
+     AMD.tar.gz
+     CHOLMOD.tar.gz
+     UFconfig.tar.gz
+
+/home/sexy/local:
+      lib/
+      include/
+
+我所使用的编译器为：
+gcc/gfortran
+version: 4.6.1
+你还可以使用gcc/g77，但最好不要在你的系统里让gfortran和g77共存，不然numpy会很不高兴[6]
+   
+##############################################################################
+1.安装netlib-lapack:
+   cd /home/sexy/src
+   tar xzvf lapack-3.4.0.tgz
+   cd lapack-3.4.0
+   在INSTALL目录里有许多make.inc.xxx的文件，其中xxx代表了一种体系结构，为你的机器朋友挑选一个最合适的copy到lapack目录下:
+   cp INSTALL/make.inc.gfortran make.inc
+   在make.inc 中将下面两行进行修改:
+   OPTS = -O2 -fPIC
+   NOOPT = -O0 -fPIC
+   如果是64位机器：
+   OPTS = -O2 -m64 -fPIC
+   NOOPT = -O0 -m64 -fPIC   
+   这两行是gfortran的编译选项, -O为优化等级，-fPIC用于生成动态链接库, 这里其实可以不加
+   现在我们可以make了
+   cd SRC
+   make
+   make结束后会在lapack目录生成liblapack.a， 这样lapack便安装完成
+
+2.安装"通吃lapack"的atlas：
+   cd /home/sexy/src
+   tar xjvf atlas3.8.4.tar.bz2
+   
+   如果你英文够好，我建议你仔细读一下INSTALL.txt，如果觉得不过隐就再读一下doc/atlas_install.pdf，那里的最后几页作者给了一个详尽的例子。但如果你是个急性子，那请就继续接受本文的挑逗。
+   由于ATLAS库比较娇气，只有cpu不对自身频率进行节流(throttling)的时候它才能编译。那怎么知道cpu当前有没有throttling，又怎么对其进行控制呢？这里就需要cpupowerutils这个工具了，这个工具很强大，可以用查看和设置当前cpu的状态，这里我们主要关注cpu的频率信息。fedora 默认未安装这个工具集，可用yum install cpupowerutils安装。
+  首先 cpupower -c all frequecy-info 查看当前cpu的工作频率，其中-c all代表所有cpu
+  我们主要要关注cpu的frequency governor信息。也许你这个人有点完美主义，对问题的方方面面都想弄清楚，那你一定想知道governor是什么，说白了就是windows下的电源工作模式。Linux下常用的governor有performance(放浪型)，powersave(隐忍型)， ondemand(能屈能伸型），userspace(适应型）等等。据我综合多方面资料分析[3][4]，ondemand和userspace属于throttling一类，而performance, powersave属于非throttling一类，也是我们需要的类型。
+   请看frequency-info中的available governors一项，这里给出了你朋友可以使用的governor。紧接着观察current policy， 如果已是performance或powersave，那么就不用再费力了，否则请用如下命令修改frequency governor:
+   cpupower -c all frequency-set -g performance (在我们搞定ATLAS后，你还可已用同样的命令改  回原来的governor)
+   关于这里要多说几句。首先其实修改governor有更快更直接的方法，那就是扒开你伙伴的外套，在BIOS的某处拨动按钮。但本人比较优雅，再加上遇到服务器的话还得费死劲拆机柜，就采取了比较迂回一点的方式，但你完全可以参考[3]来手动解决:-P。其次，虽说centos和fedora关系比较亲，但在这里却采用了与ubuntu同样的cpufreq-selector程序管理cpu frequency，提供了一个及其不优雅的范例。（centOS 中还有cpufreq-utils可以使用）
+
+  下面，我们开始正式调戏ATLAS:
+   cd ATLAS
+   makedir atlas_build
+   cd atlas_build
+   ../configure -b 32 -Fa alg -fPIC --with-netlib-lapack=/home/sexy/src/lapack-3.4.0/liblapack.a --prefix=/home/sexy/local  (64位请将 -b 32换成 -b 64）
+    make build
+    假如你是个有责任心的男人请执行下面三行：python setup.py build
+    python setup.py install
+    make check
+    make ptcheck（如果你的宝贝儿有多个核的话）
+    make time
+    但如果你喜欢完事就呼呼大睡，这几行也是可以不用的，但你总得有个好点儿的睡姿吧，所以请务必执行下面这几行（它们对有责任心的人也是需要的）：
+    cd lib
+    make shared
+    make ptshared (同样是多核的宝贝儿请执行）
+    cd .. 
+    make install
+    cp lib/*.so /home/sexy/local/lib
+    chmod 0644 /home/sexy/local/lib/*.so
+    好了，我们搞定了ATLAS，这时去你的/home/sexy/local/lib中看一下，如果libatlas.so   libcblas.so liblapack.so libf77blas.so libptcblas.so libptf77blas.so都在，那你可以安心继续了。如果最后两个不在，你也可以抱着试一试的态度往下进行。否则，从头再来一遍或许是最好的方法。
+
+3.安装AMD, UFconfig与UMFPACK(可选)
+   cd /usr/sexy/src
+   tar xzvf AMD.tar.gz
+   tar xzvf UFconfig.tar.gz
+   tar xzvf UMFPACK.tar.gz
+   tar xzvf CHOLMOD.tar.gz
+   由于AMD和UMFPACK的安装都由UFconfig控制，我们先对其作一些修改：
+   cd UFconfig
+   用你最喜欢的编辑器对下面几行进行修改：
+    F77 = gfortran
+    F77FLAGS = $(FFLAGS) -O -fPIC （64位需加 -m64)
+   
+    INSTALL_LIB = /home/sexy/local/lib
+    INSTALL_INCLUDE = /home/sexy/local/include
+   
+    BLAS = -L/usr/lib/gcc/i686-redhat-linux-gnu/4.6.1 -L/home/yang/local/lib -llapack -lf77blas -lcblas -latlas -lgfortran
+    LAPACK = -L/usr/lib/gcc/i686-redhat-linux-gnu/4.6.1 -L/home/yang/local/lib -llapack -lf77blas -lcblas -latlas -lgfortran
+   （用你本机上的gcc库地址替换-L/usr/lib/gcc/i686-redhat-linux-gnu/4.6.1，比如centos下-L/usr/lib/gcc/x86_64-redhat-linux/4.1.2， 如果你是多核请用 -lptf77blas -lptcblas 替换 -lf77blas -lcblas）
+
+    METIS_PATH =
+    METIS =
+
+    CHOLMOD_CONFIG = -DNPARTITION
+
+    CC = gcc
+    CFLAGS = -O3 -fexceptions -fPIC (64位需加 -m64)
+    
+    好了，现在我们可以来make了
+    cd ../UMFPACK
+    make library
+    make install
+    cd ../AMD
+    make library
+    make install
+    cd ../UFconfig
+    cp UFconfig.h /home/sexy/local/include
+
+4.安装numpy
+    cd /home/sexy/src/numpy
+    cp site.cfg.example site.cfg
+    
+    打开site.cfg进行如下修改：
+    [default]
+    library_dirs = /home/sexy/local/lib
+    include_dirs = /home/sexy/local/include
+
+    如果你的/home/sexy/local/lib里有libptf77blas和libptcblas:
+    [blas_opt]
+    libraries = ptf77blas, ptcblas, atlas
+    [lapack_opt]
+    libraries = lapack, ptf77blas, ptcblas, atlas
+    否则：
+    [blas_opt]
+    libraries = f77blas, cblas, atlas
+    [lapack_opt]
+    libraries = lapack, f77blas, cblas, atlas
+
+    如果你乖乖地安装了UMFPACK等包：
+    [amd]
+    amd_libs = amd
+    [umfpack]
+    umfpack_libs = umfpack
+    修改site.cfg时十分需要注意的是一定不要忘了吧[xxx]这一行前面的#去掉，否则，嘿嘿。。
+    
+    修改好的文件就像这样：
+
+
+    然后，我们开始编译numpy
+    python setup.py build
+    python setup.py install
+    
+    一阵疯狂的刷屏后，numpy就安好了，我知道大多数负责的男人都会确认一下是不是真的在我们的宝贝里面留下了点什么有用的玩意儿，所以请：
+    python -c 'import numpy; numpy.test()'
+    如果正常的话应宝贝儿不会承认我们的影响，报诸如"import Error: liblapack.so: cannot open shared object file"这样的错。不要慌，这是因为我们的/home/sexy/local/lib不在系统的动态链接库搜索路径上，所以找不到这些so文件。我们需要做的是设置一个环境变量：
+    LD_LIBRARY_PATH=/home/sexy/loacl/lib
+    export $LD_LIBRARY_PATH
+    最好将以上两句加入你的~/.bashrc里，这样每次打开bash都不用再重新设置。
+    再ldd /path/to/python2.7/site-package/numpy/linalg/lapack_lite.so
+    如果结果显示每个库都有对应的地址，就说明LD_LIBRARY_PATH已生效了。
+    关于动态链接库的搜索顺序，[5]给了一个很好的介绍（甚至还有静动差别的知识！）。
+    现在python -c 'import numpy; numpy.test()' 应该能很好地运行了，欣赏你的工作吧:-)
+    
+    下面是我在fedora下的UnitTest结果：
+
+
+
+5.安装scipy
+    cd /usr/sexy/src/scipy
+    cp site.cfg.example site.cfg
+    用与numpy一样的方法对其进行修改，你甚至可以把numpy的直接cp过来
+    python setup.py build
+    python setup.py install
+    python -c 'import scipy; scipy.test()'
+    
+    这是我在64位CentOS上的test()结果：
+
+
+
+###############################################################################
+参考资料：
+
+[1] http://www.scipy.org/Installing_SciPy/BuildingGeneral#head-9dee2950fc1f565d62baa559c87fb022027b3f11
+[2] http://www.scipy.org/Installing_SciPy/Linux#head-4370855360945afce5b9c65b714a31901fb3b72e
+[3] ATLAS/INSTALL.txt
+[4] http://ubuntuforums.org/showthread.php?t=1662977
+[5] http://www.jz123.cn/text/0333918.html
+[6] http://docs.scipy.org/doc/numpy/user/install.html
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+----> blas (Fortran)                                                                 |
+ BLAS, 全称Basic Linear Algebra Subprograms, 即基础线性代数子程序库, 里面拥有大量已经|
+ 编写好的关于线性代数运算的程序. BLAS的源码可以从 http://www.netlib.org/blas/ 下载, 但|
+ 实际上LAPACK中已经包含了BLAS.                                                        |
+ -->--> install                                                                    
+  0 依赖                                                                               
+    需要gfortran编译器, 不依赖其它库                                                   
+  1 解压
+    tar -xvzf blas.tgz
+  2 cd BLAS
+  3 修改 make.inc 中的编译选项:
+    PLAT = _LINUX
+    FORTRAN  = gfortran
+    OPTS     = -O2 -m64 -fPIC
+    NOOPT    = -O0 -m64 -fPIC
+    LOADER   = gfortran
+  4 编译BLAS
+    make       # 编译完成后, 会生成blas_LINUX.a文件
+  5 拷贝
+    mv blas_LINUX.a /usr/lib64/libblas.a
+  
+  blas-3.1.1-64.33.x86_64.rpm
+-------------------------------------------------------------------------------------+
