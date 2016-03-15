@@ -1,0 +1,176 @@
+
+
+
+http://www.cnblogs.com/AlphaDu/articles/1233209.html
+交叉编译[5]--之readline & ncurses
+交叉编译场景分析(arm-linux)(四)--编译readline和ncurses
+
+ 
+
+出处：http://blog.csdn.net/absurd
+
+ 
+
+1.         基本信息：
+
+软件名称
+
+readline
+
+功能简述
+
+readline一个命令行编辑程序库
+
+下载地址
+
+http://directory.fsf.org/readline.html
+
+软件版本
+
+readline-5.1.tar.gz
+
+依赖关系
+
+默认
+
+前置条件
+
+源文件位置：$(WORK_DIR)/ readline-5.1
+
+ 
+
+2.         过程分析
+
+下载的稳定版本，configure已经存在，直接进行配置：
+
+[root@linux readline-5.1]# ./configure --host=$ARCH-linux --prefix=$ROOTFS_DIR/usr
+
+ OK，配置成功，编译：
+
+[root@linux readline-5.1]# make && make install
+
+ OK，编译成功。少有的顺利！
+
+ 3.         构建处方
+
+l         readline.mk
+
+ READLINE_DIR="readline-5.1"
+
+ all: clean config build
+
+ config:
+
+    @cd $(READLINE_DIR) && \
+
+    ./configure --prefix=$$ROOTFS_DIR/usr --host=$$ARCH-linux && \
+
+    echo "config done"
+
+   
+
+build:
+
+    @cd $(READLINE_DIR) && \
+
+    make && make install && \
+
+    echo "build done"
+
+   
+
+clean:
+
+    @cd $(READLINE_DIR) && \
+
+    if [ -e Makefile ]; then make distclean; fi && \
+
+    echo "clean done"
+
+ 
+
+1.         基本信息：
+
+软件名称
+
+ncurses
+
+功能简述
+
+ncurses一个文本界面的图形程序库
+
+下载地址
+
+http://directory.fsf.org/ncurses.html
+
+软件版本
+
+ncurses-5.5.tar.gz
+
+依赖关系
+
+默认
+
+前置条件
+
+源文件位置：$(WORK_DIR)/ ncurses-5.5
+
+ 
+
+2.         过程分析
+
+下载的稳定版本，configure已经存在，直接进行配置：
+
+[root@linux ncurses-5.5]# ./configure --host=$ARCH-linux --prefix=$ROOTFS_DIR/usr
+
+ 
+
+OK，配置成功，编译：
+
+[root@linux ncurses-5.5]# make && make install
+
+                
+
+OK，编译成功。少有的顺利！
+
+ 
+
+3.         构建处方
+
+l         ncurses.mk
+
+NCURSES_DIR="ncurses-5.5"
+
+ 
+
+all: clean config build
+
+ 
+
+config:
+
+    @cd $(NCURSES_DIR) && \
+
+    ./configure --prefix=$$ROOTFS_DIR/usr --host=$$ARCH-linux && \
+
+    echo "config done"
+
+   
+
+build:
+
+    @cd $(NCURSES_DIR) && \
+
+    make && make install && \
+
+    echo "build done"
+
+   
+
+clean:
+
+    @cd $(NCURSES_DIR) && \
+
+    if [ -e Makefile ]; then make distclean; fi && \
+
+echo "clean done"

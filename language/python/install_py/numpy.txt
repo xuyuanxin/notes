@@ -1,3 +1,21 @@
+--> install
+ 依赖：python(with zlib) 
+ 
+ -->--> src
+  
+
+ -->--> 方法2
+  1 把whl文件拷贝到 C:\Python27\Scripts
+  2 pip install numpy-1.9.2+mkl-cp33-none-win_amd64.whl
+  3 C:\Python27\Scripts>pip2.7.exe install "numpy-1.9.2+mkl-cp27-none-win_amd64.whl"   (windows 10 成功安装)
+ 
+ -->--> 方法3
+  pip install numpy
+  
+ -->--> 方法4
+  numpy-1.8.1-win32-superpack-python2.7.exe
+  exe文件, 双击安装即可.
+
 ----> 资源
 http://www.lfd.uci.edu/~gohlke/pythonlibs/        下载.whl文件
 http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy  
@@ -8,16 +26,7 @@ http://stackoverflow.com/questions/11200137/installing-numpy-on-64bit-windows-7-
 http://www.goldencui.org/2014/10/02/windows64%E4%BD%8D%E7%8E%AF%E5%A2%83%E4%B8%8Bpython%E5%AE%89%E8%A3%85numpy%E3%80%81scipy%E5%92%8Cmatplotlib/   windows64位环境下python安装numpy、scipy和matplotlib
 
 
-----> install
-----> 方法1
-1 把whl文件拷贝到 C:\Python27\Scripts
-2 pip install numpy-1.9.2+mkl-cp33-none-win_amd64.whl
-3 C:\Python27\Scripts>pip2.7.exe install "numpy-1.9.2+mkl-cp27-none-win_amd64.whl"   (windows 10 成功安装)
-----> 方法2
-pip install numpy
-----> 方法3
-numpy-1.8.1-win32-superpack-python2.7.exe
-exe文件, 双击安装即可.
+
 
 
 

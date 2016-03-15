@@ -1,30 +1,34 @@
-----> Linux下python升级步骤                                                          |
-http://www.cnblogs.com/lanxuezaipiao/archive/2012/10/21/2732864.html                 |
-1 下载源tar包                                                                        |
-  wget http://www.python.org/ftp/python/3.3.0/Python-3.3.0.tgz                       |
-2 解压
-  bunzip2 Python-3.1.2.tar.bz2
-  tar -xvf Python-3.1.2.tar     # 或者
-  tar -xzvf Python-3.3.0.tgz    # 这样也行
-3 编译安装
-  cd Python-3.1.2                           # 进入解压缩后的文件夹
-  mkdir /usr/local/python3
-  ./configure --prefix=/usr/local/python3
-  make
-  make install
-4 修改链接
-  mv /usr/bin/python /usr/bin/python_old               # 保存下原来的
-  ln -s /usr/local/python3/bin/python3 /usr/bin/python # 创建一个新的
-5 测试
-  python  # 就会显示出python的新版本信息
-  Python 3.1.2 (r312:79147, Oct 21 2012, 01:03:21))
-  [GCC 3.2.2 20030222 (Red Hat Linux 3.2.2-5)] on linux2
-  Type "help", "copyright", "credits" or "license" for more information.
-  >>>
-6 说明                                                                               |
-如果不建立新安装路径python3, 而是直接默认安装, 则安装后的新python应该会覆盖linux下自 |
-带的老版本, 也有可能不覆盖, 具体看安装过程了, 这个大家可以自己试验下, 当然如果还想保 |
-留原来的版本, 那么这种方法最好不过了.                                                |
+--> Linux下python升级步骤                                                            |
+ http://www.cnblogs.com/lanxuezaipiao/archive/2012/10/21/2732864.html                |
+ 1 下载源tar包                                                                       |
+   wget http://www.python.org/ftp/python/3.3.0/Python-3.3.0.tgz                       
+ 2 解压
+   bunzip2 Python-3.1.2.tar.bz2
+   tar -xvf Python-3.1.2.tar     # 或者
+   tar -xzvf Python-3.3.0.tgz    # 这样也行
+ 3 编译安装
+   cd Python-3.1.2                           # 进入解压缩后的文件夹
+   mkdir /usr/local/python3
+   ./configure --prefix=/usr/local/python3
+   make
+   make install
+   
+   新安装的系统，会缺少zlib readline等库
+   zlib：numpy依赖
+   
+ 4 修改链接
+   mv /usr/bin/python /usr/bin/python_old               # 保存下原来的
+   ln -s /usr/local/python3/bin/python3 /usr/bin/python # 创建一个新的
+ 5 测试
+   python  # 就会显示出python的新版本信息
+   Python 3.1.2 (r312:79147, Oct 21 2012, 01:03:21))
+   [GCC 3.2.2 20030222 (Red Hat Linux 3.2.2-5)] on linux2
+   Type "help", "copyright", "credits" or "license" for more information.
+   >>>                                                                               |
+ 6 说明                                                                              
+   如果不建立新安装路径python3, 而是直接默认安装, 则安装后的新python应该会覆盖linux下|
+   自带的老版本, 也有可能不覆盖, 具体看安装过程了, 这个大家可以自己试验下, 当然如果还|
+   想保留原来的版本, 那么这种方法最好不过了.                                         |
 
 ----> windows安装
 D:\Python27;D:\Python27\Scripts

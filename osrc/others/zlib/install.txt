@@ -1,0 +1,15 @@
+
+--> install
+ 0: 依赖
+    null
+ $wget http://www.zlib.net/zlib-1.2.3.tar.gz
+ $tar -xvzf zlib-1.2.3.tar.gz
+ $cd zlib-1.2.3.tar.gz
+ $./configure
+ $make
+ $sudo make install
+
+
+--> introduction
+ zlib官方网站：http://www.zlib.net
+ zlib是提供数据压缩用的函式库
