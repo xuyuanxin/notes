@@ -4,6 +4,13 @@
 |  |--version     kernel version
 
 
+
+--> 关于ubuntu /usr/lib64 /usr/lib/x86_64-linux-gnu
+ http://unix.stackexchange.com/questions/43190/where-did-usr-lib64-go-and-what-is-usr-lib-x86-64-linux-gnu
+ https://wiki.debian.org/Multiarch/
+ https://wiki.ubuntu.com/MultiarchSpec
+
+
 http://www.cnblogs.com/peida/archive/2012/11/21/2780075.html  每天一个linux命令（23）：Linux 目录结构
 
                                                                                      |

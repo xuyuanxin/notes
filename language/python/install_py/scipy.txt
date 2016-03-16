@@ -1,9 +1,25 @@
 
---> install
- 依赖：lapack/blas
+--> install                                                                          |
+ 依赖：lapack/blas numpy
+ 
+ lapack之后会产生 liblapack.a, librefblas.a, libtmglib.a 3个静态链接库，复制这3个文件
+ 到 /usr/lib 或 /usr/local/lib并改名为 liblapack.a, libblas.a, libtmglib.a ，注意，这
+ 里一定要改名。64位系统, 拷贝到/usr/lib64。
+ 
+ lapack自带了blas，成功编译安装lapack中的blas，可以不再单独编译blas。
 
  -->--> src
- 1) 
+  1)
+
+  测试
+   python
+   >>> import nose
+   >>> import numpy
+   >>> import scipy
+   >>> numpy.test('full')
+   等待。。。。
+   >>> scipy.test('full') 
+  
  ----> windows install
   1 下载scipy-0.16.0-cp27-none-win_amd64.whl, 拷贝到c:\Python27\Scripts
   2 c:\Python27\Scripts>pip install scipy-0.16.0-cp27-none-win_amd64.whl
@@ -11,10 +27,78 @@
     Installing collected packages: scipy
     Successfully installed scipy-0.16.0
 
+--> 问题记录
+ 1 numpy.distutiles.system_info.NotFoundError: no lapack/blas resources found
+   安装了numpy，但没有安装lapack和blas。出现这个错误。
+   安装lapack后即可解决。
+ 2 编译时卡死 scipy0.16.1 numpy1.10.4
+   /usr/local/python2.7.11/lib/python2.7/site-packages/numpy/core/include/
+   numpy/npy_1_7_deprecated_api.h:15:2: warning: #warning "Using deprecated
+   NumPy API, disable it by" "#defining NPY_NO_DEPRECATED_API_NPY_1_7_API_VERSION" [-Wcpp]
+   
+   a) 使用低版本的numpy或许能解决
+   
+   b) https://bbs.aliyun.com/read/253225.html?spm=0.0.0.0.Itcdlb  创建了1G的交换分区搞定了
+   
+   c) http://alexsavio.github.io/numpy_scipy_mkl.html
+   Compiling Scipy: “Using deprecated NumPy API, disable it by…”
+   Thi may be because of the version of GCC, try using 4.7 (worked in November 2013):
 
+   sudo apt-get install gcc-4.7
+   sudo rm /usr/bin/gcc
+   sudo ln -s /usr/bin/gcc-4.7 /usr/bin/gcc
+   Compile both Numpy and Scipy again.
+   
+   d) http://docs.scipy.org/doc/numpy-dev/reference/c-api.deprecations.html
 
 
 
 http://sourceforge.net/projects/scipy/files/    win32安装包.exe
 http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy  win64安装包.whl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

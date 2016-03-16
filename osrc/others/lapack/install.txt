@@ -4,22 +4,44 @@
  1 解压
     tar xvzf lapack-3.4.0.gz 
  2 修改编译脚本(参考blas)
-   cp make.inc.example make.inc                                                                  
- 3 修改makefile文件
-   lib: lapacklib tmglib                     # 提前安装blas, 用这个(默认)
-   #lib: blaslib variants lapacklib tmglib   # 没有安装blas, 用这个. 会自动编译出blas.  
+   cp make.inc.example make.inc  
+   对make.inc做如下修改：
+   OPTS = -O2 -fPIC
+   NOOPT = -O0 -fPIC
+   如果是64位机器：
+   OPTS = -O2 -m64 -fPIC
+   NOOPT = -O0 -m64 -fPIC   
+   这两行是gfortran的编译选项, -O为优化等级，-fPIC用于生成动态链接库,   
+ 3 修改Makefile文件
+   lib: lapacklib tmglib                   #提前安装blas, 用这个(默认)
+   #lib: blaslib variants lapacklib tmglib #没有安装blas, 用这个. 会自动编译出blas.  
  4 编译
    make # 生成liblapack.a librefblas.a libtmglib.a
         # 实际安装中发现都要编译blas(无论是否安装过blas, 可能是blas没有安装正确)
  5 拷贝 
-   liblapack.a librefblas.a libtmglib.a 三个文件到/usr/lib /usr/local/lib两个文件夹中.
-   64位系统, 拷贝到/usr/lib64
+   make之后会产生 liblapack.a, librefblas.a, libtmglib.a 3个静态链接库，复制这3个文
+   件到 /usr/lib 或 /usr/local/lib并改名为 liblapack.a, libblas.a, libtmglib.a ，注
+   意，这里一定要改名。64位系统, 拷贝到/usr/lib64
  6 编译动态库(如果需要)
    reference: http://icl.cs.utk.edu/lapack-forum/viewtopic.php?f=2&t=908
 
-----> Lapack windows
-http://icl.cs.utk.edu/lapack-for-windows/index.html
+--> Lapack windows
+  http://icl.cs.utk.edu/lapack-for-windows/index.html
 
+-->问题记录
+ 1 编译完成后，测试失败。
+   liblapack.a, librefblas.a, libtmglib.a 编译出来了，但测试失败。
+   
+   NEP: Testing Nonsymmetric Eigenvalue Problem routines
+   ./xeigtstz < nep.in > znep.out 2>&1
+   Makefile:453: recipe for target 'znep.out' failed
+   make[1]: *** [znep.out] Error 139
+   make[1]: Leaving directory '/xxx/xxx/lapack/lapack-3.6.0/TESTING'
+   Makefile:45: recipe for target 'lapack_testing' failed
+   make: *** [lapack_testing] Error 2
+   
+  
+  
 --> introduction
  LAPACK, 其名为Linear Algebra PACKage的缩写, 是一以Fortran编程语言写就, 用于数值计算的|
  函式集. LAPACK提供了丰富的工具函式, 可用于诸如解多元线性方程式, 线性系统方程组的最小 |

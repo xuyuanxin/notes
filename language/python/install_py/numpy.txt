@@ -1,11 +1,24 @@
 --> install
  依赖：python(with zlib), 未发现其他依赖(ubuntu)
+                                                                                     |
+ 如果没有安装lapack/blas也可以编译成功，编译脚本会用自带的linalg/lapack_lite目录下的 |
+ 未优化实现编译出动态库lapack_lite.so供上层的Python应用程序调用。总之，NumPy是否依赖 |
+ lapack和atlas库，主要影响的是其性能，其功能不受影响。另外，在实际开发环境中，用到   |
+ Numpy的地方通常也会用到SciPy，而SciPy是必须依赖lapack和atlas库的，所以，实际项目中使|
+ 用的NumPy库通常会依赖lapack和atlas。
  
  -->--> src
-  tar -zxvf xxx.tar.gz
-  python setup.py build
-   编译前会检查是否有blas lapack库，如果没有也不影响编译，不确定是否影响使用。
-  python setup.py install
+  1 tar -zxvf xxx.tar.gz
+  
+  2 python setup.py build
+    编译前会检查是否有blas lapack库，如果没有也不影响编译。主要影响的是其性能，其功能
+	不受影响。注意lapack/blas和numpy要用相同的fortrun编译器。
+	To build with g77:
+    python setup.py build --fcompiler=gnu
+    To build with gfortran:
+    python setup.py build --fcompiler=gnu95
+	
+  3 python setup.py install
 
  -->--> 方法2
   1 把whl文件拷贝到 C:\Python27\Scripts
