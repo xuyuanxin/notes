@@ -18,9 +18,13 @@ DEPS = $(SRCS:.c=.dep)
 DEPS := $(addprefix $(DEPS_DIR)/, $(DEPS))
 
 # 中间文件
+ifeq ("$(OBJS_DIR)", "")
 OBJS_DIR=$(ROOT)/build/objs
+endif
 OBJS = $(SRCS:.c=.o)
 OBJS := $(addprefix $(OBJS_DIR)/, $(OBJS))
+
+EXEOBJS = $(wildcard *.o)
 
 # 库文件, 借用objs目录生成库, 然后移动到libs
 LIBS_DIR = $(ROOT)/build/libs
@@ -35,7 +39,10 @@ LIBOBJS = $(wildcard *.o)
 endif
 
 # 可执行文件
+ifeq ("$(EXES_DIR)", "")
 EXES_DIR = $(ROOT)/build/exes
+endif
+
 ifneq ("$(EXE)", "")
 EXE := $(addprefix $(EXES_DIR)/, $(EXE))
 endif
@@ -95,7 +102,9 @@ $(LIBDYN): forcerun
 # 可执行文件
 $(EXE): $(OBJS) forcerun
 #	$(CC) -Bdynamic $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
-	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
+#	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
+	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(EXEOBJS) -L$(LIBS_DIR) $(LINK_LIBS)
+
 clean:
 	@echo done
 
@@ -111,6 +120,7 @@ dbginfo:
 	@echo "LIBS_DIR : "$(LIBS_DIR)	
 	@echo "LIB      : "$(LIB)
 	@echo "LIBDYN   : "$(LIBDYN)
+	@echo "LIBOBJS  : "$(LIBOBJS)
 	@echo "----> $@ run end"	
 
 

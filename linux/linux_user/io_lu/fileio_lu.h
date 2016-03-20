@@ -75,7 +75,7 @@ to obtain the access-mode bits and then compare the result against any of the fi
 
 
 
-
+#include <fcntl.h>
 
 /*If the file exists and if it is successfully opened for either write-only or
 read¨Cwrite, truncate its length to 0.*/

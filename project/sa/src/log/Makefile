@@ -10,8 +10,5 @@ INCLUDE_DIRS = $(ROOT)/include
 # 本次构建所依赖的库 			   
 LINK_LIBS = 
 
-# 中间文件路径
-OBJS_DIR=$(ROOT)/build/exe_ut
-
 # now begin
 include $(ROOT)/build/make.rule

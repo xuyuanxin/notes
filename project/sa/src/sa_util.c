@@ -27,6 +27,7 @@ int sa_rand32(int wait)
     return num; 
 }
 
+/* todo */
 void *sa_re_alloc(void *old, size_t new_size)
 {
     void *new_mem = NULL;
@@ -35,7 +36,7 @@ void *sa_re_alloc(void *old, size_t new_size)
 	if(NULL == new_mem)
 		return NULL;
 
-    //memcpy
+    return new_mem;
 }
 
 

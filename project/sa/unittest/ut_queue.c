@@ -11,8 +11,5 @@ struct ut_que_data
 
 
 
-int main()
-{
-    return 0;
-}
+
 
