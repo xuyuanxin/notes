@@ -73,6 +73,8 @@ struct tm *localtime(const time_t *timep);
 
  Output: 
  The current local time is: Wed Feb 13 16:06:10 2013
+
+ http://bbs.csdn.net/topics/390345116
  ---------------------------------------------------------------------------------*/
 char* ctime (const time_t * timer);
 

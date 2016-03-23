@@ -5,7 +5,9 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <malloc.h>
- 
+#include <string.h>
+#include <sys/stat.h>
+
 #define sizeMalloc(p) (*(((unsigned int *)p)-1) & ~(0x01|0x02))
 
 int sa_rand32(int wait)
@@ -39,6 +41,35 @@ void *sa_re_alloc(void *old, size_t new_size)
     return new_mem;
 }
 
+void mkdirs(const char *pPath)
+{
+    char tmpPath[128];
+    int pos=0;
+    const char* pCur = pPath;
+
+    if(-1 != access(pPath,0)) {
+         return;
+    }
+
+    if(strlen(pPath)> 128) {
+        return;
+    }
+
+    memset(tmpPath,0,sizeof(tmpPath));
+	
+    while(*pCur++!='\0')
+    {
+        tmpPath[pos++] = *(pCur-1);
+
+         if(*pCur=='/' || *pCur=='\0')
+         {
+             if(0!=access(tmpPath,0)&&strlen(tmpPath)>0)
+             {
+                 mkdir(tmpPath,0777);
+             }
+         }
+     }
+}
 
 int main_t(void)
 {

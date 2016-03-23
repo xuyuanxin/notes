@@ -17,6 +17,9 @@ DEPS_DIR=$(ROOT)/build/deps
 DEPS = $(SRCS:.c=.dep)
 DEPS := $(addprefix $(DEPS_DIR)/, $(DEPS))
 
+# 依赖的头文件路径
+INCLUDE_DIRS += $(ROOT)/include
+
 # 中间文件
 ifeq ("$(OBJS_DIR)", "")
 OBJS_DIR=$(ROOT)/build/objs

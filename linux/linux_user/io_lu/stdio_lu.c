@@ -342,9 +342,38 @@ int vdprintf(int fd, const char *restrict format, va_list arg);
 /*Returns: number of characters stored in array if OK, negative value if encoding error*/
 int vsprintf(char *restrict buf, const char *restrict format,va_list arg);
 
-/*Returns: number of characters that would have been stored in array
-if buffer was large enough, negative value if encoding error*/
-int vsnprintf(char *restrict buf, size_t n,const char *restrict format, va_list arg);
+/*-----------------------------------------------------------------------------------
+ @s
+    Pointer to a buffer where the resulting C-string is stored. The buffer should ha-
+    ve a size of at least n characters.
+ @n
+    Maximum number of bytes to be used in the buffer. The generated string has a len-
+    gth of at most n-1, leaving space for the additional terminating null character.
+ @format
+    C string that contains a format string that follows the same specifications as f-
+    ormat in printf (see printf for details).
+ @arg
+    A value identifying a variable arguments list initialized with va_start.
+ @return
+    The number of characters that would have been written if n had been  sufficiently 
+    large, not counting the terminating null character. If an encoding error  occurs, 
+    a negative number is returned. Notice that only when this returned value is     -
+    non-negative and less than n, the string has been completely written.
+
+ Write formatted data from variable argument list to sized buffer
+
+ {
+	va_list ap;
+	int n=0;
+	va_start(ap, fmt); //获得可变参数列表
+	n=vsnprintf (s, size, fmt, ap); //写入字符串s
+	va_end(ap); //释放资源
+	return n; //返回写入的字符个数
+ }
+
+ example: sa_log.c
+ -----------------------------------------------------------------------------------*/
+int vsnprintf (char * s, size_t n, const char * format, va_list arg );
 
 #include <stdio.h>
 /*return: number of input items assigned,

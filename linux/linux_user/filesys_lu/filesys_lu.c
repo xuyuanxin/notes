@@ -26,7 +26,7 @@ int stat(const char *restrict pathname,struct stat *restrict buf);
  @return
     0 if OK,-1 on error
 -----------------------------------------------------------------------------------*/
-int fstat(int fd,struct stat *buf);
+int fstat(int fd, struct stat *buf);
 
 /*-----------------------------------------------------------------------------------
  @pathname:

@@ -36,7 +36,7 @@ all dbginfo:
 	
 	@echo ""
 	@echo ""
-	@echo ":-) Completed"
+	@echo ":-) Compile Successfully!"
 	@echo ""
 	
 clean:
@@ -48,6 +48,8 @@ clean:
 	$(RM) $(RMFLAGS) $(ROOT)/build/deps/*.tmp
 	$(RM) $(RMFLAGS) $(ROOT)/build/exes/*.exe
 	$(RM) $(RMFLAGS) $(ROOT)/build/exes/*.out
+	$(RM) $(RMFLAGS) $(ROOT)/build/exe_ut/*.o
+	$(RM) $(RMFLAGS) $(ROOT)/build/exe_ut/*.out
 	
 # 更改所有文件的时间戳	
 touch:
