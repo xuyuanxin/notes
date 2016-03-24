@@ -23,7 +23,7 @@
 #include<netinet/in.h>
 
 /*-----------------------------------------------------------------------------------
- ----> Socket Address Structures
+ Socket Address Structures
  Most socket functions require a pointer to a socket address structure as an argumen-
  t. Each supported protocol suite defines its own socket address structure. The names 
  of these structures begin with sockaddr_ and end with a unique suffix for each prot-
@@ -79,8 +79,33 @@ struct sockaddr_in /* POSIX definition */
 #include <sys/socket.h>
 
 /*-----------------------------------------------------------------------------------
+ http://www.cnblogs.com/youxin/p/3965962.html
+
+ windows平台下:
+ 头文件：#include<ws2tcpip.h>
+
+ linux平台下：
+ 下面两个头文件都有定义：
+ 1）#include <sys/socket.h>
+ 2）#include <unistd.h>
+
+
+ 详细定义：typedef int socklen_t;
+
+ 翻译：
+
+ 任何完整的库必须定义socklen_t和int相同的尺寸大小。别的事情打破了BSD套接字层的填充。
+ POSIX起初确实将其定义为size_t。我已经向他们大声诉说这件事情。定义其为size_t类型是非
+ 常糟糕的，特别是size_t在64位操作系统上，很少和int保持同样的尺寸大小。例如，BSD套接
+ 字接口只接受和int尺寸大小的值，不管如何，POSIX组织最终想出一个办法，创建socklen_t的
+ 类型，他们本不该插手这个类型。但是曾经他们确实认为为它定义一个类型是必须的，为了某些
+ 令人费解的理由。
+ ----------------------------------------------------------------------------------*/
+typedef int socklen_t;
+
+
+/*-----------------------------------------------------------------------------------
 	  The generic socket address structure: sockaddr.  <sys/socket.h>
- ------------------------------------------------------------------------------------  
  ----------------------------------------------------------------------------------*/
 struct sockaddr 
 {

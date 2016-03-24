@@ -396,10 +396,11 @@ int shutdown(int sockfd, int howto);
      number of bytes read if OK, ¨C1 on error
  ----------------------------------------------------------------------------------*/
 ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags, 
-struct sockaddr *from, socklen_t *addrlen);
+                    struct sockaddr *from, socklen_t *addrlen);
 
-/*-----------------------------------------------------------------------------------
- @flag:
+/*----------------------------------------------------------------------------------- 
+ @sockfd @buff @nbytes  look @recvfrom
+ @flag: 
  @to @addrlen
      The @to argument for @sendto is a socket address structure containing the proto-
      col address (e.g. IP address and port number) of where the data is to be sent. -
@@ -422,7 +423,7 @@ struct sockaddr *from, socklen_t *addrlen);
    resulting IP datagram on the interface output queue. 
  ----------------------------------------------------------------------------------*/
 ssize_t sendto(int sockfd, const void *buff, size_t nbytes, int flags, 
-const struct sockaddr *to, socklen_t addrlen);
+                 const struct sockaddr *to, socklen_t addrlen);
  
 
 /************************************************************************************

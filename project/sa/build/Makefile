@@ -7,6 +7,7 @@ ROOT = $(realpath ..)
 #所有要编译的目录
 DIRS += $(ROOT)/src
 DIRS += $(ROOT)/src/log
+DIRS += $(ROOT)/src/cmd
 
 #默认目录
 DIRS+=$(ROOT)/build/objs
