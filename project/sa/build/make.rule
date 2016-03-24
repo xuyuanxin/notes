@@ -9,7 +9,7 @@ ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案�
 
 #CCFLAGS = -shared -fPIC -Wall -Werror
 #CCFLAGS = -shared -Wall -Werror
-CCFLAGS = -shared -Wall -D__READLINE_DEBUG
+CCFLAGS = -shared -Wall -Werror -fPIC -D__READLINE_DEBUG
 
 SRCS = $(wildcard *.c)
 
