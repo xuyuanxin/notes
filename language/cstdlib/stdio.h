@@ -1,3 +1,31 @@
+#include <stdio.h>
+
+
+/*-----------------------------------------------------------------------------------
+ @stream
+    Pointer to a FILE object that specifies the stream to be closed.
+ @return
+    If the stream is successfully closed, a zero value is returned. On failure, EOF -
+    is returned.
+    
+ Closes the file associated with the stream and disassociates it. All internal buffe-
+ rs associated with the stream are disassociated from it and flushed: the content  of 
+ any unwritten output buffer is written and the content of any unread input buffer is 
+ discarded.
+ 
+ Even if the call fails, the stream passed as parameter will no longer be  associated 
+ with the file nor its buffers.
+ ----------------------------------------------------------------------------------*/
+int fclose ( FILE * stream );
+
+
+
+
+
+
+
+
+
 /*-----------------------------------------------------------------------------------
  Changes the name of the file or directory specified by @oldname to @newname. This is 
  an operation performed directly on a file; No streams are involved in the operation.

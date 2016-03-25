@@ -414,6 +414,13 @@ ssize_t recvfrom(int sockfd, void *buff, size_t nbytes, int flags,
  from @recvfrom is acceptable for a datagram protocol: It does not mean that the peer 
  has closed the connection, as does a return value of 0 from read on a TCP socket. S-
  ince UDP is connectionless, there is no such thing as closing a UDP connection.
+
+ When the process calls recvfrom, the next datagram from the buffer is returned to t-
+ he process in a first-in, first-out (FIFO) order. This way, if multiple datagrams a-
+ rrive for the socket before the process can read what's already queued for the sock-
+ et, the arriving datagrams are just added to the socket receive buffer. But, this b-
+ uffer has a limited size. We discussed this size and how to increase it with the   -
+ SO_RCVBUF socket option in Section 7.5.
  
  1 Both @recvfrom and @sendto can be used with TCP, although there is normally no re-
    ason to do so.

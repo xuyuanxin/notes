@@ -341,7 +341,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	dg_cli(stdin, sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
+	dg_cli_v1(stdin, sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 
 	exit(0);
 }

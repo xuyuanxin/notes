@@ -12,7 +12,6 @@ static const char * const pszCmdPrompt = "clover>>";
 //退出交互式调测器的命令(不区分大小写)
 static const char *pszQuitCmd[] = {"Quit", "Exit", "End", "Bye", "Q", "E", "B"};
 static const unsigned char ucQuitCmdNum = sizeof(pszQuitCmd) / sizeof(pszQuitCmd[0]);
-#endif
 
 
 
@@ -166,6 +165,34 @@ int main_cmd(void)
 
     return 0;
 }
+
+#else
+
+int main_cmd(void)
+{
+    char cmdbuf[512] = {0};
+    char *cmdstr = NULL;
+	int first = 1;
+
+    while(1)
+    {
+        memset(cmdbuf, 0, 512);
+		if(first)
+		{
+		    printf("->");
+			first = 0;
+		}
+        cmdstr = fgets(cmdbuf, 512, stdin);
+		printf("len:%d, %s",(int)strlen(cmdstr), cmdstr);
+		printf("->");
+    }
+}
+
+
+
+#endif
+
+
 
 /*
 1 [wangxiaoyuan_@localhost test1]$ gcc -Wall -o ReadLine ReadLine.c -D__READLINE_DEBUG -lreadline -lncurses

@@ -77,7 +77,6 @@ Both fopen and freopen are part of ISO C;fdopen is part of POSIX.1, since ISO C 
 ---->关于type
 
 */
-#include <stdio.h>
 /*******************************************************************************
  function:opens a specified file. 
  return  :return file pointer if OK,NULL on error
@@ -108,7 +107,6 @@ FILE *freopen(const char *restrict pathname,const char *restrict type,FILE *rest
 FILE *fdopen(int fd,const char *type);
 
 
-#include <stdio.h>
 /*******************************************************************************
  Three functions allow us to read one character at a time.
  The function getchar is defined to be equivalent to getc(stdin)
@@ -129,7 +127,6 @@ int getchar(void);
 
  Both return: nonzero(true) if condition is true, 0 (false) otherwise
  ******************************************************************************/
-#include <stdio.h>
 int ferror(FILE *fp);
 int feof(FILE *fp);
 
@@ -154,7 +151,6 @@ void clearerr(FILE *fp);
 
  returns:c if OK,EOF on error 
  ******************************************************************************/
-#include <stdio.h>
 int ungetc(int c,FILE *fp);
 
 
@@ -164,22 +160,52 @@ int ungetc(int c,FILE *fp);
 
  All three return:c if OK,EOF on error
  ******************************************************************************/
-#include <stdio.h>
 int putc(int c,FILE *fp);
 int fputc(int c,FILE *fp);
 int putchar(int c);
 
+/*-----------------------------------------------------------------------------------
+ @str
+    Pointer to an array of chars where the string read is copied.
+ @num
+    Maximum number of characters to be copied into str (including the terminating   -
+    null-character).
+ @stream
+    Pointer to a FILE object that identifies an input stream. @stdin can be used as -
+    argument to read from the standard input.
+ @return
+    On success, the function returns @str. If the end-of-file is encountered while a-
+    ttempting to read a character, the eof indicator is set (feof). If this happens -
+    before any characters could be read, the pointer returned is a null pointer ( and 
+    the contents of str remain unchanged). If a read error occurs, the error indicat-
+    or (ferror) is set and a null pointer is also returned ( but the contents pointed 
+    by str may have changed).
 
-#include <stdio.h>
-/*******************************************************************************
- @buf:存放读取的字符
- @fp :从哪个流读取字符
- return:buf if OK,NULL on end of file or erro
+ #include <stdio.h>
 
- 一次读入一行，最多读n-1个字符，第n个字符自动填NULL。如果一行多于n-1个字符，可以
- 分两次读取，对@fgets的下次读取还会继续该行。当键入EOF,fgets返回NULL
- ******************************************************************************/
-char *fgets(char *restrict buf,int n,FILE *restrict fp);
+ int main()
+ {
+    FILE * pFile;
+    char mystring [100];
+
+    pFile = fopen ("myfile.txt" , "r");
+    if (pFile == NULL) 
+    {
+      perror ("Error opening file");
+    } 
+    else 
+    {
+      if ( fgets (mystring , 100 , pFile) != NULL )
+        puts (mystring);
+      fclose (pFile);
+    }
+    return 0;
+ }
+
+ This example reads the first line of myfile.txt or the first 99 characters, whichev-
+ er comes first, and prints them on the screen. 
+ ----------------------------------------------------------------------------------*/
+char *fgets ( char *str, int num, FILE *stream );
 
 /*******************************************************************************
  @buf:存放读取的字符 reads from standard input
@@ -215,8 +241,6 @@ int puts(const char *str);
  ----------------------------------------------------------------------------------*/
 int fileno( FILE *stream );
 
-
-#include <stdio.h>
 /*******************************************************************************
  @ptr:
  function:以结构为单位读
@@ -270,25 +294,18 @@ int fseek(FILE *fp,long offset,int whence);
  ******************************************************************************/
 void rewind(FILE *fp);
 
-
-#include <stdio.h>
 /*Returns: current file position indicator if OK,(off_t)-1 on error*/
 off_t ftello(FILE *fp);
 
 /*Returns: 0 if OK,-1 on error*/
 int fseeko(FILE *fp,off_t offset,int whence);
 
-
-#include <stdio.h>
 /*return: 0 if OK, nonzero on error*/
 int fgetpos(FILE *restrict fp,fpos_t *restrict pos);
 
 /*return: 0 if OK, nonzero on error*/
 int fsetpos(FILE *fp,const fpos_t *pos);
 
-
-
-#include <stdio.h>
 #define L_tmpnam
 #define TMP_MAX
 
@@ -309,9 +326,6 @@ char *tmpnam(char *ptr);
  ******************************************************************************/
 FILE *tmpfile(void);
 
-
-
-#include <stdio.h>
 /*return: number of characters output if OK, negative value if output error*/
 int printf(const char *restrict format, . ..);
 
@@ -324,8 +338,13 @@ int dprintf(int fd, const char *restrict format, . ..);
 /*Returns: number of characters stored in array if OK, negative value if encoding error*/
 int sprintf(char *restrict buf, const char *restrict format, . ..);
 
-/*Returns: number of characters that would have been stored in array
-if buffer was large enough, negative value if encoding error*/
+/*-----------------------------------------------------------------------------------
+ The snprintf function returns the number of characters that would have been  written 
+ to the buffer had it been big enough. As with sprintf, the return value doesn't inc-
+ lude the terminating null byte. If snprintf returns a positive value less than the -
+ buffer size @n, then the output was not truncated. If an encoding error occurs,    -
+ snprintf returns a negative value.
+ ----------------------------------------------------------------------------------*/
 int snprintf(char *restrict buf, size_t n,const char *restrict format, . ..);
 
 #include <stdarg.h>

@@ -21,6 +21,8 @@
 /* socklent_t   uint32_t */
 
 #include<netinet/in.h>
+typedef uint32_t in_addr_t;  /*  IPv4 address, normally uint32_t */
+
 
 /*-----------------------------------------------------------------------------------
  Socket Address Structures

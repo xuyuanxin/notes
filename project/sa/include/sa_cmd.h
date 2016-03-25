@@ -1,6 +1,8 @@
 #ifndef __SA_CMD_H__
 #define __SA_CMD_H__
 
+#ifdef __READLINE_DEBUG
+
 //√¸¡ÓΩ·ππÃÂ
 typedef int (*CmdProcFunc)(void);
 typedef struct
@@ -32,7 +34,7 @@ static CMD_PROC gCmdMap[] = {
 
 #define CMD_MAP_NUM     (sizeof(gCmdMap)/sizeof(CMD_PROC)) - 1/*End*/
 
-
+#endif
 
 #endif
 

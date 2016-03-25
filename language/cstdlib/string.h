@@ -129,7 +129,7 @@ char *strcasestr(const char *haystack, const char *needle);
     Sets the first @num bytes of the block of memory pointed by @ptr to the specified 
     @value (interpreted as an unsigned char).
 -----------------------------------------------------------------------------------*/
-void * memset ( void * ptr, int value, size_t num );
+void *memset ( void *ptr, int value, size_t num );
 
 /*-----------------------------------------------------------------------------------
  @errnum

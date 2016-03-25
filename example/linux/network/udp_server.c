@@ -51,9 +51,9 @@ void dg_echo(int sockfd, struct sockaddr  *pcliaddr, socklen_t clilen)
 
 int main(int argc, char **argv)
 {
-	int					sockfd;
+	int sockfd;
 	int temp;
-	struct sockaddr_in	servaddr, cliaddr;
+	struct sockaddr_in servaddr, cliaddr;
 
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if(sockfd < 0)

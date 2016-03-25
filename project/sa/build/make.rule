@@ -7,9 +7,9 @@ CC = gcc         # gcc
 AR = ar          # ar:管理静态库。
 ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案文件;s:生成库索引，提高连接效率; 
 
-#CCFLAGS = -shared -fPIC -Wall -Werror
-#CCFLAGS = -shared -Wall -Werror
-CCFLAGS = -shared -Wall -Werror -fPIC -D__READLINE_DEBUG
+#CCFLAGS = -shared -Wall -Werror -fPIC
+CCFLAGS = -shared -Wall -Werror
+#CCFLAGS = -shared -Wall -Werror -fPIC -D__READLINE_DEBUG
 
 SRCS = $(wildcard *.c)
 

@@ -77,17 +77,19 @@ FILE _iob[_IOB_ENTRIES] = {
 };
 
 
-/*三个默认打开的流
-Three streams are predefined and automatically available to a process: standard 
-input, standard output, and standard error.These streams refer to the same files 
-as the file descriptors STDIN_FILENO, STDOUT_FILENO,and STDERR_FILENO,respectively.
-These three standard I/O streams are referenced through the predefined file 
-pointers stdin, stdout,and stderr. The file pointers are defined in the<stdio.h> 
-header.
-*/
-#define stdin  (&_iob[0]) /* Standard input  标准输入 */
-#define stdout (&_iob[1]) /* Standard output 标准输出 */
-#define stderr (&_iob[2]) /* Standard error  标准错误 */
+#include <stdio.h> 
+
+
+/*-----------------------------------------------------------------------------------
+ Three streams are predefined and automatically available to a process: standard inp-
+ ut, standard output, and standard error. These streams refer to the same files as t-
+ he file descriptors STDIN_FILENO, STDOUT_FILENO,and STDERR_FILENO, respectively. Th-
+ ese three standard I/O streams are referenced through the predefined file pointers -
+ stdin, stdout, and stderr. The file pointers are defined in the<stdio.h> header.
+ ----------------------------------------------------------------------------------*/
+#define stdin  (&_iob[0]) /* Standard input   */
+#define stdout (&_iob[1]) /* Standard output  */
+#define stderr (&_iob[2]) /* Standard error   */
 
 
 /*
