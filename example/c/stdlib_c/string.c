@@ -20,7 +20,7 @@ int strtok_eg ()
   char str[] ="This^a#sample$string.";
   char * pch;
   printf ("Splitting string \"%s\" into tokens:\n",str);
-  pch = strtok (str,"^#");
+  pch = strtok(str,"^#");
   while (pch != NULL)
   {
     printf ("%s <--> %s \n",pch,str);

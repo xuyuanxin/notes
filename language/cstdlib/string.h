@@ -6,6 +6,39 @@ https://en.wikipedia.org/wiki/C_string_handling
 */
 
 /*-----------------------------------------------------------------------------------
+ @str1
+    C string to be compared.
+ @str2
+    C string to be compared.
+ @ret
+    Returns an integral value indicating the relationship between the strings:
+    return value  indicates
+      <0          the first character that does not match has a lower value in ptr1 
+                  than in ptr2
+       0          the contents of both strings are equal
+      >0          the first character that does not match has a greater value in ptr1 
+                  than in ptr2
+-----------------------------------------------------------------------------------*/
+int strcmp ( const char * str1, const char * str2 );
+
+/*-----------------------------------------------------------------------------------
+ @strcat: string catenate
+ @destination
+    Pointer to  the  destination array, which should contain a C string, and be large 
+    enough to contain the concatenated resulting string.
+ @source
+    C string to be appended. This should not overlap destination.
+ @ret 
+    @destination is returned.
+ @func
+    Appends a copy of the @source string to the @destination  string. The terminating 
+    null character in @destination is overwritten by the  first character of @source, 
+    and a null-character is included at the end of the new string formed by the conc-
+    atenation of both in @destination. @destination and @source shall not overlap.   
+-----------------------------------------------------------------------------------*/
+char * strcat ( char * destination, const char * source );
+
+/*-----------------------------------------------------------------------------------
  Returns the length of the C string @str. The length of a C string is determined by -
  the terminating null-character: A C string is as long as the number of characters b-
  etween the beginning of the string and the terminating null character (without inclu-
@@ -47,70 +80,64 @@ int strncmp ( const char * str1, const char * str2, size_t num );
     maller strings (tokens). Alternativelly, a null pointer may be specified, in whi-
     ch case the function continues scanning where a previous successful call to the -
     function ended.
-@delimiters
-   C string containing the delimiter characters. These can be different from one cal-
-   l to another.
-@return
+ @delimiters
+    C string containing the delimiter characters. These can be different from one ca-
+    ll to another.
+ @return
     If a token is found, a pointer to the beginning of the token. Otherwise, a null -
     pointer. A null pointer is always returned when the end of the string (i.e., a n-
     ull character) is reached in the string being scanned.
 
-Split string into tokens. A sequence of calls to this function split @str into token-
-s, which are sequences of contiguous characters separated by any of the characters t-
-hat are part of delimiters. On a first call, the function expects a C string as argu-
-ment for @str, whose first character is used as the starting location to scan for to-
-kens. In subsequent calls, the function expects a null pointer and uses the  position 
-right after the end of the last token as the new starting location for scanning.
+ Split string into tokens. A sequence of calls to this function split @str into toke-
+ ns, which are sequences of contiguous characters separated by any of the  characters 
+ that are part of @delimiters. On a first call, the function expects a C string as a-
+ rgument for @str, whose first character is used as the starting location to scan for 
+ tokens. In subsequent calls, the function expects a null pointer and uses the posit-
+ ion right after the end of the last token as the new starting location for scanning.
 
-To determine the beginning and the end of a token, the function first scans from  the 
-starting location for the first character not contained in delimiters ( which becomes 
-the beginning of the token). And then scans starting from this beginning of the token 
-for the first character contained in delimiters, which becomes the end of the  token. 
-The scan also stops if the terminating null character is found.
+ To determine the beginning and the end of a token, the function first scans from the 
+ starting location for the first character not contained in @delimiters (which becom-
+ es the beginning of the token). And then scans starting from this beginning of the -
+ token for the first character contained in @delimiters, which becomes the end of the 
+ token. The scan also stops if the terminating null character is found.
 
-This end of the token is automatically replaced by a null-character, and the beginni-
-ng of the token is returned by the function. Once the terminating null character of -
-@str is found in a call to strtok, all subsequent calls to this function (with a null 
-pointer as the first argument) return a null pointer.
+ This end of the token is automatically replaced by a null-character, and the beginn-
+ ing of the token is returned by the function. Once the terminating null character of
+ @str is found in a call to strtok,all subsequent calls to this function (with a null 
+ pointer as the first argument) return a null pointer.
 
-The point where the last token was found is kept internally by the function to be us-
-ed on the next call (particular library implementations are not required to avoid da-
-ta races).
------------------------------------------------------------------------------------*/
-char *strtok ( char * str, const char * delimiters );
+ The point where the last token was found is kept internally by the function to be u-
+ sed on the next call (particular library implementations are not required to avoid -
+ data races).
 
-/*-----------------------------------------------------------------------------------
- @str1
-    C string to be compared.
- @str2
-    C string to be compared.
- @ret
-    Returns an integral value indicating the relationship between the strings:
-    return value  indicates
-      <0          the first character that does not match has a lower value in ptr1 
-                  than in ptr2
-       0          the contents of both strings are equal
-      >0          the first character that does not match has a greater value in ptr1 
-                  than in ptr2
------------------------------------------------------------------------------------*/
-int strcmp ( const char * str1, const char * str2 );
+ //strtok example 
+ #include <stdio.h>
+ #include <string.h>
 
-/*-----------------------------------------------------------------------------------
- @strcat: string catenate
- @destination
-    Pointer to  the  destination array, which should contain a C string, and be large 
-    enough to contain the concatenated resulting string.
- @source
-    C string to be appended. This should not overlap destination.
- @ret 
-    @destination is returned.
- @func
-    Appends a copy of the @source string to the @destination  string. The terminating 
-    null character in @destination is overwritten by the  first character of @source, 
-    and a null-character is included at the end of the new string formed by the conc-
-    atenation of both in @destination. @destination and @source shall not overlap.   
------------------------------------------------------------------------------------*/
-char * strcat ( char * destination, const char * source );
+ int main ()
+ {
+   char str[] ="- This, a sample string.";
+   char * pch;
+   printf ("Splitting string \"%s\" into tokens:\n",str);
+   pch = strtok (str," ,.-");
+   while (pch != NULL)
+   {
+     printf ("%s\n",pch);
+     pch = strtok (NULL, " ,.-");
+   }
+   return 0;
+ }
+
+ Output:
+ Splitting string "- This, a sample string." into tokens:
+ This
+ a
+ sample
+ string
+ ----------------------------------------------------------------------------------*/
+char *strtok( char * str, const char * delimiters );
+
+
 
 /* strstr */
 char *strcasestr(const char *haystack, const char *needle);

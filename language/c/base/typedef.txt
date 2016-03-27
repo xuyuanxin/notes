@@ -1,0 +1,44 @@
+
+--> typedef
+ C supports a mechanism called typedef, which allows you to define new names for var-
+ ious data types. For example, the declaration
+    char *ptr_to_char;
+ declares the variable ptr_to_char to be a pointer to a character. But add the keywo-
+ rd typedef and you get.
+    typedef char *ptr_to_char;
+ which declares the identifier ptr_to_char to be a new name for the type pointer to -
+ character. You can use the new name in subsequent declarations just like any of  the 
+ predefined names. For example,
+    ptr_to_char a;
+ declares a to be a pointer to a character.
+ 
+ It must be emphasized that a typedef declaration does not create a new type in any -
+ sense; it merely adds a new name for some existing type. Nor are there any new sema-
+ ntics: variables declared this way have exactly the same properties as variables wh-
+ ose declarations are spelled out explicitly. 
+ 
+--> example
+ -->--> 1
+  typedef struct tnode *Treeptr;
+ 
+  typedef struct tnode { /* the tree node: *I
+     char *WOrd; /* points to the text */
+     int count; /* number of occurrences *I
+     Treeptr left; /* left child */
+     Treeptr right; /* right child *I
+  } Treenode;
+ 
+  This creates two new type keywords called Treenode (a structure) and Treeptr (a po-
+  inter to the structure).
+ 
+ -->--> 2
+  void *func(int)
+  typedef void (*fp)(int); /* define a type(a pointer to function) */
+  
+ -->--> 3
+  int a;
+  typedef int Length; // makes the name Length a synonym for int.
+
+ 
+ 
+ 
