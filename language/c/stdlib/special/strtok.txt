@@ -1,0 +1,175 @@
+http://blog.chinaunix.net/uid-11861796-id-2813603.html
+
+strtok()函数 2009-09-03 18:55:33
+分类： LINUX
+strtok()这个函数大家都应该碰到过,但好像总有些问题, 这里着重讲下它
+
+首先看下MSDN上的解释:
+
+char *strtok( char *strToken, const char *strDelimit );
+
+Parameters
+strToken
+String containing token or tokens.
+strDelimit
+Set of delimiter characters.
+Return Value
+Returns a pointer to the next token found in strToken. They return NULL when no more tokens are found. Each call modifies strToken by substituting a NULL character for each delimiter that is encountered.
+Remarks
+The strtok function finds the next token in strToken. The set of characters in strDelimitspecifies possible delimiters of the token to be found in strToken on the current call.
+Security Note    These functions incur a potential threat brought about by a buffer overrun problem. Buffer overrun problems are a frequent method of system attack, resulting in an unwarranted elevation of privilege. For more information, see Avoiding Buffer Overruns.
+On the first call to strtok, the function skips leading delimiters and returns a pointer to the first token in strToken, terminating the token with a null character. More tokens can be broken out of the remainder of strToken by a series of calls to strtok. Each call tostrtok modifies strToken by inserting a null character after the token returned by that call. To read the next token from strToken, call strtok with a NULL value for the strTokenargument. The NULL strToken argument causes strtok to search for the next token in the modified strToken. The strDelimit argument can take any value from one call to the next so that the set of delimiters may vary.
+Note   Each function uses a static variable for parsing the string into tokens. If multiple or simultaneous calls are made to the same function, a high potential for data corruption and inaccurate results exists. Therefore, do not attempt to call the same function simultaneously for different strings and be aware of calling one of these functions from within a loop where another routine may be called that uses the same function. However, calling this function simultaneously from multiple threads does not have undesirable effects.
+很晕吧？ 呵呵。。。
+
+简单的说，就是函数返回第一个分隔符分隔的子串后，将第一参数设置为NULL，函数将返回剩下的子串。
+
+下面我们来看一个例子：
+
+int main() 
+{
+      char test1[] = "feng,ke,wei";  
+      char *test2 = "feng,ke,wei";  
+      char *p;  
+      p = strtok(test1, ",");
+      while(p)  
+          {   
+              printf("%s\n", p);   
+              p = strtok(NULL, ",");     
+          }      
+      return 0;
+ }
+运行结果:
+
+feng
+
+ke
+
+wei
+
+ 
+
+说明：
+
+函数strtok将字符串分解为一系列标记(token),标记就是一系列用分隔符(delimiting chracter，通常是空格或标点符号)分开的字符。注意，此的标记是由delim分割符分割的字符串喔。
+
+例如，在一行文本中，每个单词可以作为标记，空格是分隔符。
+需要多次调用strtok才能将字符串分解为标记(假设字符串中包含多个标记)。第一次调用strtok包含两个参数，即要标记化的字符串和包含用来分隔标记的字符的字符串(即分隔符)：下列语句： tokenPtr = Strtok(string, " ")
+将tokenPtr赋给string中第一个标记的指针。strtok的第二个参数””表示string中的标记用空格分开。
+函数strtok搜索string中不是分隔符(空格)的第一个字符，这是第一个标记的开头。然后函数寻找字符串中的下一个分隔符，将其换成null(， w，)字符,这是当前标记的终点。注意标记的开始于结束。
+
+函数strtok保存string中标记后面的下一个字符的指针，并返回当前标记的指针。
+
+
+后面再调用strtok时，第一个参数为NULL，继续将string标记化。NULL参数表示调用strtok继续从string中上次调用 strtok时保存的位置开始标记化。
+
+如果调用strtok时已经没有标记，则strtok返回NULL。注意strtok修改输入字符串，因此，如果调用strtok之后还要在程序中使用这个字符串，则应复制这个字 符串。
+
+但如果用p = strtok(test2, ",")则会出现内存错误,这是为什么呢?是不是跟它里面那个静态变量有关呢? 我们来看看它的原码:
+
+/***
+*strtok.c - tokenize a string with given delimiters
+*
+*       Copyright (c) Microsoft Corporation. All rights reserved.
+*
+*Purpose:
+*       defines strtok() - breaks string into series of token
+*       via repeated calls.
+*
+*******************************************************************************/
+#include
+#include
+#ifdef _MT
+#include
+#endif  /* _MT */
+/***
+*char *strtok(string, control) - tokenize string with delimiter in control
+*
+*Purpose:
+*       strtok considers the string to consist of a sequence of zero or more
+*       text tokens separated by spans of one or more control chars. the first
+*       call, with string specified, returns a pointer to the first char of the
+*       first token, and will write a null char into string immediately
+*       following the returned token. subsequent calls with zero for the first
+*       argument (string) will work thru the string until no tokens remain. the
+*       control string may be different from call to call. when no tokens remain
+*       in string a NULL pointer is returned. remember the control chars with a
+*       bit map, one bit per ascii char. the null char is always a control char.
+*       //这里已经说得很详细了!!比MSDN都好!
+*Entry:
+*       char *string - string to tokenize, or NULL to get next token
+*       char *control - string of characters to use as delimiters
+*
+*Exit:
+*       returns pointer to first token in string, or if string
+*       was NULL, to next token
+*       returns NULL when no more tokens remain.
+*
+*Uses:
+*
+*Exceptions:
+*
+*******************************************************************************/
+char * __cdecl strtok (
+        char * string,
+        const char * control
+        )
+{
+        unsigned char *str;
+        const unsigned char *ctrl = control;
+        unsigned char map[32];
+        int count;
+#ifdef _MT
+        _ptiddata ptd = _getptd();
+#else  /* _MT */
+        static char *nextoken;                        //保存剩余子串的静态变量   
+#endif  /* _MT */
+        /* Clear control map */
+        for (count = 0; count < 32; count++)
+                map[count] = 0;
+        /* Set bits in delimiter table */
+        do {
+                map[*ctrl >> 3] |= (1 << (*ctrl & 7));
+        } while (*ctrl++);
+        /* Initialize str. If string is NULL, set str to the saved
+         * pointer (i.e., continue breaking tokens out of the string
+         * from the last strtok call) */
+        if (string)
+                str = string;                             //第一次调用函数所用到的原串       
+else
+#ifdef _MT
+                str = ptd->_token;
+#else  /* _MT */
+                str = nextoken;                      //将函数第一参数设置为NULL时调用的余串
+#endif  /* _MT */
+  /* Find beginning of token (skip over leading delimiters). Note that
+         * there is no token iff this loop sets str to point to the terminal
+         * null (*str == '\0') */
+        while ( (map[*str >> 3] & (1 << (*str & 7))) && *str )
+                str++;
+        string = str;                                  //此时的string返回余串的执行结果 
+        /* Find the end of the token. If it is not the end of the string,
+         * put a null there. */
+//这里就是处理的核心了, 找到分隔符,并将其设置为'\0',当然'\0'也将保存在返回的串中
+        for ( ; *str ; str++ )
+                if ( map[*str >> 3] & (1 << (*str & 7)) ) {
+                        *str++ = '\0';              //这里就相当于修改了串的内容 ①
+                        break;
+                }
+        /* Update nextoken (or the corresponding field in the per-thread data
+         * structure */
+#ifdef _MT
+        ptd->_token = str;
+#else  /* _MT */
+        nextoken = str;                 //将余串保存在静态变量中,以便下次调用
+#endif  /* _MT */
+        /* Determine if a token has been found. */
+        if ( string == str )
+              return NULL;
+        else
+                return string;
+}
+原来, 该函数修改了原串. 
+
+所以,当使用char *test2 = "feng,ke,wei"作为第一个参数传入时,在位置①处, 由于test2指向的内容保存在文字常量区,该区的内容是不能修改的,所以会出现内存错误. 而char test1[] = "feng,ke,wei" 中的test1指向的内容是保存在栈区的,所以可以修改.
+看到这里  大家应该会对文字常量区有个更加理性的认识吧.....

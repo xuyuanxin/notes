@@ -204,6 +204,8 @@ int putchar(int c);
 
  This example reads the first line of myfile.txt or the first 99 characters, whichev-
  er comes first, and prints them on the screen. 
+
+ example: fgets_eg()
  ----------------------------------------------------------------------------------*/
 char *fgets ( char *str, int num, FILE *stream );
 
