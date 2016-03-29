@@ -17,29 +17,46 @@
  ----------------------------------------------------------------------------------*/
 log_st *log_init(char *log_path, char *logfile_name, int logfile_size)
 {  
-    char new_path[128] = {0};  
-    if (NULL == log_path || NULL == logfile_name) return NULL;  
-    log_st *log = (log_st *)malloc(sizeof(log_st));  
-    memset(log, 0, sizeof(log_st));  
+    char fullname[128] = {0};
+	log_st *logger;
 
-    mkdirs(log_path);
+    if (NULL == log_path || NULL == logfile_name) 
+	{
+		return NULL;
+    }
+	
+    logger = (log_st *)malloc(sizeof(log_st));
+	if(NULL == logger)
+	{
+	    printf("log init failed!\n");
+        return NULL;
+	}
 
-    snprintf(new_path, 128, "%s/%s", log_path,logfile_name);  
+    memset(logger, 0, sizeof(log_st));  
 
-    if(-1 == (log->fd = open(new_path, O_RDWR|O_APPEND|O_CREAT|O_SYNC, S_IRUSR|S_IWUSR|S_IROTH)))  
+    if(-1 == mkdirs(log_path))
+    {
+        printf("log init failed! mkdirs %s failed!\n",log_path);
+		return NULL;
+    }
+
+    snprintf(fullname, 128, "%s/%s", log_path,logfile_name);  
+
+    if(-1 == (logger->fd = open(fullname, O_RDWR|O_APPEND|O_CREAT|O_SYNC, S_IRUSR|S_IWUSR|S_IROTH)))  
     {  
-        free(log);
-        printf("Error! log init failed!");
+        free(logger);
+        printf("Error! log init failed! open %s failed!\n",fullname);
         return NULL;  
     }  
 
-    strncpy(log->path, log_path, 128); 
-    strncpy(log->name, logfile_name, 128);
+    strncpy(logger->path, log_path, 128); 
+    strncpy(logger->name, logfile_name, 128);
 
-    log->size = (logfile_size > 0 ? logfile_size:0);
+    logger->size = (logfile_size > 0 ? logfile_size:0);
 
     printf("Info log init ok.\n");
-    return log;  
+
+    return logger;  
 }  
 
 int log_header(char *buf)
@@ -94,14 +111,15 @@ void log_checksize(log_st *log)
     char new_path[128] = {0};  
     char bak_path[128] = {0};
 	
-    if(NULL == log) { 
+    if(NULL == log) 
+	{ 
         return;
     }
 
     memset(&stat_buf, 0, sizeof(struct stat));  
     fstat(log->fd, &stat_buf);
 
-    printf("log file size %d",(int)stat_buf.st_size);
+    //printf("log file size %d",(int)stat_buf.st_size);
 	
     if(stat_buf.st_size > log->size)  
     {  

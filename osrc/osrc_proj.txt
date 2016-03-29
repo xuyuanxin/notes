@@ -2,7 +2,8 @@
 --> data_hacking
  https://github.com/ClickSecurity/data_hacking
 
-
+--> zlog
+ https://github.com/HardySimpson/zlog
 
 
 -------------------------------------------------------------------------------------|

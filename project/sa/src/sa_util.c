@@ -41,34 +41,41 @@ void *sa_re_alloc(void *old, size_t new_size)
     return new_mem;
 }
 
-void mkdirs(const char *pPath)
+int mkdirs(const char *pPath)
 {
     char tmpPath[128];
     int pos=0;
     const char* pCur = pPath;
 
-    if(-1 != access(pPath,0)) {
-         return;
+    if(-1 != access(pPath,0)) 
+	{
+         return -1;
     }
 
-    if(strlen(pPath)> 128) {
-        return;
+    if(strlen(pPath) > 128) 
+	{
+        return -1;
     }
 
     memset(tmpPath,0,sizeof(tmpPath));
 	
-    while(*pCur++!='\0')
+    while('\0' != *pCur++)
     {
         tmpPath[pos++] = *(pCur-1);
 
          if(*pCur=='/' || *pCur=='\0')
          {
-             if(0!=access(tmpPath,0)&&strlen(tmpPath)>0)
+             if(0!=access(tmpPath,0) && strlen(tmpPath)>0)
              {
-                 mkdir(tmpPath,0777);
+                 if (-1 == mkdir(tmpPath,0777))
+				 {
+				     return -1;
+				 }
              }
          }
-     }
+    }
+
+	return 0;
 }
 
 int main_t(void)
