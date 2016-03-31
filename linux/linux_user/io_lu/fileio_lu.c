@@ -16,7 +16,7 @@
      file descriptor if OK, -1 on error. The file descriptor returned by @open and  -
      @openat is guaranteed to be the lowestnumbered unused descriptor.  
  ----------------------------------------------------------------------------------*/
-int open(const char *path,int oflag,... /* mode_t mode*/ );
+int open(const char *path, int oflag, ... /* mode_t mode*/ );
 int openat(int fd,const char *path,int oflag,... /* mode_tmode*/ );
 
 /*-----------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ ssize_t read(int fd,void *buf,size_t nbytes);
  process either catches the signal and returns from the signal handler, or ignores t-
  he signal, the write operation returns EPIPE.
  ----------------------------------------------------------------------------------*/
-ssize_t write(int fd,const void *buf, size_t nbytes);
+ssize_t write(int fd, const void *buf, size_t nbytes);
 
 /******************************************************************************
 @fd    ：要读取数据的文件描述符

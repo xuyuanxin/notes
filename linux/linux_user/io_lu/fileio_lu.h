@@ -90,6 +90,9 @@ read每write, truncate its length to 0.*/
  O_RDWR
     Most implementations define O_RDONLY as 0, O_WRONLY as 1, and O_RDWR as 2, for 
     compatibility with older programs.
+ O_APPEND 
+    Append to the end of file on each write. By default, "current file offset" is in-
+    itialized to 0 when a file is opened, unless the O_APPEND option is specified.    
  O_EXEC
     Open for execute only.
  O_EXCL  
@@ -97,8 +100,7 @@ read每write, truncate its length to 0.*/
     test for whether the file already exists and the creation of the file if it doe-
     sn't exist is an atomic operation. 
  O_SEARCH
-    One and only one of the previous five constants must be specified. The following
-    constants are optional:
+
  O_CREAT  
     Create the file if it doesn't exist. This option requires a third argument to the 
     @open function (a fourth argument to the @openat function), the mode, which spec-
@@ -110,14 +112,14 @@ read每write, truncate its length to 0.*/
  O_TRUNC 
      If the file exists and if it is successfully opened for either write-only or re
      ad-write, truncate its length to 0.
+ O_SYNC 
+    Have each write wait for physical I/O to complete, including I/O necessary to up-
+    date file attributes modified as a result of the @write.
  ----------------------------------------------------------------------------------*/
 #define O_RDONLY  0
 #define O_WRONLY  1 
 #define O_RDWR    2
-
-#define O_APPEND /*Append to the end of file on each write.By default, 
-"current file offset" is initialized to 0 when a file is opened, unless the 
-O_APPEND option is specified.*/
+#define O_APPEND 
 #define O_CLOEXEC /*Set the FD_CLOEXEC file descriptor flag.*/
 #define	O_CREAT  
 #define O_EXEC	  /* Open for execute only.*/
@@ -125,8 +127,9 @@ O_APPEND option is specified.*/
 #define	O_NONBLOCK 
 
 #define O_SEARCH  /*Open for search only (applies to directories).*/
-#define	O_TRUNC /*If the file exists and if it is successfully opened for 
-either write-only or read每write, truncate its length to 0.*/
+#define	O_TRUNC 
+
+#define O_SYNC
 
 /*
 The purpose of theO_SEARCHconstant is to evaluate search permissions at the time

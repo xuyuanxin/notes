@@ -59,25 +59,25 @@ log_st *log_init(char *log_path, char *logfile_name, int logfile_size)
     return logger;  
 }  
 
-int log_header(char *buf)
+int log_header(char *buf, char *type)
 {
 	time_t nowtime = time(NULL);
     char *pos      = ctime(&nowtime);  
     size_t sz      = strlen(pos);
 
-    pos[sz-1]=']';  
-    snprintf(buf, BUF_SIZE, "[%s", pos);
+    pos[sz-1]='\0';  
+    snprintf(buf, BUF_SIZE, "[%s][%s]", pos, type);
 
     return strlen(buf);
 }
 
-void log_debug(log_st *log, const char *msg, ...)
+void log_print(log_st *log, char *type, const char *msg, ...)
 {  
     va_list ap;  
-    char _n = '\n';  
+    //char _n = '\n';  
     char message[BUF_SIZE] = {0};  
     int msglen = 0;  
-    size_t lh_size; 
+    size_t lh_size; /* loger header size */
 
     if(NULL == log) {
         return;
@@ -85,25 +85,25 @@ void log_debug(log_st *log, const char *msg, ...)
 
 	log_checksize(log);
 
-    lh_size = log_header(message);
+    lh_size = log_header(message,type);
 	
-    va_start(ap, msg);  
+    va_start(ap, msg);
     msglen = vsnprintf(message + lh_size, BUF_SIZE - lh_size, msg, ap);  
     va_end(ap); 
 	
     if (msglen <= 0) {
-        printf("msg len is zero. %s\n", message);
+        printf("msg len is zero. %s", message);
         return;  
     }
 
     if (0 == log->level) {
-        printf("%s\n", message);
+        printf("%s", message);
     }
 
     write(log->fd, message, strlen(message));  
-    write(log->fd, &_n, 1);
+    //write(log->fd, &_n, 1);
     fsync(log->fd);  
-} 
+}
 
 void log_checksize(log_st *log)
 {  

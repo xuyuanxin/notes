@@ -60,7 +60,6 @@ int faccessat(int fd, const char *pathname, int mode, int flag);
 -----------------------------------------------------------------------------------*/
 mode_t umask(mode_t cmask);
 
-#include <sys/stat.h>
 
 
 /*-----------------------------------------------------------------------------------
@@ -81,18 +80,36 @@ int chmod(const char *pathname, mode_t mode);
 int fchmod(int fd, mode_t mode);
 int fchmodat(int fd, const char *pathname, mode_t mode, int flag);
 
+/*-----------------------------------------------------------------------------------
+ @pathname:
+    This @pathname may be relative or absolute. If a file with this pathname  already 
+    exists, then the call fails with the error EEXIST.
+ @mode:
+    The specified file access permissions, mode, are modified by the file mode creat-
+    ion mask of the process.  S_IRUSR
+ @function:
+    create a new, empty directory. The entries for dot and dot-dot are created autom-
+    atically. 
+ @return  : 
+    0 if OK, -1 on error
+
+  for a directory, we normally want at least one of the execute bits enabled, to all-
+  ow access to filenames within the directory.   
+ ----------------------------------------------------------------------------------*/
+int mkdir(const char *pathname, mode_t mode);
+
+
+int mkdirat(int fd, const char *pathname, mode_t mode);
+
 
 #include <unistd.h>
-#define R_OK /*test for read permission*/
-#define W_OK /*test for write permission*/
-#define X_OK /*test for execute permission*/
+
 
 /*-----------------------------------------------------------------------------------
  @mode : 
     The @mode is either the value F_OK to test if a file exists, or the bitwise OR of 
     any of the flags:R_OK W_OK X_OK
  return: 0 if OK, -1 on error
- 功能  : 根据文件@pathname的实际用户ID，判断文件的权限
 
  when we open a file, the kernel performs its access tests based on the effective us-
  er and group IDs. Sometimes, however, a process wants to test accessibility based on 
@@ -102,7 +119,7 @@ int fchmodat(int fd, const char *pathname, mode_t mode, int flag);
  access a given file. The @access and @faccessat functions base their tests on the r-
  eal user and group IDs. 
 
- example: access_eg01()
+ example: 4.7 access_eg01()
 -----------------------------------------------------------------------------------*/
 int access(const char *pathname, int mode);
 
@@ -251,16 +268,7 @@ int utimensat(int fd, const char *path, const struct timespec times[2],int flag)
 /*Returns: 0 if OK, -1 on error*/
 int utimes(const char *pathname, const struct timeval times[2]);
 
-#include <sys/stat.h>
-/*******************************************************************************
- function: create a new, empty directory. The entries for dot and dot-dot are
-           created automatically. 
- return  : 0 if OK, -1 on error
- *******************************************************************************/
-int mkdir(const char *pathname, mode_t mode);
 
-
-int mkdirat(int fd, const char *pathname, mode_t mode);
 
 
 #include <unistd.h>

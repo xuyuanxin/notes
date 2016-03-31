@@ -47,9 +47,9 @@ int mkdirs(const char *pPath)
     int pos=0;
     const char* pCur = pPath;
 
-    if(-1 != access(pPath,0)) 
+    if(0 == access(pPath,F_OK)) 
 	{
-         return -1;
+         return 0;
     }
 
     if(strlen(pPath) > 128) 
@@ -65,7 +65,7 @@ int mkdirs(const char *pPath)
 
          if(*pCur=='/' || *pCur=='\0')
          {
-             if(0!=access(tmpPath,0) && strlen(tmpPath)>0)
+             if(0!=access(tmpPath,F_OK) && strlen(tmpPath)>0)
              {
                  if (-1 == mkdir(tmpPath,0777))
 				 {

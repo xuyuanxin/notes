@@ -20,6 +20,7 @@
 #define S_ISUID   0004000   /* set-user-ID on execution */
 #define S_ISGID   0002000   /* set-group-ID on execution */
 #define S_ISVTX   0001000   /* saved-text (sticky bit) */
+
 /*st_mode也包含了文件的访问权限位,下面是9个访问权限位*/
 #define S_IRUSR   0000400   /* (S_IREAD)  read by user (owner) */
 #define S_IREAD
@@ -33,6 +34,7 @@
 #define S_IROTH   0000004   /* read by other (world) */
 #define S_IWOTH   0000002   /* write by other (world) */
 #define S_IXOTH   0000001   /* execute by other (world) */
+
 /* Linux系统中还定义了几个权限组合：*/
 #define S_IRWXU  (S_IRUSR|S_IWUSR|S_IXUSR) /* read, write, and execute by user (owner) */
 #define S_IRWXO  (S_IWGRP|S_IWGRP|S_IXGRP) /* read, write, and execute by other (world) */
@@ -102,10 +104,11 @@ struct __dirstream
 };
 
 
-
-
-
-
+#include <unistd.h>
+#define F_OK 0 /* test if a file exists */
+#define X_OK 1 /* test for execute permission */
+#define W_OK 2 /* test for write permission */
+#define R_OK 4 /* test for read permission */
 
 
 

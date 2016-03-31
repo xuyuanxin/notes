@@ -11,7 +11,12 @@ int access_eg01(int argc, char *argv[])
         printf("usage: a.out <pathname>");
         return 1;
     }
-    
+
+    printf("F_OK:%d\n", F_OK);
+    printf("R_OK:%d\n", R_OK);
+    printf("W_OK:%d\n", W_OK);
+    printf("X_OK:%d\n", X_OK);
+	
     if (access(argv[1], R_OK) < 0) {
         printf("access error for %s", argv[1]);
     } else {
