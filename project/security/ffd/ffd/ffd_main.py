@@ -4,6 +4,7 @@ import os
 import ConfigParser
 import logging
 import time
+import argparse
 
 import tldextract
 from pymongo import MongoClient
@@ -14,6 +15,13 @@ import logdb
 import feature
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d","--data", type=str, help="the start date, e.g. 2014/12/20/23")
+    parser.add_argument("-f", "--force", action="store_true", help="force run")
+    parser.add_argument("-v", "--verbose", action="store_true", help="verbose info")
+    args = parser.parse_args()
+    print(args)
+	
     ticksbeg  = time.time()
     cfger = ConfigParser.SafeConfigParser()
     cfger.read('ffd.conf')

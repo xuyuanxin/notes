@@ -33,13 +33,14 @@
  init_domain_set(r"G:\xdata_osrc\FluxEnder\resources\cdn_new.txt", outlier_domain_set)
  
 --> 模型训练
- -->--> 白样本
+ -->--> 训练时的白样本
   Alexa排名在10000到15000之间的域名。
   http://s3.amazonaws.com/alexa-static/top-1m.csv.zip
   
- -->--> 黑样本
+ -->--> 黑样本(训练时作为黑样本，检测时直接认为是有问题的域名)
   1 botnet域名
   2 恶意域名中满足条件的
+  3 ud_black.txt
   
  -->--> 排除的域名(不可作为训练数据)
   1 例外域名
@@ -66,6 +67,13 @@
  计算特征时用网络前缀熵表示
  作为检查条件时用 网络前缀个数/ip_nums 来表示
 
+--> 检测
+ 1 白名单 免检域名
+   例外域名
+   alexa前1万
+   自定义白名单
+    
+ 
 --> 特征
  1 ip_nums
 

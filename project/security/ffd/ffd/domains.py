@@ -50,7 +50,7 @@ class Domains:
         self._load_file(self.dpath+os.sep+"hosts_spyeye.txt", self.botnet_r)
         self._load_file(self.dpath+os.sep+"hosts_palevo.txt", self.botnet_r)
         self._load_file(self.dpath+os.sep+"hosts_feodo.txt", self.botnet_r)
-
+        self._load_file(self.dpath+os.sep+"ud_black.txt", self.botnet_r)
     def _load_botnet_e(self):
         self._load_file(self.dpath+os.sep+"hosts_badzeus.txt", self.botnet_e)
         self._load_file(self.dpath+os.sep+"hosts_spyeye.txt", self.botnet_e)

@@ -1,50 +1,196 @@
 '''
 Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
 
+--> Python module
+ Python module, the highest-level program organization unit, which packages program -
+ code and data for reuse, and provides selfcontained namespaces that minimize variab-
+ le name clashes across your programs. In concrete terms, modules typically correspo-
+ nd to Python program files. Each file is a module, and modules import other  modules 
+ to use the names they define. 
+ 
+ the central concepts of Python modules, imports, and object attributes.
 
+--> Why Use Modules?
+ In short, modules provide an easy way to organize components into a system by servi-
+ ng as self-contained packages of variables known as namespaces. All the names defin-
+ ed at the top level of a module file become attributes of the imported module objec-
+ t. As we saw in the last part of this book, imports give access to names in a modul-
+ e’s global scope. That is, the module file’s global scope morphs into the module ob-
+ ject’s attribute namespace when it is imported. 
 
-Why Use Modules?
-In short, modules provide an easy way to organize components into a system by serving
-as self-contained packages of variables known as namespaces. All the names defined at
-the top level of a module file become attributes of the imported module object. As we
-saw in the last part of this book, imports give access to names in a module’s global
-scope. That is, the module file’s global scope morphs into the module object’s attribute
-namespace when it is imported. 
+-->
+ Load the file b.py (unless it’s already loaded), and give me access to all its attributes
+ through the name b.
+ To satisfy such goals, import (and, as you’ll see later, from) statements execute and load
+ other files on request. More formally, in Python, cross-file module linking is not resolved until such import statements are executed at runtime; their net effect is to assign
+ module names—simple variables like b—to loaded module objects. In fact, the module
+ name used in an import statement serves two purposes: it identifies the external file to
+ be loaded, but it also becomes a variable assigned to the loaded module.
 
+--> How Imports Work
+ Some C programmers like to compare the Python module import operation to a C       -
+ #include, but they really shouldn’t—in Python, imports are not just textual inserti-
+ ons of one file into another. They are really runtime operations that perform  three 
+ distinct steps the first time a program imports a given file:
+ 1. Find the module’s file.
+ 2. Compile it to byte code (if needed).
+ 3. Run the module’s code to build the objects it defines.
 
-the central concepts of Python modules, imports, and object attributes.
+ Python storing loaded modules in a table named sys.modules and checking there at the 
+ start of an import operation. If the module is not present, a three-step process be-
+ gins.
 
+ The final step of an import operation executes the byte code of the module. All sta-
+ tements in the file are run in turn, from top to bottom, and any assignments made to
+ names during this step generate attributes of the resulting module object. This is -
+ how the tools defined by the module’s code are created. For instance, def statements 
+ in a file are run at import time to create functions and assign attributes within t-
+ he module to those functions. The functions can then be called later in the  program 
+ by the file’s importers. Because this last import step actually runs the file’s cod-
+ e, if any top-level code in a module file does real work, you’ll see its results  at 
+ import time. 
 
-Load the file b.py (unless it’s already loaded), and give me access to all its attributes
-through the name b.
-To satisfy such goals, import (and, as you’ll see later, from) statements execute and load
-other files on request. More formally, in Python, cross-file module linking is not resolved until such import statements are executed at runtime; their net effect is to assign
-module names—simple variables like b—to loaded module objects. In fact, the module
-name used in an import statement serves two purposes: it identifies the external file to
-be loaded, but it also becomes a variable assigned to the loaded module.
+-->The Module Search Path
+ -->--> Home directory (automatic)
+  Python first looks for the imported file in the home directory. The meaning of this
+  entry depends on how you are running the code. When you’re running a program,  this 
+  entry is the directory containing your program’s top-level script file. When you’re 
+  working interactively, this entry is the directory in which you are working ( i.e., 
+  the current working directory).
+ -->--> PYTHONPATH directories (configurable)
+  Next, Python searches all directories listed in your PYTHONPATH environment variab-
+  le setting, from left to right (assuming you have set this at all: it’s not  preset 
+  for you).
+  
+  For instance, on Windows, you might use your Control Panel’s System icon to set   -
+  PYTHONPATH to a list of directories separated by semicolons, like this:
+  c:\pycode\utilities;d:\pycode\package1
+  Or you might instead create a text file called C:\Python33\pydirs.pth, which  looks 
+  like this:
+  c:\pycode\utilities
+  d:\pycode\package1
+ -->--> Standard library directories (automatic)
+  Next, Python automatically searches the directories where the standard library mod-
+  ules are installed on your machine. Because these are always searched, they normal-
+  ly do not need to be added to your PYTHONPATH or included in path files ( discussed 
+  next)
+ -->--> .pth path file directories (configurable)
+  Next, a lesser-used feature of Python allows users to add directories to the module
+  search path by simply listing them, one per line, in a text file whose name ends w-
+  ith a .pth suffix (for "path"). These path configuration files are a somewhat adva-
+  nced installation-related feature; In short, text files of directory names  dropped 
+  in an appropriate directory can serve roughly the same role as the PYTHONPATH envi-
+  ronment variable setting.
+ -->--> The Lib\site-packages directory of third-party extensions (automatic)
+  Finally, Python automatically adds the site-packages subdirectory of its standard -
+  library to the module search path.
 
+ -->--> The sys.path List
+  If you want to see how the module search path is truly configured on your machine ,
+  you can always inspect the path as Python knows it by printing the built-in       -
+  sys.path list (that is, the path attribute of the standard library module sys).   -
+  sys.path is the module search path. Python configures it at program startup, autom-
+  atically merging the home directory of the top-level file (or an empty string to d-
+  esignate the current working directory), any PYTHONPATH directories, the contents -
+  of any .pth file paths you’ve created, and all the standard library directories. T-
+  he result is a list of directory name strings that Python searches on each import -
+  of a new file. 
 
-How Imports Work
-Some C programmers like to compare the Python module import operation to a C
-#include, but they really shouldn’t—in Python, imports are not just textual insertions
-of one file into another. They are really runtime operations that perform three distinct
-steps the first time a program imports a given file:
-1. Find the module’s file.
-2. Compile it to byte code (if needed).
-3. Run the module’s code to build the objects it defines.
-To better understand module imports, we’ll explore these steps in turn. Bear in mind
-that all three of these steps are carried out only the first time a module is imported
-during a program’s execution; later imports of the same module in a program run
-bypass all of these steps and simply fetch the already loaded module object in memory.
-Technically, Python does this by storing loaded modules in a table named sys.mod
-ules and checking there at the start of an import operation. If the module is not present,
-a three-step process begins.
+ -->--> Module File Selection
+  For example, an import statement of the form import b might today load or resolve -
+  to:
+  • A source code file named b.py
+  • A byte code file named b.pyc
+  • An optimized byte code file named b.pyo (a less common format)
+  • A directory named b, for package imports (described in Chapter 24)
+  • A compiled extension module, coded in C, C++, or another language, and dynamical-
+    ly linked when imported (e.g., b.so on Linux, or b.dll or b.pyd on Cygwin and Wi-
+	ndows)
+  • A compiled built-in module coded in C and statically linked into Python
+  • A ZIP file component that is automatically extracted when imported
+  • An in-memory image, for frozen executables
+  • A Java class, in the Jython version of Python
+  • A .NET component, in the IronPython version of Python
+  
+  Saying import b gets whatever module b is, according to your module search path, a-
+  nd b.attr fetches an item in the module, be it a Python variable or a linked-in C -
+  function. Some standard modules we will use in this book are actually coded in C, -
+  not Python; because they look just like Python-coded module files, their clients d-
+  on’t have to care.
+  
+--> Module Creation
+ To define a module, simply use your text editor to type some Python code into a text
+ file, and save it with a ".py" extension; any such file is automatically  considered 
+ a Python module. All the names assigned at the top level of the module become its a-
+ ttributes (names associated with the module object) and are exported for clients  to 
+ use--they morph from variable to module object attribute automatically.
 
+ For instance, if you type the following def into a file called module1.py and import 
+ it, you create a module object with one attribute--the name printer, which happens -
+ to be a reference to a function object:
+ 
+ def printer(x): # Module attribute module1.py
+     print(x)
 
+ Because module names become variable names inside a Python program (without the .py)
+ , they should also follow the normal variable name rules outlined in Chapter 11. For 
+ instance, you can create a module file named if.py, but you cannot import it becaus-
+ e if is a reserved word, when you try to run import if, you’ll get a syntax error.
 
-
-
-
+ -->--> Other Kinds of Modules (extension modules)
+  As mentioned in the preceding chapter, it is also possible to create a Python modu-
+  le by writing code in an external language such as C, C++, and others ( e.g., Java, 
+  in the Jython implementation of the language). Such modules are called extension m-
+  odules, and they are generally used to wrap up external libraries for use in Python 
+  scripts. When imported by Python code, extension modules look and feel the same  as 
+  modules coded as Python source code files--they are accessed with import statement-
+  s, and they provide functions and objects as module attributes. 
+  
+--> Module Usage
+ -->--> The import Statement
+  In the first example, the name module1 serves two different purposes--it identifies 
+  an external file to be loaded, and it becomes a variable in the script, which refe-
+  rences the module object after the file is loaded:
+  >>> import module1 # Get module as a whole (one or more)
+  >>> module1.printer('Hello world!') # Qualify to get names
+  Hello world!
+  The import statement simply lists one or more names of modules to load, separated -
+  by commas. Because it gives a name that refers to the whole module object, we  must 
+  go through the module name to fetch its attributes (e.g., module1.printer).
+ -->--> The from Statement
+  By contrast, because from copies specific names from one file over to another scop-
+  e, it allows us to use the copied names directly in the script without going throu-
+  gh the module (e.g., printer):
+  >>> from module1 import printer # Copy out a variable (one or more)
+  >>> printer('Hello world!') # No need to qualify name
+  Hello world!
+  This form of from allows us to list one or more names to be copied out, separated -
+  by commas. Here, it has the same effect as the prior example, but because the impo-
+  rted name is copied into the scope where the from statement appears, using that na-
+  me in the script requires less typing--we can use it directly instead of naming the 
+  enclosing module. In fact, we must; from doesn’t assign the name of the module its-
+  elf. As you’ll see in more detail later, the from statement is really just a  minor 
+  extension to the import statement--it imports the module file as usual (running the 
+  full three-step procedure of the preceding chapter), but adds an extra step that c-
+  opies one or more names (not objects) out of the file. The entire file is loaded, -
+  but you’re given names for more direct access to its parts.  
+ -->--> The from * Statement
+  Finally, the next example uses a special form of from: when we use a * instead of -
+  specific names, we get copies of all names assigned at the top level of the refere-
+  nced module. Note that only * works in this context; you can’t use pattern matching 
+  to select a subset of names.
+  
+--> Module Packages  
+ -->--> Package Relative Imports
+  
+  
+  
+  
+  
+  
+  
+  
+  
 ----> What Are Modules?
  Modules are a means to organize Python code, and packages help you organize modules. 
  A module allows you to logically organize your Python code. When code gets to be la-
