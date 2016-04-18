@@ -1,0 +1,315 @@
+
+http://roclinux.cn/?p=2449  dig挖出DNS的秘密
+
+
+《dig挖出DNS的秘密》-linux命令五分钟系列之三十四
+Linux命令五分钟
+本原创文章属于《Linux大棚》博客。
+
+博客地址为http://roclinux.cn。
+
+文章作者为roc。
+
+===
+
+【初次见面】
+
+我相信使用nslookup的同学一定比使用dig的同学多，所以还是有必要花些时间给大家介绍一下dig的。
+
+dig，和nslookup作用有些类似，都是DNS查询工具。
+
+dig，其实是一个缩写，即Domain Information Groper。
+
+一些专业的DNS管理员在追查DNS问题时，都乐于使用dig命令，是看中了dig设置灵活、输出清晰、功能强大的特点。
+
+【最简单的dig用法】
+
+最简单的dig用法，当然就是直接输入dig按回车。
+
+
+?
+1
+2
+3
+4
+5
+6
+$ dig
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> //Dig命令的版本信息
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+从上面的输出，你一定观察到了，当直接使用dig命令，不加任何参数和选项时，dig会向默认的上连DNS服务器查询“.”（根域）的NS记录。
+
+【dig加个点】
+
+刚才直接输入dig，这次我们在后面加上一个“.”，看看结果和刚才有何区别：
+
+?
+1
+2
+3
+4
+5
+6
+$ dig .
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> .
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+【我想用google-DNS来查baidu.com的A记录】
+
+?
+1
+2
+3
+4
+5
+6
+7
+$ dig @8.8.8.8 www.baidu.com A //命令格式为dig @dnsserver name querytype
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> @8.8.8.8 www.baidu.com A
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+从这个例子，大家学习到了dig的基本的命令格式是：
+
+?
+1
+dig @dnsserver name querytype
+如果你设置的dnsserver是一个域名，那么dig会首先通过默认的上连DNS服务器去查询对应的IP地址，然后再以设置的dnsserver为上连DNS服务器。
+如果你没有设置@dnsserver，那么dig就会依次使用/etc/resolv.conf里的地址作为上连DNS服务器。
+而对于querytype，如果你看过我上一篇有关nslookup命令的讲解，那么你应该对querytype有所了解，你可以设置A/AAAA/PTR/MX/ANY等值，默认是查询A记录。
+
+【一些常用的选项】
+
+1 -c选项，可以设置协议类型（class），包括IN(默认)、CH和HS。
+
+2 -f选项，dig支持从一个文件里读取内容进行批量查询，这个非常体贴和方便。文件的内容要求一行为一个查询请求。来个实际例子吧：
+
+?
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+$ cat querylist //文件内容，共有两个域名需要查询
+www.baidu.com
+www.sohu.com
+$ dig -f querylist -c IN -t A//设置-f参数开始批量查询
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> www.baidu.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> www.sohu.com
+;; Got answer:
+;; ->>HEADER<
+3 -4和-6两个选项，用于设置仅适用哪一种作为查询包传输协议，分别对应着IPv4和IPv6。
+
+4 -t选项，用来设置查询类型，默认情况下是A，也可以设置MX等类型，来一个例子：
+
+?
+1
+2
+3
+4
+5
+6
+$ dig roclinux.cn -t MX
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> roclinux.cn -t MX
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+5 -q选项，其实它本身是一个多余的选项，但是它在复杂的dig命令中又是那么的有用。-q选项可以显式设置你要查询的域名，这样可以避免和其他众多的参数、选项相混淆，提高了命令的可读性，来个例子：
+
+?
+1
+2
+3
+4
+5
+6
+$ dig -q www.roclinux.cn
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> -q www.roclinux.cn
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+6 -x选项，是逆向查询选项。可以查询IP地址到域名的映射关系。举一个例子：
+
+?
+1
+2
+3
+4
+5
+6
+$ dig -x 193.0.14.129
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> -x 193.0.14.129
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+【dig特有的查询选项（query option）】
+
+和刚才的选项不同，dig还有一批所谓的“查询选项”，这批选项的使用与否，会影响到dig的查询方式或输出的结果信息，因此对于这批选项，dig要求显式的在其前面统一的加上一个“+”（加号），这样dig识别起来会更方便，同时命令的可读性也会更强。
+dig总共有42个查询选项，涉及到DNS信息的方方面面，如此多的查询选项，本文不会一一赘述，只会挑出最最常用的几个重点讲解。
+
+【TCP代替UDP】
+
+众所周知，DNS查询过程中的交互是采用UDP的。如果你希望采用TCP方式，需要这样：
+
+?
+1
+2
+3
+4
+5
+6
+$ dig +tcp www.baidu.com
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> +tcp www.baidu.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+【默认追加域】
+
+大家直接看例子，应该就能理解“默认域”的概念了，也就能理解+domain=somedomain的作用了：
+
+?
+1
+2
+3
+4
+5
+6
+dig +domain=baidu.com image
+ 
+; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.10.rc1.el6_3.2 <<>> +domain=baidu.com image
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<
+【跟踪dig全过程】
+
+dig非常著名的一个查询选项就是+trace，当使用这个查询选项后，dig会从根域查询一直跟踪直到查询到最终结果，并将整个过程信息输出出来。
+
+?
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+$ dig +trace roclinux.cn 
+ 
+; <<>> DiG 9.2.4 <<>> +trace roclinux.cn 
+;; global options:  printcmd
+.                       335937  IN      NS      l.root-servers.net.
+.                       335937  IN      NS      b.root-servers.net.
+.                       335937  IN      NS      d.root-servers.net.
+.                       335937  IN      NS      k.root-servers.net.
+.                       335937  IN      NS      h.root-servers.net.
+.                       335937  IN      NS      j.root-servers.net.
+.                       335937  IN      NS      a.root-servers.net.
+.                       335937  IN      NS      e.root-servers.net.
+.                       335937  IN      NS      c.root-servers.net.
+.                       335937  IN      NS      m.root-servers.net.
+.                       335937  IN      NS      g.root-servers.net.
+.                       335937  IN      NS      i.root-servers.net.
+.                       335937  IN      NS      f.root-servers.net.
+;; Received 400 bytes from 10.23.0.231#53(10.23.0.231) in 0 ms //从本地DNS查找到根域DNS列表
+ 
+cn.                     172800  IN      NS      c.dns.cn.
+cn.                     172800  IN      NS      a.dns.cn.
+cn.                     172800  IN      NS      b.dns.cn.
+cn.                     172800  IN      NS      e.dns.cn.
+cn.                     172800  IN      NS      ns.cernet.net.
+cn.                     172800  IN      NS      d.dns.cn.
+;; Received 292 bytes from 192.228.79.201#53(b.root-servers.net) in 460 ms //选择了b.root-servers.net这台根域DNS来查找cn.域DNS列表
+ 
+roclinux.cn.            21600   IN      NS      ns11.edong.com.
+roclinux.cn.            21600   IN      NS      ns12.edong.com.
+;; Received 76 bytes from 203.119.27.1#53(c.dns.cn) in 0 ms //选择了c.dns.cn这台cn.域DNS服务器来查找roclinux.cn的DNS列表
+ 
+roclinux.cn.            3600    IN      A       116.255.245.206
+roclinux.cn.            3600    IN      NS      ns12.edong.com.
+roclinux.cn.            3600    IN      NS      ns11.edong.com.
+;; Received 124 bytes from 61.147.124.145#53(ns11.edong.com) in 104 ms //最终查找到A记录
+【精简dig输出】
+
+1 使用+nocmd的话，可以节省输出dig版本信息。
+
+2 使用+short的话，仅会输出最精简的CNAME信息和A记录，其他都不会输出。就像这样：
+
+?
+1
+2
+3
+4
+$ dig +short www.baidu.com
+www.a.shifen.com.
+119.75.218.77
+119.75.217.56
+3 使用+nocomment的话，可以节省输出dig的详情注释信息。
+
+4 使用+nostat的话，最后的统计信息也不会输出。当+nocmd、+nocomment和+nostat都是用上，是这样：
+
+?
+1
+2
+3
+4
+5
+$ dig +nocmd +nocomment +nostat www.baidu.com
+;www.baidu.com.                 IN      A
+www.baidu.com.          260     IN      CNAME   www.a.shifen.com.
+www.a.shifen.com.       244     IN      A       119.75.217.56
+www.a.shifen.com.       244     IN      A       119.75.218.77
+【我们还需要学习什么】
+
+坚持看我的博客的同学，已经掌握了nslookup和dig两个DNS工具，我想，下一步你可以
+自己搭建一套内部的DNS服务器了，自己设置master/slave服务器，自己添加Zone，
+自己添加正解、反解，自己设置缓存超时等等，相信通过这一番折腾，
+你对DNS会有不一样的理解和认识。
+
+谢谢！

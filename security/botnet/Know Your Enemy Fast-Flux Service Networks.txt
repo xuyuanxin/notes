@@ -1,0 +1,305 @@
+
+--> REAL WORLD FAST-FLUX EXAMPLES
+ Having explained the underlying principles, we will now look at a fast-flux  service 
+ network from the point of view of a criminal and review the basic steps required  to 
+ setup a fast-flux service network. First, our criminal(s) registers a domain for th-
+ eir attack. An example would be a bogus domain name that appears similar to a  bank, 
+ or a site promoting pharmaceutical drugs. In our case, we will use "example.com". B-
+ ased on our research, the domain extensions .info and .hk are some of the most comm-
+ only abused Top Level Domains (TLD¡¯s). This is may be due to the fact that resellers 
+ for these domain registrars are more lax in their controls than other TLDs. Often t-
+ hese false domains are registered by fraudulent means, such as using stolen credit -
+ cards and bogus or otherwise invalid registrant account detail. The criminal(s) will 
+ often already have control of a network of compromised systems to act as their redi-
+ rectors, or they can temporarily rent a botnet. In addition, registrations for the -
+ domains are often the cheapest. The criminal(s) then publish Name Server (NS) recor-
+ ds that either point to bullet-proof hosting, or at any of the proxy/redirects     -
+ flux-agent nodes under their control. Examples of bullet-proof hosting providers co-
+ uld include DNS services operated from Russia, China, or many other countries around 
+ the world. If the criminals do not have access to this type of hardened service, th-
+ ey will host the DNS services on their own compromised systems, and often the mothe-
+ rship node that is hosting the master web sites can also be found serving DNS servi-
+ ces. We will now review two actual deployments.
+
+ -->--> Single-Flux: A Money Mule
+  First we will review the DNS records for a single-flux service network. This is a -
+  real world example demonstrating a money mule recruitment scam. A money mule is so-
+  meone that acts as an intermediary in transferring or withdrawing money often invo-
+  lved in fraud. For example, a criminal will steal money out of someone¡¯s bank acco-
+  unt, transfer it to the money mule¡¯s bank account, then have the money mule withdr-
+  aw the funds and send them to a location for pickup, perhaps in a different countr-
+  y. What is unique about some current money mule scams is that the money mule may t-
+  hink they are working for a legitimate company, not realizing they are acting on t-
+  he behalf of criminals in money laundering schemes. Often the money mule is actual-
+  ly just another victim in a chain of other victims.
+
+  Below are the single-flux DNS records typical of such an infrastructure. The table-
+  s show DNS snapshots of the domain name divewithsharks.hk taken approximately every 
+  30 minutes, with the five A records returned round-robin showing clear infiltration 
+  into home/business dialup and broadband networks. Notice that the NS records do not 
+  change, but some of the A records do. This is the money mule web site.
+
+  ;; WHEN: Sat Feb 3 20:08:08 2007
+  divewithsharks.hk. 1800 IN A 70.68.187.xxx [xxx.vf.shawcable.net]
+  divewithsharks.hk. 1800 IN A 76.209.81.xxx [SBIS-AS - AT&T Internet Services]
+  divewithsharks.hk. 1800 IN A 85.207.74.xxx [adsl-ustixxx-74-207-85.bluetone.cz]
+  divewithsharks.hk. 1800 IN A 90.144.43.xxx [d90-144-43-xxx.cust.tele2.fr]
+  divewithsharks.hk. 1800 IN A 142.165.41.xxx [142-165-41-xxx.msjw.hsdb.sasknet.sk.ca]
+
+  divewithsharks.hk. 1800 IN NS ns1.world-wr.com.
+  divewithsharks.hk. 1800 IN NS ns2.world-wr.com.
+
+  ns1.world-wr.com.  87169 IN A 66.232.119.212 [HVC-AS - HIVELOCITY VENTURES CORP]
+  ns2.world-wr.com.  87177 IN A 209.88.199.xxx [vpdn-dsl209-88-199-xxx.alami.net]
+  
+  Single-flux nets appear to apply some form of logic in deciding which of their ava-
+  ilable IP addresses will be advertised in the next set of responses. This may be b-
+  ased on ongoing connection quality monitoring (and perhaps a load-balancing algori-
+  thm). New flux-agent IP addresses are inserted into the fast-flux service network -
+  to replace nodes with poor performance, being subject to mitigation or otherwise o-
+  ffline nodes. Now let¡¯s take a look at the DNS records of the same domain name 30 -
+  minutes later and see what has changed:
+
+  ;; WHEN: Sat Feb 3 20:40:04 2007 (~30 minutes/1800 seconds later)
+  divewithsharks.hk. 1800 IN A 24.85.102.xxx [xxx.vs.shawcable.net] NEW
+  divewithsharks.hk. 1800 IN A 69.47.177.xxx [d47-69-xxx-177.try.wideopenwest.com] NEW
+  divewithsharks.hk. 1800 IN A 70.68.187.xxx [xxx.vf.shawcable.net]
+  divewithsharks.hk. 1800 IN A 90.144.43.xxx [d90-144-43-xxx.cust.tele2.fr]
+  divewithsharks.hk. 1800 IN A 142.165.41.xxx [142-165-41-xxx.msjw.hsdb.sasknet.sk.ca]
+
+  divewithsharks.hk. 1800 IN NS ns1.world-wr.com.
+  divewithsharks.hk. 1800 IN NS ns2.world-wr.com.
+
+  ns1.world-wr.com.  85248 IN A 66.232.119.xxx [HVC-AS - HIVELOCITY VENTURES CORP]
+  ns2.world-wr.com.  82991 IN A 209.88.199.xxx [vpdn-dsl209-88-199-xxx.alami.net]
+
+  As we see, highlighted in bold two of the advertised IP addresses have changed. Ag-
+  ain, these two IP addresses belong to dial-up or broadband networks. Another 30 mi-
+  nutes later, a lookup of the domain returns the following information:
+
+  ;; WHEN: Sat Feb 3 21:10:07 2007 (~30 minutes/1800 seconds later)
+  divewithsharks.hk. 1238 IN A 68.150.25.xxx [xxx.ed.shawcable.net] NEW
+  divewithsharks.hk. 1238 IN A 76.209.81.xxx [SBIS-AS - AT&T Internet Services] This one came back!
+  divewithsharks.hk. 1238 IN A 172.189.83.xxx [xxx.ipt.aol.com] NEW
+  divewithsharks.hk. 1238 IN A 200.115.195.xxx [pcxxx.telecentro.com.ar] NEW
+  divewithsharks.hk. 1238 IN A 213.85.179.xxx [CNT Autonomous System] NEW
+
+  divewithsharks.hk. 1238 IN NS ns1.world-wr.com.
+  divewithsharks.hk. 1238 IN NS ns2.world-wr.com.
+
+  ns1.world-wr.com.  83446 IN A 66.232.119.xxx [HVC-AS - HIVELOCITY VENTURES CORP]
+  ns2.world-wr.com.  81189 IN A 209.88.199.xxx [vpdn-dsl209-88-199-xxx.alami.net]
+
+  Now, we observe four new IP addresses and one IP address that we saw in the first -
+  query. This demonstrates the round-robin address response mechanism used in       -
+  fast-flux networks. As we have seen in this example, the A records for the domain -
+  are constantly changing. Each one of these systems represents a compromised host a-
+  cting as a redirector, a redirector that eventually points to the money mule web s-
+  ite. A significant response issue is that the incident responders do not know the -
+  ultimate destination of the money mule site unless they have access to one of the -
+  redirector nodes. This creates a far more dynamic and robust environment for the c-
+  riminals. Next we will consider double-flux networks, where criminals add an addit-
+  ional layer of complexity to improve their security.
+
+ -->--> Double-Flux: MySpace
+  Double-flux is where both the NS records (authoritative name server for the domain) 
+  and A records (web serving host or hosts for the target) are regularly changed, ma-
+  king the fast-flux service network much more dynamic. For double-flux techniques to 
+  work, the domain registrar has to allow the domain administrator the ability to fr-
+  equently change the NS information, which is not something that usually occurs in -
+  normal domain management.
+
+  In the example below, we observe a phishing attack directed against the popular so-
+  cial networking web site MySpace. The attacker has created a bogus website called -
+  login.mylspacee.com. This fake website appears visually to be the real MySpace  web 
+  site, but instead harvests MySpace user authentication credentials from anyone  who 
+  is tricked into logging in to the fake site. To make it harder for security profes-
+  sionals to shut down the fake site, both the NS and A DNS records are constantly c-
+  hanging. Observing DNS activity in such incidents, it is very common to detect a c-
+  onsistent pattern of between five to ten A record in a set of round-robin response-
+  s, in addition to a five NS record round-robin response set for any double-flux do-
+  main. This signature is becoming the hallmark for identifying double-flux  domains. 
+  In the table below, observe that these DNS records are constantly changing:
+
+  ;; WHEN: Wed Apr 4 18:47:50 2007
+  login.mylspacee.com. 177 IN A 66.229.133.xxx [c-66-229-133-xxx.hsd1.fl.comcast.net]
+  login.mylspacee.com. 177 IN A 67.10.117.xxx [cpe-67-10-117-xxx.gt.res.rr.com]
+  login.mylspacee.com. 177 IN A 70.244.2.xxx [adsl-70-244-2-xxx.dsl.hrlntx.swbell.net]
+  login.mylspacee.com. 177 IN A 74.67.113.xxx [cpe-74-67-113-xxx.stny.res.rr.com]
+  login.mylspacee.com. 177 IN A 74.137.49.xxx [74-137-49-xxx.dhcp.insightbb.com]
+
+  mylspacee.com. 108877 IN NS ns3.myheroisyourslove.hk.
+  mylspacee.com. 108877 IN NS ns4.myheroisyourslove.hk.
+  mylspacee.com. 108877 IN NS ns5.myheroisyourslove.hk.
+  mylspacee.com. 108877 IN NS ns1.myheroisyourslove.hk.
+  mylspacee.com. 108877 IN NS ns2.myheroisyourslove.hk.
+
+  ns1.myheroisyourslove.hk.854 IN A 70.227.218.xxx [ppp-70-227-218-xxx.dsl.sfldmi.ameritech.net]
+  ns2.myheroisyourslove.hk.854 IN A 70.136.16.xxx [adsl-70-136-16-xxx.dsl.bumttx.sbcglobal.net]
+  ns3.myheroisyourslove.hk. 854 IN A 68.59.76.xxx [c-68-59-76-xxx.hsd1.al.comcast.net]
+  ns4.myheroisyourslove.hk. 854 IN A 70.126.19.xxx [xxx-19.126-70.tampabay.res.rr.com]
+  ns5.myheroisyourslove.hk. 854 IN A 70.121.157.xxx [xxx.157.121.70.cfl.res.rr.com]
+
+  About 4 minutes later, for the same domain, only the A records have changed. Notice 
+  that the NS records have remained the same.
+
+  ;; WHEN: Wed Apr 4 18:51:56 2007 (~4 minutes/186 seconds later)
+  login.mylspacee.com. 161 IN A 74.131.218.xxx [74-131-218-xxx.dhcp.insightbb.com] NEW
+  login.mylspacee.com. 161 IN A 24.174.195.xxx [cpe-24-174-195-xxx.elp.res.rr.com] NEW
+  login.mylspacee.com. 161 IN A 65.65.182.xxx [adsl-65-65-182-xxx.dsl.hstntx.swbell.net] NEW
+  login.mylspacee.com. 161 IN A 69.215.174.xxx [ppp-69-215-174-xxx.dsl.ipltin.ameritech.net] NEW
+  login.mylspacee.com. 161 IN A 71.135.180.xxx [adsl-71-135-180-xxx.dsl.pltn13.pacbell.net] NEW
+
+  mylspacee.com. 108642 IN NS ns3.myheroisyourslove.hk.
+  mylspacee.com. 108642 IN NS ns4.myheroisyourslove.hk.
+  mylspacee.com. 108642 IN NS ns5.myheroisyourslove.hk.
+  mylspacee.com. 108642 IN NS ns1.myheroisyourslove.hk.
+  mylspacee.com. 108642 IN NS ns2.myheroisyourslove.hk.
+
+  ns1.myheroisyourslove.hk. 608 IN A 70.227.218.xxx [ppp-70-227-218-xxx.dsl.sfldmi.ameritech.net]
+  ns2.myheroisyourslove.hk. 608 IN A 70.136.16.xxx [adsl-70-136-16-xxx.dsl.bumttx.sbcglobal.net]
+  ns3.myheroisyourslove.hk. 608 IN A 68.59.76.xxx [c-68-59-76-xxx.hsd1.al.comcast.net]
+  ns4.myheroisyourslove.hk. 608 IN A 70.126.19.xxx [xxx-19.126-70.tampabay.res.rr.com]
+  ns5.myheroisyourslove.hk. 608 IN A 70.121.157.xxx [xxx.157.121.70.cfl.res.rr.com]
+
+  Checking again one and a half hours later, the NS records for this domain have mig-
+  rated and five new NS records appear. Similar to the previous example, we see  that 
+  the A and NS record are hosted at dial-up or broadband providers, indicating that -
+  these are compromised hosts used by an attacker for nefarious purposes:
+
+  ;; WHEN: Wed Apr 4 21:13:14 2007 (~90 minutes/4878 seconds later)
+  ns1.myheroisyourslove.hk. 3596 IN A 75.67.15.xxx [c-75-67-15-xxx.hsd1.ma.comcast.net] NEW
+  ns2.myheroisyourslove.hk. 3596 IN A 75.22.239.xxx [adsl-75-22-239-xxx.dsl.chcgil.sbcglobal.net] NEW
+  ns3.myheroisyourslove.hk. 3596 IN A 75.33.248.xxx [adsl-75-33-248-xxx.dsl.chcgil.sbcglobal.net] NEW
+  ns4.myheroisyourslove.hk. 180 IN A 69.238.210.xxx [ppp-69-238-210-xxx.dsl.irvnca.pacbell.net] NEW
+  ns5.myheroisyourslove.hk. 3596 IN A 70.64.222.xxx [xxx.mj.shawcable.net] NEW
+  
+--> FAST-FLUX MALWARE
+ Flux node agents share the most essential and basic capabilities of the traditional, 
+ but minimalist IRC-based bot in several ways: they regularly phone home to  announce 
+ their continued availability, they check for updates, perform download operations, -
+ and allow for the execution of arbitrary commands on the local operating system by -
+ a remote attacker. However, almost without exception, fast-flux Command and  Control 
+ (C&C) activity observed in the wild thus far has been HTTP protocol based.
+
+ The ability of Fast-flux agents to proxy or redirect TCP services appears to be an -
+ outgrowth from the redirect functions of legacy IRC bots that possess optional UDP -
+ proxy or redirect capabilities. The bundling of these features enables a fast-flux -
+ service network to become a powerful criminal tool and helps to make the fast-flux -
+ service network operator less easily detectable. The fast-flux front end nodes  will 
+ either act on command or execute hard-coded instructions to redirect inbound traffic 
+ received on configured ports to a specifically chosen upstream fast-flux  mothership 
+ node. Several fast-flux service network operations have been observed maintaining d-
+ istributed nodes that act primarily in performing availability and connection quali-
+ ty tests of individual flux-agents within the fast-flux service network. For an exa-
+ mple of the development cycle of fast-flux malware, refer to Appendix A. For an exa-
+ mple of the infection process for the malware, refer to Appendix B. Below we summar-
+ ize two commonly used malware that have adopted fast-flux capabilities.
+
+ Warezov/Stration:
+ The networks based upon these malware variants have been erected to provide a robust 
+ platform for sending large volumes of unsolicited email (spam). They have been  very 
+ successful in this goal and employ advanced techniques such as the constant automat-
+ ed creation of many malware variants to frustrate anti-virus signature creation. In-
+ fected machines download these updates on a regular schedule in order to increase t-
+ he amount of time it takes for a system to be cleaned and taken offline. These upda-
+ tes must be hosted on websites, so if their public IP addresses remain static, the -
+ update sites can potentially be taken down fairly easily. Until recently, a strategy 
+ of auto-generating pseudo-random domain names which moved around was used to protect 
+ such download sites. Starting in May 2007, the criminal organization behind this sp-
+ am business moved to a fast-flux service network model. This group is now hosting t-
+ heir DNS services and malware download sites via fast-flux service networks and app-
+ ear to be enjoying continued success in their criminal endeavor.
+
+ Storm:
+ The biggest competitor of the Warezov/Stration gang is perhaps the criminal organiz-
+ ation operating a very large spam sending network based on the family of malware va-
+ riants dubbed Storm/Peacomm/Peed. They employ a UDP-based P2P model for botnet comm-
+ and and control. This is a highly robust way to operate a large distributed  network 
+ if the complexities of managing peer lists and minimizing latency can be overcome. -
+ They have also employed novel techniques to counter anti-spam solutions, such as ge-
+ nerating image-based spam on the fly on the endpoints flux-agent nodes themselves, -
+ rather than simply relying on template based messaging. These images are  randomized 
+ in ways which frustrate the OCR (object character recognition) technologies used  in 
+ some anti-spam products and have been most commonly used to facilitate fraudulent p-
+ ump and dump stock spam schemes. In June 2007 this group was observed attempting  to 
+ modify their P2P network to support fast-flux style networking. This is a significa-
+ nt advance for spam-sending malware and requires further study.  
+  
+--> FAST-FLUX CASE STUDY
+ We have discussed several real world examples captured in the wild. Now let¡¯s take -
+ a closer, more detailed look at an incident. In this case, we deliberately  infected 
+ a honeypot system with a fast-flux agent. The system was contained in a controlled -
+ Honeywall environment. The malware we used was called weby.exe and had the MD5  hash 
+ 70978572bc5c4fecb9d759611b27a762 . The binary was executed in a sandbox  environment 
+ with a Honeywall gateway providing data control and data capture capabilities.     -
+ Post-infection analysis of the captured system and network data identified the foll-
+ owing activity:
+
+ 1. First, the system resolved the domain name www.google.com. This is most likely  a 
+ basic Internet connectivity check. The malware component needs to first determine t-
+ hat it has access to the Internet and DNS is resolving.
+
+ 2. The malware binary then registers with its owner. This is performed by connecting 
+ to a virtual web host with an HTTP GET request and a URL query string that  contains 
+ information about the infected host. This is not a Command and Control (C&C) channe-
+ l, instead it is nothing more than an announcement to the malware administrator that 
+ another victim system has been successfully infected. The HTTP GET request was subm-
+ itted with the following form (query string named variable values are omitted).  The 
+ complete HTTP GET request is shown in Appendix C, where we show a full example of  a 
+ registration request by a flux-agent.
+
+ http://xxx.ifeelyou.info/settings/weby/remote.php?os= &user= &status= &version= &build= &uptime=
+
+ 3. The fast-flux registration server (mothership) response to the announcement/regi-
+ stration step is "Added Successfully!" This we perceive to mean that the infected s-
+ ystem has been successfully added to the fast-flux service network. A new victim  is 
+ standing by for malicious duty.
+
+ 4. The next step is for the infected system to obtain a configuration file by hourl-
+ y polling of a settings file on a remote web server. This is where the flux agent l-
+ earns details including what ports to bind and where the mothership is located and -
+ which incoming traffic will be redirected upstream to the mothership. In this  case, 
+ the fast-flux agent submits a HTTP GET request to another virtual web host that only 
+ happens to share the same IP as used by the registration interface.
+
+ http://xxx.iconnectyou.biz/settings/weby/settings.ini
+
+ For which the server responds with what appears to be a consistent 197 byte        -
+ binary/encoded configuration response. We are still attempting to reverse engineer -
+ complete details of this session. For full packet payload of the binary/encoded con-
+ figuration response, please refer to Appendix D.
+
+ 5. Finally the system downloads a suspiciously named DLL plugin_ddos.dll, whose nam-
+ ing might suggest to some that it is a denial of service component. For more inform-
+ ation on this session, refer to Appendix E. 
+ 
+--> STATISTICS
+ ss
+
+--> DETECTION & MITIGATION
+ Our goal is to not only to explain the threat of fast-flux service networks, but al-
+ so offer advice on how to identity and mitigate them. We provide several suggestions 
+ that highlight potential steps that can be taken and provide a brief overview of po-
+ ssible mitigation strategies. However, this is not a complete overview, since this -
+ complex topic deserves a paper on its own.
+
+ It can be very difficult to detect and shut down fast-flux service networks. The de-
+ tection of domain names being served by a fast-flux service network depends upon mu-
+ ltiple analytical passes over DNS query results, with increasing flux detection acc-
+ uracy gained by employing a scoring mechanism to evaluate multiple relatively  short 
+ lived DNS records, taking into account including the number of A records returned p-
+ er query, the number of NS records returned, the diversity of unrelated networks re-
+ presented and the presence of broadband or dialup networks in every result set. Thi-
+ s concept of analyzing short TTLs with the associated scoring of result sets per do-
+ main or hostname from multiple successive TTL expiration periods can work in identi-
+ fying the use of fast-flux service networks.
+
+ First, service providers can detect upstream mothership nodes by probing any suspec-
+ ted flux-agent proxies in specific ways. Assuming that the suspect flux-agent is  in 
+ fact a proxy redirecting TCP port 80 or perhaps UDP port 53 traffic to some as of y-
+ et unknown host upstream, the use of any specially crafted request with an otherwise 
+ low probability of occurrence in the wild may enable egress/Internet bound IDS sens-
+ ors to alert on network events that in turn identify
+
+  

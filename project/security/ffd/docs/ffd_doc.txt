@@ -1,3 +1,66 @@
+
+--> domain type
+ -->--> 大类
+  1 botnet fastflux
+  2 botnet dga
+  3 botnet 
+ 
+ --> 统一编码
+ botnet: 1~99999
+  1: fastflux
+ 
+  
+ others: 100000
+
+
+ http://mirror1.malwaredomains.com/files/domains.txt 
+ botnet fastflux malware malicious malwareurl phishing ransomware suspicious
+
+--> domains
+ -->--> abuse
+  1 ZeuS Tracker
+    Below is a list of all ZeuS C&Cs as well as Fake URLs which are currently known -
+	to ZeuS Tracker. Each ZeuS C&C or FakeURL is tagged with a level. The level indi-
+	cates which kind of IP the Host is hosted on. Here is an overview about the leve-
+	ls and its meaning:
+	
+    Level 1    Bulletproof hosted
+    Level 2    Hacked webserver
+    Level 3    Free hosting service
+    Level 4    Unknown
+    Level 5    Hosted on a FastFlux botnet
+
+  2 ZeuS Blocklist
+    ZeuS domain blocklist (BadDomains)
+	ZeuS IP blocklist (BadIPs)
+	ZeuS domain blocklist (Standard)
+	ZeuS IP blocklist (Standard)
+	
+  3 ransomware tracker
+  
+  4 ransomware blocklist
+ 
+ -->--> malwaredomains (have botnet,fastflux) 
+  http://www.malwaredomains.com/
+  http://mirror1.malwaredomains.com/files/domains.txt
+ 
+ -->-->  
+ 
+--> botnet来源
+ -->--> fastflux
+  1 Abuse.ch
+    Zeus: Level 5
+  2 
+
+ -->--> DGA
+
+ -->--> botnet(除fastflux dga之外的)
+   
+
+
+  
+
+
 基于Passive DNS的恶意域名识别研究 (2014 北京大学硕士论文) 作者：陈恺 导师：陈萍
 
 --> botnet域名
@@ -77,9 +140,7 @@
 
 
 
---
-
-
-
 
   
+
+

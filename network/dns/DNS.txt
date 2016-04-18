@@ -114,186 +114,193 @@
  country code    Each country (geographic scheme)
 
 --> fully qualified domain names (FQDNs)
+ ss
 
+--> Domain Name Resolution
+ A client must know how to contact at least one name server. To ensure that a domain -
+ name server can reach others, the domain system requires that each server know the a-
+ ddress of at least one root server. Domain name servers use a well-known protocol po-
+ rt for all communication, so clients know how to communicate with a name server  once 
+ they know the IP address of the machine in which the server executes. How does a cli-
+ ent learn the address of a name server? Many systems obtain the address of a domain -
+ server automatically as part of the bootstrap process. For example, bootstrap protoc-
+ ols such as IPv4’s DHCP and IPv6’s NDP or DHCPv6 can supply a name server address. Of 
+ course, other approaches are possible. For example, the address of a name server  can 
+ be bound into application programs at compile time. Alternatively, the address can be 
+ stored in a file on secondary storage. 
 
+ dns client
+ the client software forms a domain name query that contains the name to be  resolved, 
+ a declaration of the class of the name, the type of answer desired, and a code that -
+ specifies whether the name server should translate the name completely. The client s-
+ ends the query to a name server for resolution. A client always contacts a local dom-
+ ain name server first.
 
-----> Domain Name Resolution
-A client must know how to contact at least one name server. To ensure that a domain -
-name server can reach others, the domain system requires that each server know the a-
-ddress of at least one root server. Domain name servers use a well-known protocol po-
-rt for all communication, so clients know how to communicate with a name server  once 
-they know the IP address of the machine in which the server executes. How does a cli-
-ent learn the address of a name server? Many systems obtain the address of a domain -
-server automatically as part of the bootstrap process. For example, bootstrap protoc-
-ols such as IPv4’s DHCP and IPv6’s NDP or DHCPv6 can supply a name server address. Of 
-course, other approaches are possible. For example, the address of a name server  can 
-be bound into application programs at compile time. Alternatively, the address can be 
-stored in a file on secondary storage. 
+ dns server
+ When a domain name server receives a query, it checks to see if the name lies in  the 
+ subdomain for which it is an authority. If so, it translates the name to an address -
+ according to its database, and appends an answer to the query before sending it  back 
+ to the client. If the name server cannot resolve the name completely, it checks to s-
+ ee what type of interaction the client specified. If the client requested complete t-
+ ranslation (recursive resolution, in domain name terminology), the server contacts  a 
+ domain name server that can resolve the name and returns the answer to the client. If 
+ the client requested non-recursive resolution (iterative resolution), the name server 
+ cannot supply an answer. It generates a reply that specifies the name server the cli-
+ ent should contact to resolve the name.
 
-dns client
-the client software forms a domain name query that contains the name to be  resolved, 
-a declaration of the class of the name, the type of answer desired, and a code that -
-specifies whether the name server should translate the name completely. The client s-
-ends the query to a name server for resolution. A client always contacts a local dom-
-ain name server first.
+--> 不同类型的机器可能有相同的名字
+ A given name may map to more than one item in the domain system. The client specifies 
+ the type of object desired when resolving a name, and the server returns objects of -
+ that type. For example, a given name can be the name of a host computer that has an -
+ IPv4 address, a host computer that has an IPv6 address, a mail server, and so on. Wh-
+ en a client asks the domain system to resolve a name, it must specify the type of an-
+ swer desired.
 
-dns server
-When a domain name server receives a query, it checks to see if the name lies in  the 
-subdomain for which it is an authority. If so, it translates the name to an address -
-according to its database, and appends an answer to the query before sending it  back 
-to the client. If the name server cannot resolve the name completely, it checks to s-
-ee what type of interaction the client specified. If the client requested complete t-
-ranslation (recursive resolution, in domain name terminology), the server contacts  a 
-domain name server that can resolve the name and returns the answer to the client. If 
-the client requested non-recursive resolution (iterative resolution), the name server 
-cannot supply an answer. It generates a reply that specifies the name server the cli-
-ent should contact to resolve the name.
+--> 仅从名字不能区分出是一个域的名字还是一个主机的名字,也看不出域名的类型
+ One cannot distinguish the names of subdomains from the names of individual objects -
+ or the type of an object using only the domain name syntax. it is possible to have  a 
+ machine named gwen.purdue.edu,even though cs.purdue.edu names a subdomain.
 
-----> 不同类型的机器可能有相同的名字
-A given name may map to more than one item in the domain system. The client specifies 
-the type of object desired when resolving a name, and the server returns objects of -
-that type. For example, a given name can be the name of a host computer that has an -
-IPv4 address, a host computer that has an IPv6 address, a mail server, and so on. Wh-
-en a client asks the domain system to resolve a name, it must specify the type of an-
-swer desired.
+--> 域名的层级管理
+ A machine named xinu in the Computer Science department at Purdue University has  the 
+ official domain name: xinu.cs.purdue.edu. The machine name was approved and register-
+ ed by the local network manager in the Computer Science department. The department m-
+ anager had previously obtained authority for the subdomain cs.purdue.edu from a univ-
+ ersity network authority, who had obtained permission to manage the subdomain       -
+ purdue.edu from the Internet authority. The Internet authority retains control of the 
+ edu domain, so new universities can only be added with its permission. Similarly, the 
+ university network manager at Purdue University retains authority for the  purdue.edu 
+ subdomain, so new third-level domains may only be added with the manager’s permission.
 
----- 仅从名字不能区分出是一个域的名字还是一个主机的名字,也看不出域名的类型
-One cannot distinguish the names of subdomains from the names of individual objects -
-or the type of an object using only the domain name syntax. it is possible to have  a 
-machine named gwen.purdue.edu,even though cs.purdue.edu names a subdomain.
+--> name server  name resolver
+ A name server is a server program that supplies name-to-address translation,  mapping 
+ from domain names to IP addresses. Often,server software executes on a dedicated pro-
+ cessor, and the machine itself is called the name server. The client software, called 
+ a name resolver, may contact one or more name servers when translating a name.
 
-----> 域名的层级管理
-A machine named xinu in the Computer Science department at Purdue University has  the 
-official domain name: xinu.cs.purdue.edu. The machine name was approved and register-
-ed by the local network manager in the Computer Science department. The department m-
-anager had previously obtained authority for the subdomain cs.purdue.edu from a univ-
-ersity network authority, who had obtained permission to manage the subdomain       -
-purdue.edu from the Internet authority. The Internet authority retains control of the 
-edu domain, so new universities can only be added with its permission. Similarly, the 
-university network manager at Purdue University retains authority for the  purdue.edu 
-subdomain, so new third-level domains may only be added with the manager’s permission.
+--> caching 
+ Internet name servers use caching to make resolution efficient.
+ When a client asks the server to resolve a name, the server first checks to see
+ if it has authority for the name according to the standard procedure. If not, the server
+ checks its cache to see if the name has been resolved recently. Servers report cached
+ information to clients, but mark it as a nonauthoritativebinding and give the domain
+ name of the server,S, from which they obtained the binding. The local server also
+ sends along additional information that tells the client the binding betweenSand an IP
+ address. 
+ Caching is important in hosts as well as in local name servers. Most resolver
+ software caches DNS entries in the host. Thus, if a user looks up the same name repeatedly, subsequent lookups can be resolved from the local cache without using the
+ network.
 
-----> name server  name resolver
-A name server is a server program that supplies name-to-address translation,  mapping 
-from domain names to IP addresses. Often,server software executes on a dedicated pro-
-cessor, and the machine itself is called the name server. The client software, called 
-a name resolver, may contact one or more name servers when translating a name.
+ 关于老化时间ttl
+ The key to DNS success arises because a server does not apply a single fixed
+ timeout to all entries. Instead, DNS allows the authority for an entry to configure its
+ timeout. That is, whenever an authority responds to a request, the authority includes a
+ Time To Live(TTL) value in the response that specifies how long the binding will
+ remain valid. Thus, authorities can reduce network overhead by specifying long
+ timeouts for entries that they expect to remain unchanged, while specifying short
+ timeouts for entries that they expect to change.
 
----->caching 
-Internet name servers use caching to make resolution efficient.
-When a client asks the server to resolve a name, the server first checks to see
-if it has authority for the name according to the standard procedure. If not, the server
-checks its cache to see if the name has been resolved recently. Servers report cached
-information to clients, but mark it as a nonauthoritativebinding and give the domain
-name of the server,S, from which they obtained the binding. The local server also
-sends along additional information that tells the client the binding betweenSand an IP
-address. 
-Caching is important in hosts as well as in local name servers. Most resolver
-software caches DNS entries in the host. Thus, if a user looks up the same name repeatedly, subsequent lookups can be resolved from the local cache without using the
-network.
+--> DNS Message Format
+ -->--> format
+  |0                    16                    31|
+  +---------------------------------------------+
+  |    IDENTIFICATION    |      PARAMETER       |
+  +---------------------------------------------+
+  | NUMBER OF QUESTIONS  | NUMBER OF ANSWERS    |
+  +---------------------------------------------+
+  | NUMBER OF AUTHORITY  | NUMBER OF ADDITIONAL |
+  +---------------------------------------------+
+  |             QUESTION SECTION                |
+  |                    ...                      |
+  +---------------------------------------------+
+  |              ANSWER SECTION                 |
+  |                    ...                      |
+  +---------------------------------------------+
+  |             AUTHORITY SECTION               |
+  |                    ...                      |
+  +---------------------------------------------+
+  |   ADDITIONAL INFORMATION SECTION            |
+  |                    ...                      |
+  +---------------------------------------------+
 
-关于老化时间ttl
-The key to DNS success arises because a server does not apply a single fixed
-timeout to all entries. Instead, DNS allows the authority for an entry to configure its
-timeout. That is, whenever an authority responds to a request, the authority includes a
-Time To Live(TTL) value in the response that specifies how long the binding will
-remain valid. Thus, authorities can reduce network overhead by specifying long
-timeouts for entries that they expect to remain unchanged, while specifying short
-timeouts for entries that they expect to change.
-
----->协议格式
-|0                    16                    31|
-+---------------------------------------------+
-|    IDENTIFICATION    |      PARAMETER       |
-+---------------------------------------------+
-| NUMBER OF QUESTIONS  | NUMBER OF ANSWERS    |
-+---------------------------------------------+
-| NUMBER OF AUTHORITY  | NUMBER OF ADDITIONAL |
-+---------------------------------------------+
-|             QUESTION SECTION                |
-|                    ...                      |
-+---------------------------------------------+
-|              ANSWER SECTION                 |
-|                    ...                      |
-+---------------------------------------------+
-|             AUTHORITY SECTION               |
-|                    ...                      |
-+---------------------------------------------+
-|   ADDITIONAL INFORMATION SECTION            |
-|                    ...                      |
-+---------------------------------------------+
-
-IDENTIFICATION 
+ -->-->IDENTIFICATION 
     set by the client and returned by the server. It lets the client match  responses 
 	to requests. 
 	
-
-|0                                                                     16|
-+------------------------------------------------------------------------+
-| Q/R | OpCode(4 bits) | AA | TC | RD | RA | Z | AD | CD | RCODE(4 bits) |
-+------------------------------------------------------------------------+ 	
-PARAMETER
-    field that specifies the operation requested and a response code.
-	Bit of PARAMETER field | Meaning
-                         0 | Operation:
-                           | 0 Query
-                           | 1 Response
-	-----------------------------------------------------------------					   
-                       1-4 | Query Type:
-                           | 0 Standard
-                           | 1 Inverse
-                           | 2 Server status request
-                           | 4 Notify
-                           | 5 Update
+ -->--> PARAMETER
+  |0                                                                     16|
+  +------------------------------------------------------------------------+
+  | Q/R | OpCode(4 bits) | AA | TC | RD | RA | Z | AD | CD | RCODE(4 bits) |
+  +------------------------------------------------------------------------+ 
+  
+  PARAMETER: field that specifies the operation requested and a response code.
+  
+	-----------------------------------------------------------------
+	field | Meaning
+    -----------------------------------------------------------------
+        0 | Q/R          QR is a 1-bit field:   
+	      |----------------------------------------------------------
+          | 0 Query      0 means the message is a query;
+          | 1 Response   1 means it is a response.
+    -----------------------------------------------------------------						   
+      1-4 | OpCode:      OpCode, a 4-bit field
+	      |-----------------------------------------------------------
+          | 0 Standard   The normal value is 0 for requests and responses
+          | 1 Inverse     
+          | 2 Server status request
+          | 4 Notify
+          | 5 Update
 	-----------------------------------------------------------------						   
-                         5 | Set if answer authoritative
-                         6 | Set if message truncated
-                         7 | Set if recursion desired
-                         8 | Set if recursion available
-                         9 | Set if data is authenticated
-                        10 | Set if checking is disabled
-                        11 | Reserved
-	-----------------------------------------------------------------							
-                     12-15 | Response Type:
-                           | 0 No error
-                           | 1 Format error in query
-                           | 2 Server failure
-                           | 3 Name does not exist
-                           | 5 Refused
-                           | 6 Name exists when it should not
-                           | 7 RR set exists
-                           | 8 RR set that should exist does not
-                           | 9 Server not authoritative for the zone
-                           | 10 Name not contained in zone
-	-----------------------------------------------------------------							   
-    16-bit word includes a number of flags and other subfields. Beginning from the  -
-	left-most bit, QR(Query:0/Response:1) is a 1-bit field: 0 means the message is  a 
-	query; 1 means it is a response. The next is the OpCode, a 4-bit field. The norm-
-	al value is 0 (a standard query) for requests and responses. Other values are:  -
-	4 (notify), and 5 (update). Other values (1–3) are deprecated or never seen in o-
-	perational use. Next is the AA(Authoritative Answer) bit field that indicates  an 
-	"authoritative answer" (as opposed to a cached answer). TC(Truncated Answer) is -
-	a 1-bit field that means "truncated." With UDP, this flag being set means that t-
-	he total size of the reply exceeded 512 bytes, and only the first 512 bytes of t-
-	he reply were returned. RD(Recursion Desired) is a bit field that means "recursi-
-	on desired." It can be set in a query and is then returned in the response. It t-
-	ells the server to perform a recursive query. If the bit is not set, and the req-
-	uested name server does not have an authoritative answer, the requested name ser-
-	ver returns a list of other name servers to contact for the answer. At this poin-
-	t, the overall query may be continued by contacting the list of other name serve-
-	rs. This is called an iterative query. RA(Recursion Available) is a bit field th-
-	at means "recursion available." This bit is set in the response if the server su-
-	pports recursion. Root servers generally do not support recursion, thereby forci-
-	ng clients to perform iterative queries to complete name resolution. The  Z(Zero) 
-	bit field must be 0 for now but is reserved for future use. The                 -
-	AD(Authentic Data RFC4035) bit field is set to true if the contained  information 
-	is authenticated, and the CD(Checking Disable RFC4035) bit is set to true if sec-
-	urity checking is disabled. The Response Code (or RCODE) field is a 4-bit field -
-	with the return code whose possible values are given in [DNSPARAM]. The common v-
-	alues include 0 (no error) and 3 (name error or "nonexistent domain," written  as 
-	NXDOMAIN). 
+        5 | AA. Set if answer authoritative. the AA bit field that indicates an "aut-
+		  | horitative answer" (as opposed to a cached answer).
+    -----------------------------------------------------------------
+        6 | TC. Set if message truncated. With UDP, this flag being set means that t-
+		  | he total size of the reply exceeded 512 bytes, and only the first 512 by-
+		  | tes of the reply were returned.
+    ---------------------------------------------------------------------------------
+        7 | RD. Set if recursion desired. RD is a bit field that means "recursion de-
+		  | sired." It can be set in a query and is then returned in the response. It 
+		  | tells the server to perform a recursive query. If the bit is not set, and 
+		  | the requested name server does not have an authoritative answer, the req-
+		  | uested name server returns a list of other name servers to contact for t-
+		  | he answer. At this point, the overall query may be continued by contacti-
+		  | ng the list of other name servers. This is called an iterative query. 
+    ---------------------------------------------------------------------------------
+        8 | RA. Set if recursion available. RA is a bit field that means "recursion -
+		  | available." This bit is set in the response if the server supports recur-
+		  | sion. Root servers generally do not support recursion, thereby forcing c-
+		  | lients to perform iterative queries to complete name resolution. 
+    ---------------------------------------------------------------------------------
+	    9 | Z. The Z bit field must be 0 for now but is reserved for future use.
+	---------------------------------------------------------------------------------
+       10 | AD. Set if data is authenticated.
+	---------------------------------------------------------------------------------
+       11 | CD. The CD bit is set to true if security checking is disabled.
+	---------------------------------------------------------------------------------							
+    12-15 | RCODE. The Response Code field is a 4-bit field with the return code.
+	---------------------------------------------------------------------------------
+          | 0  NoError  [RFC1035] No error
+          | 1  FormErr  [RFC1035] Format error; query cannot be interpreted
+          | 2  ServFail [RFC1035] Server failure; error in processing at server
+          | 3  NXDomain [RFC1035] Nonexistent domain; unknown domain referenced
+          | 4  NotImp   [RFC1035] Not implemented; request not supported in server
+          | 5  Refused  [RFC1035] Refused; server unwilling to provide answer
+          | 6  YXDomain [RFC2136] Name exists but should not (used with updates)
+          | 7  YXRRSet  [RFC2136] RRSet exists but should not (used with updates)
+          | 8  NXRRSet  [RFC2136] RRSet does not exist but should (used with updates)
+          | 9  NotAuth  [RFC2136] Server not authorized for zone (used with updates)
+          | 10 NotZone  [RFC2136] Name not contained in zone (used with updates)
+		  |
+		  | values 11 through 15 are unassigned. Additional types are defined using -
+		  | a special extension. A name error is returned only from an  authoritative 
+		  | name server and means that the domain name specified in the query does n-
+		  | ot exist.
+		  | 
+		  | The common values include 0 (no error) and 3 (name error or "nonexistent -
+		  | domain," written as NXDOMAIN.
+	---------------------------------------------------------------------------------
 
-NUMBER OF XXX
+ -->-->NUMBER OF XXX
     each give a count of entries in the corresponding sections that occur later in t-
 	he message. For example, the field labeled NUMBER OF QUESTIONS gives the count of 
 	entries that appear in the QUESTION SECTION of the message. For a query, the num-
@@ -304,39 +311,109 @@ NUMBER OF XXX
 	contain a name, type, and class information, but also the TTL value that controls 
 	how long the data can be cached.
 	
-	
-|0                    16                    31|
-+---------------------------------------------+
-|               QUERY DOMAIN NAME             |
-+---------------------------------------------+
-|    QUERY TYPE       |      QUERY CLASS      |
-+---------------------------------------------+	
-QUESTION SECTION
-    The domain name is variable length. A client fills in the questions; a server re-
-	turns the questions along with answers. No padding is used. The QUERY TYPE  field 
-	encodes the type of the question (e.g., whether the question refers to a  machine 
-	name or a mail address). The QUERY CLASS field allows domain names to be used for 
-	arbitrary objects because official Internet names are only one possible class.
-	
-ANSWER SECTION, AUTHORITY SECTION, and ADDITIONAL INFORMATION SECTION	
+ -->--> Question (Query) and Zone Section Format
+  |0                                               15|
+  +--------------------------------------------------+
+  | Query Name(variable) (Zone NAME for DNA UPDATE)  |
+  +--------------------------------------------------+
+  | Query Type(16 bits) (Zone Type for DNS UPDATE)   |
+  +--------------------------------------------------+
+  | Query Class(16 bits) (Zone Class for DNS UPDATE) |
+  +--------------------------------------------------+	
+  
+  The question or query section of a DNS message lists the question(s) being referen-
+  ced. There is normally just one, although the protocol can support more. The same -
+  structure is also used for the zone section in dynamic updates, but with  different 
+  names. The query (or question) section of a DNS message does not contain a TTL bec-
+  ause it is not cached. 
+
+  Query Name
+    The Query Name is the domain name being looked up. The domain name is variable l-
+	ength. A client fills in the questions; a server returns the questions along with 
+	answers. No padding is used. Therefore, messages sent to or from domain name ser-
+	vers may contain an odd number of octets.
+
+  Query Type
+    The Query Type field holds a value indicating the type of query being performed -
+	using the values from Table 11-3. The most common query type is A (or AAAA if   -
+	IPv6 DNS resolution is enabled), which means that an IP address is desired for t-
+	he query name. It is also possible to create a query of type ANY, which returns -
+	all RRs of any type in the same class that match the query name.
+
+  Query Class 
+	The class value is 1, 254, or 255, indicating the Internet class, no class, or a-
+	ll classes, respectively, for all cases in which we are interested ( other values 
+	are not typically used for TCP/IP networks).
+
+  ANSWER SECTION, AUTHORITY SECTION, and ADDITIONAL INFORMATION SECTION	
     In a domain name server message, each of the ANSWER SECTION, AUTHORITY SECTION, -
 	and ADDITIONAL INFORMATION SECTION fields consists of a set of resource records -
 	that describe domain names and mappings. 
 
-Each resource record describes one name. 
-|0                    16                    31|
-+---------------------------------------------+
-|            RESOURCE DOMAIN NAME             |
-+---------------------------------------------+
-|    QUERY TYPE       |      QUERY CLASS      |
-+---------------------------------------------+
-|    QUERY TYPE       |      QUERY CLASS      |
-+---------------------------------------------+			
-The RESOURCE DOMAIN NAME field contains the domain name to which this
-resource record refers. It may be an arbitrary length. The TYPE field specifies the type
-of the data included in the resource record; the CLASS field specifies the data’s class.
-The TIME TO LIVE field contains a 32-bit integer. The integer specifies the number of
-seconds that information in the resource record can be cached. Clients use the TIME
-TO LIVE value to set a timeout when they cache the resource record. The last two
-fields contain the results of the binding, with the RESOURCE DATA LENGTH field
-specifying the count of octets in the RESOURCE DATA field.	
+--> Resource Record
+ Each resource record describes one name. 
+ |0                     |16                     31|
+ +----------------------|-------------------------+
+ |        RESOURCE DOMAIN NAME(variable)          |
+ +----------------------|-------------------------+
+ |         TYPE         |           CLASS         |
+ +----------------------|-------------------------+
+ |                     TTL                        |
+ +----------------------|-------------------------+	
+ | Resource Data Length | Resource Data(variable) |
+ +------------------------------------------------+
+ 
+ The RESOURCE DOMAIN NAME field contains the domain name to which this
+ resource record refers. It may be an arbitrary length. The TYPE field specifies the type
+ of the data included in the resource record; the CLASS field specifies the data’s class.
+ The TIME TO LIVE field contains a 32-bit integer. The integer specifies the number of
+ seconds that information in the resource record can be cached. Clients use the TIME
+ TO LIVE value to set a timeout when they cache the resource record. The last two
+ fields contain the results of the binding, with the RESOURCE DATA LENGTH field
+ specifying the count of octets in the RESOURCE DATA field.	
+ 
+ -->--> CNAME
+
+ 
+--> QueryType QueryClass
+ enum QueryType //查询的资源记录类型。
+ {
+   A=0x01, //指定计算机 IP 地址。
+   NS=0x02, //指定用于命名区域的 DNS 名称服务器。
+   MD=0x03, //指定邮件接收站(此类型已经过时了，使用MX代替)
+   MF=0x04, //指定邮件中转站(此类型已经过时了，使用MX代替)
+   CNAME=0x05, //指定用于别名的规范名称。
+   SOA=0x06, //指定用于 DNS 区域的“起始授权机构”。
+   MB=0x07, //指定邮箱域名。
+   MG=0x08, //指定邮件组成员。
+   MR=0x09, //指定邮件重命名域名。
+   NULL=0x0A, //指定空的资源记录
+   WKS=0x0B, //描述已知服务。
+   PTR=0x0C, //如果查询是 IP 地址，则指定计算机名;否则指定指向其它信息的指针。
+   HINFO=0x0D, //指定计算机 CPU 以及操作系统类型。
+   MINFO=0x0E, //指定邮箱或邮件列表信息。
+   MX=0x0F, //指定邮件交换器。
+   TXT=0x10, //指定文本信息。
+   AAAA=0x1c,//IPV6资源记录。
+   UINFO=0x64, //指定用户信息。
+   UID=0x65, //指定用户标识符。
+   GID=0x66, //指定组名的组标识符。
+   ANY=0xFF //指定所有数据类型。
+ };
+   
+ enum QueryClass //指定信息的协议组。
+ {
+   IN=0x01, //指定 Internet 类别。
+   CSNET=0x02, //指定 CSNET 类别。(已过时)
+   CHAOS=0x03, //指定 Chaos 类别。
+   HESIOD=0x04,//指定 MIT Athena Hesiod 类别。
+   ANY=0xFF //指定任何以前列出的通配符。
+ };
+ 
+ 
+别名记录(CNAME)
+ 也被称为规范名字。这种记录允许您将多个名字映射到同一台计算机。 通常用于同时提供WWW和MAIL服务的计算机。例如，有一台计算机名为“host.mydomain.com”（A记录）。 它同时提供WWW和MAIL服务，为了便于用户访问服务。可以为该计算机设置两个别名（CNAME）：WWW和MAIL。 这两个别名的全称就是“www.mydomain.com”和“mail.mydomain.com”。实际上他们都指向“host.mydomain.com”。 同样的方法可以用于当您拥有多个域名需要指向同一服务器IP，此时您就可以将一个域名做A记录指向服务器IP然后将其他的域名做别名到之前做A记录的域名上，那么当您的服务器IP地址变更时您就可以不必麻烦的一个一个域名更改指向了 只需要更改做A记录的那个域名其他做别名的那些域名的指向也将自动更改到新的IP地址上了。
+ 我的理解：
+ 别名：www.mydomain.com 指向 主机名：host.mydomain.com 指向 主机IP：127.0.0.1
+ 别名：mail.mydomain.com 指向 主机名：host.mydomain.com 指向 主机IP：127.0.0.1
+ 上面的主机IP为假设，以便于理解。当在浏览器输入别名www.mydomain.com 和mail.mydomain.com，等同于输入主机名host.mydomain.com ，也等同于输入主机IP127.0.0.1。CNAME记录就是把别名指向（映射到）主机名的过程。

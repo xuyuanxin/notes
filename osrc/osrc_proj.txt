@@ -5,6 +5,9 @@
 --> zlog
  https://github.com/HardySimpson/zlog
 
+--> PyAna
+ https://github.com/PyAna/PyAna
+ PyAna - Analyzing the Windows shellcode
 
 -------------------------------------------------------------------------------------|
 BeaEngine 
