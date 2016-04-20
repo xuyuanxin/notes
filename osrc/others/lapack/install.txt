@@ -1,5 +1,7 @@
---> install                                                                         |
- 依赖: gfortran blas
+
+
+--> lapack install                                                                      
+ requires: gfortran blas(可选)
 
  1 解压
     tar xvzf lapack-3.4.0.gz 
@@ -13,11 +15,12 @@
    NOOPT = -O0 -m64 -fPIC   
    这两行是gfortran的编译选项, -O为优化等级，-fPIC用于生成动态链接库,   
  3 修改Makefile文件
-   lib: lapacklib tmglib                   #提前安装blas, 用这个(默认)
-   #lib: blaslib variants lapacklib tmglib #没有安装blas, 用这个. 会自动编译出blas.  
+   lib: lapacklib tmglib                   # 提前安装blas, 用这个(默认)
+   #lib: blaslib variants lapacklib tmglib # 没有安装blas, 用这个. 会自动编译出blas.  
  4 编译
    make # 生成liblapack.a librefblas.a libtmglib.a
         # 实际安装中发现都要编译blas(无论是否安装过blas, 可能是blas没有安装正确)
+		# 后续发现是因为lapack编译出的librefblas.a没有修改名字
  5 拷贝 
    make之后会产生 liblapack.a, librefblas.a, libtmglib.a 3个静态链接库，复制这3个文
    件到 /usr/lib 或 /usr/local/lib并改名为 liblapack.a, libblas.a, libtmglib.a ，注
@@ -40,15 +43,34 @@
    Makefile:45: recipe for target 'lapack_testing' failed
    make: *** [lapack_testing] Error 2
    
-  
-  
 --> introduction
  LAPACK, 其名为Linear Algebra PACKage的缩写, 是一以Fortran编程语言写就, 用于数值计算的|
  函式集. LAPACK提供了丰富的工具函式, 可用于诸如解多元线性方程式, 线性系统方程组的最小 |
  平方解, 计算特征向量, 用于计算矩阵QR分解的Householder转换, 以及奇异值分解等问题.     |
- LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.           |
+ LAPACK的源码可以从 http://www.netlib.org/lapack/ 处下载, BLAS也包含在其中.           |  
+  
 
 
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
  
  
 --> 在fedora 15下从源代码安装numpy与scipy 

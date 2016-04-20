@@ -6,18 +6,16 @@
   3 botnet 
  
  --> 统一编码
- botnet: 1~99999
+  botnet: 1~99999
   1: fastflux
  
   
- others: 100000
-
-
- http://mirror1.malwaredomains.com/files/domains.txt 
- botnet fastflux malware malicious malwareurl phishing ransomware suspicious
-
+  others: 100000
+ 
 --> domains
  -->--> abuse
+  http://www.abuse.ch/
+  
   1 ZeuS Tracker
     Below is a list of all ZeuS C&Cs as well as Fake URLs which are currently known -
 	to ZeuS Tracker. Each ZeuS C&C or FakeURL is tagged with a level. The level indi-
@@ -43,9 +41,28 @@
  -->--> malwaredomains (have botnet,fastflux) 
   http://www.malwaredomains.com/
   http://mirror1.malwaredomains.com/files/domains.txt
+  botnet fastflux malware malicious malwareurl phishing ransomware suspicious
  
- -->-->  
- 
+ -->-->  Malware Domain List
+  http://www.malwaredomainlist.com/
+  http://www.malwaredomainlist.com/hostslist/hosts.txt
+  只有域名，没有进一步分类
+
+ -->--> CyberCrime Tracker
+  http://cybercrime-tracker.net/
+  http://cybercrime-tracker.net/all.php
+  恶意URL，没有进一步分类
+  主页上有分类，没有进一步研究，说有CC分类，没看到怎么获取
+  
+ -->--> hpHosts
+  http://hosts-file.net/ 
+  http://hphosts.gt500.org/hosts.txt
+  恶意域名，有分类，没发现专门针对CC的分类
+  
+ -->--> PhishTank
+  http://www.phishtank.com/ 
+  http://data.phishtank.com/data/online-valid.csv
+  
 --> botnet来源
  -->--> fastflux
   1 Abuse.ch

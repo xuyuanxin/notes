@@ -4,12 +4,119 @@
 ---->====>####> 1.1.1
 
 
+--> Classes Generate Multiple Instance Objects
+ there are two kinds of objects in Python’s OOP model: class objects and instance ob-
+ jects. Class objects provide default behavior and serve as factories for instance o-
+ bjects. Instance objects are the real objects your programs process—each is a names-
+ pace in its own right, but inherits (i.e., has automatic access to) names in the cl-
+ ass from which it was created. Class objects come from statements, and instances co-
+ me from calls; each time you call a class, you get a new instance of that class.
+ 
+ -->--> Class Objects Provide Default Behavior
+  When we run a class statement, we get a class object. Here’s a rundown of the  main
+  properties of Python classes:
+  1 The @class statement creates a class object and assigns it a name. Just like  the 
+    function @def statement, the Python @class statement is an executable statement .
+    When reached and run, it generates a new class object and assigns it to the  name
+    in the class header. Also, like @defs, @class statements typically run when the -
+	files they are coded in are first imported.
+  2 Assignments inside @class statements make class attributes. Just like in module -
+    files, top-level assignments within a @class statement (not nested in a def) gen-
+	erate attributes in a class object. Technically, the @class statement defines a -
+	local scope that morphs into the attribute namespace of the class object, just l-
+	ike a module’s global scope. After running a @class statement, class attributes -
+	are accessed by name qualification: object.name.
+  3 Class attributes provide object state and behavior. Attributes of a class  object
+    record state information and behavior to be shared by all instances created  from
+    the class; function @def statements nested inside a @class generate methods, whi-
+	ch process instances.
 
-
-
-
-
-
+ -->--> Instance Objects Are Concrete Items
+  When we call a class object, we get an instance object. Here’s an overview of the -
+  key points behind class instances:
+  1 Calling a class object like a function makes a new instance object. Each time a -
+    class is called, it creates and returns a new instance object. Instances represe-
+	nt concrete items in your program’s domain.
+  2 Each instance object inherits class attributes and gets its own namespace. Insta-
+    nce objects created from classes are new namespaces; they start out empty but in-
+	herit attributes that live in the class objects from which they were generated.
+  3 Assignments to attributes of @self in methods make per-instance attributes. Insi-
+    de a class’s method functions, the first argument (called @self by convention) r-
+	eferences the instance object being processed; assignments to attributes of @self
+    create or change data in the instance, not the class.
+	
+  The end result is that classes define common, shared data and behavior, and generate
+  instances. Instances reflect concrete application entities, and record  per-instance 
+  data that may vary per object.
+  
+ -->--> A First Example
+ 
+  >>> class FirstClass:            # Define a class object
+         def setdata(self, value): # Define class's methods
+             self.data = value     # self is the instance
+         def display(self):
+             print(self.data)      # self.data: per instance
+			 
+  Like all compound statements, the @class starts with a header line that lists the -
+  class name, followed by a body of one or more nested and (usually) indented statem-
+  ents. Here, the nested statements are @defs; they define functions that implement -
+  the behavior the class means to export.
+  
+  As we learned in Part IV, @def is really an assignment. Here, it assigns function -
+  objects to the names @setdata and @display in the class statement’s scope, and so -
+  generates attributes attached to the class—FirstClass.setdata and FirstClass.display. 
+  In fact, any name assigned at the top level of the class’s nested block becomes  an 
+  attribute of the class. Functions inside a class are usually called methods. But in 
+  a method function, the first argument automatically receives an implied instance o-
+  bject when called—the subject of the call.
+  
+  >>> x = FirstClass() # Make two instances
+  >>> y = FirstClass() # Each is a new namespace
+  By calling the class this way (notice the parentheses), we generate instance objec-
+  ts, which are just namespaces that have access to their classes’ attributes. at th-
+  is point, we have three objects: two instances and a class.
+  
+   +-------+
+   |   X   |         is-a               +------------+
+   | -data |--------------------------->| FirstClass |
+   +-------+                            |            |
+                                        | -setdata   |
+   +-------+                            | -display   |
+   |   X   |         is-a               |            |
+   | -data |--------------------------->|            |
+   +-------+                            +------------+
+  Figure 27-1. Classes and instances are linked namespace objects in a class tree th-
+  at is searched by inheritance. Here, the "data" attribute is found in instances, b-
+  ut "setdata" and "display" are in the class above them.
+  
+  The two instances start out empty but have links back to the class from which  they
+  were generated. 
+  >>> x.setdata("King Arthur") # Call methods: self is x
+  >>> y.setdata(3.14159) # Runs: FirstClass.setdata(y, 3.14159)
+  Neither x nor y has a @setdata attribute of its own, so to find it, Python  follows 
+  the link from instance to class. And that’s about all there is to inheritance in  -
+  Python: it happens at attribute qualification time, and it just involves looking up 
+  names in linked objects—here, by following the is-a links in Figure 27-1.
+  
+  In the @setdata function inside FirstClass, the value passed in is assigned to    -
+  self.data. Within a method, @self—the name given to the leftmost argument by conve-
+  ntion—automatically refers to the instance being processed (x or y), so the assign-
+  ments store values in the instances’ namespaces, not the class’s; that’s how the  -
+  @data names in Figure 27-1 are created.
+  
+  >>> x.display() # self.data differs in each instance
+  King Arthur
+  >>> y.display() # Runs: FirstClass.display(y)
+  3.14159
+  In fact, if we were to call @display on one of our instances before calling @setdata, 
+  we would trigger an undefined name error—the attribute named data doesn’t even exi-
+  st in memory until it is assigned within the @setdata method.
+  
+  we could even generate an entirely new attribute in the instance’s namespace by as-
+  signing to its name outside the class’s method functions:
+  >>> x.anothername = "spam" # Can set new attributes here too!
+  This would attach a new attribute called @anothername, which may or may not be used
+  by any of the class’s methods, to the instance object x.
 
 
 

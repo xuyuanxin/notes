@@ -2,7 +2,5 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/     Unofficial Windows Binaries for P
 
 
 
----->ÒÀÀµ¹ØÏµ
-scipy: lapack/blas
-matplotlib: six pyparsing dateutil(Python-Dateutil) numpy
+
 
