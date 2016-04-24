@@ -67,7 +67,7 @@ int mkdirs(const char *pPath)
          {
              if(0!=access(tmpPath,F_OK) && strlen(tmpPath)>0)
              {
-                 if (-1 == mkdir(tmpPath,0777))
+                 if (-1 == mkdir(tmpPath,S_IRUSR|S_IWUSR|S_IRGRP))
 				 {
 				     return -1;
 				 }

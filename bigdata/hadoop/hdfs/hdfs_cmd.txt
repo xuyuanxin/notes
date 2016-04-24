@@ -1,229 +1,239 @@
 ---> URI for specifying exact file and directory location
-Hadoop file commands can interact with both the HDFS filesystem and the local filesy-
-stem. A URI pinpoints the location of a specific file or directory. The full URI for-
-mat is 
+ Hadoop file commands can interact with both the HDFS filesystem and the local filesy-
+ stem. A URI pinpoints the location of a specific file or directory. The full URI for-
+ mat is 
     scheme://authority/path
-The scheme is similar to a protocol. It can be hdfs or file, to specify the HDFS fil-
-esystem or the local filesystem, respectively. For HDFS, authority is the NameNode h-
-ost and path is the path of the file or directory of interest. For example, for a st-
-andard pseudo-distributed configuration running HDFS on the local machine on port 90-
-00, a URI to access the example.txt file under the directory /user/chuck will look l-
-ike 
+ The scheme is similar to a protocol. It can be hdfs or file, to specify the HDFS fil-
+ esystem or the local filesystem, respectively. For HDFS, authority is the NameNode h-
+ ost and path is the path of the file or directory of interest. For example, for a st-
+ andard pseudo-distributed configuration running HDFS on the local machine on port 90-
+ 00, a URI to access the example.txt file under the directory /user/chuck will look l-
+ ike 
     hdfs://localhost:9000/user/chuck/example.txt
 	
-You can use the Hadoop cat command to show the content of that file:
+ You can use the Hadoop cat command to show the content of that file:
     hadoop fs -cat hdfs://localhost:9000/user/chuck/example.txt
 	
-As we’ll see shortly, most setups don’t need to specify the scheme://authority part -
-of the URI. When dealing with the local filesystem, you’ll probably prefer your stan-
-dard Unix commands rather than the Hadoop file commands. For copying files between t-
-he local filesystem and HDFS, Hadoop commands, such as put and get use the local fil-
-esystem as source and destination, respectively, without you specifying the file:// -
-scheme. For other commands, if you leave out the scheme://authority part of the  URI, 
-the default from the Hadoop configuration is used. For example, if you have changed -
-the conf/core-site.xml file to the pseudo-distributed configuration, your fs.default-
-.name property in the file should be
+ As we’ll see shortly, most setups don’t need to specify the scheme://authority part -
+ of the URI. When dealing with the local filesystem, you’ll probably prefer your stan-
+ dard Unix commands rather than the Hadoop file commands. For copying files between t-
+ he local filesystem and HDFS, Hadoop commands, such as put and get use the local fil-
+ esystem as source and destination, respectively, without you specifying the file:// -
+ scheme. For other commands, if you leave out the scheme://authority part of the  URI, 
+ the default from the Hadoop configuration is used. For example, if you have changed -
+ the conf/core-site.xml file to the pseudo-distributed configuration, your fs.default-
+ .name property in the file should be
     <property>
         <name>fs.default.name</name>
         <value>hdfs://localhost:9000</value>
     </property>
-Under this configuration,shorten the URI 
+ Under this configuration,shorten the URI 
     hdfs://localhost:9000/user/chuck/example.txt 
-to 
+ to 
     /user/chuck/example.txt
 
-Furthermore, HDFS defaults to a current working directory of /user/$USER, where $USER 
-is your login user name. If you’re logged in as  chuck, then shorten the URI 
+ Furthermore, HDFS defaults to a current working directory of /user/$USER, where $USER 
+ is your login user name. If you’re logged in as  chuck, then shorten the URI 
     hdfs://localhost:9000/user/chuck/example.txt 
-to 
+ to 
     example.txt
 	
-The Hadoop cat command to show the content of the file is
+ The Hadoop cat command to show the content of the file is
     hadoop fs -cat example.txt
 
 
 	
-HDFS has a default working directory of /user/$USER, where $USER is your login user -
-name. This directory isn’t automatically created for you, though, so let’s create  it 
-with the mkdir command. For the purpose of illustration, we use @chuck. You should s-
-ubstitute your user name in the example commands.
+ HDFS has a default working directory of /user/$USER, where $USER is your login user -
+ name. This directory isn’t automatically created for you, though, so let’s create  it 
+ with the mkdir command. For the purpose of illustration, we use @chuck. You should s-
+ ubstitute your user name in the example commands.
     hadoop fs –mkdir /user/chuck	
-	
-	
-	
-	
 
+http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/FileSystemShell.html
 http://www.51studyit.com/html/notes/20140318/18.html
 
 
 Hadoop file commands take the form of
     hadoop fs -cmd <args>
-where cmd is the specific file command and <args> is a variable number of  arguments.
-The command cmd is usually named after the corresponding Unix equivalent.
+ where cmd is the specific file command and <args> is a variable number of  arguments.
+ The command cmd is usually named after the corresponding Unix equivalent.
 
+--> 
+ hadoop fs -mkdir /user/trunk
 
-hadoop fs -mkdir /user/trunk
+ hadoop fs -ls /user
+ hadoop fs -lsr /user
 
-hadoop fs -ls /user
-hadoop fs -lsr /user
+ hadoop fs -put test.txt /user/trunk
+ hadoop fs -put test.txt .  (复制到hdfs当前目录下, 首先要创建当前目录)
 
-hadoop fs -put test.txt /user/trunk
-hadoop fs -put test.txt .  (复制到hdfs当前目录下, 首先要创建当前目录)
+ hadoop fs -get /user/trunk/test.txt . (复制到本地当前目录下)
 
-hadoop fs -get /user/trunk/test.txt . (复制到本地当前目录下)
+ hadoop fs -cat /user/trunk/test.txt
 
-hadoop fs -cat /user/trunk/test.txt
+ hadoop fs -tail /user/trunk/test.txt (查看最后1000字节)
 
-hadoop fs -tail /user/trunk/test.txt (查看最后1000字节)
+ hadoop fs -rm /user/trunk/test.txt
 
-hadoop fs -rm /user/trunk/test.txt
-
-hadoop fs -help ls (查看ls命令的帮助文档)
+ hadoop fs -help ls (查看ls命令的帮助文档)
 
 ----------------------------------------------------------
-----> cat
-hadoop fs -cat URI [URI …]
-将路径指定文件的内容输出到stdout。
+--> cat
+ hadoop fs -cat URI [URI …]
+ 将路径指定文件的内容输出到stdout。
 
-示例:
-hadoop fs -cat hdfs://host1:port1/file1 hdfs://host2:port2/file2
-hadoop fs -cat file:///file3 /user/hadoop/file4
+ 示例:
+ hadoop fs -cat hdfs://host1:port1/file1 hdfs://host2:port2/file2
+ hadoop fs -cat file:///file3 /user/hadoop/file4
 
-返回值:
-成功返回0, 失败返回-1.
+ 返回值:
+ 成功返回0, 失败返回-1.
 
-----> chgrp
-hadoop fs -chgrp [-R] GROUP URI [URI …] 
-Change group association of files. With -R, make the change recursively through the directory structure. The user must be the owner of files, or else a super-user. Additional information is in the Permissions User Guide. -->
+--> chgrp
+ hadoop fs -chgrp [-R] GROUP URI [URI …] 
+ Change group association of files. With -R, make the change recursively through the directory structure. The user must be the owner of files, or else a super-user. Additional information is in the Permissions User Guide. -->
 
-改变文件所属的组。使用-R将使改变在目录结构下递归进行。命令的使用者必须是文件的所有者或者超级用户。更多的信息请参见HDFS权限用户指南。
+ 改变文件所属的组。使用-R将使改变在目录结构下递归进行。命令的使用者必须是文件的所有者或者超级用户。更多的信息请参见HDFS权限用户指南。
 
-chmod
-使用方法：hadoop fs -chmod [-R] <MODE[,MODE]... | OCTALMODE> URI [URI …]
+--> chmod
+ 使用方法：hadoop fs -chmod [-R] <MODE[,MODE]... | OCTALMODE> URI [URI …]
 
-改变文件的权限。使用-R将使改变在目录结构下递归进行。命令的使用者必须是文件的所有者或者超级用户。更多的信息请参见HDFS权限用户指南。
+ 改变文件的权限。使用-R将使改变在目录结构下递归进行。命令的使用者必须是文件的所有者或者超级用户。更多的信息请参见HDFS权限用户指南。
 
-chown
-使用方法：hadoop fs -chown [-R] [OWNER][:[GROUP]] URI [URI ]
+--> chown
+ 使用方法：hadoop fs -chown [-R] [OWNER][:[GROUP]] URI [URI ]
 
-改变文件的拥有者。使用-R将使改变在目录结构下递归进行。命令的使用者必须是超级用户。更多的信息请参见HDFS权限用户指南。
+  改变文件的拥有者。使用-R将使改变在目录结构下递归进行。命令的使用者必须是超级用户。更多的信息请参见HDFS权限用户指南。
 
-----> copyFromLocal
-除了限定源路径是一个本地文件外, 和put命令相似. 格式:
-hadoop fs -copyFromLocal <localsrc> URI
+--> copyFromLocal
+ 除了限定源路径是一个本地文件外, 和put命令相似. 格式:
+ hadoop fs -copyFromLocal <localsrc> URI
 
-hadoop fs -copyFromLocal input/docs/quangle.txt hdfs://localhost/user/tom/quangle.txt
+ hadoop fs -copyFromLocal input/docs/quangle.txt hdfs://localhost/user/tom/quangle.txt
 
-copyToLocal
-使用方法：hadoop fs -copyToLocal [-ignorecrc] [-crc] URI <localdst>
+--> copyToLocal
+ 使用方法：hadoop fs -copyToLocal [-ignorecrc] [-crc] URI <localdst>
 
-除了限定目标路径是一个本地文件外，和get命令类似。
+ 除了限定目标路径是一个本地文件外，和get命令类似。
 
-cp
-使用方法：hadoop fs -cp URI [URI …] <dest>
+--> cp
+ 使用方法：hadoop fs -cp URI [URI …] <dest>
 
-将文件从源路径复制到目标路径。这个命令允许有多个源路径，此时目标路径必须是一个目录。 
-示例：
+ 将文件从源路径复制到目标路径。这个命令允许有多个源路径，此时目标路径必须是一个目录。 
+ 示例：
 
-hadoop fs -cp /user/hadoop/file1 /user/hadoop/file2
-hadoop fs -cp /user/hadoop/file1 /user/hadoop/file2 /user/hadoop/dir
-返回值：
+ hadoop fs -cp /user/hadoop/file1 /user/hadoop/file2
+ hadoop fs -cp /user/hadoop/file1 /user/hadoop/file2 /user/hadoop/dir
+ 返回值：
 
-成功返回0，失败返回-1。
+ 成功返回0，失败返回-1。
 
-du
-使用方法：hadoop fs -du URI [URI …]
+--> du
+ 使用方法：hadoop fs -du URI [URI …]
 
-显示目录中所有文件的大小，或者当只指定一个文件时，显示此文件的大小。
-示例：
-hadoop fs -du /user/hadoop/dir1 /user/hadoop/file1 hdfs://host:port/user/hadoop/dir1 
-返回值：
-成功返回0，失败返回-1。 
-dus
-使用方法：hadoop fs -dus <args>
+ 显示目录中所有文件的大小，或者当只指定一个文件时，显示此文件的大小。
+ 示例：
+ hadoop fs -du /user/hadoop/dir1 /user/hadoop/file1 hdfs://host:port/user/hadoop/dir1 
+ 返回值：
+ 成功返回0，失败返回-1。 
+--> dus
+ 使用方法：hadoop fs -dus <args>
 
-显示文件的大小。
+ 显示文件的大小。
 
-expunge
-使用方法：hadoop fs -expunge
+--> expunge
+ 使用方法：hadoop fs -expunge
 
-清空回收站。请参考HDFS设计文档以获取更多关于回收站特性的信息。
+ 清空回收站。请参考HDFS设计文档以获取更多关于回收站特性的信息。
 
-get
-使用方法：hadoop fs -get [-ignorecrc] [-crc] <src> <localdst> 
-复制文件到本地文件系统。可用-ignorecrc选项复制CRC校验失败的文件。使用-crc选项复制文件以及CRC信息。
+--> get
+ 使用方法：hadoop fs -get [-ignorecrc] [-crc] <src> <localdst> 
+ 复制文件到本地文件系统。可用-ignorecrc选项复制CRC校验失败的文件。使用-crc选项复制文件以及CRC信息。
 
-示例：
+ 示例：
 
-hadoop fs -get /user/hadoop/file localfile
-hadoop fs -get hdfs://host:port/user/hadoop/file localfile
-返回值：
+ hadoop fs -get /user/hadoop/file localfile
+ hadoop fs -get hdfs://host:port/user/hadoop/file localfile
+ 返回值：
 
-成功返回0，失败返回-1。
+ 成功返回0，失败返回-1。
 
-getmerge（这个比较常用，合并多个文件下载到本地）
-使用方法：hadoop fs -getmerge <src> <localdst> [addnl]
+--> getmerge（这个比较常用，合并多个文件下载到本地）
+ 使用方法：hadoop fs -getmerge <src> <localdst> [addnl]
 
-接受一个源目录和一个目标文件作为输入，并且将源目录中所有的文件连接成本地目标文件。addnl是可选的，用于指定在每个文件结尾添加一个换行符。
+ 接受一个源目录和一个目标文件作为输入，并且将源目录中所有的文件连接成本地目标文件。addnl是可选的，用于指定在每个文件结尾添加一个换行符。
 
-----> ls
-hadoop fs -ls <args>
+--> ls
+ hadoop fs -ls <args>
                                                                                      |
-如果是文件, 则按照如下格式返回文件信息:
-文件名 <副本数> 文件大小 修改日期 修改时间 权限 用户ID 组ID 
-如果是目录, 则返回它直接子文件的一个列表, 就像在Unix中一样. 目录返回列表的信息如下:
-目录名 <dir> 修改日期 修改时间 权限 用户ID 组ID 
+ 如果是文件, 则按照如下格式返回文件信息:
+ 文件名 <副本数> 文件大小 修改日期 修改时间 权限 用户ID 组ID 
+ 如果是目录, 则返回它直接子文件的一个列表, 就像在Unix中一样. 目录返回列表的信息如下:
+ 目录名 <dir> 修改日期 修改时间 权限 用户ID 组ID 
 
-示例:
-hadoop fs -ls /user/hadoop/file1 /user/hadoop/file2 hdfs://host:port/user/hadoop/dir1 /nonexistentfile 
+ 示例:
+ hadoop fs -ls /user/hadoop/file1 /user/hadoop/file2 hdfs://host:port/user/hadoop/dir1 /nonexistentfile 
 
-返回值: 成功返回0, 失败返回-1.
+ 返回值: 成功返回0, 失败返回-1.
  
-----> lsr
-hadoop fs -lsr <args> 
-ls命令的递归版本. 类似于Unix中的ls -R.
+--> lsr
+ hadoop fs -lsr <args> 
+ ls命令的递归版本. 类似于Unix中的ls -R.
 
-----> mkdir                                                                          |
-接受路径指定的uri作为参数, 创建这些目录. 其行为类似于Unix的mkdir -p, 它会创建路径中的|
-各级父目录. 格式:                                                                    |
-hadoop fs -mkdir <paths> 
+--> mkdir                                                                          |
+ 接受路径指定的uri作为参数, 创建这些目录. 其行为类似于Unix的mkdir -p, 它会创建路径中的|
+ 各级父目录. 格式:                                                                    |
+ hadoop fs -mkdir <paths> 
 
-示例:
-hadoop fs -mkdir /user/hadoop/dir1 /user/hadoop/dir2
-hadoop fs -mkdir hdfs://host1:port1/user/hadoop/dir hdfs://host2:port2/user/hadoop/dir
+ 示例:
+ hadoop fs -mkdir /user/hadoop/dir1 /user/hadoop/dir2
+ hadoop fs -mkdir hdfs://host1:port1/user/hadoop/dir hdfs://host2:port2/user/hadoop/dir
 
-返回值: 成功返回0, 失败返回-1.
+ 返回值: 成功返回0, 失败返回-1.
 
-movefromLocal
-使用方法：dfs -moveFromLocal <src> <dst>
+--> movefromLocal
+ 使用方法：dfs -moveFromLocal <src> <dst>
 
-输出一个”not implemented“信息。
+ 输出一个”not implemented“信息。
 
-mv
-使用方法：hadoop fs -mv URI [URI …] <dest>
+--> mv
+ 使用方法：hadoop fs -mv URI [URI …] <dest>
 
-将文件从源路径移动到目标路径。这个命令允许有多个源路径，此时目标路径必须是一个目录。不允许在不同的文件系统间移动文件。 
-示例：
+ 将文件从源路径移动到目标路径。这个命令允许有多个源路径，此时目标路径必须是一个目录。不允许在不同的文件系统间移动文件。 
+ 示例：
 
-hadoop fs -mv /user/hadoop/file1 /user/hadoop/file2
-hadoop fs -mv hdfs://host:port/file1 hdfs://host:port/file2 hdfs://host:port/file3 hdfs://host:port/dir1
-返回值：
+ hadoop fs -mv /user/hadoop/file1 /user/hadoop/file2
+ hadoop fs -mv hdfs://host:port/file1 hdfs://host:port/file2 hdfs://host:port/file3 hdfs://host:port/dir1
+ 返回值：
 
-成功返回0，失败返回-1。
+ 成功返回0，失败返回-1。
 
-----> put                                                                            |                     
-从本地文件系统中复制单个或多个源路径到目标文件系统. 也支持从标准输入中读取输入写入目 |
-标文件系统. 格式:                                                                    |
-hadoop fs -put <localsrc> ... <dst>
+--> put                                                                                             
+ Usage: hadoop fs -put <localsrc> ... <dst>
 
-examples:
-hadoop fs -put localfile /user/hadoop/hadoopfile
-hadoop fs -put localfile1 localfile2 /user/hadoop/hadoopdir
-hadoop fs -put localfile hdfs://host:port/hadoop/hadoopfile
-hadoop fs -put - hdfs://host:port/hadoop/hadoopfile 
-从标准输入中读取输入.
+ Copy single src, or multiple srcs from local file system to the destination file sy-
+ stem. Also reads input from stdin and writes to destination file system.
 
-返回值: 成功返回0, 失败返回-1. 
+ hadoop fs -put localfile /user/hadoop/hadoopfile
+ hadoop fs -put localfile1 localfile2 /user/hadoop/hadoopdir
+ hadoop fs -put localfile hdfs://nn.example.com/hadoop/hadoopfile
+ hadoop fs -put - hdfs://nn.example.com/hadoop/hadoopfile     # Reads the input from stdin.
+ 
+ Exit Code:
+ Returns 0 on success and -1 on error.
+ 
+ Hadoop fs -put  filename  hdfs                                                   
+ 这个时候，如果hdfs文件目录已经存在，此时则会将file放在hdfs/下的，而如果hdfs文件目录 
+ 不存在，则把file/*的文件放在目录下，即此时hdfs目录下不存在filename.
+ 比如 hadoop fs -put /home/test/20121127   /user/test/data/  
+ 此时，如果 /user/test/data/ 不存在，则在put时，会把/home/test/20121127下面的文件拷贝
+ 到该目录下。/home/test/20121127/a.txt  则，此时 /user/test/data/ 下是 
+ /user/test/data/a.txt 而没有20121127这个目录了。
+ 但是，如果存在 /user/test/data/ 这个目录了，这个时候就是   
+ /user/test/data/20121127/a.txt了。
+
+
+因此，需要先判断一下是否存在这个目录了，如果不存在，则mkdir一下，然后再put。否则会和你想要的不一样啊……
 
 rm
 使用方法：hadoop fs -rm URI [URI …]

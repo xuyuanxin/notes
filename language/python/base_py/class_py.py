@@ -118,15 +118,123 @@
   This would attach a new attribute called @anothername, which may or may not be used
   by any of the class’s methods, to the instance object x.
 
+--> The @class Statement 
+ @class is a compound statement, with a body of statements typically indented appear-
+ ing under the header. In the header, superclasses are listed in parentheses after t-
+ he class name, separated by commas. Listing more than one superclass leads to multi-
+ ple inheritance, which we’ll discuss more formally in Chapter 31. Here is the state-
+ ment’s general form:
+
+ class name(superclass,...): # Assign to name
+   attr = value # Shared class data
+   def method(self,...): # Methods
+     self.attr = value # Per-instance data
+
+ Within the @class statement, any assignments generate class attributes, and special-
+ ly named methods overload operators; for instance, a function called __init__ is ca-
+ lled at instance object construction time, if defined.
+
+ Like a @def, a @class statement is an object builder,and an implicit assignment—when 
+ run, it generates a class object and stores a reference to it in the name used in t-
+ he header. Also like a def, a class statement is true executable code—your class do-
+ esn’t exist until Python reaches and runs the class statement that defines it. 
+ 
+ As we’ve seen, classes are mostly just @namespaces-that is, tools for defining names
+ (i.e., attributes) that export data and logic to clients. When Python executes a cl-
+ ass statement (not a call to a class), it runs all the statements in its body,  from 
+ top to bottom. Assignments that happen during this process create names in the     -
+ class’s local scope, which become attributes in the associated class object. Because 
+ of this, classes resemble both modules and functions:
+ 1 Like functions, class statements are local scopes where names created by nested a-
+   ssignments live.
+ 2 Like names in a module, names assigned in a class statement become attributes in -
+   a class object.
+ Typically, assignment statements inside the @class statement make data attributes, -
+ and nested defs make method attributes. 
+ 
+ class MixedNames: # Define class
+   data = 'spam' # Assign class attr
+   def __init__(self, value): # Assign method name
+     self.data = value # Assign instance attr
+   def display(self):
+     print(self.data, MixedNames.data) # Instance attr, class attr
+	 
+ This class contains two defs, which bind class attributes to method functions. It a-
+ lso contains an = assignment statement; because this assignment assigns the name   -
+ @data inside the class, it lives in the class’s local scope and becomes an attribute 
+ of the class object. Like all class attributes, this @data is inherited and shared -
+ by all instances of the class that don’t have @data attributes of their own. When we 
+ make instances of this class, the name @data is attached to those instances by the -
+ assignment to self.data in the constructor method:
+ 
+ >>> x = MixedNames(1) # Make two instance objects
+ >>> y = MixedNames(2) # Each has its own data
+ >>> x.display(); y.display() # self.data differs, MixedNames.data is the same
+ 1 spam
+ 2 spam
+ 
+ The net result is that @data lives in two places: in the instance objects (created -
+ by the self.data assignment in __init__), and in the class from which they inherit -
+ names(created by the @data assignment in the class). The class’s @display method pr-
+ ints both versions, by first qualifying the self instance, and then the class.
+
+--> Methods
+ Methods are just function objects created by @def statements nested in a class stat-
+ ement’s body.  a method’s first argument always receives the instance object that is 
+ the implied subject of the method call.
+ 
+ In other words, Python automatically maps instance method calls to a class’s  method
+ functions as follows. Method calls made through an instance, like this:
+   instance.method(args...)
+ are automatically translated to class method function calls of this form:
+   class.method(instance, args...)
+   
+ -->--> Method Example
+ 
+  class NextClass:           # Define class
+    def printer(self, text): # Define method
+      self.message = text    # Change instance
+      print(self.message)    # Access instance
+  
+  The name @printer references a function object; because it’s assigned in the  class 
+  statement’s scope, it becomes a class object attribute and is inherited by every i-
+  nstance made from the class.
+  
+  >>> x = NextClass() # Make instance
+  >>> x.printer('instance call') # Call its method
+  instance call
+  >>> x.message # Instance changed
+  'instance call'
+  
+  When we call the method by qualifying an instance like this, @printer is first loc-
+  ated by inheritance, and then its @self argument is automatically assigned the ins-
+  tance object (x); the @text argument gets the string passed at the call ( 'instance 
+  call'). Notice that because Python automatically passes the first argument to @self 
+  for us, we only actually have to pass in one argument. Inside @printer, the name  -
+  @self is used to access or set per-instance data because it refers back to the ins-
+  tance currently being processed.
+  
+  >>> NextClass.printer(x, 'class call') # Direct class call
+  class call
+  >>> x.message # Instance changed again
+  'class call'
+  
+  As we’ve seen, though, methods may be called in one of two ways—through an instanc-
+  e, or through the class itself. For example, we can also call @printer by going th-
+  rough the class name, provided we pass an instance to the self argument explicitly.
+  
+  
 
 
 
 
 
-
-
-
-
+  
+  
+  
+  
+  
+  
 
 
 
