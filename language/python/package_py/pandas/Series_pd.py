@@ -3,6 +3,7 @@
 class Series(data=None, index=None, dtype=None, name=None, copy=False, fastpath=False): # pandas.Series
   '''
   http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html
+  http://pandas.pydata.org/pandas-docs/stable/api.html#series
   
   
   '''
@@ -35,7 +36,11 @@ class Series(data=None, index=None, dtype=None, name=None, copy=False, fastpath=
     '''	
     pass
   
-  
+  def value_counts(normalize=False, sort=True, ascending=False, bins=None, dropna=True):
+    '''
+	Returns object containing counts of unique values.
+	'''
+    pass
   
 
 --> Series

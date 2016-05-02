@@ -1,3 +1,5 @@
+# User Guide http://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction
+# API http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html#sklearn.feature_extraction.text.CountVectorizer
 
 #sklearn.feature_extraction.text.CountVectorizer
 class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', \
@@ -24,6 +26,9 @@ class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', 
    lower than the given threshold. This value is also called cut-off in the literatu-
    re. If float, the parameter represents a proportion of documents, integer absolute 
    counts. This parameter is ignored if vocabulary is not None.
+   
+   max_df=1.0 min_df= 0.5
+   abc bcd abc --> abc
   '''
   
   vocabulary_ : dict
@@ -35,6 +40,7 @@ class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', 
 
   def get_feature_names():
     # Array mapping from feature integer indices to feature name
+	# call @fit_transform first.
     pass
 
   def fit_transform(raw_documents, y=None):
@@ -49,16 +55,45 @@ class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', 
     '''
     pass
 
+  def transform(self, raw_documents):
+        """Transform documents to document-term matrix.
+        Extract token counts out of raw text documents using the vocabulary
+        fitted with fit or the one provided to the constructor.
+        Parameters
+        ----------
+        raw_documents : iterable
+            An iterable which yields either str, unicode or file objects.
+        Returns
+        -------
+        X : sparse matrix, [n_samples, n_features]
+            Document-term matrix.
+        """
+    pass		
+	
+	
+	
 --> Common Vectorizer usage(4.2.3.3. )
- CountVectorizer implements both tokenization and occurrence counting in a single cl-
- ass:
+ @CountVectorizer implements both tokenization and occurrence counting in a single c-
+ lass:
  
  >>> from sklearn.feature_extraction.text import CountVectorizer
  >>> vectorizer = CountVectorizer(min_df=1)
+ >>> vectorizer                     
+ CountVectorizer(analyzer=...'word', binary=False, decode_error=...'strict',
+        dtype=<... 'numpy.int64'>, encoding=...'utf-8', input=...'content',
+        lowercase=True, max_df=1.0, max_features=None, min_df=1,
+        ngram_range=(1, 1), preprocessor=None, stop_words=None,
+        strip_accents=None, token_pattern=...'(?u)\\b\\w\\w+\\b',
+        tokenizer=None, vocabulary=None)
  >>> corpus = ['This is the first document.', 'This is the second second document.',
  ...           'And the third one.','Is this the first document?',]
  >>> X = vectorizer.fit_transform(corpus)
-        
+ >>> X.toarray()           
+ array([[0, 1, 1, 1, 0, 0, 1, 0, 1],
+        [0, 1, 0, 1, 0, 2, 1, 0, 1],
+        [1, 0, 0, 0, 1, 0, 1, 1, 0],
+        [0, 1, 1, 1, 0, 0, 1, 0, 1]]...)  
+		
  The default configuration tokenizes the string by extracting words of at least 2 le-
  tters. The specific function that does this step can be requested explicitly:
  >>> analyze = vectorizer.build_analyzer()
@@ -68,16 +103,8 @@ class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', 
  Each term found by the analyzer during the fit is assigned a unique integer index c-
  orresponding to a column in the resulting matrix. This interpretation of the columns 
  can be retrieved as follows:
- >>> vectorizer.get_feature_names() == (
- ...     ['and', 'document', 'first', 'is', 'one',
- ...      'second', 'the', 'third', 'this'])
+ >>> vectorizer.get_feature_names() == (['and', 'document', 'first', 'is', 'one','second', 'the', 'third', 'this'])
  True
-
- >>> X.toarray()           
- array([[0, 1, 1, 1, 0, 0, 1, 0, 1],
-        [0, 1, 0, 1, 0, 2, 1, 0, 1],
-        [1, 0, 0, 0, 1, 0, 1, 1, 0],
-        [0, 1, 1, 1, 0, 0, 1, 0, 1]]...)
 
  The converse mapping from feature name to column index is stored in the  vocabulary_ 
  attribute of the vectorizer:
@@ -95,12 +122,12 @@ class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', 
  that the last document is an interrogative form. To preserve some of the local orde-
  ring information we can extract 2-grams of words in addition to the 1-grams (indivi-
  dual words):
- >>> bigram_vectorizer = CountVectorizer(ngram_range=(1, 2),
- ...                                     token_pattern=r'\b\w+\b', min_df=1)
+ >>> bigram_vectorizer = CountVectorizer(ngram_range=(1, 2),token_pattern=r'\b\w+\b', min_df=1)
  >>> analyze = bigram_vectorizer.build_analyzer()
  >>> analyze('Bi-grams are cool!') == (
  ...     ['bi', 'grams', 'are', 'cool', 'bi grams', 'grams are', 'are cool'])
  True
+ 
  The vocabulary extracted by this vectorizer is hence much bigger and can now resolve 
  ambiguities encoded in local positioning patterns:
  >>> X_2 = bigram_vectorizer.fit_transform(corpus).toarray()
@@ -110,7 +137,8 @@ class CountVectorizer(input='content', encoding='utf-8', decode_error='strict', 
         [0, 0, 1, 0, 0, 1, 1, 0, 0, 2, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0],
         [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0],
         [0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1]]...)
- In particular the interrogative form ¡°Is this¡± is only present in the last document:
+
+ In particular the interrogative form "Is this" is only present in the last document:
  >>> feature_index = bigram_vectorizer.vocabulary_.get('is this')
  >>> X_2[:, feature_index]     
  array([0, 0, 0, 1]...)

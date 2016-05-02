@@ -1,3 +1,4 @@
+#coding=utf-8
 
 ''' Build models to detect Algorithmically Generated Domain Names (DGA).
     We're trying to classify domains as being 'legit' or having a high probability

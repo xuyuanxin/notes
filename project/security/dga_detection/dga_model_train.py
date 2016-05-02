@@ -1,3 +1,5 @@
+#coding=utf-8
+
 # https://github.com/ClickSecurity/data_hacking/blob/master/dga_detection/dga_model_gen.py
 
 ''' Build models to detect Algorithmically Generated Domain Names (DGA).
@@ -21,7 +23,7 @@ import numpy as np
 import tldextract
 import math
 
-DGA_DATA_PATH  = "F:\\mygit\\data\\dga\\data"
+DGA_DATA_PATH  = "F:\\mygit\\data\\dga\\datatest"
 DGA_MODEL_PATH = "F:\\mygit\\data\\dga\\models"
 
 
@@ -103,6 +105,15 @@ def main():
         print 'Loading alexa dataframe...'
         alexa_dataframe = pd.read_csv(options.alexa_file, names=['rank','uri'], header=None, encoding='utf-8')
         print alexa_dataframe.info()
+		
+        '''
+    		rank           uri
+        0     1  facebook.com
+        1     2    google.com
+        2     3   youtube.com
+        3     4     yahoo.com
+        4     5     baidu.com
+        '''
         print alexa_dataframe.head()
 
         # Compute the 2LD of the domain given by Alexa
@@ -111,19 +122,39 @@ def main():
         del alexa_dataframe['uri']
         alexa_dataframe = alexa_dataframe.dropna()
         alexa_dataframe = alexa_dataframe.drop_duplicates()
+		
+        '''
+             domain
+        0  facebook
+        1    google
+        2   youtube
+        3     yahoo
+        4     baidu
+        '''
         print alexa_dataframe.head()
 
         # Set the class
         alexa_dataframe['class'] = 'legit'
+		
+        '''
+             domain  class
+        0  facebook  legit
+        1    google  legit
+        2   youtube  legit
+        3     yahoo  legit
+        4     baidu  legit
+        '''
+        print alexa_dataframe.head()
 
         # Shuffle the data (important for training/testing)
         alexa_dataframe = alexa_dataframe.reindex(np.random.permutation(alexa_dataframe.index))
         alexa_total = alexa_dataframe.shape[0]
-        print 'Total Alexa domains %d' % alexa_total
-
+        print 'dataframe.shape:', alexa_dataframe.shape # dataframe.shape: (91383, 2)
+        print 'Total Alexa domains %d' % alexa_total    # Total Alexa domains 91383 
 
         # Read in the DGA domains
         dga_dataframe = pd.read_csv(DGA_DATA_PATH + os.sep+'dga_domains.txt', names=['raw_domain'], header=None, encoding='utf-8')
+        print dga_dataframe.head()
 
         # We noticed that the blacklist values just differ by captilization or .com/.org/.info
         dga_dataframe['domain'] = dga_dataframe.applymap(lambda x: x.split('.')[0].strip().lower())
@@ -133,17 +164,50 @@ def main():
         dga_dataframe = dga_dataframe.dropna()
         dga_dataframe = dga_dataframe.drop_duplicates()
         dga_total = dga_dataframe.shape[0]
-        print 'Total DGA domains %d' % dga_total
+        print 'Total DGA domains %d' % dga_total  # Total DGA domains 2664
 
         # Set the class
         dga_dataframe['class'] = 'dga'
 
-        print 'Number of DGA domains: %d' % dga_dataframe.shape[0]
+        print 'Number of DGA domains: %d' % dga_dataframe.shape[0] # Number of DGA domains: 2664
+		
+        '''
+                                     domain class
+        0  04055051be412eea5a61b7da8438be3d   dga
+        1                        1cb8a5f36f   dga
+        2  30acd347397c34fc273e996b22951002   dga
+        3  336c986a284e2b3bc0f69f949cb437cb   dga
+        5  40a43e61e56a5c218cf6c22aca27f7ee   dga
+        '''
         print dga_dataframe.head()
 
 
         # Concatenate the domains in a big pile!
         all_domains = pd.concat([alexa_dataframe, dga_dataframe], ignore_index=True)
+        #print 'all domains'
+        '''
+        		                      domain  class
+        0                           facebook  legit
+        1                          wikipedia  legit
+        2                             google  legit
+        3                              baidu  legit
+        4                            youtube  legit
+        5                              yahoo  legit
+        6                             taobao  legit
+        7                                 qq  legit
+        8                               live  legit
+        9                             amazon  legit
+        10  04055051be412eea5a61b7da8438be3d    dga
+        11                        1cb8a5f36f    dga
+        12  30acd347397c34fc273e996b22951002    dga
+        13  336c986a284e2b3bc0f69f949cb437cb    dga
+        14  40a43e61e56a5c218cf6c22aca27f7ee    dga
+        15                        4ab8fcb17d    dga
+        16                        54cd4a9d63    dga
+        17                        55ae81a098    dga
+        18  5915776a38968a1a759b23279d5ec5db    dga
+        '''
+        #print all_domains
 
         # Add a length field for the domain
         all_domains['length'] = [len(x) for x in all_domains['domain']]
@@ -155,6 +219,15 @@ def main():
 
         # Add a entropy field for the domain
         all_domains['entropy'] = [entropy(x) for x in all_domains['domain']]
+		
+        '''
+                               domain  class  length   entropy
+        0                stratoserver  legit      12  2.688722
+        3  downloadmediaconverterfree  legit      26  3.551428
+        4              deine-tierwelt  legit      14  2.950212
+        5                 emailduniya  legit      11  3.095795
+        7               interdiscount  legit      13  3.238901
+        '''
         print all_domains.head()
 
 
@@ -171,7 +244,20 @@ def main():
         # I'm SURE there's a better way to store all the counts but not sure...
         # At least the min_df parameters has already done some thresholding
         counts_matrix = alexa_vc.fit_transform(alexa_dataframe['domain'])
-        alexa_counts = np.log10(counts_matrix.sum(axis=0).getA1())
+		
+        ''' alexa: abcabc.com abcd.com
+        [[2 1 1 0 1 1 1 0 1 1]
+         [1 0 0 1 0 0 0 1 0 0]]
+        [u'abc', u'abca', u'abcab', u'abcd', u'bca', u'bcab', u'bcabc', u'bcd', u'cab', u'cabc']
+        [[3 1 1 1 1 1 1 1 1 1]]
+
+        '''
+        #print counts_matrix.toarray() 
+        #print alexa_vc.get_feature_names()
+        #print counts_matrix.sum(axis=0)
+        #return 
+
+        alexa_counts = np.log10(counts_matrix.sum(axis=0).getA1()) # numpy.matrix
         ngrams_list = alexa_vc.get_feature_names()
 
         # For fun sort it and show it
@@ -180,7 +266,6 @@ def main():
         print 'Alexa NGrams: %d' % len(_sorted_ngrams)
         for ngram, count in _sorted_ngrams[:10]:
             print ngram, count
-
 
         # We're also going to throw in a bunch of dictionary words
         word_dataframe = pd.read_csv(DGA_DATA_PATH + os.sep+'words.txt', names=['word'], \
@@ -219,6 +304,21 @@ def main():
             print '%s Alexa match:%d Dict match: %d' % (domain, alexa_match, dict_match)
 
         # Examples:
+        '''
+        >>> from numpy import *
+        >>> a=matrix('[1, 2,3, 4]')
+        >>> a
+        matrix([[1, 2, 3, 4]])
+        >>> b=a.T
+        >>> b
+        matrix([[1],
+                [2],
+                [3],
+                [4]])
+        >>> c=a*b
+        >>> c
+        matrix([[30]])
+        '''
         ngram_count('google')
         ngram_count('facebook')
         ngram_count('1cb8a5f36f')
@@ -228,10 +328,11 @@ def main():
         ngram_count('bey666on4ce')
 
         # Compute NGram matches for all the domains and add to our dataframe
+        #print all_domains.head()
         all_domains['alexa_grams']= alexa_counts * alexa_vc.transform(all_domains['domain']).T
         all_domains['word_grams']= dict_counts * dict_vc.transform(all_domains['domain']).T
         print all_domains.head()
-
+        #return 
 
         # Use the vectorized operations of the dataframe to investigate differences
         # between the alexa and word grams
@@ -339,5 +440,248 @@ def main():
 if __name__ == '__main__':
     main()
 	
+'''
+配置两个路径：DGA_DATA_PATH DGA_MODEL_PATH 
+python dga_model_train.py
 
+F:\mygit\notes\project\security\dga_detection>python dga_model_train.py
+Scikit Learn version: 0.16.1
+Pandas version: 0.16.2
+TLDExtract version: 1.7.2
+{'alexa_file': 'F:\\mygit\\data\\dga\\data\\alexa_100k.csv'} []
+Loading alexa dataframe...
+<class 'pandas.core.frame.DataFrame'>
+Int64Index: 100000 entries, 0 to 99999
+Data columns (total 2 columns):
+rank    100000 non-null int64
+uri     100000 non-null object
+dtypes: int64(1), object(1)
+memory usage: 2.3+ MB
+None
+
+
+
+
+
+
+Alexa NGrams: 23615
+ing 3.44388854678
+lin 3.42716140293
+ine 3.39967372148
+tor 3.26528962586
+ter 3.26339933133
+ion 3.24674470972
+ent 3.22891340599
+por 3.20167017965
+the 3.20057692675
+ree 3.16345955177
+      word
+37       a
+48      aa
+51     aaa
+53    aaaa
+54  aaaaaa
+55    aaal
+56    aaas
+57  aaberg
+58  aachen
+59     aae
+Word NGrams: 123061
+ing 4.38730082245
+ess 4.20487933376
+ati 4.19334725639
+ion 4.16503647999
+ter 4.16241503611
+nes 4.11250445877
+tio 4.07682242334
+ate 4.07236020396
+ent 4.06963110262
+tion 4.04960561259
+google Alexa match:17 Dict match: 14
+facebook Alexa match:31 Dict match: 27
+1cb8a5f36f Alexa match:0 Dict match: 0
+pterodactylfarts Alexa match:35 Dict match: 76
+ptes9dro-dwacty2lfa5rrts Alexa match:19 Dict match: 28
+beyonce Alexa match:15 Dict match: 16
+bey666on4ce Alexa match:2 Dict match: 1
+                       domain  class  length   entropy  alexa_grams  \
+0                stratoserver  legit      12  2.688722    50.763173
+3  downloadmediaconverterfree  legit      26  3.551428   135.179057
+4              deine-tierwelt  legit      14  2.950212    35.222850
+5                 emailduniya  legit      11  3.095795    28.364240
+7               interdiscount  legit      13  3.238901    57.751316
+
+   word_grams
+0   69.848307
+3  141.302668
+4   40.203292
+5   29.975341
+7   85.280390
+                                 domain  class  length   entropy  alexa_grams  \
+41875  bipolardisorderdepressionanxiety  legit      32  3.616729   117.313043
+87980     channel4embarrassingillnesses  legit      29  3.440070    95.786979
+14643    stirringtroubleinternationally  legit      30  3.481728   134.055434
+40793  americansforresponsiblesolutions  legit      32  3.667838   148.143385
+9037                pragmatismopolitico  legit      19  3.326360    61.244630
+8813            egaliteetreconciliation  legit      23  3.186393    91.938518
+11447           interoperabilitybridges  legit      23  3.588354    95.038871
+18791            foreclosurephilippines  legit      22  3.447402    74.506884
+1458        annamalicesissyselfhypnosis  legit      27  3.429908    68.680068
+43205         corazonindomablecapitulos  legit      25  3.813661    75.535473
+
+       word_grams       diff
+41875  190.833856 -73.520813
+87980  169.119440 -73.332460
+14643  207.204729 -73.149295
+40793  218.363956 -70.220572
+9037   121.536223 -60.291593
+8813   152.125325 -60.186808
+11447  153.626312 -58.587441
+18791  132.514638 -58.007754
+1458   126.667692 -57.987623
+43205  133.160690 -57.625217
+                                                  domain  class  length  \
+45494  gay-sex-pics-porn-pictures-gay-sex-porn-gay-se...  legit      56
+90853     article-directory-free-submission-free-content  legit      46
+16514                          stream-free-movies-online  legit      25
+18145                            watch-free-movie-online  legit      23
+20628                          best-online-shopping-site  legit      25
+88690                      social-bookmarking-sites-list  legit      29
+25860                              free-online-directory  legit      21
+32343                      free-links-articles-directory  legit      29
+86536                               online-web-directory  legit      20
+8107                                web-directory-online  legit      20
+14314                                xxx-porno-sexvideos  legit      19
+58838                                  movie-news-online  legit      17
+73154                            freegamesforyourwebsite  legit      23
+8689                                free-tv-video-online  legit      20
+85976                              seowebdirectoryonline  legit      21
+75980                         freeweb-directory-listings  legit      26
+78789                                download-free-games  legit      19
+59800                            social-bookmarking-site  legit      23
+81020                            web-link-directory-site  legit      23
+79082                                  the-web-directory  legit      17
+33951                                freewebsite-service  legit      19
+47594                         addsiteurlfreewebdirectory  legit      26
+3336                              free-web-mobile-themes  legit      22
+15714                            your-new-directory-site  legit      23
+37414                                  money-news-online  legit      17
+11760                                 web-directory-site  legit      18
+24757                               free-links-directory  legit      20
+42158                                 web-directory-plus  legit      18
+11074                                web-directory-sites  legit      19
+4067                            acme-people-search-forum  legit      24
+53229                                  all-free-download  legit      17
+29550                                   own-free-website  legit      16
+52593                            bookmarking-sites-lists  legit      23
+85052                                  free-sexvideosfc2  legit      17
+13332                                  free-webdirectory  legit      17
+4885                                global-web-directory  legit      20
+34940                                 the-free-directory  legit      18
+54507                                freewebdirectory101  legit      19
+6322                                    us-web-directory  legit      16
+53255                                linkdirectoryonline  legit      19
+39205                            web-marketing-directory  legit      23
+53475                                seowebdirectoryfree  legit      19
+17459                                 online-deal-coupon  legit      18
+84019                               myonlinewebdirectory  legit      20
+62102                            business-web-directorys  legit      23
+16787                                  online-games-zone  legit      17
+85866                                 good-web-directory  legit      18
+22271                           mybusiness-web-directory  legit      24
+1273                                    free-sex-for-you  legit      16
+81176                                free-link-directory  legit      19
+
+        entropy  alexa_grams  word_grams       diff
+45494  3.661056   159.642847   85.124184  74.518662
+90853  3.786816   235.234347  188.230453  47.003894
+16514  3.509275   120.250616   74.496915  45.753701
+18145  3.708132   103.029245   58.943451  44.085794
+20628  3.452879   123.377240   79.596640  43.780601
+88690  3.702472   145.755266  102.261826  43.493440
+25860  3.403989   123.379738   80.735030  42.644708
+32343  3.702472   153.239055  110.955361  42.283694
+86536  3.584184   116.311022   74.082948  42.228074
+8107   3.584184   114.402976   74.082948  40.320028
+14314  3.260828    74.754533   34.574489  40.180044
+58838  3.175123    81.363076   41.705735  39.657341
+73154  3.551191   116.178832   77.311761  38.867071
+8689   3.284184    83.922239   45.662984  38.259254
+85976  3.499228   128.410905   91.819498  36.591407
+75980  3.796218   151.322999  115.541450  35.781549
+78789  3.576618    86.095306   50.661490  35.433815
+59800  3.762267   119.132204   83.942961  35.189242
+81020  3.729446   103.917967   69.367186  34.550782
+79082  3.454822    89.005372   54.697986  34.307386
+33951  3.115834    98.430306   64.263812  34.166494
+47594  3.609496   137.340747  103.178748  34.161998
+3336   3.356492    88.099492   54.149725  33.949766
+15714  3.555533   100.759875   67.468067  33.291808
+37414  3.101881    78.614060   45.775375  32.838685
+11760  3.461320    93.104749   60.481777  32.622973
+24757  3.646439   104.556597   71.956644  32.599953
+42158  3.836592    90.829685   58.484138  32.345547
+11074  3.471354   100.398745   68.088416  32.310329
+4067   3.553509    89.855945   57.898987  31.956958
+53229  3.219528    71.848927   39.909696  31.939231
+29550  3.250000    60.754562   28.839294  31.915269
+52593  3.621176   117.854969   85.993333  31.861636
+85052  3.381580    63.131829   31.276372  31.855458
+13332  3.337175    94.972506   63.858372  31.114135
+4885   3.721928   102.266225   71.293587  30.972639
+34940  3.239098    92.203708   61.350068  30.853640
+54507  3.471354   102.025963   71.474824  30.551138
+6322   3.625000    81.399278   50.969551  30.429727
+53255  3.326360   119.045698   88.790687  30.255012
+39205  3.849224   126.869671   96.714227  30.155444
+53475  3.281373   101.669474   71.535853  30.133621
+17459  3.308271    77.295882   47.284055  30.011827
+84019  3.584184   123.245668   93.276322  29.969346
+62102  3.621176   127.957041   98.160126  29.796915
+16787  3.292770    75.265768   45.881826  29.383942
+85866  3.461320    87.904932   58.629789  29.275143
+22271  3.772055   126.679550   97.538670  29.140880
+1273   3.030639    45.674730   16.670504  29.004227
+81176  3.536887    95.509960   66.507042  29.002918
+91
+          domain  class  length   entropy  alexa_grams  word_grams      diff
+256      woai310  legit       7  2.807355     1.204120    2.260071 -1.055951
+822      9995432  legit       7  2.128085     1.431364    0.000000  1.431364
+1849     crx7601  legit       7  2.807355     0.000000    0.000000  0.000000
+2403     emxp001  legit       7  2.521641     1.755875    0.000000  1.755875
+7912    dnp-cdms  legit       8  2.750000     0.000000    0.000000  0.000000
+8268   757207049  legit       9  2.419382     0.000000    0.000000  0.000000
+9920     r4i-3ds  legit       7  2.807355     0.000000    0.000000  0.000000
+10627    5311314  legit       7  1.842371     1.113943    0.000000  1.113943
+11740    bnp2tki  legit       7  2.807355     1.462398    1.602060 -0.139662
+13002    enwdgts  legit       7  2.807355     1.653213    2.164353 -0.511140
+legit    67224
+dga       2664
+weird       91
+dtype: int64
+Confusion Matrix Stats
+legit/legit: 99.54% (13393/13455)
+legit/dga: 0.46% (62/13455)
+dga/legit: 16.44% (86/523)
+dga/dga: 83.56% (437/523)
+[('length', 0.12369059649462537), ('entropy', 0.15606037046647006), ('alexa_grams', 0.53797192189288467), ('word_grams', 0.18227
+711114601991)]
+google : legit
+google88 : legit
+facebook : legit
+1cb8a5f36f : dga
+pterodactylfarts : legit
+ptes9dro-dwacty2lfa5rrts : dga
+beyonce : legit
+bey666on4ce : dga
+supersexy : legit
+yourmomissohotinthesummertime : legit
+35-sdf-09jq43r : dga
+clicksecurity : legit
+Storing Serialized Model to Disk (dga_model_random_forest:3.13Meg)
+Storing Serialized Model to Disk (dga_model_alexa_vectorizor:5.16Meg)
+Storing Serialized Model to Disk (dga_model_alexa_counts:0.18Meg)
+Storing Serialized Model to Disk (dga_model_dict_vectorizor:7.85Meg)
+Storing Serialized Model to Disk (dga_model_dict_counts:0.94Meg)
+'''
 

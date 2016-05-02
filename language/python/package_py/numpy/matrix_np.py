@@ -39,4 +39,19 @@ class numpy.matrix:
     >>> x.getA1()
     array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11])
 	'''
+	pass
   
+  def sum(axis=None, dtype=None, out=None):
+    '''
+	Returns the sum of the matrix elements, along the given axis. This is the same as 
+	ndarray.sum, except that where an ndarray would be returned, a @matrix object  is 
+	returned instead.
+    '''
+    pass
+
+
+
+
+
+
+

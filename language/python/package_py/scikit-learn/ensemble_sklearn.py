@@ -2,6 +2,11 @@
 
 class RandomForestClassifier(): # sklearn.ensemble.RandomForestClassifier
   '''
+  http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
+  http://scikit-learn.org/stable/modules/ensemble.html#forest
+  
+  A random forest classifier.
+  
   @n_estimators : integer, optional (default=10)
     The number of trees in the forest.
   @criterion : string, optional (default=¡±gini¡±)
@@ -45,3 +50,4 @@ class RandomForestClassifier(): # sklearn.ensemble.RandomForestClassifier
             The predicted classes.
         """
 	pass
+	

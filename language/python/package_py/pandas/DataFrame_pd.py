@@ -33,8 +33,8 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
     d    4    1 
   '''
 
-  shape #DataFrame.shape
-    #Return a tuple representing the dimensionality of the DataFrame.
+  shape # DataFrame.shape
+    # Return a tuple representing the dimensionality of the DataFrame.
 
   index
     # 返回索引
@@ -88,7 +88,7 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
     Return object with labels on given axis omitted where alternately any or all of t-
 	he data are missing
 	
-    @axis : {0 or ‘index’, 1 or ‘columns’}, or tuple/list thereof
+    @axis : {0 or "index", 1 or "columns"}, or tuple/list thereof
       Pass tuple or list to drop on multiple axes
     @how : {‘any’, ‘all’}
     @any : if any NA values are present, drop that label
@@ -102,6 +102,12 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
       If True, do operation inplace and return None.
     @Returns:	
       dropped : DataFrame	
+	                                                                                 |
+	对于一个 Series，dropna 返回一个仅含非空数据和索引值的 Series。问题在于对 DataFrame 
+	的处理方式，因为一旦 drop 的话，至少要丢掉一行（列）。这里的解决方式与前面类似，还
+	是通过一个额外的参数：dropna(axis=0, how='any', thresh=None) ，how 参数可选的值为 
+	any 或者 all。all 仅在切片元素全为 NA 时才抛弃该行(列)。另外一个有趣的参数是 thresh，
+	该参数的类型为整数，它的作用是，比如 thresh=3，会在一行中至少有 3 个非 NA 值时将其保留。
 	'''
     pass
 
@@ -125,11 +131,11 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
 	pass
 
   def head(n=5):
-    #Returns first n rows
+    # Returns first n rows
     pass
 
   def info(verbose=None, buf=None, max_cols=None, memory_usage=None, null_counts=None):
-    #Concise summary of a DataFrame.
+    # Concise summary of a DataFrame.
     pass
 
   def insert(loc, column, value, allow_duplicates=False): # DataFrame.insert
@@ -146,7 +152,35 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
    '''
    pass
 	
+  def reindex():
+    '''
+    Create a dataframe with some fictional data.
 
+    >>> index = ['Firefox', 'Chrome', 'Safari', 'IE10', 'Konqueror']
+    >>> df = pd.DataFrame({
+    ...      'http_status': [200,200,404,404,301],
+    ...      'response_time': [0.04, 0.02, 0.07, 0.08, 1.0]},
+    ...       index=index)
+    >>> df
+                http_status  response_time
+    Firefox            200           0.04
+    Chrome             200           0.02
+    Safari             404           0.07
+    IE10               404           0.08
+    Konqueror          301           1.00
+    Create a new index and reindex the dataframe. By default values in the new index that do not have corresponding records in the dataframe are assigned NaN.
+
+    >>> new_index= ['Safari', 'Iceweasel', 'Comodo Dragon', 'IE10',
+    ...             'Chrome']
+    >>> df.reindex(new_index)
+                   http_status  response_time
+    Safari                 404           0.07
+    Iceweasel              NaN            NaN
+    Comodo Dragon          NaN            NaN
+    IE10                   404           0.08
+    Chrome                 200           0.02
+    '''
+    pass
 
 --> DataFrame
  http://pandas.pydata.org/pandas-docs/stable/dsintro.html#dataframe
