@@ -6,3 +6,8 @@
 3. 之后重启Eclipse就可以了。如何检查是否已经正确安装pydev？ 打开Eclipse–>Windows–>preferences,然后在左边的树状结构中就能找到Pydev选项。
 
 http://www.linuxidc.com/Linux/2015-02/113882.htm   Pydev在Eclipse上的安装及配置
+http://www.cnblogs.com/Bonker/p/3584707.html python+Eclipse+pydev环境搭建
+
+
+--> 利用已有的python工程建立pydev工程
+ 创建工程时，workspace选择已有工程的根目录。

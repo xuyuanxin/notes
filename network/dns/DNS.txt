@@ -1,5 +1,5 @@
 
---> Domain Name System (DNS)
+--> Domain Name System (DNS), introduction
  The Domain Name System (DNS) is the system that provides name to address mapping for 
  the Internet. DNS has two conceptually independent aspects. The first is abstract:it 
  specifies the name syntax and rules for delegating authority over names. The  second
@@ -22,6 +22,22 @@
  press messages that contain multiple domain names.
 
  domain name comparisons are insensitive to case, so COM is equivalent to com.
+ 
+ DNS is a distributed client/server networked database that is used by TCP/IP applic-
+ ations to map between host names and IP addresses (and vice versa), to provide elec-
+ tronic mail routing information, service naming, and other capabilities. We use  the 
+ term distributed because no single site on the Internet knows all of the informatio-
+ n. Each site (university department, campus, company, or department within a compan-
+ y, for example) maintains its own database of information and runs a server  program 
+ that other systems across the Internet (clients) can query. The DNS provides the pr-
+ otocol that allows clients and servers to communicate with each other and also a pr-
+ otocol for allowing servers to exchange information.
+
+ From an application’s point of view, access to the DNS is through an application li-
+ brary called a resolver. In general, an application must convert a host name to an -
+ IPv4 and/or IPv6 address before it can ask TCP to open a connection or send a unica-
+ st datagram using UDP. The TCP and IP protocol implementations know nothing about t-
+ he DNS; they operate only with the addresses.
 
 --> The DNS Name Space
  The set of all names used with DNS constitutes the DNS "name space". This space is -
@@ -30,6 +46,11 @@
  he so-called top-level domains (TLDs), which include generic TLDs (gTLDs),         -
  country-code TLDs(ccTLDs), and internationalized country-code TLDs (IDN ccTLDs), pl-
  us a special infrastructure TLD called, for historical reasons, ARPA [RFC3172]. 
+ 
+ gTLDs       generic TLDs (gTLDs)
+ ccTLDs      country-code TLDs(ccTLDs)
+ IDN ccTLDs  internationalized country-code TLDs (IDN ccTLDs)
+ ARPA        special infrastructure TLD
  
  There are five commonly used groups of TLDs, and one group of specialized domains b-
  eing used for internationalized domain names (IDNs).
@@ -87,35 +108,71 @@
   ciated with the television entertainment industry. Creating a name in such an unco-
   nventional way is sometimes called a "domain hack".
 
---> top-level domin
- Conceptually, the top-level names permit two different naming hierarchies: geographic 
- and organizational. 
+ -->--> IDN ccTLDs
+ 
+ -->--> ARPA
+  
+--> DNS Naming Syntax
+ The names below a TLD in the DNS name tree are further partitioned into groups known 
+ as subdomains. The example names we have seen so far are known as fully qualified d-
+ omain names (FQDNs). They are sometimes written more formally with a trailing period
+ (e.g., mit.edu.). This trailing period indicates that the name is complete; no addi-
+ tional information should be added to the name when performing a name resolution.
+ 
+ In contrast to the FQDN, an unqualified domain name, which is used in combination w-
+ ith a default domain or domain search list set during system configuration, has  one 
+ or more strings appended to the end. For example, the default domain cs.berkeley.edu 
+ might be configured in systems at the computer science department at UC Berkeley. If 
+ a user on one of these machines types in the name vangogh, the local resolver softw-
+ are converts this name to the FQDN vangogh.cs.berkeley.edu. before invoking a resol-
+ ver to determine vangogh’s IP address.
+ 
+ A domain name consists of a sequence of labels separated by periods. The name repre-
+ sents a location in the name hierarchy, where the period is the hierarchy  delimiter 
+ and descending down the tree takes place from right to left in the name. For exampl-
+ e, the FQDN
+     www.net.in.tum.de.
+ contains a host name label (www) in a four-level-deep domain (net.in.tum.de). Start-
+ ing from the root, and working from right to left in the name, the TLD is de(the   -
+ ccTLD for Germany), tum is shorthand for Technische Universität München, in is shor-
+ thand for informatik (German for "computer science"), and finally net is shorthand -
+ for the networks group within the computer science department. 
+ 
+ Labels are case-insensitive for matching purposes, so the name ACME.COM is equivale-
+ nt to acme.com or AcMe.cOm [RFC4343]. Each label can be up to 63 characters long, a-
+ nd an entire FQDN is limited to at most 255 (1-byte) characters.
+ 
+ The hierarchical structure of the DNS name space allows different administrative au-
+ thorities to manage different parts of the name space. For example, creating a new -
+ DNS name of the form elevator.cs.berkeley.edu would likely require dealing with  the 
+ owner of the cs.berkeley.edu subdomain only. The berkeley.edu and edu portions of t-
+ he name space would not require alteration, so the owners of those would not need to 
+ be bothered. This feature of DNS is one key aspect of its scalability. That is, no -
+ single entity is required to administer all the changes for the entire DNS name spa-
+ ce. I
 
- aero            Air transport industry
- arpa            Infrastructure domain
- asia            Regional domain for Asia
- biz             Businesses
- cat             Catalan language and cultural
- com             Commercial organization
- coop            Cooperative associations
- edu             Educational institution (4-year)
- gov             United States government
- info            Information
- int             International treaty organizations
- jobs            Human resource management
- mil             United States military
- museum          Museums
- name            Individuals
- net             Major network support centers
- org             Organizations other than those above
- pro             Credentialed professionals
- travel          Travel industry
- xxx             Internet pornography
- country code    Each country (geographic scheme)
-
---> fully qualified domain names (FQDNs)
- ss
-
+--> Name Servers and Zones
+ Management responsibility for portions of the DNS name space is assigned to individ-
+ uals or organizations. 
+ 
+ The unit of administrative delegation, in the language of DNS servers, is called a -
+ zone. A zone is a subtree of the DNS name space that can be administered  separately 
+ from other zones. Every domain name exists within some zone, even the TLDs that exi-
+ st in the root zone. Whenever a new record is added to a zone, the DNS administrator 
+ for the zone allocates a name and additional information (usually an IP address) for 
+ the new entry and enters these into the name server’s database.
+ 
+ A DNS server can contain information for more than one zone. At any hierarchical ch-
+ ange point in a domain name (i.e., wherever a period appears), a different zone  and 
+ containing server may be accessed to provide information for the name. This is call-
+ ed a delegation. A common delegation approach uses a zone for implementing a second-
+ level domain name, such as berkeley.edu. In this domain, there may be individual ho-
+ sts (e.g., www.berkeley.edu) or other domains (e.g., cs.berkeley.edu). Each zone ha-
+ s a designated owner or responsible party who is given authority to manage the name-
+ s, addresses, and subordinate zones within the zone. Often this person manages not -
+ only the contents of the zone but also the name servers that contain the zone’s dat-
+ abase(s).
+ 
 --> Domain Name Resolution
  A client must know how to contact at least one name server. To ensure that a domain -
  name server can reach others, the domain system requires that each server know the a-
