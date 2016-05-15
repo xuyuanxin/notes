@@ -248,26 +248,123 @@ int pthread_rwlock_tryrdlock(pthread_rwlock_t *rwlock);
 int pthread_rwlock_trywrlock(pthread_rwlock_t *rwlock);
 
 /*----------------------------------------------------------------------------------- 
- 互斥锁是为了上锁而设计的，条件变量是为了等待而设计的 
- 与互斥锁不同，条件变量是用来等待而不是用来上锁的。条件变量用来自动阻塞一个线程，直到
- 某特殊情况发生为止。通常条件变量和互斥锁同时使用。
+ A mutex prevents multiple threads from accessing a shared variable at the same time. 
+ A condition variable allows one thread to inform other threads about changes in  the 
+ state of a shared variable (or other shared resource) and allows the other threads -
+ to wait (block) for such notification.
 
- 条件变量使我们可以睡眠等待某种条件出现。条件变量是利用线程间共享的全局变量进行同步的
- 一种机制， 主要包括两个动作：一个线程等待"条件变量的条件成立"而挂起；另一个线程使"条
- 件成立"（给出条件成立信号）。
+ A simple example that doesn't use condition variables serves to demonstrate why the-
+ y are useful. Suppose that we have a number of threads that produce some "result un-
+ its" that are consumed by the main thread, and that we use a mutex-protected variab-
+ le, @avail, to represent the number of produced units awaiting consumption:
+ 
+ static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+ static int avail = 0;
 
- 条件的检测是在互斥锁的保护下进行的。如果一个条件为假，一个线程自动阻塞，并释放等待状
- 态改变的互斥锁。如果另一个线程改变了条件，它发信号给关联的条件变量，唤醒一个或多个等
- 待它的线程，重新获得互斥锁，重新评价条件。如果两进程共享可读写的内存，条件变量可以被
- 用来实现这两进程间的线程同步。
+ In the producer threads, we would have code such as the following:
 
- 互斥锁用于保护代码临界区，从而保证任何时刻只有一个线程或者进程在临界区执行。有时候一
- 个线程获得某个互斥锁后，发现自己需要等待某个条件变为真，这样线程就可以等待在某个条件
- 上。条件变量总是有一个互斥锁与之关联。
+ s = pthread_mutex_lock(&mtx);
+ if (s != 0)
+     errExitEN(s, "pthread_mutex_lock");
+ avail++; // Let consumer know another unit is available 
+ s = pthread_mutex_unlock(&mtx);
+ if (s != 0)
+     errExitEN(s, "pthread_mutex_unlock");
 
- 互斥锁和条件变量可以静态分配并静态初始化。它们也可以动态分配并要求动态地初始化它们。
- 动态初始化允许我们指定进程间共享属性，从而允许在不同进程间共享某个互斥锁或条件变量，
- 其前提是该互斥锁或条件变量必须存在在由这些进程共享的内存区。
+ And in the main (consumer) thread, we could employ the following code:
+ 
+ for (;;) {
+     s = pthread_mutex_lock(&mtx);
+     if (s != 0)
+         errExitEN(s, "pthread_mutex_lock");
+     while (avail > 0) { // Consume all available units 
+         // Do something with produced unit 
+         avail--;
+     }
+ s = pthread_mutex_unlock(&mtx);
+ if (s != 0)
+    errExitEN(s, "pthread_mutex_unlock");
+ }
+
+ The above code works, but it wastes CPU time, because the main thread continually l-
+ oops, checking the state of the variable avail. A condition variable remedies this -
+ problem. It allows a thread to sleep (wait) until another thread notifies ( signals) 
+ it that it must do something (i.e., that some "condition" has arisen that the sleep-
+ er must now respond to).
+
+ Using a condition variable in the producer-consumer example
+
+ static pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+ static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+ static int avail = 0;
+ s = pthread_mutex_lock(&mtx);
+ if (s != 0)
+     errExitEN(s, "pthread_mutex_lock");
+ avail++; // Let consumer know another unit is available 
+ s = pthread_mutex_unlock(&mtx);
+ if (s != 0)
+     errExitEN(s, "pthread_mutex_unlock");
+ s = pthread_cond_signal(&cond); // Wake sleeping consumer 
+ if (s != 0)
+     errExitEN(s, "pthread_cond_signal");
+
+ we first unlocked the mutex associated with the shared variable, and then signaled -
+ the corresponding condition variable. We could have reversed these two steps;  SUSv3 
+ permits them to be done in either order. [Butenhof, 1996] points out that, on some -
+ implementations, unlocking the mutex and then signaling the condition variable may -
+ yield better performance than performing these steps in the reverse sequence. If the 
+ mutex is unlocked only after the condition variable is signaled, the thread perform-
+ ing pthread_cond_wait() may wake up while the mutex is still locked, and then immed-
+ iately go back to sleep again when it finds that the mutex is locked. 
+
+ the main (consumer) thread to use pthread_cond_wait(), as follows:
+
+ for (;;) {
+     s = pthread_mutex_lock(&mtx);
+     if (s != 0)
+         errExitEN(s, "pthread_mutex_lock");
+     while (avail == 0) { // Wait for something to consume 
+         s = pthread_cond_wait(&cond, &mtx);
+         if (s != 0)
+             errExitEN(s, "pthread_cond_wait");
+     }
+     while (avail > 0) { // Consume all available units 
+         // Do something with produced unit 
+         avail--;
+     }
+     s = pthread_mutex_unlock(&mtx);
+     if (s != 0)
+         errExitEN(s, "pthread_mutex_unlock");
+     // Perhaps do other work here that doesn't require mutex lock 
+ }
+
+ --> Testing a Condition Variable's Predicate
+  Each condition variable has an associated predicate involving one or more shared v-
+  ariables. For example, in the code segment in the preceding section, the  predicate
+  associated with @cond is (avail == 0). This code segment demonstrates a general de-
+  sign principle: a pthread_cond_wait() call must be governed by a while loop  rather
+  than an if statement. This is so because, on return from pthread_cond_wait(), there
+  are no guarantees about the state of the predicate; therefore, we should immediate-
+  ly recheck the predicate and resume sleeping if it is not in the desired state.  We 
+  can't make any assumptions about the state of the predicate upon return from      -
+  pthread_cond_wait(), for the following reasons:
+  1 Other threads may be woken up first. Perhaps several threads were waiting to acq-
+    uire the mutex associated with the condition variable. Even if the thread that s-
+    ignaled the mutex set the predicate to the desired state, it is still possible t-
+    hat another thread might acquire the mutex first and change the state of the ass-
+    ociated shared variable(s), and thus the state of the predicate.
+  2 Designing for "loose" predicates may be simpler. Sometimes, it is easier to desi-
+    gn applications based on condition variables that indicate possibility rather th-
+    an certainty. In other words, signaling a condition variable would mean "there m-
+    ay be something" for the signaled thread to do, rather than "there is something " 
+    to do. Using this approach, the condition variable can be signaled based on appr-
+    oximations of the predicate's state, and the signaled thread can ascertain if th-
+    ere really is something to do by rechecking the predicate.
+  3 Spurious wake-ups can occur. On some implementations, a thread waiting on a cond-
+    ition variable may be woken up even though no other thread actually signaled  the 
+    condition variable. Such spurious wake-ups are a (rare) consequence of the techn-
+    iques required for efficient implementation on some multiprocessor systems, and -
+    are explicitly permitted by SUSv3.
 -----------------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------------
@@ -315,8 +412,29 @@ int pthread_cond_destroy(pthread_cond_t *cond);
  ul call to @pthread_cond_wait or @pthread_cond_timedwait, a thread needs to reevalu-
  ate the condition, since another thread might have run and already changed the cond-
  ition.
+
+ pthread_cond_wait(), which performs the following steps:
+ 1 unlock the mutex specified by mutex; 
+ 2 block the calling thread until another thread signals the condition variable @cond; and
+ 3 relock mutex.
+ releasing the mutex and blocking on the condition variable are performed atomically. 
+ In other words, it is not possible for some other thread to acquire the mutex and s-
+ ignal the condition variable before the thread calling pthread_cond_wait() has bloc-
+ ked on the condition variable.
 -----------------------------------------------------------------------------------*/
 int pthread_cond_wait(pthread_cond_t *restrict cond,pthread_mutex_t *restrict mutex);
+
+/*-----------------------------------------------------------------------------------
+ 1 All waiting threads are awoken.
+ 2 One thread is scheduled first. This thread checks the state of the shared variabl-
+   e(s) (under protection of the associated mutex) and sees that there is work to  be 
+   done. The thread performs the required work, changes the state of the shared vari-
+   able(s) to indicate that the work has been done, and unlocks the associated mutex.
+ 3 Each of the remaining threads in turn locks the mutex and tests the state of the -
+   shared variable. However, because of the change made by the first thread, these t-
+   hreads see that there is no work to be done, and so unlock the mutex and go back -
+   to sleep (i.e., call pthread_cond_wait() once more).
+-----------------------------------------------------------------------------------*/
 int pthread_cond_timedwait(pthread_cond_t *restrict cond,pthread_mutex_t *restrict mutex,
                                   const struct timespec *restrict tsptr);
 
@@ -326,14 +444,18 @@ int pthread_cond_timedwait(pthread_cond_t *restrict cond,pthread_mutex_t *restri
 
  There are two functions to notify threads that a condition has been satisfied. The -
  @pthread_cond_signal function will wake up at least one thread waiting on a conditi-
- on (如果没有等待的线程，则什么也不做 ), whereas the @pthread_cond_broadcast function 
- will wake up all threads waiting on a condition. 
-
- if a thread calls  @pthread_cond_signal and no thread is currently blocked in a call 
- to @pthread_cond_wait, the signal is lost.
+ on, whereas the @pthread_cond_broadcast function will wake up all threads waiting on 
+ a condition. if a thread calls  @pthread_cond_signal and no thread is currently blo-
+ cked in a call to @pthread_cond_wait, the signal is lost.
   
  The POSIX specification allows for implementations of pthread_cond_signal to wake up 
  more than one thread, to make the implementation simpler.
+
+ A condition variable holds no state information. It is simply a mechanism for commu-
+ nicating information about the application's state. If no thread is waiting on the -
+ condition variable at the time that it is signaled, then the signal is lost. A thre-
+ ad that later waits on the condition variable will unblock only when the variable is 
+ signaled once more.
 
  example: pthread_cond_eg01()
 -----------------------------------------------------------------------------------*/

@@ -1,0 +1,23 @@
+--> coredump产生
+ ~$ sleep 10        #使用sleep命令休眠 10 s
+ ^C                           #使用 Ctrl+C 终止该程序,不会产生 core dump
+ ~$ sleep 10
+ ^\Quit (core dumped)                #使用 Ctrl+\ 退出程序, 会产生 core dump
+ ~$ ls         #多出下面一个 core 文件
+ -rw-------  1 xxx xxx 335872 10月 22 11:31 sleep.core.21990
+ 
+ 我们使用 Ctrl+\ 来终止一个进程，会向进程发出 SIGQUIT 信号，默认是会产生 core dump 的。
+                                                                                     |
+--> Linux 下打开 Core Dump
+ 在终端中输入命令 ulimit -c ，输出的结果为 0，说明默认是关闭 core dump 的
+ 使用命令 ulimit -c unlimited 来开启 core dump 功能，并且不限制 core dump 文件的大小； 
+ 如果需要限制文件的大小，将 unlimited 改成你想生成 core 文件最大的大小，注意单位为 blocks（KB）。
+ 
+--> 使用 gdb 调试 Core 文件
+ ~$ gcc core_demo.c -o core_demo -g
+ ~$ ./core_demo 
+ Segmentation fault (core dumped)
+
+ ~$ gdb core_demo core_demo.core.24816
+ (gdb)  where
+ (gdb) info frame

@@ -135,7 +135,10 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
     pass
 
   def info(verbose=None, buf=None, max_cols=None, memory_usage=None, null_counts=None):
-    # Concise summary of a DataFrame.
+    '''
+	buf : writable buffer, defaults to sys.stdout
+    Concise summary of a DataFrame.
+    '''
     pass
 
   def insert(loc, column, value, allow_duplicates=False): # DataFrame.insert
@@ -236,6 +239,7 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
   d    4   NaN
   b    2   NaN
   a    1   NaN
+  
   The row and column labels can be accessed respectively by accessing the index and -
   columns attributes:
 
@@ -317,6 +321,10 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
   1  5  10
   
 --> Column selection, addition, deletion
+ You can treat a DataFrame semantically like a dict of like-indexed Series objects. -
+ Getting, setting, and deleting columns works with the same syntax as the analogous -
+ dict operations:
+ 
  In [32]: df
  Out[32]: 
     one  two
@@ -324,10 +332,6 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
  b    2    2
  c    3    3
  d  NaN    4  
- 
- You can treat a DataFrame semantically like a dict of like-indexed Series objects. -
- Getting, setting, and deleting columns works with the same syntax as the analogous -
- dict operations:
  
  In [54]: df['one']
  Out[54]: 
@@ -392,9 +396,152 @@ class DataFrame(data=None, index=None, columns=None, dtype=None, copy=False): # 
  c    3    3   True  bar        NaN
  d  NaN  NaN  False  bar        NaN
 
+--> Console display
+ http://pandas.pydata.org/pandas-docs/stable/dsintro.html#console-display
  
+ Very large DataFrames will be truncated to display them in the console. You can als-
+ o get a summary using info(). 
  
+ In [101]: baseball = pd.read_csv('data/baseball.csv')
+
+ In [102]: print(baseball)
+        id     player  year  stint  ...   hbp   sh   sf  gidp
+ 0   88641  womacto01  2006      2  ...   0.0  3.0  0.0   0.0
+ 1   88643  schilcu01  2006      1  ...   0.0  0.0  0.0   0.0
+ ..    ...        ...   ...    ...  ...   ...  ...  ...   ...
+ 98  89533   aloumo01  2007      1  ...   2.0  0.0  3.0  13.0
+ 99  89534  alomasa02  2007      1  ...   0.0  0.0  0.0   0.0
+
+ [100 rows x 23 columns]
  
+ In [103]: baseball.info()
+ <class 'pandas.core.frame.DataFrame'>
+ RangeIndex: 100 entries, 0 to 99
+ Data columns (total 23 columns):
+ id        100 non-null int64
+ player    100 non-null object
+ year      100 non-null int64
+ stint     100 non-null int64
+ team      100 non-null object
+ lg        100 non-null object
+ g         100 non-null int64
+ ab        100 non-null int64
+ r         100 non-null int64
+ h         100 non-null int64
+ X2b       100 non-null int64
+ X3b       100 non-null int64
+ hr        100 non-null int64
+ rbi       100 non-null float64
+ sb        100 non-null float64
+ cs        100 non-null float64
+ bb        100 non-null int64
+ so        100 non-null float64
+ ibb       100 non-null float64
+ hbp       100 non-null float64
+ sh        100 non-null float64
+ sf        100 non-null float64
+ gidp      100 non-null float64
+ dtypes: float64(9), int64(11), object(3)
+ memory usage: 18.0+ KB
+ 
+ However, using to_string will return a string representation of the DataFrame in ta-
+ bular form, though it won’t always fit the console width:
+ In [104]: print(baseball.iloc[-20:, :12].to_string())
+        id     player  year  stint team  lg    g   ab   r    h  X2b  X3b
+ 80  89474  finlest01  2007      1  COL  NL   43   94   9   17    3    0
+ 81  89480  embreal01  2007      1  OAK  AL    4    0   0    0    0    0
+ 82  89481  edmonji01  2007      1  SLN  NL  117  365  39   92   15    2
+ 83  89482  easleda01  2007      1  NYN  NL   76  193  24   54    6    0
+ 84  89489  delgaca01  2007      1  NYN  NL  139  538  71  139   30    0
+ 85  89493  cormirh01  2007      1  CIN  NL    6    0   0    0    0    0
+ 86  89494  coninje01  2007      2  NYN  NL   21   41   2    8    2    0
+ 87  89495  coninje01  2007      1  CIN  NL   80  215  23   57   11    1
+ 88  89497  clemero02  2007      1  NYA  AL    2    2   0    1    0    0
+ 89  89498  claytro01  2007      2  BOS  AL    8    6   1    0    0    0
+ 90  89499  claytro01  2007      1  TOR  AL   69  189  23   48   14    0
+ 91  89501  cirilje01  2007      2  ARI  NL   28   40   6    8    4    0
+ 92  89502  cirilje01  2007      1  MIN  AL   50  153  18   40    9    2
+ 93  89521  bondsba01  2007      1  SFN  NL  126  340  75   94   14    0
+ 94  89523  biggicr01  2007      1  HOU  NL  141  517  68  130   31    3
+ 95  89525  benitar01  2007      2  FLO  NL   34    0   0    0    0    0
+ 96  89526  benitar01  2007      1  SFN  NL   19    0   0    0    0    0
+ 97  89530  ausmubr01  2007      1  HOU  NL  117  349  38   82   16    3
+ 98  89533   aloumo01  2007      1  NYN  NL   87  328  51  112   19    1
+ 99  89534  alomasa02  2007      1  NYN  NL    8   22   1    3    1    0
+ 
+ New since 0.10.0, wide DataFrames will now be printed across multiple rows by default:
+
+ In [105]: pd.DataFrame(np.random.randn(3, 12))
+ Out[105]: 
+          0         1         2         3         4         5         6   \
+ 0  1.225021 -0.528620  0.448676  0.619107 -1.199110 -0.949097  2.169523   
+ 1 -1.753617  0.992384 -0.505601 -0.599848  0.133585  0.008836 -1.767710   
+ 2 -0.461585 -1.321106  1.745476  1.445100  0.991037 -0.860733 -0.870661   
+
+          7         8         9         10        11  
+ 0  0.302230  0.919516  0.657436  0.262574 -0.804798  
+ 1  0.700112 -0.020773 -0.302481  0.347869  0.179123  
+ 2 -0.117845 -0.046266  2.095649 -0.524324 -0.610555  
+ 
+ You can change how much to print on a single row by setting the display.width option:
+
+ In [106]: pd.set_option('display.width', 40) # default is 80
+
+ In [107]: pd.DataFrame(np.random.randn(3, 12))
+ Out[107]: 
+          0         1         2   \
+ 0 -1.280951  1.472585 -1.001914   
+ 1  0.130529 -1.603771 -0.128830   
+ 2 -1.084566 -0.515272  1.367586   
+ 
+          3         4         5   \
+ 0  1.044770 -0.050668 -0.013289   
+ 1 -1.869301 -0.232977 -0.139801   
+ 2  0.963500  0.224105 -0.020051   
+ 
+          6         7         8   \
+ 0 -0.291893  2.029038 -1.117195   
+ 1 -1.083341 -0.357234 -0.818199   
+ 2  0.524663  0.351081 -1.574209   
+ 
+          9         10        11  
+ 0  1.598577 -0.397325  0.151653  
+ 1 -0.886885  1.238885 -1.639274  
+ 2 -0.486856 -0.545888 -0.927076  
+ 
+ You can adjust the max width of the individual columns by setting display.max_colwidth
+
+ In [108]: datafile={'filename': ['filename_01','filename_02'],
+    .....:           'path': ["media/user_name/storage/folder_01/filename_01",
+    .....:                    "media/user_name/storage/folder_02/filename_02"]}
+    .....: 
+
+ In [109]: pd.set_option('display.max_colwidth',30)
+ 
+ In [110]: pd.DataFrame(datafile)
+ Out[110]: 
+       filename  \
+ 0  filename_01   
+ 1  filename_02   
+
+                             path  
+ 0  media/user_name/storage/fo...  
+ 1  media/user_name/storage/fo...  
+
+ In [111]: pd.set_option('display.max_colwidth',100)
+
+ In [112]: pd.DataFrame(datafile)
+ Out[112]: 
+       filename  \
+ 0  filename_01   
+ 1  filename_02   
+
+                                             path  
+ 0  media/user_name/storage/folder_01/filename_01  
+ 1  media/user_name/storage/folder_02/filename_02  
+
+ You can also disable this feature via the expand_frame_repr option. This will  print 
+ the table in one block.
  
  
  

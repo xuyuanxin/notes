@@ -1,4 +1,4 @@
-zip([iterable, ...])
+def zip([iterable, ...]):
 This function returns a list of tuples, where the i-th tuple contains the i-th eleme-
 nt from each of the argument sequences or iterables. 
 

@@ -181,10 +181,178 @@ Python入门笔记(23)：模块   http://www.cnblogs.com/BeginMan/p/3183656.html
   to select a subset of names.
   
 --> Module Packages  
+ -->--> Package Import Basics
+  At a base level, package imports are straightforward--in the place where you have -
+  been naming a simple file in your import statements, you can instead list a path of 
+  names separated by periods:
+    import dir1.dir2.mod
+  The same goes for from statements:
+    from dir1.dir2.mod import x
+  The "dotted" path in these statements is assumed to correspond to a path through t-
+  he directory hierarchy on your computer, leading to the file mod.py (or similar; t-
+  he extension may vary). That is, the preceding statements indicate that on your ma-
+  chine there is a directory dir1, which has a subdirectory dir2, which contains a m-
+  odule file mod.py (or similar).
+  
+  Furthermore, these imports imply that dir1 resides within some container  directory
+  dir0, which is a component of the normal Python module search path. In other words,
+  these two import statements imply a directory structure that looks something like -
+  this (shown with Windows backslash separators):
+    dir0\dir1\dir2\mod.py # Or mod.pyc, mod.so, etc.
+  The container directory dir0 needs to be added to your module search path unless  -
+  it’s the home directory of the top-level file, exactly as if dir1 were a simple mo-
+  dule file. More formally, the leftmost component in a package import path is  still 
+  relative to a directory included in the sys.path module search path list we explor-
+  ed in Chapter 22. 
+  
+ -->--> Package __init__.py Files
+  If you choose to use package imports, there is one more constraint you must follow: 
+  at least until Python 3.3, each directory named within the path of a package      -
+  @import statement must contain a file named __init__.py, or your package imports w-
+  ill fail. That is, in the example we’ve been using, both dir1 and dir2 must contain 
+  a file called __init__.py; the container directory dir0 does not require such a fi-
+  le because it’s not listed in the @import statement itself.
+  
+  Package initialization file roles:
+  1 Package initialization. The first time a Python program imports through a direct-
+  ory, it automatically runs all the code in the directory’s __init__.py file.
+  2 Module usability declarations. Package __init__.py files are also partly  present 
+  to declare that a directory is a Python package. 
+  3 Module namespace initialization. In the package import model, the directory paths 
+  in your script become real nested object paths after an import. For instance, in t-
+  he preceding example, after the import the expression dir1.dir2 works and returns a 
+  module object whose namespace contains all the names assigned by dir2’s __init__.py 
+  initialization file. Such files provide a namespace for module objects created  for 
+  directories, which would otherwise have no real associated module file.
+  4 from * statement behavior. As an advanced feature, you can use __all__ lists in -
+  __init__.py files to define what is exported when a directory is imported with  the 
+  from * statement form. 
+  
+  -->--> Package Import Example
+   # dir1\__init__.py
+   print('dir1 init')
+   x = 1
+   
+   # dir1\dir2\__init__.py
+   print('dir2 init')
+   y = 2
+   
+   # dir1\dir2\mod.py
+   print('in mod.py')
+   z = 3
+   
+   
+   C:\code> python # Run in dir1's container directory
+   >>> import dir1.dir2.mod # First imports run init files
+   dir1 init
+   dir2 init
+   in mod.py
+   >>>
+   >>> import dir1.dir2.mod # Later imports do not
+   >>> dir1.x
+   1
+   >>> dir1.dir2.y
+   2
+   >>> dir1.dir2.mod.z
+   3
+   >>> dir2.mod
+   NameError: name 'dir2' is not defined
+   >>> mod.z
+   NameError: name 'mod' is not defined
+   
+   C:\code> python
+   >>> from dir1.dir2 import mod # Code path here only
+   dir1 init
+   dir2 init
+   in mod.py
+   >>> mod.z # Don't repeat path
+   3
+   >>> from dir1.dir2.mod import z
+   >>> z
+   3
+   >>> import dir1.dir2.mod as mod # Use shorter name (see Chapter 25)
+   >>> mod.z
+   3
+   >>> from dir1.dir2.mod import z as modz # Ditto if names clash (see Chapter 25)
+   >>> modz
+   3
+  
+ 
+ 
  -->--> Package Relative Imports
+  Imports with dots: In both Python 3.X and 2.X, you can use leading dots in @from s-
+  tatements’ module names to indicate that imports should be relative-only to the co-
+  ntaining package--such imports will search for modules inside the package directory 
+  only and will not look for same-named modules located elsewhere on the import sear-
+  ch path (sys.path). The net effect is that package modules override outside module-
+  s.
+  Imports without dots: In Python 2.X, normal imports in a package’s code without le-
+  ading dots currently default to a relative-then-absolute search path order--that is
+  , they search the package’s own directory first. However, in Python 3.X, normal im-
+  ports within a package are absolute-only by default--in the absence of any  special 
+  dot syntax, imports skip the containing package itself and look elsewhere on the  -
+  sys.path search path.
   
+  >>> from __future__ import absolute_import  # Use 3.X relative import model in 2.X
   
+  If present, this statement enables the Python 3.X absolute-only search path change. 
+  In 3.X, and in 2.X when enabled, an import without a leading dot in the module nam-
+  e always causes Python to skip the relative components of the module import  search 
+  path and look instead in the absolute directories that sys.path contains. 
   
+  In effect, the "." in a relative import is taken to stand for the package directory 
+  containing the file in which the import appears. An additional leading dot performs 
+  the relative import starting from the parent of the current package. For example:
+  
+  |--A
+  |  |--B
+  |     |--C <----
+  |     |--D
+  |        |--X
+  |  |--E
+  |     |--X
+  
+  code located in some module A.B.C can use any of these forms:
+  >>> from . import D # Imports A.B.D (. means A.B)
+  >>> from .. import E # Imports A.E (.. means A)
+  >>> from .D import X # Imports A.B.D.X (. means A.B)
+  >>> from ..E import X # Imports A.E.X (.. means A)
+  
+  -->-->--> The Scope of Relative Imports
+   Relative imports apply to imports within packages only. Keep in mind that this fe-
+   ature’s module search path change applies only to import statements within  module 
+   files used as part of a package--that is, intrapackage imports. Normal imports  in 
+   files not used as part of a package still work exactly as described earlier, auto-
+   matically searching the directory containing the top-level script first.
+   Relative imports apply to the @from statement only. Also remember that this featu-
+   re’s new syntax applies only to @from statements, not @import statements. It’s de-
+   tected by the fact that the module name in a @from begins with one or more dots (-
+   periods). Module names that contain embedded dots but don’t have a leading dot are 
+   package imports, not relative imports.
+   
+  -->-->--> Module Lookup Rules Summary
+   With packages and relative imports, the module search story in Python 3.X that  we
+   have seen so far can be summarized as follows:
+   1 Basic modules with simple names (e.g., A) are located by searching each directo-
+   ry on the sys.path list, from left to right. 
+   2 Packages are simply directories of Python modules with a special __init__.py fi-
+   le, which enables A.B.C directory path syntax in imports. In an import of A.B.C, -
+   for example, the directory named A is located relative to the normal module import
+   search of sys.path, B is another package subdirectory within A, and C is a  module
+   or other importable item within B.
+   3 Within a package’s files,normal import and from statements use the same sys.path 
+   search rule as imports elsewhere. Imports in packages using from statements and l-
+   eading dots, however, are relative to the package; that is, only the package dire-
+   ctory is checked, and the normal sys.path lookup is not used.
+   
+   Python 2.X works the same, except that normal imports without dots also automatic-
+   ally search the package directory first before proceeding on to sys.path. In  sum, 
+   Python imports select between relative (in the containing directory) and  absolute 
+   (in a directory on sys.path) resolutions as follows:
+    Dotted imports: from . import m
+      Are relative-only in both 2.X and 3.X
+    Nondotted imports: import m, from m import x
+      Are relative-then-absolute in 2.X, and absolute-only in 3.X
   
   
   

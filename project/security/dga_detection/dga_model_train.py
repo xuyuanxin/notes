@@ -104,7 +104,7 @@ def main():
         # This is the Alexa 1M domain list.
         print 'Loading alexa dataframe...'
         alexa_dataframe = pd.read_csv(options.alexa_file, names=['rank','uri'], header=None, encoding='utf-8')
-        print alexa_dataframe.info()
+        alexa_dataframe.info()
 		
         '''
     		rank           uri
@@ -248,7 +248,9 @@ def main():
         ''' alexa: abcabc.com abcd.com
         [[2 1 1 0 1 1 1 0 1 1]
          [1 0 0 1 0 0 0 1 0 0]]
+		 
         [u'abc', u'abca', u'abcab', u'abcd', u'bca', u'bcab', u'bcabc', u'bcd', u'cab', u'cabc']
+		
         [[3 1 1 1 1 1 1 1 1 1]]
 
         '''

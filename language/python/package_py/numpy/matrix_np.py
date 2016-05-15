@@ -46,6 +46,18 @@ class numpy.matrix:
 	Returns the sum of the matrix elements, along the given axis. This is the same as 
 	ndarray.sum, except that where an ndarray would be returned, a @matrix object  is 
 	returned instead.
+
+    >>> import numpy as np
+    >>> x = np.matrix([[1, 2], [4, 3]])
+    >>> x
+    matrix([[1, 2],
+            [4, 3]])
+    >>> a = x.sum(axis=0)
+    >>> a
+    matrix([[5, 5]])
+    >>> b = a.getA1()
+    >>> b
+    array([5, 5])
     '''
     pass
 

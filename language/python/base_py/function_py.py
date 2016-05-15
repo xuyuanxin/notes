@@ -176,20 +176,23 @@
   
   Yep, we get a dictionary rather than a tuple. 
 
-  Reversing the Process
-  Now you’ve learned about gathering up parameters in tuples and dictionaries, but  it 
-  is in fact possible to do the "opposite" as well, with the same two operators, * and 
-  **. This is simply done by using the * or ** operator at the "other end" — that is ,
-  when calling the function rather than when defining it. 
-  def add(x, y): return x + y
-  params = (1, 2) 
-  >>> add(*params)
-  3
-  You can use the same technique with dictionaries, using the ** operator.
-  def print_params_3(**params): print params
-  >>> params = {'name': 'Sir Robin', 'greeting': 'Well met'}
-  >>> hello_3(**params)
-  Well met, Sir Robin!	  
+  -->--> Reversing the Process
+   Now you’ve learned about gathering up parameters in tuples and dictionaries, but it 
+   is in fact possible to do the "opposite" as well, with the same two operators, *and 
+   **. This is simply done by using the * or ** operator at the "other end" — that is,
+   when calling the function rather than when defining it. 
+  
+   def add(x, y): return x + y
+   params = (1, 2) 
+   >>> add(*params)
+   3
+  
+   You can use the same technique with dictionaries, using the ** operator.
+  
+   def print_params_3(**params): print params
+   >>> params = {'name': 'Sir Robin', 'greeting': 'Well met'}
+   >>> hello_3(**params)
+   Well met, Sir Robin!	  
 
 --> Closures
  If references are made from inside an inner function to an object defined in any ou-
