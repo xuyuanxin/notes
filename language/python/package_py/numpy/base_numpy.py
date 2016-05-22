@@ -1,7 +1,9 @@
-
+http://docs.scipy.org/doc/numpy-dev/reference/index.html  NumPy Reference
+http://docs.scipy.org/doc/numpy-dev/user/index.html#user  NumPy User Guide
 http://wiki.scipy.org/Tentative_NumPy_Tutorial            Tentative NumPy Tutorial
 https://docs.scipy.org/doc/numpy-dev/user/quickstart.html Quickstart tutorial
 http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  chinese edition
+http://www.dataivy.cn/blog/python%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E5%BA%93-numpy/   Python基础数据处理库-NumPy
 
 --> The Basics
  NumPy's main object is the homogeneous multidimensional array. It is a table of ele-
@@ -70,9 +72,9 @@ http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  c
  ---------------------------------
 
 --> Array Creation
- you can create an array from a regular Python list or tuple using the array function
- . The type of the resulting array is deduced from the type of the elements in the s-
- equences.
+ you can create an array from a regular Python list or tuple using the array() funct-
+ ion. The type of the resulting array is deduced from the type of the elements in the 
+ sequences.
  >>> from numpy import *
  >>> a = array( [2,3,4] )
  >>> a
@@ -85,6 +87,7 @@ http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  c
  >>> c
  array([[ 1.+0.j,  2.+0.j],
         [ 3.+0.j,  4.+0.j]])
+
  The function @zeros creates an array full of zeros, the function @ones creates an a-
  rray full of ones, and the function @empty creates an array whose initial content i-
  s random and depends on the state of the memory. By default, the dtype of the creat-
@@ -103,6 +106,7 @@ http://www.tuicool.com/articles/r2yyei                    Quickstart tutorial  c
  >>> empty( (2,3) )
  array([[  3.73603959e-262,   6.02658058e-154,   6.55490914e-260],
        [  5.30498948e-313,   3.14673309e-307,   1.00000000e+000]])
+
  To create sequences of numbers, NumPy provides a function analogous to range that r-
  eturns arrays instead of lists
  >>> arange( 10, 30, 5 )

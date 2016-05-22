@@ -259,7 +259,7 @@ def main():
         #print counts_matrix.sum(axis=0)
         #return 
 
-        alexa_counts = np.log10(counts_matrix.sum(axis=0).getA1()) # numpy.matrix
+        alexa_counts = np.log10(counts_matrix.sum(axis=0).getA1()) # numpy.matrix 每个词频出现的次数
         ngrams_list = alexa_vc.get_feature_names()
 
         # For fun sort it and show it

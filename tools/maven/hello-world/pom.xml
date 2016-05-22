@@ -3,17 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.juvenxu.mvnbook</groupId>
-  <artifactId>hello-world</artifactId>
+  <modelVersion>4.0.0</modelVersion> <!-- POM模型版本，对于Maven2及Maven3来说，它只能是4.0.0 -->
+  <groupId>com.juvenxu.mvnbook</groupId> <!-- 属于哪个组 -->
+  <artifactId>hello-world</artifactId> <!-- 项目在组中的唯一ID -->
   <version>1.0-SNAPSHOT</version>
   <name>Maven Hello World Project</name>
   <dependencies>
     <dependency>
   	  <groupId>junit</groupId>
   	  <artifactId>junit</artifactId>
-  	  <version>4.7</version>
-  	  <scope>test</scope>
+  	  <version>4.7</version>  <!-- junit-4.7.jar -->
+  	  <scope>test</scope> <!-- 依赖范围，表示只对测试有效。默认是compile -->
     </dependency>
   </dependencies>
   <build>
@@ -48,4 +48,20 @@ http://maven.apache.org/maven-v4_0_0.xsd">
   	  </plugin>
     </plugins>
   </build>
-</project>  
+</project> 
+
+<!-- -->
+<!--
+ POM: Project Object Model 项目对象模型；类似于Make的Makefile，Ant的build.xml
+ 
+ Maven约定：
+ 1 项目主代码位于 src/main/java
+   主目录下有 com/juvenxu/mvnbook/helloworld/HelloWorld.java. 和 groupId artifactId 吻合
+ 2 Maven构建的所有输出都在 target/ 目录中
+   target/classses: 编译好的类
+ 3 测试代码目录 src/test/java
+ 
+ 
+
+
+--> 
