@@ -33,6 +33,9 @@
   
   我这里应该是2个Cpu,每个Cpu有6个core,应该是Intel的U,支持超线程,所以显示24
 
+--> meminfo
+ cat /proc/meminfo  
+  
 --> 查看suse版本号
  http://www.2cto.com/os/201303/196063.html
 
