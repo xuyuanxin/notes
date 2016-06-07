@@ -1,0 +1,102 @@
+http://www.tuicool.com/articles/Y3eame 【Apache ZooKeeper】命令行zkCli.sh使用指南
+http://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_zkCommands   ZooKeeper Commands: The Four Letter Words
+
+jps
+QuorumPeerMain  <-- zk进程
+
+
+ 常用命令
+3.1. 启动ZK服务:        bin/zkServer.sh start
+3.2. 查看ZK服务状态:  bin/zkServer.sh status
+3.3  停止ZK服务:        bin/zkServer.sh stop
+3.4. 重启ZK服务:        bin/zkServer.sh restart 
+3.5  连接服务器          zkCli.sh -server 127.0.0.1:2181
+3.6  查看根目录 ls /
+3.7  创建 testnode节点，关联字符串"zz"         create /zk/testnode "zz"
+3.8  查看节点内容  get /zk/testnode 
+3.9  设置节点内容  set /zk/testnode abc
+4.0  删除节点      delete /zk/testnode
+
+
+--> ZooKeeper Commands: The Four Letter Words
+ ZooKeeper responds to a small set of commands. Each command is composed of four let-
+ ters. You issue the commands to ZooKeeper via telnet or nc, at the client port.
+
+ Three of the more interesting commands: "stat" gives some general information  about 
+ the server and connected clients, while "srvr" and "cons" give extended details on -
+ server and connections respectively.
+
+ conf
+  New in 3.3.0: Print details about serving configuration.
+
+ cons
+  New in 3.3.0: List full connection/session details for all clients connected to this server. Includes information on numbers of packets received/sent, session id, operation latencies, last operation performed, etc...
+
+ crst
+  New in 3.3.0: Reset connection/session statistics for all connections.
+
+ dump
+  Lists the outstanding sessions and ephemeral nodes. This only works on the leader.
+
+ envi
+  Print details about serving environment
+
+ ruok
+  Tests if server is running in a non-error state. The server will respond with imok if it is running. Otherwise it will not respond at all.
+
+  A response of "imok" does not necessarily indicate that the server has joined the quorum, just that the server process is active and bound to the specified client port. Use "stat" for details on state wrt quorum and client connection information.
+
+ srst
+  Reset server statistics.
+
+ srvr
+  New in 3.3.0: Lists full details for the server.
+
+ stat
+  Lists brief details for the server and connected clients.
+
+ wchs
+  New in 3.3.0: Lists brief information on watches for the server.
+
+ wchc
+  New in 3.3.0: Lists detailed information on watches for the server, by session. This outputs a list of sessions(connections) with associated watches (paths). Note, depending on the number of watches this operation may be expensive (ie impact server performance), use it carefully.
+
+ wchp
+  New in 3.3.0: Lists detailed information on watches for the server, by path. This outputs a list of paths (znodes) with associated sessions. Note, depending on the number of watches this operation may be expensive (ie impact server performance), use it carefully.
+
+ mntr
+  New in 3.4.0: Outputs a list of variables that could be used for monitoring the health of the cluster.
+
+  $ echo mntr | nc localhost 2185
+
+  zk_version  3.4.0
+  zk_avg_latency  0
+  zk_max_latency  0
+  zk_min_latency  0
+  zk_packets_received 70
+  zk_packets_sent 69
+  zk_outstanding_requests 0
+  zk_server_state leader
+  zk_znode_count   4
+  zk_watch_count  0
+  zk_ephemerals_count 0
+  zk_approximate_data_size    27
+  zk_followers    4                   - only exposed by the Leader
+  zk_synced_followers 4               - only exposed by the Leader
+  zk_pending_syncs    0               - only exposed by the Leader
+  zk_open_file_descriptor_count 23    - only available on Unix platforms
+  zk_max_file_descriptor_count 1024   - only available on Unix platforms
+ 
+  The output is compatible with java properties format and the content may change over time (new keys added). Your scripts should expect changes.
+
+  ATTENTION: Some of the keys are platform specific and some of the keys are only exported by the Leader.
+
+  The output contains multiple lines with the following format:
+
+  key \t value
+ 
+ Here's an example of the ruok command:
+
+ $ echo ruok | nc 127.0.0.1 5111
+ imok
+ 

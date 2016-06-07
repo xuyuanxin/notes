@@ -1,0 +1,47 @@
+http://zookeeper.apache.org/doc/r3.4.8/zookeeperAdmin.html#sc_configuration
+
+
+--> Minimum Configuration 
+ Here are the minimum configuration keywords that must be defined in the configurati-
+ on file:
+ 
+ -->--> clientPort
+  the port to listen for client connections; that is, the port that clients attempt -
+  to connect to.
+  
+ -->--> dataDir
+  the location where ZooKeeper will store the in-memory database snapshots and, unle-
+  ss specified otherwise, the transaction log of updates to the database. 
+  Note: Be careful where you put the transaction log. A dedicated transaction log de-
+  vice is key to consistent good performance. Putting the log on a busy device will -
+  adversely effect performance.
+  
+ -->--> tickTime
+  the length of a single tick, which is the basic time unit used by ZooKeeper, as me-
+  asured in milliseconds. It is used to regulate heartbeats, and timeouts. For examp-
+  le, the minimum session timeout will be two ticks.
+
+--> Cluster Options
+ -->--> initLimit (No Java system property)
+  Amount of time, in ticks (see tickTime), to allow followers to connect and sync  to 
+  a leader. Increased this value as needed, if the amount of data managed by ZooKeeper 
+  is large. 
+
+ -->--> server.x=[hostname]:nnnnn[:nnnnn], etc (No Java system property)
+  servers making up the ZooKeeper ensemble. When the server starts up, it  determines 
+  which server it is by looking for the file myid in the data directory. That file c-
+  ontains the server number, in ASCII, and it should match x in server.x in the  left 
+  hand side of this setting.
+  The list of servers that make up ZooKeeper servers that is used by the clients must 
+  match the list of ZooKeeper servers that each ZooKeeper server has.
+  There are two port numbers nnnnn. The first followers use to connect to the leader, 
+  and the second is for leader election. The leader election port is only necessary -
+  if electionAlg is 1, 2, or 3 (default). If electionAlg is 0, then the second port -
+  is not necessary. If you want to test multiple servers on a single machine, then d-
+  ifferent ports can be used for each server.  
+  
+ -->--> syncLimit (No Java system property)
+  Amount of time, in ticks (see tickTime), to allow followers to sync with  ZooKeeper. 
+  If followers fall too far behind a leader, they will be dropped.
+
+  

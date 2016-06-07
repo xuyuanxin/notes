@@ -1,5 +1,39 @@
 
---> 生命周期和插件
+--> 坐标
+ Maven坐标是通过一些元素定义的，他们是groupId、artifactId、version、packaging、classfier
+ 
+ <groupId>org.sonatype.nexus</groupId>
+ <artifactId>nexus-indexer</artifactId>
+ <version>2.0.0</version>
+ <packaging>jar</packaging>
+ 
+ -->--> groupId (必须定义)
+  定义当前Maven项目隶属的实际项目。                                                                
+  上例中，groupId为org.sonatype.nexus，org.sonatype表示Sonatype公司建立的一个非盈利性组织，nexus表
+  示Nexus这一实际项目。
+ -->--> artifactId (必须定义)
+  定义实际项目中的一个Maven项目(模块)，推荐使用实际项目名称作为artifactId的前缀。
+  上例中， artifactId为nexus-indexer，使用了实际项目名nexus作为前缀。
+ -->--> version (必须定义)
+  定义Maven项目当前所处的版本。
+ -->--> packaging (可选默认是jar)
+  定义Maven项目的打包方式(jar war)，默认为jar。
+  上例中packaging为jar，最终的文件名为nexus-indexer-2.0.0.jar
+ -->--> classifier (不能直接定义)
+  定义构建输出的一些附属构建。附属构建与主构件对应，上例中的主构件是nexus-indexer-2.0.0.jar
+  该项目可能还会通过一些插件生成如nexus-indexer-2.0.0-javadoc.jar、nexus-indexer-2.0.0-source.jar
+  这样一些附属构建，其包含了java文档和源代码。
+                                                                                     
+--> 依赖
+ 根元素project下的dependencies可以包含一个或多个dependency元素，以声明一个或者多个项
+ 目依赖。每个依赖可以包含的元素有：
+ groupId、artifactId和version：依赖的基本坐标。
+ type：依赖的类型，对应于项目坐标定义的packaging。默认为jar
+ scope：依赖的范围
+ optional：标记依赖是否可选
+ exclusions：用来排除传递性依赖。
+
+--> 生命周期
  Maven有三套相互独立的生命周期：clean、default、site
  clean：清理项目
  default: 构建项目
@@ -37,5 +71,86 @@
  3、mvn clean install 
  调用clean生命周期的clean阶段和default的install阶段，实际执行pre-clean和clean，install以及之前所有阶段
   
+--> 插件
+ http://www.cnblogs.com/luotaoyeah/p/3819001.html
+ http://blog.csdn.net/wanghantong/article/details/9375013 maven详解之生命周期与插件(一) 
+ 
+ Maven的核心仅仅定义了抽象的生命周期，具体的任务是交由插件完成的，插件以独立的构建形
+ 式存在。一个插件通常可以完成多个任务，每一个任务就叫做插件的一个目标。
+ 
+ Maven的生命周期是抽象的，实际需要插件来完成任务，这一过程是通过将插件的目标（goal）
+ 绑定到生命周期的具体阶段（phase）来完成的。如：将maven-compiler-plugin插件的compile
+ 目标绑定到default生命周期的compile阶段，完成项目的源代码编译。
+ 
+ -->--> 内置绑定
+  Maven对一些生命周期的阶段（phase）默认绑定了插件目标。
   
+  clean生命周期阶段与插件目标的绑定关系
+  生命周期阶段    插件目标
+  pre-clean     
+  clean           maven-clean-plugin:clean
+  post-clean
+
+  site生命周期阶段与插件目标的绑定关系 
+  生命周期阶段    插件目标
+  pre-site     
+  site            maven-site-plugin:site
+  post-site     
+  site-deploy    maven-site-plugin:deploy  
+  
+  default生命周期与内置插件绑定关系及具体任务(打包类型: jar)
+  生命周期阶段              插件目标                                 执行任务
+  process-resources         maven-resources-plugin:resources         复制主资源文件至主输出目录
+  compile                   maven-compile-plugin:compile             编译主代码至主输出目录
+  process-test-resources    maven-resources-plugin:testRresources    复制测试资源文件至测试输出目录
+  test-compile              maven-compiler-plugin:testCompile        编译测试代码至测试输出目录
+  test                      maven-surefire-plugin:test               执行测试用例
+  package                   maven-jar-plugin:jar                     创建项目jar包
+  install                   maven-install-plugin:install             将项目输出构件安装到本地仓库
+  deploy                    maven-deploy-plugin:deploy               将项目输出构件部署到远程仓库
+  
+ -->--> 自定义绑定
+  用户能够自己选择将某个插件目标绑定到生命周期的某个阶段上。一个常见的例子就是创建项
+  目的源码jar包，内置的插件绑定关系中没有涉及这一任务，要用户自行配置。maven-source-plugin
+  可以帮助我们完成该任务，它的jar-no-fork目标能够将项目的主代码打包成jar文件，可以将
+  其绑定到default生命周期的verify阶段上，在执行完集成测试后和安装构建之前创建源码jar
+  包。具体的配置如下：
+  <build>                                                                            
+      <plugins>
+          <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <version>2.2.1</version>
+              <executions>
+                  <execution>
+                      <id>attach-source</id>
+                      <phase>verify</phase><!-- 要绑定到的生命周期的阶段 -->
+                      <goals>
+                          <goal>jar-no-fork</goal><!-- 要绑定的插件的目标 -->
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+      ……
+  </build>                                                                           
+
+  上述配置中，除了基本的插件坐标声明外，还有插件执行配置，executions下每个execution子
+  元素可以用来配置执行一个任务。该例中配置了一个id为attach-sources的任务，通过phase配
+  置，将其绑定到verify生命周期阶段上，再通过goals配置指定要执行的插件目标。
+  
+  有时候，即使不通过phase元素配置生命周期阶段，插件目标也能够绑定到生命周期中去。例如
+  ，可以删除上述配置中的phase一行，再次执行mvn verify，仍然可以看到maven-source-plugin:jar-no-fork
+  得以执行。出现这一现象的原因是：很多插件的目标在编写时已经定义了默认绑定阶段。可以
+  使用maven-help-plugin查看插件详细信息：
+  $ mvn help:describe-Dplugin=org.apache.maven.plugins:maven-source-plugin:2.1.1-Ddetail
+  
+  当插件目标被绑定到不同的生命周期阶段的时候，其执行顺序会由生命周期阶段的先后顺序决定。
+  当多个插件目标绑定到同一个阶段的时候，这些插件声明的先后顺序决定了目标的执行顺序。
+
+ -->--> 插件配置
+  完成了
+
+
+ 
   

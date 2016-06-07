@@ -5,7 +5,8 @@ http://ip:4040
 
 参考      
 http://book.51cto.com/art/201408/448416.htm
-http://www.open-open.com/lib/view/open1419490748562.html                                                                                |
+http://www.open-open.com/lib/view/open1419490748562.html     
+http://developer.51cto.com/art/201409/451295.htm  Spark实战：单节点本地模式搭建Spark运行环境
 
 1 安装Scala                                                                          |
                                                                                      |

@@ -1,5 +1,5 @@
 '''
-
+https://docs.python.org/2/library/stdtypes.html#file-objects
 example: file_io_py_eg.py
 
 Standard Files
@@ -17,13 +17,17 @@ Standard Files
   function receives its input from sys.stdin.
 
 
-
-File objects are implemented using C¡¯s stdio package and can be created with the    -
-built-in open() function. File objects are also returned by some other built-in func-
-tions and methods, such as os.popen() and os.fdopen() and the makefile() method of s-
-ocket objects. Temporary files can be created using the tempfile module, and        -
-high-level file operations such as copying, moving, and deleting files and directori-
-es can be achieved with the @shutil module.
+--> File Objects
+ File objects are implemented using C¡¯s stdio package and can be created with the   -
+ built-in open() function. File objects are also returned by some other built-in fun-
+ ctions and methods, such as os.popen() and os.fdopen() and the makefile() method  of 
+ socket objects. Temporary files can be created using the @tempfile module, and     -
+ high-level file operations such as copying, moving, and deleting files and director-
+ ies can be achieved with the @shutil module.
+ 
+ When a file operation fails for an I/O-related reason, the exception @IOError is ra-
+ ised. This includes situations where the operation is not defined for some reason, -
+ like seek() on a tty device or writing a file opened for reading.
 '''
 
 def close():

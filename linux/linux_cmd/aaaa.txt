@@ -1,8 +1,9 @@
+--> 
+ http://www.computerhope.com/unix/overview.htm  Brief overview of Unix and Linux commands
 
+--> net
+ route
 
-----> net
-route
-
-----> 包管理
-rpm
-zypper(suse)
+--> 包管理
+ rpm
+ zypper(suse)

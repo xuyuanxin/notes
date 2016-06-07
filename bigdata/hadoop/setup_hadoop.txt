@@ -1,24 +1,24 @@
-http://IP:50070  HDFS集群的状况
-http://IP:50075  不确定
-http://IP:8088   ResourceManager运行状态
-http://IP:8042   NodeManager运行状态
-http://IP:19888  JobHistory中的任务执行历史信息
+-->
+ http://IP:50070  HDFS集群的状况
+ http://IP:50075  不确定
+ http://IP:8088   ResourceManager运行状态
+ http://IP:8042   NodeManager运行状态
+ http://IP:19888  JobHistory中的任务执行历史信息
 
-jps
-xxxx DataNode             <-- slave  sbin/start-hdfs.sh(在master上执行，自动启动slave上的脚本)
-xxxx NodeManager          <-- slave  sbin/start-yarn.sh(在master上执行，自动启动slave上的脚本)
-xxxx NameNode             <-- master sbin/start-hdfs.sh stop-hdfs.sh
-xxxx SecondaryNameNode    <-- master sbin/start-hdfs.sh stop-hdfs.sh
-xxxx ResourceManager      <-- master sbin/start-yarn.sh stop-yarn.sh
-xxxx JobHistory(不确定)   <-- master sbin/mr-jobhistory-daemon.sh start historyserver
+ jps
+ xxxx DataNode             <-- slave  sbin/start-hdfs.sh(在master上执行，自动启动slave上的脚本)
+ xxxx NodeManager          <-- slave  sbin/start-yarn.sh(在master上执行，自动启动slave上的脚本)
+ xxxx NameNode             <-- master sbin/start-hdfs.sh stop-hdfs.sh
+ xxxx SecondaryNameNode    <-- master sbin/start-hdfs.sh stop-hdfs.sh
+ xxxx ResourceManager      <-- master sbin/start-yarn.sh stop-yarn.sh
+ xxxx JobHistory(不确定)   <-- master sbin/mr-jobhistory-daemon.sh start historyserver
                           <-- master sbin/mr-jobhistory-daemon.sh stop  historyserver
 
-http://www.powerxing.com/install-hadoop/    Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04
-http://www.powerxing.com/install-hadoop-cluster/  Hadoop集群安装配置教程_Hadoop2.6.0/Ubuntu 14.04
-
+ http://www.powerxing.com/install-hadoop/    Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0/Ubuntu14.04
+ http://www.powerxing.com/install-hadoop-cluster/  Hadoop集群安装配置教程_Hadoop2.6.0/Ubuntu 14.04
 
 --> 准备工作
- 更新apt
+ -->--> 更新apt
   $ sudo apt-get update                                                              |
   若出现如下 “Hash校验和不符” 的提示，可通过更改软件源来解决。若没有该问题，则不需要 |
   更改。
@@ -31,9 +31,41 @@ http://www.powerxing.com/install-hadoop-cluster/  Hadoop集群安装配置教程_Hadoop2
   此时会提示列表信息过时，点击【重新载入】，
   最后耐心等待更新缓存即可。更新完成会自动关闭【软件和更新】这个窗口。如果还是提示错误，请选择其他服务器节点如 mirrors.163.com 再次进行尝试。更新成功后，再次执行 sudo apt-get update 就正常了。
 
- 安装vim
+ -->--> 安装vim
   $ sudo apt-get install vim
+                                                                                     
+--> 安装SSH、配置SSH无密码登陆
+ 集群、单节点模式都需要用到 SSH 登陆（类似于远程登陆，你可以登录某台 Linux 主机，并且
+ 在上面运行命令），Ubuntu 默认已安装了 SSH client，此外还需要安装 SSH server：
 
+ sudo apt-get install openssh-server
+
+ 安装后，可以使用如下命令登陆本机：
+
+ ssh localhost
+
+ 此时会有如下提示(SSH首次登陆提示)，输入 yes 。然后按提示输入密码 hadoop，这样就登陆到本机了。
+
+ 但这样登陆是需要每次输入密码的，我们需要配置成SSH无密码登陆比较方便。
+
+ 首先退出刚才的 ssh，就回到了我们原先的终端窗口，然后利用 ssh-keygen 生成密钥，并将密钥加入到授权中：
+
+ exit                           # 退出刚才的 ssh localhost
+ cd ~/.ssh/                     # 若没有该目录，请先执行一次ssh localhost
+ ssh-keygen -t rsa              # 会有提示，都按回车就可以
+ cat ./id_rsa.pub >> ./authorized_keys  # 加入授权
+
+ 此时再用 ssh localhost 命令，无需输入密码就可以直接登陆了
+ 
+ -->--> 相关命令
+  cd ~/.ssh                               # 如果没有.ssh目录，登录一下(ssh localhost)就自动创建了.
+  ssh-keygen -t rsa                       # 一直按回车就可以
+  cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+  scp ~/.ssh/id_rsa.pub hadoop@Slave1:/home/hadoop/ # 传输公钥到Slave1                                        
+  cd ~                                    # 接着在 Slave1 节点上执行
+  mkdir .ssh
+  cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+  
 --> Hadoop伪分布式配置
  1 创建Hadoop用户:
   sudo useradd -m hadoop -s /bin/bash     # 创建hadoop用户
@@ -124,129 +156,129 @@ http://www.powerxing.com/install-hadoop-cluster/  Hadoop集群安装配置教程_Hadoop2
   
   jps # 若成功启动, jps会列出如下进程: NameNode、DataNode和SecondaryNameNode。
 
-7 运行 WordCount 实例:
-bin/hdfs dfs -mkdir -p /user/hadoop       # 创建HDFS目录
-bin/hdfs dfs -mkdir input                 #
-bin/hdfs dfs -put etc/hadoop/*.xml input  # 将配置文件作为输入
-bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar grep input output 'dfs[a-z.]+'
-bin/hdfs dfs -cat output/*                # 查看输出
+ 7 运行 WordCount 实例:
+ bin/hdfs dfs -mkdir -p /user/hadoop       # 创建HDFS目录
+ bin/hdfs dfs -mkdir input                 #
+ bin/hdfs dfs -put etc/hadoop/*.xml input  # 将配置文件作为输入
+ bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar grep input output 'dfs[a-z.]+'
+ bin/hdfs dfs -cat output/*                # 查看输出
 
-----------------> Hadoop集群配置
-假定有两台机器:
-Master  192.168.1.121
-Slave1  192.168.1.122
+--> Hadoop集群配置
+ 假定有两台机器:
+ Master  192.168.1.121
+ Slave1  192.168.1.122
 
-Hadoop集群配置过程: 
-选定一台机器作为 Master, 在所有主机上配置网络映射
-在Master主机上配置hadoop用户, 安装SSH server, 安装Java环境
-在Master主机上安装Hadoop, 并完成配置
-在其他主机上配置hadoop用户, 安装SSH server, 安装Java环境
-将Master主机上的Hadoop目录复制到其他主机上
-开启, 使用Hadoop
+ Hadoop集群配置过程: 
+ 选定一台机器作为 Master, 在所有主机上配置网络映射
+ 在Master主机上配置hadoop用户, 安装SSH server, 安装Java环境
+ 在Master主机上安装Hadoop, 并完成配置
+ 在其他主机上配置hadoop用户, 安装SSH server, 安装Java环境
+ 将Master主机上的Hadoop目录复制到其他主机上
+ 开启, 使用Hadoop
 
-1 所有主机配置hadoop用户, 安装SSH server, 安装Java环境: 
-sudo useradd -m hadoop -s /bin/bash     # 创建hadoop用户
-sudo passwd hadoop                      # 修改密码
-sudo adduser hadoop sudo                # 增加管理员权限
-sudo apt-get update                     # 更新apt
-sudo apt-get install vim                # 安装vim
-sudo apt-get install openssh-server     # 安装ssh
-sudo apt-get install openjdk-7-jre openjdk-7-jdk # 安装Java
-vim ~/.bashrc                           # 设置JAVA_HOME
+ 1 所有主机配置hadoop用户, 安装SSH server, 安装Java环境: 
+ sudo useradd -m hadoop -s /bin/bash     # 创建hadoop用户
+ sudo passwd hadoop                      # 修改密码
+ sudo adduser hadoop sudo                # 增加管理员权限
+ sudo apt-get update                     # 更新apt
+ sudo apt-get install vim                # 安装vim
+ sudo apt-get install openssh-server     # 安装ssh
+ sudo apt-get install openjdk-7-jre openjdk-7-jdk # 安装Java
+ vim ~/.bashrc                           # 设置JAVA_HOME
                                         # 在文件最前面添加如下单独一行:
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-source ~/.bashrc                        # 使变量设置生效, 使JAVA_HOME变量生效：
+ export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+ source ~/.bashrc                        # 使变量设置生效, 使JAVA_HOME变量生效：
                                         # 所有主机配置网络映射:
-sudo vim /etc/HOSTNAME                  # 修改主机名
-sudo vim /etc/hosts                     # 修改主机与 IP 的映射关系
-sudo reboot                             # 重启, 使网络配置生效
-                                        # 在Master主机上执行：
-cd ~/.ssh                               # 如果没有.ssh目录，登录一下(ssh localhost)就自动创建了.
-ssh-keygen -t rsa                       # 一直按回车就可以
-cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-scp ~/.ssh/id_rsa.pub hadoop@Slave1:/home/hadoop/ # 传输公钥到Slave1                                        
-cd ~                                    # 接着在 Slave1 节点上执行
-mkdir .ssh
-cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+ sudo vim /etc/HOSTNAME                  # 修改主机名
+ sudo vim /etc/hosts                     # 修改主机与 IP 的映射关系
+ sudo reboot                             # 重启, 使网络配置生效
+                                         # 在Master主机上执行：
+ cd ~/.ssh                               # 如果没有.ssh目录，登录一下(ssh localhost)就自动创建了.
+ ssh-keygen -t rsa                       # 一直按回车就可以
+ cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+ scp ~/.ssh/id_rsa.pub hadoop@Slave1:/home/hadoop/ # 传输公钥到Slave1                                        
+ cd ~                                    # 接着在 Slave1 节点上执行
+ mkdir .ssh
+ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 
-2 在Master节点上进行Hadoop集群配置(位于/usr/local/hadoop/etc/hadoop中): 
-2.1 文件slave:
-将原来localhost 删除, 把所有Slave的主机名写上, 每行一个.
+ 2 在Master节点上进行Hadoop集群配置(位于/usr/local/hadoop/etc/hadoop中): 
+ 2.1 文件slave:
+ 将原来localhost 删除, 把所有Slave的主机名写上, 每行一个.
 
-2.2 文件 core-site.xml:
-<property>
-    <name>fs.defaultFS</name>
-    <value>hdfs://Master:9000</value>  # Master是IP，/etc/hosts要有映射关系
-</property>
-<property>
-    <name>hadoop.tmp.dir</name>
-    <value>file:/usr/local/hadoop/tmp</value>
-    <description>Abase for other temporary directories.</description>
-</property>
+ 2.2 文件 core-site.xml:
+ <property>
+     <name>fs.defaultFS</name>
+     <value>hdfs://Master:9000</value>  # Master是IP，/etc/hosts要有映射关系
+ </property>
+ <property>
+     <name>hadoop.tmp.dir</name>
+     <value>file:/usr/local/hadoop/tmp</value>
+     <description>Abase for other temporary directories.</description>
+ </property>
 
-2.3 文件 hdfs-site.xml:
-<property>
-    <name>dfs.namenode.secondary.http-address</name>
-    <value>Master:50090</value> # Master是IP，/etc/hosts要有映射关系
-</property>
-<property>
-    <name>dfs.namenode.name.dir</name>
-    <value>file:/usr/local/hadoop/tmp/dfs/name</value>
-</property>
-<property>
-    <name>dfs.datanode.data.dir</name>
-    <value>file:/usr/local/hadoop/tmp/dfs/data</value>
-</property>
-<property>
-    <name>dfs.replication</name>
-    <value>1</value>  # 本例中只有一个datanode
-</property>
+ 2.3 文件 hdfs-site.xml:
+ <property>
+     <name>dfs.namenode.secondary.http-address</name>
+     <value>Master:50090</value> # Master是IP，/etc/hosts要有映射关系
+ </property>
+ <property>
+     <name>dfs.namenode.name.dir</name>
+     <value>file:/usr/local/hadoop/tmp/dfs/name</value>
+ </property>
+ <property>
+     <name>dfs.datanode.data.dir</name>
+     <value>file:/usr/local/hadoop/tmp/dfs/data</value>
+ </property>
+ <property>
+     <name>dfs.replication</name>
+     <value>1</value>  # 本例中只有一个datanode
+ </property> 
+ 
+ 2.4 文件mapred-site.xml(首先需执行 cp mapred-site.xml.template mapred-site.xml):
+ <property>
+     <name>mapreduce.framework.name</name>
+     <value>yarn</value>
+ </property> 
+ 
+ 2.5 文件yarn-site.xml：
+ <property>
+     <name>yarn.resourcemanager.hostname</name>
+     <value>Master</value> # Master是IP，/etc/hosts要有映射关系
+ </property>
+ <property>
+     <name>yarn.nodemanager.aux-services</name>
+     <value>mapreduce_shuffle</value>
+ </property>  
 
-2.4 文件mapred-site.xml(首先需执行 cp mapred-site.xml.template mapred-site.xml):
-<property>
-    <name>mapreduce.framework.name</name>
-    <value>yarn</value>
-</property>
+ 3 配置好后, 在Master主机上, 将Hadoop文件复制到各个节点上:
+ cd /usr/local                            # Master执行
+ rm -r ./hadoop/tmp                       # Master执行, 删除Hadoop临时文件
+ sudo tar -zcf ./hadoop.tar.gz ./hadoop   # Master执行
+ scp ./hadoop.tar.gz Slave1:/home/hadoop  # Master执行，也可以直接用 -r 参数，拷贝文件夹
+ sudo tar -zxf ~/hadoop.tar.gz -C /usr/local     # 在Slave1上执行
+ sudo chown -R hadoop:hadoop /usr/local/hadoop   # 在Slave1上执行
 
-2.5 文件yarn-site.xml：
-<property>
-    <name>yarn.resourcemanager.hostname</name>
-    <value>Master</value> # Master是IP，/etc/hosts要有映射关系
-</property>
-<property>
-    <name>yarn.nodemanager.aux-services</name>
-    <value>mapreduce_shuffle</value>
-</property>
+ 注意 
+ 3.1 各个机器上的java路径可能不一致(注意修改hadoop-env.sh).
+ 3.2 datanode的路径要提前创建, 本例是/usr/local/hadoop/tmp
+ 3.3 datanode要和namenode通信，所有要知道namenode的IP(/etc/hosts)
 
-3 配置好后, 在Master主机上, 将Hadoop文件复制到各个节点上:
-cd /usr/local                            # Master执行
-rm -r ./hadoop/tmp                       # Master执行, 删除Hadoop临时文件
-sudo tar -zcf ./hadoop.tar.gz ./hadoop   # Master执行
-scp ./hadoop.tar.gz Slave1:/home/hadoop  # Master执行，也可以直接用 -r 参数，拷贝文件夹
-sudo tar -zxf ~/hadoop.tar.gz -C /usr/local     # 在Slave1上执行
-sudo chown -R hadoop:hadoop /usr/local/hadoop   # 在Slave1上执行
+ 4 最后在Master主机上就可以启动hadoop了(会自动启动slave上的datanode)
+ cd /usr/local/hadoop/                                                                |
+ bin/hdfs namenode -format  # 首次运行需要执行初始化，后面不再需要. 成功的话, 会看到 |
+                            # successfully formatted 的提示, 且倒数第5行的提示如下,   |
+                            # Exitting with status 0 表示成功, 若为                   |
+                            # Exitting with status 1 则是出错.                        |
+                            # 可试着加上sudo,既sudo bin/hdfs namenode -format再试试看.|
+ sbin/start-dfs.sh   #
+ sbin/start-yarn.sh  #
+ jps                 # 判断是否启动成功. 若成功启动, 
+                     # Master节点启动了NameNode, SecondrryNameNode, ResourceManager进程;
+                     # Slave节点启动了DataNode和NodeManager进程.
 
-注意 
-3.1 各个机器上的java路径可能不一致(注意修改hadoop-env.sh).
-3.2 datanode的路径要提前创建, 本例是/usr/local/hadoop/tmp
-3.3 datanode要和namenode通信，所有要知道namenode的IP(/etc/hosts)
-
-4 最后在Master主机上就可以启动hadoop了(会自动启动slave上的datanode)
-cd /usr/local/hadoop/                                                                |
-bin/hdfs namenode -format  # 首次运行需要执行初始化，后面不再需要. 成功的话, 会看到  |
-                           # successfully formatted 的提示, 且倒数第5行的提示如下,   |
-						   # Exitting with status 0 表示成功, 若为                   |
-						   # Exitting with status 1 则是出错.                        |
-						   # 可试着加上sudo,既sudo bin/hdfs namenode -format再试试看.|
-sbin/start-dfs.sh   #
-sbin/start-yarn.sh  #
-jps                 # 判断是否启动成功. 若成功启动, 
-                    # Master节点启动了NameNode, SecondrryNameNode, ResourceManager进程;
-                    # Slave节点启动了DataNode和NodeManager进程.
-
-5 在Master主机上执行WordCount实例:
-bin/hdfs dfs -mkdir -p /user/hadoop
-bin/hdfs dfs -put etc/hadoop input
-bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar grep input output 'dfs[a-z.]+'
+ 5 在Master主机上执行WordCount实例:
+ bin/hdfs dfs -mkdir -p /user/hadoop
+ bin/hdfs dfs -put etc/hadoop input
+ bin/hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar grep input output 'dfs[a-z.]+'
 
 
