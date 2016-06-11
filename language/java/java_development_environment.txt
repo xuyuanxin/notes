@@ -1,24 +1,24 @@
+http://docs.oracle.com/javase/8
 http://www.oracle.com/technetwork/java/javase/downloads/index.html  
 http://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html  安装
 
-----> linux
-a) chmod 755 jdk-7u4-linux-xxx.rpm
-b) rpm   -i  jdk-7u4-linux-xxx.rpm
-c) vi /etc/profile 
-#set java environment
-JAVA_HOME=/usr/java/jdkxxx # xxx is version(jdk1.6.0_43), 使用rpm, 默认安装在/usr/java
-CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
-PATH=$JAVA_HOME/bin:$PATH
-export JAVA_HOME,PATH,CLASSPATH 
+--> linux
+ a) chmod 755 jdk-7u4-linux-xxx.rpm
+ b) rpm   -i  jdk-7u4-linux-xxx.rpm
+ c) vi /etc/profile 
+
+ #set java environment
+ JAVA_HOME=/usr/java/jdkxxx # xxx is version(jdk1.6.0_43), 使用rpm, 默认安装在/usr/java
+ CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+ PATH=$JAVA_HOME/bin:$PATH
+ export JAVA_HOME,PATH,CLASSPATH 
     
 --> linux JDK 8 Installation Instructions
  -->--> Installation Instructions Notation and Files
   For instructions containing the notation version, substitute the appropriate JDK u-
   pdate version number. For example, if you are installing update JDK 8 update relea-
   se 2, the following string representing the name of the bundle:
-  jdk-8uversion-linux-i586.tar.gz
-  becomes:
-  jdk-8u2-linux-i586.tar.gz
+  jdk-8uversion-linux-i586.tar.gz becomes jdk-8u2-linux-i586.tar.gz
 
   Note that, as in the preceding example, the version number is sometimes preceded w-
   ith the letter u, for example, 8u2, and sometimes it is preceded with an  underbar, 
@@ -84,13 +84,13 @@ export JAVA_HOME,PATH,CLASSPATH
   5 Delete the .rpm file if you want to save disk space.
   6 Exit the root shell. No need to reboot.
 	
-----> windows
-1 下载安装jdk
-2 我的电脑->属性->高级->环境变量->系统变量中添加以下环境变量：
-JAVA_HOME值为： D:\Program Files\Java\jdk1.6.0_18（你安装JDK的目录）
-CLASSPATH值为：.;%JAVA_HOME%\lib\tools.jar;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\bin;
-Path: 追加 %JAVA_HOME%\bin;
-3 cmd下查看javac -version  java -verison，输出版本信息说明安装成功。
+--> windows
+ 1 下载安装jdk
+ 2 我的电脑->属性->高级->环境变量->系统变量中添加以下环境变量：
+ JAVA_HOME值为： D:\Program Files\Java\jdk1.6.0_18（你安装JDK的目录）
+ CLASSPATH值为：.;%JAVA_HOME%\lib\tools.jar;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\bin;
+ Path: 追加 %JAVA_HOME%\bin;
+ 3 cmd下查看javac -version  java -verison，输出版本信息说明安装成功。
 
 -------------------------------------------------------------------------------------
 ----> compile and run

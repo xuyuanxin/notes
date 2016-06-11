@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?> <!-- 指定该xml文档的版本和编码方式  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" <!-- project是所有pom.xml的根元素 -->
+<?xml version="1.0" encoding="UTF-8"?>   <!-- XML头，指定该xml文档的版本和编码方式  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion> <!-- modelVersion指定了当前POM模型的版本，对于Maven2及Maven3来说，它只能是4.0.0 -->
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">  <!-- project是所有pom.xml的根元素 -->
+  <modelVersion>4.0.0</modelVersion>     <!-- 根元素下的第一个子元素， modelVersion指定了当前POM模型的版本，对于Maven2及Maven3来说，它只能是4.0.0 -->
   <groupId>com.juvenxu.mvnbook</groupId> <!-- 属于哪个组 -->
-  <artifactId>hello-world</artifactId> <!-- 该项目在组中的唯一ID -->
-  <version>1.0-SNAPSHOT</version> <!-- 该项目的版本 -->
+  <artifactId>hello-world</artifactId>   <!-- 该项目在组中的唯一ID -->
+  <version>1.0-SNAPSHOT</version>        <!-- 该项目的版本 -->
   <name>Maven Hello World Project</name> <!-- 该项目的名字，不是必须的 -->
   <dependencies>
     <dependency>
@@ -22,8 +21,8 @@ http://maven.apache.org/maven-v4_0_0.xsd">
   	    <groupId>org.apache.maven.plugins</groupId>
   	    <artifactId>maven-compiler-plugin</artifactId>
   	    <configuration>
-  	      <source>1.5</source>
-  	      <target>1.5</target>
+  	      <source>1.8</source>
+  	      <target>1.8</target>
   	    </configuration>
   	  </plugin>
   	  <plugin>
@@ -40,7 +39,7 @@ http://maven.apache.org/maven-v4_0_0.xsd">
   	          <transformers>
   	            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
   	              <mainClass>com.juvenxu.mvnbook.helloworld.HelloWorld</mainClass>
-  	            </transformer>
+  	            </transformer> <!-- java -jar target\hello-world-1.0-SNAPSHOT.jar -->
   	          </transformers>
   	        </configuration>
   	      </execution>

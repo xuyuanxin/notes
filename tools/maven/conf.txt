@@ -1,4 +1,9 @@
-Maven 映像
+https://maven.apache.org/configure.html   Configuring Apache Maven
+
+conf/settings.xml  全局配置
+~/.m2/settings.xml 针对某个用户，最初没有此配置文件，可以手动创建
+
+--> Maven mirror
  <mirrors>
     <!-- mirror | Specifies a repository mirror site to use instead of a given
         repository. The repository that | this mirror serves has an ID that matches
@@ -17,3 +22,25 @@ Maven 映像
         <url>http://maven.oschina.net/content/repositories/thirdparty/</url>
     </mirror>
  </mirrors>
+
+--> Configuring a proxy
+ <settings>
+  .
+  .
+  <proxies>
+   <proxy>
+      <id>example-proxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>proxy.example.com</host>
+      <port>8080</port>
+      <username>proxyuser</username>
+      <password>somepassword</password>
+      <nonProxyHosts>www.google.com|*.example.com</nonProxyHosts>
+    </proxy>
+  </proxies>
+  .
+  .
+ </settings>
+ 
+ 

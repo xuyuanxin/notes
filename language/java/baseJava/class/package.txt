@@ -1,5 +1,5 @@
 
-----> Packages
+--> Packages
  Java allows you to group classes in a collection called a package. The standard Jav-
  a library is distributed over a number of packages, including java.lang,  java.util, 
  java.net, and so on. The standard Java packages are examples of hierarchical packag-

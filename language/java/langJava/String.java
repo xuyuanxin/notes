@@ -1,3 +1,4 @@
+//  http://docs.oracle.com/javase/8/docs/api/java/lang/String.html
 
 /* java.lang.String */
 public final class String extends Object implements Serializable, Comparable<String>, CharSequence

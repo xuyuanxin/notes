@@ -1,0 +1,10 @@
+
+
+--> maven-compiler-plugin
+ 
+--> maven-shade-plugin
+ 默认Maven生成的JAR包只包含了编译生成的.class文件和项目资源文件，而要得到一个可以直接在命令行通过java命令运行的JAR文件，还要满足两个条件：
+
+ JAR包中的/META-INF/MANIFEST.MF元数据文件必须包含Main-Class信息。
+ 项目所有的依赖都必须在Classpath中。
+ Maven有好几个插件能帮助用户完成上述任务，不过用起来最方便的还是maven-shade-plugin，它可以让用户配置Main-Class的值，然后在打包的时候将值填入/META-INF/MANIFEST.MF文件。关于项目的依赖，它很聪明地将依赖JAR文件全部解压后，再将得到的.class文件连同当前项目的.class文件一起合并到最终的CLI包中，这样，在执行CLI JAR文件的时候，所有需要的类就都在Classpath中了。

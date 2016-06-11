@@ -2,77 +2,78 @@
 http://xjsunjie.blog.51cto.com/999372/548595
 
 
-Ubuntu
-root@iZ25n5dtmgjZ:~# vncserver
+--> Ubuntu
+ root@iZ25n5dtmgjZ:~# vncserver
 
-You will require a password to access your desktops.
+ You will require a password to access your desktops.
 
-Password:
-Verify:
-xauth:  file /root/.Xauthority does not exist
+ Password:
+ Verify:
+ xauth:  file /root/.Xauthority does not exist
 
-New 'iZ25n5dtmgjZ:1 (root)' desktop is iZ25n5dtmgjZ:1
+ New 'iZ25n5dtmgjZ:1 (root)' desktop is iZ25n5dtmgjZ:1
 
-Creating default startup script /root/.vnc/xstartup
-Starting applications specified in /root/.vnc/xstartup
-Log file is /root/.vnc/iZ25n5dtmgjZ:1.log
+ Creating default startup script /root/.vnc/xstartup
+ Starting applications specified in /root/.vnc/xstartup
+ Log file is /root/.vnc/iZ25n5dtmgjZ:1.log
+
+--> linux(suse)
+ 1 
+  Yast-> remote administration -> Allow Remote Administration 
+  Yast-> remote administration -> Firewall Settings
+  
+ 2 启动vnc
+  2.1 ssh登陆后，执行 vncserver
+  2.2 提示设置密码
+
+ 3 配置启动脚本
+  3.1 vim /root/.vnc/xstartup
+
+  修改前:
+  #/bin/sh
+  xrdb $HOME/.Xresources
+  xsetroot -solid grey
+  xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+  twm &
+
+  修改后
+  #/bin/sh
+  xrdb $HOME/.Xresources
+  xsetroot -solid grey
+  xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
+
+  #twm &
+  gnome-session &
+
+--> windows
+ 1 用浏览器连接 (开启 java applet)
+  http://ip:port  # port = 桌面显示编号 + 5800
+
+ 2 用 vnc 客户端
+  Server: ip:桌面显示编号
+
+--> linux 相关命令
+ ps -ef|grep vnc  # 查看已经启动了vnc服务
+ 
+ service vncserver start/stop/restart
+ 
+ vncserver :号码        # 启动停止的服务，注意:后有个空格
+ 
+ vncserver -kill :号码  # 停止服务
+ 
+ vncpasswd
+
+ /root/.vnc/machineName:2.pid  # 2是桌面显示编号
+ /root/.vnc/machineName:2.log
+
+ /tmp/.X11-unix/   # 启动的服务
+
+ 经过几次连接后，如果想回到1，可以删除/tmp/.X11-unix/X1 X2等 (共有0-99个桌面）
+ 和 /root/.vnc下的其他PID、LOG文件
 
 
-
-
-
-----> linux
-1 
-Yast-> remote administration -> Allow Remote Administration 
-Yast-> remote administration -> Firewall Settings
-
-2 启动vnc
-2.1 ssh登陆后，执行 vncserver
-2.2 提示设置密码
-
-3 配置启动脚本
-3.1 vim /root/.vnc/xstartup
-
-修改前:
-#/bin/sh
-xrdb $HOME/.Xresources
-xsetroot -solid grey
-xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
-twm &
-
-修改后
-#/bin/sh
-xrdb $HOME/.Xresources
-xsetroot -solid grey
-xterm -geometry 80x24+10+10 -ls -title "$VNCDESKTOP Desktop" &
-
-#twm &
-gnome-session &
-
-----> windows
-1 用浏览器连接 (开启 java applet)
-http://ip:port  # port = 桌面显示编号 + 5800
-
-2 用 vnc 客户端
-Server: ip:桌面显示编号
-
-
-
-
-----> linux 相关命令
-ps -ef|grep vnc  # 查看已经启动了vnc服务
-service vncserver start/stop/restart
-vncserver :号码        # 启动停止的服务，注意:后有个空格
-vncserver -kill :号码  # 停止服务
-vncpasswd
-
-/root/.vnc/machineName:2.pid  # 2是桌面显示编号
-/root/.vnc/machineName:2.log
-
-/tmp/.X11-unix/   # 启动的服务
-
-经过几次连接后，如果想回到1，可以删除/tmp/.X11-unix/X1 X2等 (共有0-99个桌面）
-和 /root/.vnc下的其他PID、LOG文件
+ 
+ 
 
 https://www.suse.com/support/kb/doc.php?id=7016151
 

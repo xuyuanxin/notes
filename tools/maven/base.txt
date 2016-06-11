@@ -1,3 +1,6 @@
+http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打包的技巧
+
+
 
 --> 坐标
  Maven坐标是通过一些元素定义的，他们是groupId、artifactId、version、packaging、classfier
@@ -124,9 +127,9 @@
               <executions>
                   <execution>
                       <id>attach-source</id>
-                      <phase>verify</phase><!-- 要绑定到的生命周期的阶段 -->
+                      <phase>verify</phase>         <!-- 要绑定到的生命周期的阶段 -->
                       <goals>
-                          <goal>jar-no-fork</goal><!-- 要绑定的插件的目标 -->
+                          <goal>jar-no-fork</goal>  <!-- 要绑定的插件的目标 -->
                       </goals>
                   </execution>
               </executions>
@@ -147,9 +150,28 @@
   
   当插件目标被绑定到不同的生命周期阶段的时候，其执行顺序会由生命周期阶段的先后顺序决定。
   当多个插件目标绑定到同一个阶段的时候，这些插件声明的先后顺序决定了目标的执行顺序。
-
+                                                                                     
  -->--> 插件配置
-  完成了
+  完成了插件和生命周期的绑定之后，用户还可以配置插件目标的参数，进一步调整插件目标所
+  执行的任务，以满足项目的需求
+  
+  命令行配置，使用-D参数
+  $ mvn install -Dmaven.test.skip=true
+  参数-D是java自带的，maven简单地重用了该参数。
+  
+  在POM中配置
+  
+  <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <source>1.7</source> # 编译Java 1.5版本的源文件
+        <target>1.7</target> # 生成与JVM 1.5兼容的字节码文件
+    </configuration>
+  </plugin>
+  
+  
+  
 
 
  
