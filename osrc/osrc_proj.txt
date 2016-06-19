@@ -14,6 +14,12 @@
  
 --> CoolplaySpark
  https://github.com/lw-lin/CoolplaySpark
+ 
+--> pyobfuscate
+ https://github.com/astrand/pyobfuscate/
+ 
+ 
+ 
 
 -------------------------------------------------------------------------------------|
 BeaEngine 

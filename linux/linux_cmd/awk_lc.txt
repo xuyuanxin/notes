@@ -1,8 +1,21 @@
 http://www.cnblogs.com/zhuyp1015/archive/2012/07/11/2586985.html
 http://bbs.chinaunix.net/thread-1797847-1-1.html  发个自己写的AWK简单教程
+book: Linux Shell Scripting Cookbook   Chapter 4.7
 
 --> The structure of an awk
  awk ' BEGIN{ print "start" } pattern { commands } END{ print "end" } file
+ 
+ The awk command can read from stdin also. An awk script usually consists of three p-
+ arts: BEGIN, END, and a common statements block with the pattern match option. The -
+ three of them are optional and any of them can be absent in the script. The script -
+ is usually enclosed in single-quotes or double-quotes as follows:
+ awk 'BEGIN { statements } { statements } END { end statements }'
+ Or, alternately, use:
+ awk "BEGIN { statements } { statements } END { end statements }"
+ For example:
+ $ awk 'BEGIN { i=0 } { i++ } END{ print i}' filename
+ Or:
+ $ awk "BEGIN { i=0 } { i++ } END{ print i }" filename
 
  The awk command works in the following manner:
  1. Execute the statements in the BEGIN { commands } block.

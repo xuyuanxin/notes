@@ -1,6 +1,12 @@
 
+--> inheritance
+ In this chapter, you will learn about inheritance, another fundamental concept of  -
+ object-oriented programming. The idea behind inheritance is that you can create  new 
+ classes that are built on existing classes. When you inherit from an existing class, 
+ you reuse (or inherit) its methods, and you can add new methods and fields to  adapt 
+ your new class to new situations. This technique is essential in Java programming.
 
-----> keyword extends 
+--> @extends, defining subclasses
  The keyword extends indicates that you are making a new class that derives from an -
  existing class. The existing class is called the superclass, base class, or parent -
  class. The new class is called the subclass, derived class, or child class. The ter-
@@ -30,10 +36,11 @@
  salary, hireDay, and bonus.
  
  All inheritance in Java is public inheritance;
+ 
  a subclass can add fields, and it can add methods or override the methods of the su-
  perclass. However, inheritance can never take away any fields or methods.
  
--->  override super
+--> overriding methods and @super
  However, some of the superclass methods are not appropriate for the Manager subclass. 
  In particular, the getSalary method should return the sum of the base salary and the 
  bonus. You need to supply a new method to override the superclass method:
@@ -42,7 +49,7 @@
  fields:
          public double getSalary()
          {
-             return salary + bonus; // won't work
+             return salary + bonus; // won't work, 
          }
  However, that won't work. The getSalary method of the Manager class has no direct a-
  ccess to the private fields of the superclass . This means that the getSalary method 
@@ -66,6 +73,13 @@
          super.getSalary()
  calls the getSalary method of the Employee class. Here is the correct version of the 
  getSalary method for the Manager class:
+ 
+ Here is the correct version of the getSalary method for the Manager class:
+  public double getSalary()
+  {
+      double baseSalary = super.getSalary(); // ok
+      return baseSalary + bonus;
+  }
 
  Note
  Some people think of super as being analogous to the this reference. However, that -
@@ -107,8 +121,13 @@
  erclass constructor explicitly, the Java compiler reports an error. 
 
 --> Inheritance Hierarchies
+  null
  
 --> polymorphism, dynamic binding
+ In the Java programming language, object variables are polymorphic. A variable of t-
+ ype Employee can refer to an object of type Employee or to an object of any subclas-
+ s of the Employee class (such as Manager, Executive, Secretary, and so on).
+
  We make a new manager and set the manager's bonus:
      Manager boss = new Manager("Carl Cracker", 80000, 1987, 12, 15);
      boss.setBonus(5000);
@@ -136,7 +155,8 @@
  riate method at runtime is called dynamic binding.
 
  1 Java does not support multiple inheritance.
- 2 every manager is an employee. not every employee is a manager.
+ 2 you can use a subclass object whenever the program expects a superclass object. e-
+   very manager is an employee. not every employee is a manager. 
 
 --> you can use a subclass object whenever the program expects a superclass object. 
  every object of the subclass is an object of the superclass. For example, every man-
@@ -152,7 +172,6 @@
  In the Java programming language, object variables are polymorphic. A variable of t-
  ype Employee can refer to an object of type Employee or to an object of any subclass 
  of the Employee class (such as Manager, Executive, Secretary, and so on).
- 
  
      Manager boss = new Manager(. . .);
      Employee[] staff = new Employee[3];

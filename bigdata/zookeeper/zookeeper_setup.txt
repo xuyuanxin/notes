@@ -2,32 +2,49 @@ http://zookeeper.apache.org/doc/r3.5.0-alpha/zookeeperStarted.html
 http://shiyanjun.cn/archives/469.html  ZooKeeper-3.3.4集群安装配置
 http://blog.csdn.net/unix21/article/details/18990123  ZooKeeper集群环境安装与配置
 
-                                                                                     |
-ZooKeeper Standalone模式                                                             |
- 从Apache网站上（zookeeper.apache.org）下载ZooKeeper软件包，我选择了3.3.4版本的（    |
- zookeeper-3.3.4.tar.gz），在一台Linux机器上安装非常容易，只需要解压缩后，简单配置一 |
- 下即可以启动ZooKeeper服务器进程。                                                   |
- 将zookeeper-3.3.4/conf目录下面的 zoo_sample.cfg修改为zoo.cfg，配置文件内容如下所示：|
- +----> zoo.cfg
- |tickTime=2000
- |dataDir=/home/hadoop/storage/zookeeper
- |clientPort=2181
- |initLimit=5
- |syncLimit=2
- 上面各个配置参数的含义也非常简单，引用如下所示：
+                                                                                     
+ 
+--> Standalone Operation
+ Setting up a ZooKeeper server in standalone mode is straightforward. The server is -
+ contained in a single JAR file,so installation consists of creating a configuration. 
+ Once you've downloaded a stable ZooKeeper release unpack it and cd to the root. To -
+ start ZooKeeper you need a configuration file. Here is a sample, create it in      -
+ conf/zoo.cfg(zoo_sample.cfg --> zoo.cfg):
+
+ tickTime=2000
+ dataDir=/var/lib/zookeeper
+ clientPort=2181
+ 
+ This file can be called anything, but for the sake of this discussion call it      -
+ conf/zoo.cfg. Change the value of dataDir to specify an existing (empty to start wi-
+ th) directory. Here are the meanings for each of the fields:
  tickTime: the basic time unit in milliseconds used by ZooKeeper. It is used to do h-
  eartbeats and the minimum session timeout will be twice the tickTime.
  dataDir: the location to store the in-memory database snapshots and, unless specifi-
  ed otherwise, the transaction log of updates to the database.
  clientPort: the port to listen for client connections
- 下面启动ZooKeeper服务器进程：
- > cd zookeeper-3.3.4/
- > bin/zkServer.sh start
- 通过jps命令可以查看ZooKeeper服务器进程，名称为QuorumPeerMain。
- 在客户端连接ZooKeeper服务器，执行如下命令：
- > bin/zkCli.sh -server dynamic:2181
- 上面dynamic是我的主机名，如果在本机执行，则执行如下命令即可：
- > bin/zkCli.sh
+
+ Now that you created the configuration file, you can start ZooKeeper:
+ 
+ $bin/zkServer.sh start
+ 
+ ZooKeeper logs messages using log4j -- more detail available in the Logging  section 
+ of the Programmer's Guide. You will see log messages coming to the console (default) 
+ and/or a log file depending on the log4j configuration.
+ 
+ The steps outlined here run ZooKeeper in standalone mode. There is no replication, -
+ so if ZooKeeper process fails, the service will go down. This is fine for most deve-
+ lopment situations, but to run ZooKeeper in replicated mode, please see Running Rep-
+ licated ZooKeeper.
+
+ Connecting to ZooKeeper
+ 
+ $bin/zkCli.sh -server 127.0.0.1:2181
+ 
+ jps
+ QuorumPeerMain
+
+ 
  客户端连接信息如下所示：
   shirdrn@master:~/installation/zookeeper-3.3.4$ bin/zkCli.sh -server dynamic:2181
    Connecting to dynamic:2181
@@ -47,15 +64,16 @@ ZooKeeper Standalone模式                                                      
    WATCHER::
    WatchedEvent state:SyncConnected type:None path:null
    [zk: dynamic:2181(CONNECTED) 0]
- 接着，可以使用help查看Zookeeper客户端可以使用的基本操作命令。
+   接着，可以使用help查看Zookeeper客户端可以使用的基本操作命令。
 
-ZooKeeper Distributed模式                                                            |
+--> Clustered (Multi-Server) Setup                                                        
  首先要明确的是，ZooKeeper集群是一个独立的分布式协调服务集群，“独立”的含义就是说，如 |
  果想使用ZooKeeper实现分布式应用的协调与管理，简化协调与管理，任何分布式应用都可以使 |
  用，这就要归功于Zookeeper的数据模型（Data Model）和层次命名空间（Hierarchical       |
  Namespace）结构，详细可以参考http://zookeeper.apache.org/doc/trunk/zookeeperOver.html
  。在设计你的分布式应用协调服务时，首要的就是考虑如何组织层次命名空间。              |
  下面说明分布式模式的安装配置，过程如下所示：                                        |
+ 
  第一步：主机名称到IP地址映射配置                                                    |
   ZooKeeper集群中具有两个关键的角色：Leader和Follower。集群中所有的结点作为一个整体对|
   分布式应用提供服务，集群中每个结点之间都互相连接，所以，在配置的ZooKeeper集群的时候|
@@ -85,7 +103,7 @@ ZooKeeper Distributed模式                                                     
   |server.3=zk-03:2888:3888
   上述配置内容说明，可以参考
   http://zookeeper.apache.org/doc/trunk/zookeeperStarted.html#sc_RunningReplicatedZooKeeper。
-                                                                                     |
+                                                                                     
  第三步：远程复制分发安装文件
   上面已经在一台机器zk-01上配置完成ZooKeeper，现在可以将该配置好的安装文件远程拷贝到 |
   集群中的各个结点对应的目录下：

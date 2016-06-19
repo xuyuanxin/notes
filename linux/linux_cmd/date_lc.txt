@@ -1,0 +1,9 @@
+http://www.cnblogs.com/peida/archive/2012/12/13/2815687.html
+
+
+--> 常用
+ date -d @111   111是1970年以来的描述，转化为日期
+ 
+--> date
+ date [参数]... [+格式]
+ date 可以用来显示或设定系统的日期与时间。

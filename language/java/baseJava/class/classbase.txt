@@ -387,7 +387,7 @@ import java.util.*;
   other words, it has no implicit parameter.
   
   A static method of the Employee class cannot access the @id instance field  because 
-  it does not operate on an object. 
+  it does not operate on an object. (@id is not @static )
 
   It is legal to use an object to call a static method. For example, if harry is  an
   Employee object,then you can call harry.getNextId() instead of Employee.getnextId(). 
