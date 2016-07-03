@@ -1,0 +1,76 @@
+
+--> for 
+ http://www.cnblogs.com/fhefh/archive/2011/04/15/2017233.html
+
+ for循环语法：
+
+ for VARIABLE in 1 2 3 4 5 .. N
+ do
+         command1
+         command2
+         commandN
+ done
+
+
+ #!/bin/bash
+ for i in 1 2 3 4 5
+ do
+   echo "Welcome $i times"
+ done
+
+ bash version 3.0+版本
+ #!/bin/bash
+ for i in {1..5}
+ do
+   echo "Welcome $i times"
+ done
+
+ bash version 4版本 
+ #!/bin/bash
+ echo "Bash version ${BASH_VERSION}..."
+ for i in {0..10..2}
+ do
+     echo "Welcome $i times"
+ done
+
+
+ 含有"seq"命令的语法示例
+ #!/bin/bash
+ for i in $(seq 1 2 20)
+ do
+   echo "Welcome $i times"
+ done
+
+ for循环的三个表达式
+ 语法如下：
+ 
+ for (( EXP1; EXP2; EXP3 ))
+ do
+         command1
+         command2
+         command3
+ done
+
+
+ 示例如下：
+ #!/bin/bash
+ for (( c=1; c<=5; c++ ))
+ do
+         echo "Welcome $c times..."
+ done
+ 
+ 效果：
+ Welcome 1 times
+ Welcome 2 times
+ Welcome 3 times
+ Welcome 4 times
+ Welcome 5 times
+
+ for的无限循环
+ #!/bin/bash
+ for (( ; ; ))
+ do
+   echo "infinite loops [ hit CTRL+C to stop]"
+ done
+
+

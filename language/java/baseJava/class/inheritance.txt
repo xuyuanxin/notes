@@ -211,7 +211,7 @@
  it is an array of managers. Attempting to store an Employee reference causes an    -
  ArrayStore Exception.
  
---> final
+--> Final, Preventing Inheritance: Final Classes and Methods
  Classes that cannot be extended are called final classes, and you use the @final mo-
  difier in the definition of the class to indicate this. For example, suppose we want 
  to prevent others from subclassing the Executive class. Simply declare the class us-
@@ -222,11 +222,26 @@
      . . .
  } 
  
+ You can also make a specific method in a class final. If you do this, then no subcl-
+ ass can override that method. (All methods in a final class are automatically final.
+ )For example:
+
+ public class Employee
+ {
+     . . .
+     public final String getName()
+     {
+ 
+         return name;
+     }
+     . . .
+ }
+ 
  Recall that fields can also be declared as final. A final field cannot be changed a-
  fter the object has been constructed. However, if a class is declared final, only t-
  he methods, not the fields, are automatically final.
  
---> abstract
+--> abstract classes
  If you use the @abstract keyword, you do not need to implement the method at all.
  
  public abstract String getDescription(); // no implementation required
@@ -268,9 +283,31 @@
   3. Visible to the package and all subclasses (protected).
   4. Visible to the package—the (unfortunate) default. No modifiers are needed
 
-
-
---> 
+--> Understanding Method Calls
+ It is important to understand exactly how a method call is applied to an object. Le-
+ t’s say we call x.f(args), and the implicit parameter x is declared to be an  object 
+ of class C. Here is what happens:
+ 
+ 1 The compiler enumerates all methods called f in the class C and all accessible me-
+   thods called f in the superclasses of C. (Private methods of the superclass are n-
+   ot accessible.) For example, there may be a method f(int) and a method f(String). 
+   
+ 2 Next, the compiler determines the types of the arguments that are supplied in  the 
+   method call. This process is called "overloading resolution". For example, in a c-
+   all x.f("Hello"), the compiler picks f(String) and not f(int). If the compiler ca-
+   nnot find any method with matching parameter types or if multiple methods all mat-
+   ch after applying conversions, the compiler reports an error.
+   
+ 3 If the method is private, static, final, or a constructor, then the compiler knows
+   exactly which method to call. This is called "static binding". Otherwise, the met-
+   hod to be called depends on the actual type of the implicit parameter, and "dynam-
+   ic binding" must be used at runtime. 
+   
+ 4 When the program runs and uses dynamic binding to call a method, the virtual mach-
+   ine must call the version of the method that is appropriate for the actual type of 
+   the object to which x refers. Let’s say the actual type is D, a subclass of C.  If 
+   the class D defines a method f(String), that method is called. If not, D’s superc-
+   lass is searched for a method f(String), and so on.
 
 
 

@@ -125,39 +125,37 @@ const char *inet_ntop(int family, const void *addrptr, char *strptr, size_t len)
 #include <sys/socket.h>
 /*-----------------------------------------------------------------------------------
  @domain: AF_INET
-     specifies the protocol family 
+   specifies the protocol family 
  @type: SOCK_STREAM 
  @protocol: IPPROTO_TCP
-     specific protocol type. 0 to select the system's default for the given combinat-
-     ion of @domain and @type.
- return:
-	non-negative descriptor if OK, -1 on error.
+   specific protocol type. 0 to select the system's default for the given combination 
+   of @domain and @type.
+ @return:
+   non-negative descriptor if OK, -1 on error.
 
  AF_xxx Versus PF_xxx
-    The "AF_" prefix stands for "address family" and the "PF_" prefix stands for 
-    "protocol family." Historically, the intent was that a single protocol family 
-    might support multiple address families and that the PF_ value was used to 
-    create the socket and the AF_ value was used in socket address structures. 
-    But in actuality, a protocol family supporting multiple address families has 
-    never been supported and the <sys/socket.h> header defines the PF_ value for 
-    a given protocol to be equal to the AF_ value for that protocol. While there 
-    is no guarantee that this equality between the two will always be true, should 
-    anyone change this for existing protocols, lots of existing code would break. 
-    To conform to existing coding practice, we use only the AF_ constants in this 
-    text, although you may encounter the PF_ value, mainly in calls to socket.
+   The "AF_" prefix stands for "address family" and the "PF_" prefix stands for "pro-
+   tocol family." Historically, the intent was that a single protocol family might s-
+   upport multiple address families and that the PF_ value was used to create the so-
+   cket and the AF_ value was used in socket address structures. But in actuality,  a 
+   protocol family supporting multiple address families has never been supported  and 
+   the <sys/socket.h> header defines the PF_ value for a given protocol to be equal -
+   to the AF_ value for that protocol. While there is no guarantee that this equality 
+   between the two will always be true, should anyone change this for existing proto-
+   cols, lots of existing code would break. 
 
-  --------------------------------------------------------------------+
-                 | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
-  ---------------|----------|----------|----------|----------|--------|
-  SOCK_STREAM    | tcp|sctp | tcp|sctp |    yes   |          |        |
-  ---------------|----------|----------|----------|----------|--------|
-  SOCK_DGRAM     |    udp   |   udp    |    yes   |          |        |
-  ---------------|----------|----------|----------|----------|--------| 
-  SOCK_SEQPACKET |   sctp   |   sctp   |    yes   |          |        |
-  ---------------|----------|----------|----------|----------|--------| 
-  SOCK_RAW       |   ipv4   |   ipv6   |          |    yes   |   yes  |
-  ---------------+----------+----------+----------+----------+--------+
-  Figure 4.5 Combinations of @family and @type for the @socket function
+      --------------------------------------------------------------------+
+                     | AF_INET  | AF_INET6 | AF_LOCAL | AF_ROUTE | AF_KEY |
+      ---------------|----------|----------|----------|----------|--------|
+      SOCK_STREAM    | tcp|sctp | tcp|sctp |    yes   |          |        |
+      ---------------|----------|----------|----------|----------|--------|
+      SOCK_DGRAM     |    udp   |   udp    |    yes   |          |        |
+      ---------------|----------|----------|----------|----------|--------| 
+      SOCK_SEQPACKET |   sctp   |   sctp   |    yes   |          |        |
+      ---------------|----------|----------|----------|----------|--------| 
+      SOCK_RAW       |   ipv4   |   ipv6   |          |    yes   |   yes  |
+      ---------------+----------+----------+----------+----------+--------+
+      Figure 4.5 Combinations of @family and @type for the @socket function
        
  Not all combinations of @socket @family and @type are valid. Figure 4.5 shows the v-
  alid combinations, along with the actual protocols that are valid for each pair. Th-

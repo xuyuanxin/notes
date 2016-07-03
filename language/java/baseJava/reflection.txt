@@ -1,0 +1,42 @@
+
+--> reflective
+ A program that can analyze the capabilities of classes is called reflective.
+ 
+--> The @Class Class
+ While your program is running, the Java runtime system always maintains what is cal-
+ led "runtime type identification" on all objects. This information keeps track of t-
+ he class to which each object belongs. Runtime type information is used by the virt-
+ ual machine to select the correct methods to execute. 
+ 
+ However, you can also access this information by working with a special Java  class. 
+ The class that holds this information is called, somewhat confusingly, @Class.
+ 
+ The getClass() method in the @Object class returns an instance of @Class type.
+ 
+ Employee e;
+ . . .
+ Class cl = e.getClass();
+ 
+ If the class is in a package, the package name is part of the class name:
+
+ Random generator = new Random();
+ Class cl = generator.getClass();
+ String name = cl.getName(); // name is set to "java.util.Random"
+ 
+ You can obtain a @Class object corresponding to a class name by using the static   -
+ @forName method.
+
+ String className = "java.util.Random";
+ Class cl = Class.forName(className);
+ 
+--> Analyze Objects at Runtime
+ If @f is an object of type @Field (for example, one obtained from getDeclaredFields) 
+ and @obj is an object of the class of which @f is a field, then f.get(obj) returns -
+ an object whose value is the current value of the field of @obj. 
+ 
+ Employee harry = new Employee("Harry Hacker", 35000, 10, 1, 1989);
+ Class cl = harry.getClass(); // the class object representing Employee
+ Field f = cl.getDeclaredField("name"); // the name field of the Employee class
+ Object v = f.get(harry); // the value of the name field of the harry object, i.e., the String object "Harry Hacker"
+ 
+

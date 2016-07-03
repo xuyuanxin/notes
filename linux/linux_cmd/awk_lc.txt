@@ -3,18 +3,25 @@ http://bbs.chinaunix.net/thread-1797847-1-1.html  发个自己写的AWK简单教程
 book: Linux Shell Scripting Cookbook   Chapter 4.7
 
 --> The structure of an awk
- awk ' BEGIN{ print "start" } pattern { commands } END{ print "end" } file
+ awk ' BEGIN{ print "start" } pattern { commands } END{ print "end" } ' file
  
  The awk command can read from stdin also. An awk script usually consists of three p-
  arts: BEGIN, END, and a common statements block with the pattern match option. The -
  three of them are optional and any of them can be absent in the script. The script -
  is usually enclosed in single-quotes or double-quotes as follows:
+ 
  awk 'BEGIN { statements } { statements } END { end statements }'
+ 
  Or, alternately, use:
+ 
  awk "BEGIN { statements } { statements } END { end statements }"
+ 
  For example:
+ 
  $ awk 'BEGIN { i=0 } { i++ } END{ print i}' filename
+ 
  Or:
+ 
  $ awk "BEGIN { i=0 } { i++ } END{ print i }" filename
 
  The awk command works in the following manner:
@@ -48,14 +55,17 @@ book: Linux Shell Scripting Cookbook   Chapter 4.7
  
  When print is used without an argument, it will print the current line. 
  
- $ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; \print var1,var2,var3 ; }'
+ $ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; print var1,var2,var3 ; }'
+ 
  The above statement will print the values of the variables as follows:
  v1 v2 v3
  The echo command writes a single line into the standard output. Hence the statements 
  in the { } block of awk are executed once. If standard input to awk contains multip-
  le lines, the commands in awk will be executed multiple times. Concatenation can  be 
  used as follows:
+ 
  $ echo | awk '{ var1="v1"; var2="v2"; var3="v3"; print var1"-"var2"-"var3 ; }'
+ 
  The output will be:
  v1-v2-v3
  { } is like a block in a loop iterating through each line of a file
@@ -71,14 +81,12 @@ book: Linux Shell Scripting Cookbook   Chapter 4.7
  $2: It is the variable that holds the test of the second field text.
  
  $ echo -e "line1 f2 f3\nline2 f4 f5\nline3 f6 f7" | \
- awk '{
- print "Line no:"NR",No of fields:"NF, "$0="$0, "$1="$1,"$2="$2,"$3="$3
- }'
+ awk '{ print "Line index "NR", Nums of fields: "NF", $0="$0, "$1="$1,"$2="$2,"$3="$3 }'
  
- Line no:1,No of fields:3 $0=line1 f2 f3 $1=line1 $2=f2 $3=f3
- Line no:2,No of fields:3 $0=line2 f4 f5 $1=line2 $2=f4 $3=f5
- Line no:3,No of fields:3 $0=line3 f6 f7 $1=line3 $2=f6 $3=f7
- 
+ Line index 1, Nums of fields: 3, $0=line1 f2 f3 $1=line1 $2=f2 $3=f3
+ Line index 2, Nums of fields: 3, $0=line2 f4 f5 $1=line2 $2=f4 $3=f5
+ Line index 3, Nums of fields: 3, $0=line3 f6 f7 $1=line3 $2=f6 $3=f7
+
  We can print last field of a line as print $NF,last but second as $(NF-1) and so on.
 
 

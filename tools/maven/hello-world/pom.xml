@@ -40,12 +40,12 @@
   	            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
   	              <mainClass>com.juvenxu.mvnbook.helloworld.HelloWorld</mainClass>
   	            </transformer> <!-- java -jar target\hello-world-1.0-SNAPSHOT.jar -->
-  	          </transformers>
-  	        </configuration>
-  	      </execution>
-  	    </executions>
-  	  </plugin>
-    </plugins>
+  	          </transformers>  <!-- 默认生成的jar包不能运行，因为带有main方法的类信息不会添加到manifest中-->
+  	        </configuration>   <!-- 为了生成可执行的jar文件，要借助maven-shade-plugin -->
+  	      </execution>         <!-- 配置的mainClass，打包时会放入MANIFEST中-->
+  	    </executions>          <!-- hello-world-1.0-SNAPSHOT.jar 带有Main-class信息的可运行jar -->
+  	  </plugin>                <!-- original-hello-world-1.0-SNAPSHOT.jar 原始的jar -->
+    </plugins>                 <!-- META-INF/MANIFEST.MF -->
   </build>
 </project> 
 

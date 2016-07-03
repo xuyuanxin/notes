@@ -28,6 +28,13 @@ enum Size
 }
 
 /*-----------------------------------------------------------------------------------
+
+ F:\mygit\notes\example\java\lang_java>java EnumJava
+ Enter a size: (SMALL, MEDIUM, LARGE, EXTRA_LARGE) SMALL
+ size=SMALL
+ abbreviation=S
+
+
  ----> Enumeration Classes
  Here is a typical example:
      public enum Size { SMALL, MEDIUM, LARGE, EXTRA_LARGE };

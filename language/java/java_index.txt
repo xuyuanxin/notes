@@ -1,21 +1,28 @@
 ---->JavaËõÂÔÓï
 
----->Ë÷Òý
-Arrays    java.util
-ArrayList java.util
-Class     java.lang.Class
-reflect   import java.lang.reflect.*;
-Scanner   java.util.Scanner
-System    java.lang.System
-Thread    java.lang.Thread
+-->Ë÷Òý
+ Arrays    java.util
+ ArrayList java.util
+ Class     java.lang.Class
+ reflect   import java.lang.reflect.*;
+ Scanner   java.util.Scanner
+ System    java.lang.System
+ Thread    java.lang.Thread
 
 
 
 
 java.util.concurrent
-java
- util
-  concurrent
+
+--> java
+ -->--> java.lang
+ -->--> java.lang.reflect
+  Field
+  Method
+  Modifier
+
+ -->--> java.util
+ -->--> java.util.concurrent
    Interfaces
     Future
     
@@ -27,6 +34,9 @@ java
 
    Exceptions
     BrokenBarrierException
+
+
+
 
 	
 	

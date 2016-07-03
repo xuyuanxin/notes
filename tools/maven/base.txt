@@ -4,6 +4,11 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
 
 --> 坐标
  Maven坐标是通过一些元素定义的，他们是groupId、artifactId、version、packaging、classfier
+ 现在，只要我们提供正确的坐标元素，Maven就能找到对应的构建。我们在开发自己项目的时候，也要
+ 为其定义适当的坐标，这是Maven强制要求的。
+ 
+ 同时，项目构建的文件名是与坐标相对应的，一般规则为
+ artifactId-version[-classfier].packaging
  
  <groupId>org.sonatype.nexus</groupId>
  <artifactId>nexus-indexer</artifactId>
@@ -30,12 +35,166 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
 --> 依赖
  根元素project下的dependencies可以包含一个或多个dependency元素，以声明一个或者多个项
  目依赖。每个依赖可以包含的元素有：
+ 
+ <project>
+ ...
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>2.5.6</version>
+            <type>...</type>
+            <scope>...</scope>
+            <optional>...</optional>
+            <exclusions>
+                <exclusion>
+                ...
+                </exclusion>
+            ...
+            </exclusions>
+        ...
+		</dependency>
+		<dependency>
+        </dependency>
+        ...
+	</dependencies>
+ ...
+ </project>
+ 
  groupId、artifactId和version：依赖的基本坐标。
  type：依赖的类型，对应于项目坐标定义的packaging。默认为jar
  scope：依赖的范围
  optional：标记依赖是否可选
  exclusions：用来排除传递性依赖。
 
+--> 仓库
+ http://blog.csdn.net/wanghantong/article/details/36427433
+ 
+ Maven仓库：本地仓库、远程仓库
+ 远程仓库：中央仓库、私服、其它公共库
+
+ -->--> 本地仓库
+  C:\Users\xxx\.m2\repository   本地仓库默认路径
+  /home/xxx/.m2/repository  
+  
+  <localRepository>D:\java\rep\</localRepository> 配置本地仓库路径  settings.xml
+                                                                                     
+ -->--> 中央仓库
+  中央仓库是默认的远程仓库，maven在安装的时候，自带的就是中央仓库的配置。在maven的聚
+  合与继承中我们说过，所有的maven项目都会继承超级pom，具体的说，包含了下面配置的pom我
+  们就称之为超级pom
+  
+  <repositories>  
+    <repository>  
+      <id>central</id>  
+      <name>Central Repository</name>  
+      <url>http://repo.maven.apache.org/maven2</url>  
+      <layout>default</layout>  
+      <snapshots>  
+        <enabled>false</enabled>  
+      </snapshots>  
+    </repository>  
+  </repositories> 
+                                                                                    
+ -->--> 私服
+  私服是一种特殊的远程仓库，它是架设在局域网内的仓库服务，私服代理广域网上的远程仓库，
+  供局域网内的Maven用户使用。当Maven需要下载构件的时候，它从私服请求，如果私服上不存
+  在该构件，则从外部的远程仓库下载，缓存在私服上之后，再为Maven的下载请求提供服务。我
+  们还可以把一些无法从外部仓库下载到的构件上传到私服上。 
+  
+  当前主流的maven私服：
+  1.Apache的Archiva
+  2.JFrog的Artifactory
+  3.Sonatype的Nexus
+
+ -->--> 远程仓库配置
+  配置远程仓库将引入新的配置元素：<repositories>     <repository>
+  在<repositories>元素下，可以使用  <repository>子元素声明一个或者多个远程仓库。
+  
+  例子：
+  
+  <repositories>  
+        <repository>  
+            <id>jboss</id>  
+            <name>JBoss Repository</name>  
+            <url>http://repository.jboss.com/maven2/</url>  
+            <releases>  
+                <updatePolicy>daily</updatePolicy><!-- never,always,interval n -->  
+                <enabled>true</enabled>  
+                <checksumPolicy>warn</checksumPolicy><!-- fail,ignore -->  
+            </releases>  
+            <snapshots>  
+                <enabled>false</enabled>  
+            </snapshots>  
+            <layout>default</layout>  
+        </repository>  
+  </repositories> 
+
+  <updatePolicy>元素：表示更新的频率，值有：never, always,interval,daily, daily 为默认值
+  <checksumPolicy>元素：表示maven检查和检验文件的策略，warn为默认值  
+ 
+ -->--> 镜像
+  http://fhd001.iteye.com/blog/1193559                                               
+  
+  如果仓库X可以提供仓库Y存储的所有内容，那么就可以认为X是Y的一个镜像。换句话说，任何一
+  个可以从仓库Y获得的构件，都胡够从它的镜像中获取。举个例子，
+  http://maven.net.cn/content/groups/public/是中央仓库http://repo1.maven.org/maven2/ 
+  在中国的镜像，由于地理位置的因素，该镜像往往能够提供比中央仓库更快的务。因此，可以配
+  置Maven使用该镜像来替代中央仓库。编辑settings.xml，代码如下：
+  
+  <settings>  
+    ...  
+    <mirrors>  
+      <mirror>  
+        <id>maven.net.cn</id>  
+        <name>one of the central mirrors in china</name>  
+        <url>http://maven.net.cn/content/groups/public/</url>  
+        <mirrorOf>central</mirrorOf>  
+      </mirror>  
+    </mirrors>  
+    ...  
+  </settings>                                                                        
+  
+  该例中，<mirrorOf>的值为central，表示该配置为中央仓库的镜像，任何对于中央仓库的请求
+  都会转至该镜像，用户也可以使用同样的方法配置其他仓库的镜像。另外三个元素id,name,url
+  与一般仓库配置无异，表示该镜像仓库的唯一标识符、名称以及地址。类似地，如果该镜像需认
+  证，也可以基于该id配置仓库认证。
+  
+  关于镜像的一个更为常见的用法是结合私服。由于私服可以代理任何外部的公共仓库(包括中央
+  仓库)，因此，对于组织内部的Maven用户来说，使用一个私服地址就等于使用了所有需要的外部
+  仓库，这可以将配置集中到私服，从而简化Maven本身的配置。在这种情况下，任何需要的构件
+  都可以从私服获得，私服就是所有仓库的镜像。这时，可以配置这样的一个镜像，如例： 
+ 
+  <settings>  
+    ...  
+    <mirrors>  
+      <mirror>  
+        <id>internal-repository</id>  
+        <name>Internal Repository Manager</name>  
+        <url>http://192.168.1.100/maven2</url>  
+        <mirrorOf>*</mirrorOf>  
+      </mirror>  
+    </mirrors>  
+    ...  
+  </settings>  
+  
+  该例中<mirrorOf>的值为星号，表示该配置是所有Maven仓库的镜像，任何对于远程仓库的请求都
+  会被转至http://192.168.1.100/maven2/。如果该镜像仓库需要认证，则配置一个Id为
+  internal-repository的<server>即可。为了满足一些复杂的需求，Maven还支持更高级的镜像配置：
+
+  1.<mirrorOf>*</mirrorOf>
+    匹配所有远程仓库。
+  2.<mirrorOf>external:*</mirrorOf>
+    匹配所有远程仓库，使用localhost的除外，使用file://协议的除外。也就是说，匹配所有不在
+	本机上的远程仓库。
+  3.<mirrorOf>repo1,repo2</mirrorOf>
+    匹配仓库repo1和repo2，使用逗号分隔多个远程仓库。
+  4.<mirrorOf>*,!repo1</miiroOf>
+    匹配所有远程仓库，repo1除外，使用感叹号将仓库从匹配中排除。
+ 
+  需要注意的是，由于镜像仓库完全屏蔽了被镜像仓库，当镜像仓库不稳定或者停止服务的时候，Maven
+  仍将无法访问被镜像仓库，因而将无法下载构件。
+ 
 --> 生命周期
  Maven有三套相互独立的生命周期：clean、default、site
  clean：清理项目
@@ -169,8 +328,12 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
         <target>1.7</target> # 生成与JVM 1.5兼容的字节码文件
     </configuration>
   </plugin>
+
+--> 继承
   
-  
+--> 实例简介
+ account-email模块  ：负责发送账户激活的电子邮件 
+ account-persist模块：负责账户数据的持久化，以xml文件保存账户数据，支持账户的创建、读取、更新、删除  
   
 
 
