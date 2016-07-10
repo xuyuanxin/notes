@@ -1,0 +1,1 @@
+http://www.cnblogs.com/peida/archive/2012/11/14/2769248.html  每天一个linux命令（20）：find命令之exec

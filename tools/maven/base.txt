@@ -3,17 +3,18 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
 
 
 --> 坐标
- Maven坐标是通过一些元素定义的，他们是groupId、artifactId、version、packaging、classfier
- 现在，只要我们提供正确的坐标元素，Maven就能找到对应的构建。我们在开发自己项目的时候，也要
- 为其定义适当的坐标，这是Maven强制要求的。
+ -->--> 坐标
+  Maven坐标是通过一些元素定义的，他们是groupId、artifactId、version、packaging、classfier
+  现在，只要我们提供正确的坐标元素，Maven就能找到对应的构建。我们在开发自己项目的时候，也要
+  为其定义适当的坐标，这是Maven强制要求的。
  
- 同时，项目构建的文件名是与坐标相对应的，一般规则为
- artifactId-version[-classfier].packaging
+  同时，项目构建的文件名是与坐标相对应的，一般规则为
+  artifactId-version[-classfier].packaging
  
- <groupId>org.sonatype.nexus</groupId>
- <artifactId>nexus-indexer</artifactId>
- <version>2.0.0</version>
- <packaging>jar</packaging>
+  <groupId>org.sonatype.nexus</groupId>
+  <artifactId>nexus-indexer</artifactId>
+  <version>2.0.0</version>
+  <packaging>jar</packaging>
  
  -->--> groupId (必须定义)
   定义当前Maven项目隶属的实际项目。                                                                
@@ -68,33 +69,44 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
  exclusions：用来排除传递性依赖。
 
 --> 仓库
- http://blog.csdn.net/wanghantong/article/details/36427433
+ -->--> 仓库
+  http://blog.csdn.net/wanghantong/article/details/36427433
  
- Maven仓库：本地仓库、远程仓库
- 远程仓库：中央仓库、私服、其它公共库
+  路径与坐标的大致对应关系为groupId/artifactid/version/artifactId-version.packaging
+  例如， log4j:log4j:1.2.15对应 log4j/log4j/1.2.15/log5j-1.2.15.jar
+ 
+  Maven仓库：本地仓库、远程仓库
+   本地仓库：
+   远程仓库：中央仓库、私服、其它公共库
 
  -->--> 本地仓库
   C:\Users\xxx\.m2\repository   本地仓库默认路径
   /home/xxx/.m2/repository  
   
-  <localRepository>D:\java\rep\</localRepository> 配置本地仓库路径  settings.xml
+  <settings>
+   <localRepository>D:\java\rep\</localRepository> 配置本地仓库路径  settings.xml
+  </settings>
                                                                                      
  -->--> 中央仓库
+  由于原始的本地仓库是空的，Maven必须知道至少一个可用的远程仓库。中央仓库就是这样一个
+  默认的远程仓库。
   中央仓库是默认的远程仓库，maven在安装的时候，自带的就是中央仓库的配置。在maven的聚
   合与继承中我们说过，所有的maven项目都会继承超级pom，具体的说，包含了下面配置的pom我
   们就称之为超级pom
   
   <repositories>  
     <repository>  
-      <id>central</id>  
+      <id>central</id>  <!-- 对中央仓库进行唯一标识，任何仓库声明的id都必须是唯一的。-->
       <name>Central Repository</name>  
-      <url>http://repo.maven.apache.org/maven2</url>  
-      <layout>default</layout>  
+      <url>http://repo.maven.apache.org/maven2</url>  <!-- 可以在浏览器中输入url，浏览构建 -->
+      <layout>default</layout>  <--! 仓库布局 -->
       <snapshots>  
-        <enabled>false</enabled>  
+        <enabled>false</enabled>   <--! 不下载快照版本 -->
       </snapshots>  
     </repository>  
   </repositories> 
+  
+  超级pom：MAVEN_HOME/lib/maven-model-builder-3.0.jar，解压后 org/apache/maven/model/pom-4.0.0.xml
                                                                                     
  -->--> 私服
   私服是一种特殊的远程仓库，它是架设在局域网内的仓库服务，私服代理广域网上的远程仓库，
@@ -106,10 +118,13 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
   1.Apache的Archiva
   2.JFrog的Artifactory
   3.Sonatype的Nexus
-
+  
+ -->--> 其它公共库
+  pass
+  
  -->--> 远程仓库配置
   配置远程仓库将引入新的配置元素：<repositories>     <repository>
-  在<repositories>元素下，可以使用  <repository>子元素声明一个或者多个远程仓库。
+  在<repositories>元素下，可以使用  <repository> 子元素声明一个或者多个远程仓库。
   
   例子：
   
@@ -119,25 +134,31 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
             <name>JBoss Repository</name>  
             <url>http://repository.jboss.com/maven2/</url>  
             <releases>  
-                <updatePolicy>daily</updatePolicy><!-- never,always,interval n -->  
-                <enabled>true</enabled>  
+                <updatePolicy>daily</updatePolicy> <!-- never,always,interval n -->  
+                <enabled>true</enabled>  <!-- 下载发布版本 --> 
                 <checksumPolicy>warn</checksumPolicy><!-- fail,ignore -->  
             </releases>  
             <snapshots>  
-                <enabled>false</enabled>  
+                <enabled>false</enabled>  <!-- 不下载快照版本 -->
             </snapshots>  
             <layout>default</layout>  
         </repository>  
   </repositories> 
 
-  <updatePolicy>元素：表示更新的频率，值有：never, always,interval,daily, daily 为默认值
-  <checksumPolicy>元素：表示maven检查和检验文件的策略，warn为默认值  
+  <updatePolicy>元素：
+    表示更新的频率，值有：never, always,interval,daily, daily 为默认值
+	interval n， n是小时
+  <checksumPolicy>元素：warn fail ignore
+    表示maven检查"检验和文件"的策略。 
+	warn为默认值：校验失败发出告警。
+	fail：校验失败就让构建失败。
+	ignore：完全忽略"校验和"错误
  
  -->--> 镜像
   http://fhd001.iteye.com/blog/1193559                                               
   
   如果仓库X可以提供仓库Y存储的所有内容，那么就可以认为X是Y的一个镜像。换句话说，任何一
-  个可以从仓库Y获得的构件，都胡够从它的镜像中获取。举个例子，
+  个可以从仓库Y获得的构件，都能够从它的镜像中获取。举个例子，
   http://maven.net.cn/content/groups/public/是中央仓库http://repo1.maven.org/maven2/ 
   在中国的镜像，由于地理位置的因素，该镜像往往能够提供比中央仓库更快的务。因此，可以配
   置Maven使用该镜像来替代中央仓库。编辑settings.xml，代码如下：
@@ -149,7 +170,7 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
         <id>maven.net.cn</id>  
         <name>one of the central mirrors in china</name>  
         <url>http://maven.net.cn/content/groups/public/</url>  
-        <mirrorOf>central</mirrorOf>  
+        <mirrorOf>central</mirrorOf>  <--! 表示是中央仓库的镜像 -->
       </mirror>  
     </mirrors>  
     ...  
@@ -196,7 +217,7 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
   仍将无法访问被镜像仓库，因而将无法下载构件。
  
 --> 生命周期
- Maven有三套相互独立的生命周期：clean、default、site
+ Maven有三套相互独立的生命周期： clean default site
  clean：清理项目
  default: 构建项目
  site：建立项目站点
@@ -288,7 +309,7 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
                       <id>attach-source</id>
                       <phase>verify</phase>         <!-- 要绑定到的生命周期的阶段 -->
                       <goals>
-                          <goal>jar-no-fork</goal>  <!-- 要绑定的插件的目标 -->
+                          <goal>jar-no-fork</goal>  <!-- 要绑定的插件的目标，它会创建一个以-sources.jar结尾的源码文件包 -->
                       </goals>
                   </execution>
               </executions>
@@ -314,11 +335,11 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
   完成了插件和生命周期的绑定之后，用户还可以配置插件目标的参数，进一步调整插件目标所
   执行的任务，以满足项目的需求
   
-  命令行配置，使用-D参数
+  1 命令行配置，使用-D参数
   $ mvn install -Dmaven.test.skip=true
   参数-D是java自带的，maven简单地重用了该参数。
   
-  在POM中配置
+  2 在POM中配置
   
   <plugin>
     <groupId>org.apache.maven.plugins</groupId>
@@ -328,12 +349,62 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
         <target>1.7</target> # 生成与JVM 1.5兼容的字节码文件
     </configuration>
   </plugin>
+                                                                                     
+  除了为插件配置全局的参数，用户还可以为某个插件任务配置特定的参数。以maven-antrun-plugin
+  为例，它有一个目标run，可以用来在Maven中调用Ant任务。用户将maven-antrun-plugin:run 
+  绑定到多个生命周期阶段上，再加以不同的配置，就可以让Maven在不同的生命阶段执行不同的任
+  务，如：
 
---> 继承
-  
+  <build>  
+    <plugins>  
+        <plugin>  
+            <groupId>org.apache.maven.plugins</groupId>  
+            <artifactId>maven-antrun-plugin</artifactId>  
+            <version>1.3</version>  
+            <executions>  
+                <execution>  
+                    <id>ant-validate</id>  
+                    <phase>validate</phase>  
+                    <goals>  
+                        <goal>run</goal>  
+                    </goals>  
+                    <configuraction>  
+                        <tasks>  
+                            <echo>I'm bound to validate phase.</echo>  
+                        </tasks>  
+                    </configuraction>  
+                </execution>  
+                <execution>  
+                    <id>ant-verify</id>  
+                    <phase>verify</phase>  
+                    <goals>  
+                        <goal>run</goal>  
+                    </goals>  
+                    <configuraction>  
+                        <tasks>  
+                            <echo>I'm bound to verify phase.</echo>  
+                        </tasks>  
+                    </configuraction>  
+                </execution>  
+            </executions>  
+        </plugin>  
+    </plugins>  
+  </build>  
+                                                                                     
+  在上述代码片段中，首先，maven-antrun-plugin:run 与 validate阶段绑定，从而构成一个id
+  为ant-validate的任务。插件全局配置中得configuraction元素位于plugin元素下面，而这里的
+  configuraction元素则位于execution元素下，表示这是特定任务的配置，而非插件整体的配置。
+  这个ant-validate任务配置了一个echo Ant任务，向命令行输出一段文字，表示该任务是绑定到
+  validate阶段的。第二个任务的id为ant-verify，它绑定到了verify阶段，同样它也输出了一段
+  文字到命令行，告诉该任务绑定到了verify阶段。
+
+--> 聚合 继承
+  pass
+
 --> 实例简介
  account-email模块  ：负责发送账户激活的电子邮件 
  account-persist模块：负责账户数据的持久化，以xml文件保存账户数据，支持账户的创建、读取、更新、删除  
+ account-parent：依赖 account-email account-persist
   
 
 

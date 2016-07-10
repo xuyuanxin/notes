@@ -11,15 +11,15 @@ ARFLAGS = crs    # c:创建档案文件;r:将文件增加到所创建的档案�
 CCFLAGS = -shared -Wall -Werror
 #CCFLAGS = -shared -Wall -Werror -fPIC -D__READLINE_DEBUG
 
+# 依赖的头文件路径
+INCLUDE_DIRS += $(ROOT)/include
+
 SRCS = $(wildcard *.c)
 
 # 依赖关系文件
 DEPS_DIR=$(ROOT)/build/deps
 DEPS = $(SRCS:.c=.dep)
 DEPS := $(addprefix $(DEPS_DIR)/, $(DEPS))
-
-# 依赖的头文件路径
-INCLUDE_DIRS += $(ROOT)/include
 
 # 中间文件
 ifeq ("$(OBJS_DIR)", "")
@@ -91,7 +91,7 @@ $(DEPS_DIR)/%.dep: %.c
 $(OBJS_DIR)/%.o: %.c
 	$(CC) $(CCFLAGS) $(INCLUDE_DIRS) -o $@ -c $(filter %.c, $^)
 	
-# 生成库	
+# 生成静态库	
 $(LIB): forcerun
 #	@echo "lib_objs:"$(LIBOBJS)
 	$(AR) $(ARFLAGS) $@ $(LIBOBJS)
@@ -107,7 +107,7 @@ $(LIBDYN): forcerun
 $(EXE): $(OBJS) forcerun
 #	$(CC) -Bdynamic $(CCFLAGS)  -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
 #	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(filter %.o, $^) -L$(LIBS_DIR) $(LINK_LIBS)
-	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(EXEOBJS) -L$(LIBS_DIR) $(LINK_LIBS)
+	$(CC) -Wall -Wl,-rpath=$(LIBS_DIR) -o $@ $(EXEOBJS) $(LINK_LIBS_DIRS) $(LINK_LIBS)
 
 clean:
 	@echo done

@@ -4,11 +4,17 @@
 	<groupId>com.juvenxu.mvnbook.account</groupId>
 	<artifactId>account-aggregator</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>pom</packaging> <!-- 对于聚合来说，其打包方式为pom，否则无法构建 -->
 	<name>Account Aggregator</name>
-	<modules>
-		<module>account-email</module>
+	<modules> <!-- 可以通过打包方式为pom的Maven项目中声明任意数量的module元素来实现模块的聚合 -->
+		<module>account-email</module>   <!-- 相对路径 -->
 		<module>account-persist</module>
 		<module>account-parent</module>
 	</modules>
 </project>
+
+<!-- 
+ Maven会首先解析聚合模块的POM、分析要构建的模块、并计算出一个反应堆构建顺序(Reactor Build Order) ，
+ 然后根据这个顺序依次构建各个模块
+ 
+ -->

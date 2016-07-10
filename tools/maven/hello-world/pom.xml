@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>     <!-- 根元素下的第一个子元素， modelVersion指定了当前POM模型的版本，对于Maven2及Maven3来说，它只能是4.0.0 -->
   <groupId>com.juvenxu.mvnbook</groupId> <!-- 属于哪个组 -->
   <artifactId>hello-world</artifactId>   <!-- 该项目在组中的唯一ID -->
-  <version>1.0-SNAPSHOT</version>        <!-- 该项目的版本 -->
+  <version>1.0-SNAPSHOT</version>        <!-- 该项目的版本 hello-world-1.0-SNAPSHOT.jar -->
   <name>Maven Hello World Project</name> <!-- 该项目的名字，不是必须的 -->
   <dependencies>
     <dependency>
