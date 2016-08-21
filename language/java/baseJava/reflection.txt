@@ -36,7 +36,16 @@
  
  Employee harry = new Employee("Harry Hacker", 35000, 10, 1, 1989);
  Class cl = harry.getClass(); // the class object representing Employee
- Field f = cl.getDeclaredField("name"); // the name field of the Employee class
+ Field f = cl.getDeclaredField("name"); // the @name field of the Employee class
  Object v = f.get(harry); // the value of the name field of the harry object, i.e., the String object "Harry Hacker"
+ 
+ Actually, there is a problem with this code. Since the @name field is a private fie-
+ ld, the @get method will throw an @IllegalAccessException. 
+ 
+ f.setAccessible(true); // now OK to call f.get(harry);
+ 
+ The @setAccessible method is a method of the @AccessibleObject class, the common su-
+ perclass of the @Field, @Method, and @Constructor classes. 
+
  
 

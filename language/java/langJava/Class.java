@@ -1,10 +1,21 @@
-//  http://docs.oracle.com/javase/8/docs/api/java/lang/Class.html
+/*  
+ http://docs.oracle.com/javase/8/docs/api/java/lang/Class.html
+
+ eg: ReflectionJava.java
+ */
 
 /* java.lang.String */
 public final class Class<T>
 extends Object
 implements Serializable, GenericDeclaration, Type, AnnotatedElement
 {
+
+/*-----------------------------------------------------------------------------------
+ Returns a @Constructor object that reflects the specified public constructor of  the 
+ class represented by this @Class object. 
+ ----------------------------------------------------------------------------------*/
+ public Constructor<T> getConstructor(Class<?>... parameterTypes) 
+ throws NoSuchMethodException, SecurityException;
 
 /*-----------------------------------------------------------------------------------
  Returns the @Class object associated with the class or interface with the given str-

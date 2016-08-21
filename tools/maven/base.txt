@@ -1,5 +1,5 @@
 http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打包的技巧
-
+http://blog.csdn.net/wanghantong/article/details/36427165  maven详解之坐标与依赖
 
 
 --> 坐标
@@ -34,11 +34,12 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
   这样一些附属构建，其包含了java文档和源代码。
                                                                                      
 --> 依赖
- 根元素project下的dependencies可以包含一个或多个dependency元素，以声明一个或者多个项
- 目依赖。每个依赖可以包含的元素有：
+ -->--> 依赖
+  根元素project下的dependencies可以包含一个或多个dependency元素，以声明一个或者多个项
+  目依赖。每个依赖可以包含的元素有：
  
- <project>
- ...
+  <project>
+  ...
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -59,14 +60,28 @@ http://www.infoq.com/cn/news/2011/06/xxb-maven-9-package/  Maven实战（九）——打
         </dependency>
         ...
 	</dependencies>
- ...
- </project>
+  ...
+  </project>
  
- groupId、artifactId和version：依赖的基本坐标。
- type：依赖的类型，对应于项目坐标定义的packaging。默认为jar
- scope：依赖的范围
- optional：标记依赖是否可选
- exclusions：用来排除传递性依赖。
+  groupId 、artifactId 和 version ：依赖的基本坐标。
+  type ：依赖的类型，对应于项目坐标定义的packaging。默认为jar
+  scope ：依赖的范围
+  optional ：标记依赖是否可选
+  exclusions ：用来排除传递性依赖。
+
+ -->--> 依赖范围
+  依赖范围详解：
+  Maven在编译项目主代码的时候需要使用一套classpath
+  Maven在编译和执行测试的时候会使用另外一套classpath
+  Maven在实际运行项目的时候又会使用一套classpath
+  依赖范围就是用来控制依赖与这三种classpath(编译classpath、测试classpath、运行classpath)的关系
+  Maven的6种依赖范围：
+  compile: 编译依赖范围(默认)，对于编译、测试、运行三种classpath都有效
+  test: 测试依赖范围， 只对测试classpath有效。典型范例：Junit
+  provided: 已提供依赖范围 对于编译和测试classpath有效，但在运行时无效。典型范例：servlet-api
+  runtime: 运行时依赖范围 对于测试和运行classpath有效，但在对编译主代码时无效。典型范例：JDBC
+  system: 系统依赖范围
+  import: (maven2.0.9及以上): 导入依赖范围，它不会对三种实际的classpath产生影响
 
 --> 仓库
  -->--> 仓库

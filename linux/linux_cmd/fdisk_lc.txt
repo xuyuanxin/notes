@@ -1,0 +1,436 @@
+http://www.jb51.net/LINUXjishu/45161.html
+
+
+Linux fdisk 命令使用详解
+
+一、fdisk 的介绍
+ fdisk - Partition table manipulator for Linux                                       
+ fdsik 能划分磁盘成为若干个区，同时也能为每个分区指定分区的文件系统，比如linux 、fat32、 
+ linux 、linux swap 、fat16 以及其实类Unix类操作系统的文件系统等；当然我们用fdisk 对磁
+ 盘操作分区时，并不是一个终点，我们还要对分区进行格式化所需要的文件系统；这样一个分区才
+ 能使用；这和DOS中的fdisk 是类似的
+
+二、合理规划您的硬盘分区
+ 在操作分区之前，我们要明白硬盘分区一点理论，比如硬盘容量和分区大小的计算；对一个硬盘如
+ 何规划分区等，请参考如下文档《合理规划您的硬盘分区》
+
+三、fdisk -l 查看硬盘及分区信息
+ 通过《合理规划您的硬盘分区》 ，我们知道主分区（包括扩展分区）的总个数不能超过四个；也不
+ 能把扩展分区包围在主分区之间；根据这个原则，我们划分硬盘分区就比较容易的多；也能为以后
+ 减少不必要的麻烦
+
+ 1、通过fdisk -l 查看机器所挂硬盘个数及分区情况
+  [root@localhost beinan]# fdisk -l
+  Disk /dev/hda: 80.0 GB, 80026361856 bytes
+  255 heads, 63 sectors/track, 9729 cylinders
+  Units = cylinders of 16065 * 512 = 8225280 bytes
+  Device Boot Start End Blocks Id System
+  /dev/hda1 * 1 765 6144831 7 HPFS/NTFS
+  /dev/hda2 766 2805 16386300 c W95 FAT32 (LBA)
+  /dev/hda3 2806 9729 55617030 5 Extended
+  /dev/hda5 2806 3825 8193118+ 83 Linux
+  /dev/hda6 3826 5100 10241406 83 Linux
+  /dev/hda7 5101 5198 787153+ 82 Linux swap / Solaris
+  /dev/hda8 5199 6657 11719386 83 Linux
+  /dev/hda9 6658 7751 8787523+ 83 Linux
+  /dev/hda10 7752 9729 15888253+ 83 Linux
+  Disk /dev/sda: 1035 MB, 1035730944 bytes
+  256 heads, 63 sectors/track, 125 cylinders
+  Units = cylinders of 16128 * 512 = 8257536 bytes
+  Device Boot Start End Blocks Id System
+  /dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+  /dev/sda2 26 125 806400 5 Extended
+  /dev/sda5 26 50 201568+ 83 Linux
+  /dev/sda6 51 76 200781 83 Linux
+  
+  通过上面的信息，我们知道此机器中挂载两个硬盘（或移动硬盘），其中一个是hda 另一个是sda ；
+  如果我们想查看单个硬盘情况，可以通过 fdisk -l /dev/hda1 或者fdisk -l /dev/sda1 来操作；
+  以fdisk -l 输出的硬盘标识为准。其中 hda有三个主分区（包括扩展分区），分别是主分区 hda1 
+  hda2 和hda3（扩展分区） ；逻辑分区是 hda5到hda10。其中 sda 有两个主分区（包括扩展分区），
+  分别是 hda1 和hda2 （扩展分区）；逻辑分区是 sda5 hda6 
+
+  硬盘总容量=主分区（包括扩展分区）总容量
+  扩展分区容量=逻辑分区总容量
+
+  通过上面的例子，我们可以得知 hda=hda1+hda2+hda3，其中hda3=hda5+hda6+hda7+hda8+hda9+hda10
+  
+ 2、关于fdisk -l 一些数值的说明
+
+  Disk /dev/hda: 80.0 GB, 80026361856 bytes
+  255 heads, 63 sectors/track, 9729 cylinders
+  Units = cylinders of 16065 * 512 = 8225280 bytes
+
+  这个硬盘是80G的，有255个磁面；63个扇区；9729个磁柱；
+  每个 cylinder（磁柱）的容量是 8225280 bytes=8225.280 K（约为）=8.225280M（约为）；
+
+  分区序列 引导 开始 终止 容量 分区类型ID 分区类型
+  Device    Boot Start End   Blocks   Id  System
+  /dev/hda1 *    1     765   6144831  7   HPFS/NTFS
+  /dev/hda2      766   2805  16386300 c   W95 FAT32 (LBA)
+  /dev/hda3 2806 9729 55617030 5 Extended
+  /dev/hda5 2806 3825 8193118+ 83 Linux
+  /dev/hda6 3826 5100 10241406 83 Linux
+  /dev/hda7 5101 5198 787153+ 82 Linux swap / Solaris
+  /dev/hda8 5199 6657 11719386 83 Linux
+  /dev/hda9 6658 7751 8787523+ 83 Linux
+  /dev/hda10 7752 9729 15888253+ 83 Linux                                            
+
+  说明：
+  硬盘分区的表示：在Linux 是通过hd*x 或 sd*x 表示的，其中 * 表示的是a、b、c，x表示的数
+  字 1、2、3，hd大多是IDE硬盘；sd大多是SCSI或移动存储；
+
+  引导（Boot）：表示引导分区，在上面的例子中 hda1 是引导分区；
+  Start （开始）：表示的一个分区从X cylinder（磁柱）开始；
+  End （结束）：表示一个分区到 Y cylinder（磁柱）结束；
+  id和System 表示的是一个意思，id看起来不太直观，我们要在fdisk 一个分区时，通过指定id来
+  确认分区类型；比如 7表示的就NTFS 分区；这个在fdisk 中要通过t功能来指定。下面的部份会提到；
+  Blocks（容量）：这是我翻译的，其实不准确，表示的意思的确是容量的意思，其单位是K；一个分
+  区容量的值是由下面的公式而来的；
+  Blocks = （相应分区End数值 - 相应分区Start数值）x 单位cylinder（磁柱）的容量
+
+　　所以我们算一下 hda1的 Blocks 的大小 ：
+
+　　hda1 Blocks=（765-1）x8225.280=6284113.92 K = 6284.113.92M
+
+　　注：换算单位以硬盘厂家提供的10进位算起，如果以操作系统二进制来算，这个分区容量应该更少一些，得出的这个值和我们通过 fdisk -l 看到的 /dev/hda1的值是大体相当的，因为换算方法不一样，所以也不可能尽可能的精确；再加上分区时的一点损失之类，有时或大或小是存在的；
+
+　　我们查看分区大小或者文件的时候，还是用十进制来计算比较直观；推算办法是 byte 向前推小数点三位就是K ，K单位的值向前推小数点三位就是M，M向前推小数点三位就是G…… …… 一般也差不了多少；这么算就行；
+
+　　3、估算一个存储设备是否被完全划分
+
+　　我们估算一个硬盘是否完全被划分，我们只要看 fdisk -l 输出的内容中的 cylinders（柱体） 上一个分区的End 和 下一个分区的Start是不是一个连续的数字，另外要看一下每个硬盘设备的fdisk -l 的开头部份，看一下他的 cylinders（柱体）的值；
+
+　　比如hda设备，我们看到的是 9729 cylinders ；我们通过 hda的分区表可以看到上一个分区的End的值+1 就是下一个分区的Start 的值；比如 hda2的Start的值是 hda1 的End 的值+1，这证明 hda1 和hda2 中间没有空白分区，是连续的，以此类推；在 hda10，我们看到 End 的值是9729 ，而在fdisk -l头部信息中也有9729 cylinders，证明这个硬盘已经完全划分；
+
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+/dev/sda2 26 125 806400 5 Extended
+/dev/sda5 26 50 201568+ 83 Linux
+/dev/sda6 51 76 200781 83 Linux
+
+　　我们再看看 sda 移动储是不是被完全划分了；sda有 125个cylinders （柱体），有一个主分区和一个扩展分区构成；在扩展分区中，我们看到End的值为125，而这个移动硬盘的cylinder也是125，这能说明这个硬盘不可能再添加任何主分区了；根据我们上面所说的 sda1 sda2 sda5 sda6 之间未有任何未划分空间，但sda6 的cylinders （柱体）的End值却是 76 ，而 sda总的cylinders （柱体）有125个，由此看来sda 在 sda6后面有未划分区域；
+
+　　至于sda 有多少未划分空间，我们算一下就知道了；扩展分区总容量是 806400 K ，大约是 806.400M左右，而逻辑分区 sda5 和sda6 的大小加起来是 400M左右，所以还仍有400M左右未划分空间，并且只能划分为链逻辑分区；
+四、fdisk 对硬盘及分区的操作，进入fdisk 对硬盘操作阶段
+
+　　我们可以对硬盘进行分区操作，前提是您把fdisk -l 弄明白了；通过fdisk -l ，我们能找出机器中所有硬盘个数及设备名称；比如上面的例子，我们会看到两个设备一个是/dev/hda ，另一个是/dev/sda ；
+
+　　fdisk 操作硬盘的命令格式如下：
+
+　　[root@localhost beinan]# fdisk 设备
+
+　　比如我们通过 fdisk -l 得知 /dev/hda 或者 /dev/sda设备；我们如果想再添加或者删除一些分区，可以用
+
+　　[root@localhost beinan]# fdisk /dev/hda
+
+　　或
+
+　　[root@localhost beinan]# fdisk /dev/sda
+
+　　注 在以后的例子中，我们要以 /dev/sda设备为例，来讲解如何用fdisk 来操作添加、删除分区等动作；
+
+　　1、fdisk 的说明；
+
+　　当我们通过 fdisk 设备，进入相应设备的操作时，会发现有如下的提示；以 fdisk /dev/sda 设备为例，以下同；
+
+[root@localhost beinan]# fdisk /dev/sda
+Command (m for help): 在这里按m ，就会输出帮助；
+Command action
+a toggle a bootable flag
+b edit bsd disklabel
+c toggle the dos compatibility flag
+d delete a partition 注：这是删除一个分区的动作；
+l list known partition types 注：l是列出分区类型，以供我们设置相应分区的类型；
+m print this menu 注：m 是列出帮助信息；
+n add a new partition 注：添加一个分区；
+o create a new empty DOS partition table
+p print the partition table 注：p列出分区表；
+q quit without saving changes 注：不保存退出；
+s create a new empty Sun disklabel
+t change a partition‘s system id 注：t 改变分区类型；
+u change display/entry units
+v verify the partition table
+w write table to disk and exit 注：把分区表写入硬盘并退出；
+x extra functionality (experts only) 注：扩展应用，专家功能；
+
+　　其实我们常用的只有注有中文的，其它的功能我们不常用（呵，主要是我不会用，否则早会卖弄一下了）；x扩展功能，也不是常用的；一般的情况下只要懂得 d l m p q t w 就行了；
+
+　　下面以实例操作来详述，没有例子没有办法就，新手也看不懂；
+
+　　2、列出当前操作硬盘的分区情况，用p
+
+Command (m for help): p
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+/dev/sda2 26 125 806400 5 Extended
+/dev/sda5 26 50 201568+ 83 Linux
+/dev/sda6 51 76 200781 83 Linux
+
+　　3、通过fdisk的d指令来删除一个分区
+
+Command (m for help): p 注：列出分区情况；
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+/dev/sda2 26 125 806400 5 Extended
+/dev/sda5 26 50 201568+ 83 Linux
+/dev/sda6 51 76 200781 83 Linux
+Command (m for help): d 注：执行删除分区指定；
+Partition number (1-6): 6 注：我想删除 sda6 ，就在这里输入 6 ；
+Command (m for help): p 注：再查看一下硬盘分区情况，看是否删除了？
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+/dev/sda2 26 125 806400 5 Extended
+/dev/sda5 26 50 201568+ 83 Linux
+Command (m for help):
+
+　　警告：删除分区时要小心，请看好分区的序号，如果您删除了扩展分区，扩展分区之下的逻辑分区都会删除；所以操作时一定要小心；如果知道自己操作错了，请不要惊慌，用q不保存退出；切记切记！！！！在分区操作错了之时，千万不要输入w保存退出！！！
+　4、通过fdisk的n指令增加一个分区
+
+Command (m for help): p
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+/dev/sda2 26 125 806400 5 Extended
+/dev/sda5 26 50 201568+ 83 Linux
+Command (m for help): n 注：增加一个分区；
+Command action
+l logical (5 or over) 注：增加逻辑分区，分区编号要大于5；为什么要大于5，因为已经有sda5了；
+p primary partition (1-4) 注：增加一个主分区；编号从 1-4 ；但sda1 和sda2都被占用，所以只能从3开始；
+p
+Partition number (1-4): 3
+No free sectors available 注：失败中，为什么失败？
+
+　　注：我试图增加一个主分区，看来是失败了，为什么失败？因为我们看到主分区+扩展分区把整个磁盘都用光了，看扩展分区的End的值，再看一下 p输出信息中有125 cylinders；最好还是看前面部份；那里有提到；
+
+　　所以我们只能增加逻辑分区了
+
+Command (m for help): n
+Command action
+l logical (5 or over)
+p primary partition (1-4)
+l 注：在这里输入l，就进入划分逻辑分区阶段了；
+First cylinder (51-125, default 51): 注：这个就是分区的Start 值；这里最好直接按回车，如果您输入了一个非默认的数字，会造成空间浪费；
+Using default value 51
+Last cylinder or +size or +sizeM or +sizeK (51-125, default 125): +200M 注：这个是定义分区大小的，+200M 就是大小为200M ；当然您也可以根据p提示的单位cylinder的大小来算，然后来指定 End的数值。回头看看是怎么算的；还是用+200M这个办法来添加，这样能直观一点。如果您想添加一个10G左右大小的分区，请输入 +10000M ；
+Command (m for help):
+
+　　5、通过fdisk的t指令指定分区类型
+
+Command (m for help): t 注：通过t来指定分区类型；
+Partition number (1-6): 6 注：要改变哪个分区类型呢？我指定了6，其实也就是sda6
+Hex code (type L to list codes):L 注：在这里输入L，就可以查看分区类型的id了；
+Hex code (type L to list codes): b 注：如果我想让这个分区是 W95 FAT32 类型的，通过L查看得知 b是表示的是，所以输入了b；
+Changed system type of partition 6 to b (W95 FAT32) 注：系统信息，改变成功；是否是改变了，请用p查看；
+Command (m for help): p
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ c W95 FAT32 (LBA)
+/dev/sda2 26 125 806400 5 Extended
+/dev/sda5 26 50 201568+ 83 Linux
+/dev/sda6 51 75 201568+ b W95 FAT32
+
+　　6、fdisk 的退出，用q或者 w
+
+　　其中 q是 不保存退出，w是保存退出
+
+　　Command (m for help): w
+　　或
+　　Command (m for help): q
+
+　　7、一个添加分区的例子；
+
+　　本例中我们会添加两个200M的主分区，其它为扩展分区，在扩展分区中我们添加两个200M大小的逻辑分区
+
+Command (m for help): p 注：列出分区表；
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+Command (m for help): n 注：添加分区；
+Command action
+e extended
+p primary partition (1-4)
+p 注：添加主分区；
+Partition number (1-4): 1 注：添加主分区1；
+First cylinder (1-125, default 1): 注：直接回车，主分区1的起始位置；默认为1,默认就好；
+Using default value 1
+Last cylinder or +size or +sizeM or +sizeK (1-125, default 125): +200M 注：指定分区大小，用+200M来指定大小为200M
+Command (m for help): n 注：添加新分区；
+Command action
+e extended
+p primary partition (1-4)
+p 注：添加主分区
+Partition number (1-4): 2 注：添加主分区2；
+First cylinder (26-125, default 26):
+Using default value 26
+Last cylinder or +size or +sizeM or +sizeK (26-125, default 125): +200M 注：指定分区大小，用+200M来指定大小为200M
+Command (m for help): n
+Command action
+e extended
+p primary partition (1-4)
+e 注：添加扩展分区；
+Partition number (1-4): 3 注：指定为3 ，因为主分区已经分了两个了，这个也算主分区，从3开始；
+First cylinder (51-125, default 51): 注：直接回车；
+Using default value 51
+Last cylinder or +size or +sizeM or +sizeK (51-125, default 125): 注：直接回车，把其余的所有空间都给扩展分区；
+Using default value 125
+Command (m for help): p
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ 83 Linux
+/dev/sda2 26 50 201600 83 Linux
+/dev/sda3 51 125 604800 5 Extended
+Command (m for help): n
+Command action
+l logical (5 or over)
+p primary partition (1-4)
+l 注：添加逻辑分区；
+First cylinder (51-125, default 51):
+Using default value 51
+Last cylinder or +size or +sizeM or +sizeK (51-125, default 125): +200M 注：添加一个大小为200M大小的分区；
+Command (m for help): n
+Command action
+l logical (5 or over)
+p primary partition (1-4)
+l 注：添加一个逻辑分区；
+First cylinder (76-125, default 76):
+Using default value 76
+Last cylinder or +size or +sizeM or +sizeK (76-125, default 125): +200M 注：添加一个大小为200M大小的分区；
+Command (m for help): p 列出分区表；
+Disk /dev/sda: 1035 MB, 1035730944 bytes
+256 heads, 63 sectors/track, 125 cylinders
+Units = cylinders of 16128 * 512 = 8257536 bytes
+Device Boot Start End Blocks Id System
+/dev/sda1 1 25 201568+ 83 Linux
+/dev/sda2 26 50 201600 83 Linux
+/dev/sda3 51 125 604800 5 Extended
+/dev/sda5 51 75 201568+ 83 Linux
+/dev/sda6 76 100 201568+ 83 Linux
+
+　　然后我们根据前面所说通过t指令来改变分区类型；
+
+　　最后不要忘记w保存退出
+五、对分区进行格式化，以及加载
+
+　　先提示一下；用 mkfs.bfs mkfs.ext2 mkfs.jfs mkfs.msdos mkfs.vfatmkfs.cramfs mkfs.ext3 mkfs.minix mkfs.reiserfs mkfs.xfs 等命令来格式化分区，比如我想格式化 sda6为ext3文件系统，则输入；
+
+　　[root@localhost beinan]# mkfs.ext3 /dev/sda6
+
+　　如果我想加载 sda6到目前系统来存取文件，应该有mount 命令，但首先您得建一个挂载目录；比如 /mnt/sda6 ；
+
+[root@localhost beinan]# mkdir /mnt/sda6
+[root@localhost beinan]# mount /dev/sda6 /mnt/sda6
+[root@localhost beinan]# df -lh
+Filesystem 容量 已用 可用 已用% 挂载点
+/dev/hda8 11G 8.4G 2.0G 81% /
+/dev/shm 236M 0 236M 0% /dev/shm
+/dev/hda10 16G 6.9G 8.3G 46% /mnt/hda10
+/dev/sda6 191M 5.6M 176M 4% /mnt/sda6
+
+　　这样我们就能进入 /mnt/sda6目录，然后存取文件了
+
+　　具体的权限方法，以及mount 更详细的用法，在以后我会专门写一个帖子；在一帖中放下所有的内容实在有点为难。
+
+
+
+
+合理规划您的硬盘分区
+
+一、关于硬盘种类、物理几何结构及硬盘容量、分区大小计算；
+1、硬盘种类、物理几何结构
+硬盘的种类主要是SCSI 、IDE 、以及现在流行的SATA等；任何一种硬盘的生产都要一定的标准；随着相应的标准的升级，硬盘生产技术也在升级；比如 SCSI标准已经经历了SCSI-1 、SCSI-2、SCSI-3；其中目前咱们经常在服务器网站看到的 Ultral-160就是基于SCSI-3标准的；IDE 遵循的是ATA标准，而目前流行的SATA，是ATA标准的升级版本；IDE是并口设备，而SATA是串口，SATA的发展目的是替换IDE；硬盘的物理几何结构是由盘、磁盘表面、柱面、扇区组成，一个张硬盘内部是由几张碟片叠加在一起，这样形成一个柱体面；每个碟片都有上下表面；磁头和磁盘表面接触从而能读取数据；
+2、硬盘容量及分区大小的算法；
+我们通过fdsik -l 可以发现如下的信息：
+Disk /dev/hda: 80.0 GB, 80026361856 bytes
+255 heads, 63 sectors/track, 9729 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+
+Device Boot Start End Blocks Id System
+/dev/hda1 * 1 765 6144831 7 HPFS/NTFS
+/dev/hda2 766 2805 16386300 c W95 FAT32 (LBA)
+/dev/hda3 2806 9729 55617030 5 Extended
+/dev/hda5 2806 3825 8193118+ 83 Linux
+/dev/hda6 3826 5100 10241406 83 Linux
+/dev/hda7 5101 5198 787153+ 82 Linux swap /
+其中 heads 是磁盘面；sectors 是扇区；cylinders 是柱面；每个扇区大小是 512byte，也就是0.5K；通过上面的例子，我们发现此硬盘有 255个磁盘面，有63个扇区，有9729个柱面；所以整个硬盘体积换算公式应该是：
+磁面个数 x 扇区个数 x 每个扇区的大小512 x 柱面个数 = 硬盘体积 （单位bytes)
+所以在本例中磁盘的大小应该计算如下： 255 x 63 x 512 x 9729 = 80023749120 bytes 提示：由于硬盘生产商和操作系统换算不太一样，硬盘厂家以10进位的办法来换算，而操作系统是以2进位制来换算，所以在换算成M或者G 时，不同的算法结果却不一样；所以我们的硬盘有时标出的是80G，在操作系统下看却少几M；上面例子中，硬盘厂家算法 和 操作系统算数比较：硬盘厂家： 80023749120 bytes = 80023749.120 K = 80023.749120 M （向大单位换算，每次除以1000）
+操作系统： 80023749120 bytes = 78148192.5 K = 76316.594238281 M （向大单位换算，每次除以1024）我们在查看分区大小的时候，可以用生产厂家提供的算法来简单推算分区的大小；把小数点向前移动六位就是以G表示的大小；比如 hda1 的大小约为 6.144831G ； 
+二、关于硬盘分区划分标准及合理分区结构；
+1、硬盘分区划分标准
+硬盘的分区由主分区、扩展分区和逻辑分区组成；所以我们在对硬盘分区时要遵循这个标准；主分区（包括扩展分区）的最大个数是四个，主分区（包含扩展分区）的个数硬盘的主引导记录MBR（Master Boot Recorder）决定的，MBR存放启动管理程序(GRUB，LILO，NTLOARDER等）和分区表记录。其中扩展分区也算一个主分区；扩展分区下可以包含更多的逻辑分区；所以主分区（包括扩展分区）范围是从1-4，逻辑分区是从5开始的；比如下面的例子：
+Device Boot Start End Blocks Id System
+/dev/hda1 * 1 765 6144831 7 HPFS/NTFS
+/dev/hda2 766 2805 16386300 c W95 FAT32 (LBA)
+/dev/hda3 2806 9729 55617030 5 Extended
+/dev/hda5 2806 3825 8193118+ 83 Linux
+/dev/hda6 3826 5100 10241406 83 Linux
+/dev/hda7 5101 5198 787153+ 82 Linux swap
+
+通过这个例子，我们可以看到主分区有3个，从 hda1-hda3 ，扩展分区由 hda5-hda10 ；此硬盘没有主分区4，所以也没有显示主分区hda4 ；但逻辑分区不可能从4开始，因为那是主分区的位置，明白了吧； 
+2、硬盘设备（包括移动存储设备）在Linux或者其它类Unix系统的表示；
+IDE 硬盘在Linux或者其它类Unix系统的一般表示为 hd* ，比如hda、hdb ... ... ，我们可以通过 fdisk -l 来查看；有时您可能只有一个硬盘，在操作系统中看到的却是 hdb ，这与硬盘的跳线有关；另外hdc 大多表示是光驱设备；如果您有两块硬盘，大多是 hda和hdb。在这方面说的太多也无用，还是以fdisk -l 为准为好； SCSI 和SATA 硬盘在Linux通常也是表示为 sd* ，比如 sda 、sdb ... ... 以fdisk -l 为准移动存储设备在linux表示为 sd* ，比如 sda 、sdb ... ... 以fdisk -l 为准 
+3、合理的规划分区；
+关于一个磁盘的分区，一个磁盘应该有四个主分区，其中扩展也算一个主分区；存在以下情况：
+1）分区结构之一：四个主分区,没有扩展分区；
+[主|分区1] [主分|区2] [主|分区3] [主|分区4]
+这种情况，如果您想在一个磁盘上划分五个以上分区，这样是行不通的； 
+三个主分区 一个扩展分区；
+
+[ 主 | 分区1 ] [ 主 | 分区2 ] [ 主 | 分区3 ] [扩展分区]
+
+[逻辑|分区5] [逻辑|分区6] [逻辑|分区7] [逻辑|分区8] ... ...
+
+这种情况行得通，而且分区的自由度比较大；分区也不受约束，能分超过5个分区；这只是举一个例子； 
+2）最合理的的分区方式；
+最合理的分区结构：主分区在前，扩展分区在后，然后在扩展分区中划分逻辑分区；主分区的个数+扩展分区个数要控制在四个之内；比如下面的分区是比较好的；
+
+[主|分区1] [主|分区2] [主|分区3] [扩展分区]
+
+[逻辑|分区5] [逻辑|分区6] [逻辑|分区7] [逻辑|分区8] ... ...
+
+[主|分区1] [主|分区2] [扩展分区]
+
+[逻辑|分区5] [逻辑|分区6] [逻辑|分区7] [逻辑|分区8] ... ...
+
+[主|分区1] [扩展分区]
+
+[逻辑|分区5] [逻辑|分区6] [逻辑|分区7] [逻辑|分区8] ... ...
+
+最不合理的分区结构： 主分区包围扩展分区；比如下面的；
+
+[主|分区1] [主|分区2] [扩展分区] [主|分区4] [空白未分区空间]
+
+[逻辑|分区5] [逻辑|分区6] [逻辑|分区7] [逻辑|分区8] ... ... 这样 [主|分区2] 和 [主|分区4] 之间的 [扩展分区] 是有自由度，但[主|分区4]后的[空白未分区空间]怎么办？除非把主分区4完全利用扩展分区后的空间，否则您想在主分区4后再划一个分区是不可能的，划分逻辑分区更不可能； 虽然类似此种办法也符合一个磁盘四个主分区的标准，但这样主分区包围扩展分区的分区方法实在不可取；我们根据这个标题，查看一下我们的例子，是不是符合这个标准呢？
+
+Device Boot Start End Blocks Id System
+/dev/hda1 * 1 765 6144831 7 HPFS/NTFS
+/dev/hda2 766 2805 16386300 c W95 FAT32 (LBA)
+/dev/hda3 2806 9729 55617030 5 Extended
+/dev/hda5 2806 3825 8193118+ 83 Linux
+/dev/hda6 3826 5100 10241406 83 Linux
+/dev/hda7 5101 5198 787153+ 82 Linux swap / Solaris
+/dev/hda8 5199 6657 11719386 83 Linux
+/dev/hda9 6658 7751 8787523+ 83 Linux
+/dev/hda10 7752 9729 15888253+ 83 Linux
+把分区基础写出来，主要是想让新手弟兄知道什么是合理的分区结构，如果把硬盘分区规划好了，也为以学习省却了不少麻烦；在此文后，我计划写具体的分区工具介绍；这也算一个基础知识的积累；虽然老手都会，但新手可能还是需要的；
+
+
