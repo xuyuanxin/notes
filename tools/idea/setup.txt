@@ -1,0 +1,32 @@
+http://blog.csdn.net/lovehuangjiaju/article/details/47778671    Intellij IDEA 14.1.4 Scala开发环境搭建
+http://blog.csdn.net/haishu_zheng/article/details/50265371      Java笔记1：IntelliJ IDEA详细安装步骤
+
+
+http://blog.csdn.net/kwu_ganymede/article/details/51832427      基于IntelliJ IDEA开发Spark的Maven项目——Scala语言
+http://blog.csdn.net/olevin/article/details/51454983            IDEA UL 14如何编译打包maven工程
+http://running8.blog.51cto.com/2687882/1603429                  在Intellij IDEA中使用Maven开发Scala
+http://www.cnblogs.com/yjmyzz/p/4694219.html                    scala + intellij idea 环境搭建及编译、打包
+
+https://my.oschina.net/aaaaaaaa/blog/12473                      maven for scala
+http://docs.scala-lang.org/tutorials/scala-with-maven.html      Scala with Maven
+https://github.com/scala/scala-module-dependency-sample
+http://m.blog.csdn.net/article/details?id=51176969              Spark开发环境配置(windows/Intellij IDEA 篇)
+http://blog.csdn.net/javastart/article/details/43372977         Windows下IntelliJ IDEA中调试Spark Standalone
+
+
+
+
+
+
+
+
+
+关于Idea中右边的maven  projects窗口找不到了如何调出来？
+具体的idea版本我不太清楚，我用的是2016版，其他版本应该也是一样的。
+首先idea自带了maven控件，不像Eclipse还需要下载控件，如果你以前有maven在右边，出于某种原因，消失找不到 了，你可以试试我写的方法。
+
+方法1.你点击一下你idea界面最左下角的那个小框，maven应该从里面找到
+方法2.点击菜单栏View->Tool  Windows->Maven projects 
+方法3.点击菜单栏Help->Find Action(Ctrl+Shift+A),输入Maven projects
+
+这里我不说Ctrl+Shift+A的快捷键，是因为有很多东西有快捷键，有可能会出现快捷键冲突。

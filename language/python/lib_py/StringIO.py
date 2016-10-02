@@ -25,4 +25,32 @@ contents = output.getvalue()
 # Close object and discard memory buffer --
 # .getvalue() will now raise an exception.
 output.close()
+
+
+
+StringIO类中的方法：
+
+....● read
+
+....● readline
+
+....● readlines
+
+....● write
+
+....● writelines
+
+....● getvalue
+
+....● truncate
+
+....● tell
+
+....● seek
+
+....● close
+
+....● isatty
+
+....● flush
 '''

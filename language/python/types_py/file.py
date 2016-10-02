@@ -2,6 +2,48 @@
 https://docs.python.org/2/library/stdtypes.html#file-objects
 example: file_io_py_eg.py
 
+
+'''
+
+def close():
+    ''' file.close()
+    |with open("somefile.txt") as somefile:
+    |    do_something(somefile)
+    The with statement lets you open a file and assign it to a variable name (in this 
+	case,somefile). You then write data to your file (and, perhaps, do other  things) 
+	in the body of the statement, and the file is automatically closed when the end -
+	of the statement is reached, even if that is caused by an exception.
+	
+	the data may be buffered (stored temporarily somewhere in memory), and not writt-
+	en until you close the file. If you want to keep working with the file (and not -
+	close it) but still want to make sure the file on disk is updated to reflect your 
+	changes, call the file object¡¯s flush method.
+	
+	You should always close a file you have written to because Python may buffer (ke-
+	ep stored temporarily somewhere, for efficiency reasons) the data you have writt-
+	en, and if your program crashes for some reason, the data might not be written to 
+	the file at all. The safe thing is to close your files after you¡¯re finished with 
+	them.
+	
+	Close the file. A closed file cannot be read or written any more. Any operation -
+	which requires that the file be open will raise a ValueError after the file has -
+	been closed. Calling close() more than once is allowed.
+    '''
+	pass
+
+def truncate([size]): # file.truncate
+  '''
+  Truncate the file¡¯s size. If the optional @size argument is present, the file is t-
+  runcated to (at most) that size. The size defaults to the current position. The cu-
+  rrent file position is not changed. Note that if a specified size exceeds the file¡¯s 
+  current size, the result is platform-dependent: possibilities include that the file 
+  may remain unchanged, increase to the specified size as if zero-filled, or increase 
+  to the specified size with undefined new content.
+  '''
+  pass
+	
+'''
+
 Standard Files
   There are generally three standard files that are made available to you when your -
   program starts. These are standard input (usually the keyboard), standard output (-
@@ -29,28 +71,3 @@ Standard Files
  ised. This includes situations where the operation is not defined for some reason, -
  like seek() on a tty device or writing a file opened for reading.
 '''
-
-def close():
-    ''' file.close()
-    |with open("somefile.txt") as somefile:
-    |    do_something(somefile)
-    The with statement lets you open a file and assign it to a variable name (in this 
-	case,somefile). You then write data to your file (and, perhaps, do other  things) 
-	in the body of the statement, and the file is automatically closed when the end -
-	of the statement is reached, even if that is caused by an exception.
-	
-	the data may be buffered (stored temporarily somewhere in memory), and not writt-
-	en until you close the file. If you want to keep working with the file (and not -
-	close it) but still want to make sure the file on disk is updated to reflect your 
-	changes, call the file object¡¯s flush method.
-	
-	You should always close a file you have written to because Python may buffer (ke-
-	ep stored temporarily somewhere, for efficiency reasons) the data you have writt-
-	en, and if your program crashes for some reason, the data might not be written to 
-	the file at all. The safe thing is to close your files after you¡¯re finished with 
-	them.
-	
-	Close the file. A closed file cannot be read or written any more. Any operation -
-	which requires that the file be open will raise a ValueError after the file has -
-	been closed. Calling close() more than once is allowed.
-    '''

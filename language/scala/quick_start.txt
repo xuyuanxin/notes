@@ -1,0 +1,208 @@
+
+--> Learn to use the Scala interpreter
+ --
+
+--> Define some variables
+ - 
+
+--> Define some functions
+ scala> def max(x: Int, y: Int): Int = {
+        if (x > y) x
+        else y
+        }
+ max: (x: Int,y: Int)Int
+ 
+ scala> def max2(x: Int, y: Int) = if (x > y) x else y
+ max2: (x: Int,y: Int)Int
+ 
+ Once you have defined a function, you can call it by name, as in:
+ 
+ scala> max(3, 5)
+ res4: Int = 5
+ 
+ Here¡¯s the definition of a function that takes no parameters and returns no interes-
+ ting result:
+ 
+ scala> def greet() = println("Hello, world!")
+ greet: ()Unit
+ 
+ The empty parentheses indicate the function takes no parameters. And Unit is greet¡¯s
+ result type. A result type of Unit indicates the function returns no interesting va-
+ lue.
+
+--> Write some Scala scripts
+ Put this into a file named hello.scala:
+ 
+ println("Hello, world, from a script!")
+
+ then run:
+
+ $ scala hello.scala
+
+ And you should get yet another greeting:
+
+ Hello, world, from a script!
+ 
+ Command line arguments to a Scala script are available via a Scala array named args.
+ To try this out, type the following into a new file named helloarg.scala:
+
+ // Say hello to the first argument
+ println("Hello, "+ args(0) +"!")
+
+ then run:
+ 
+ $ scala helloarg.scala planet
+ 
+ In this command, "planet" is passed as a command line argument, which is accessed in 
+ the script as args(0). Thus, you should see:
+
+ Hello, planet!
+ 
+ Note that this script included a comment. The Scala compiler will ignore  characters 
+ between // and the next end of line and any characters between /* and */. 
+ 
+--> Loop with while; decide with if
+ To try out a while, type the following into a file named printargs.scala:
+
+ var i = 0
+ while (i < args.length) {
+     println(args(i))
+     i += 1
+ } 
+ 
+ $ scala printargs.scala Scala is fun
+ And you should see:
+ Scala
+ is
+ fun
+
+--> Iterate with foreach and for 
+ 
+        +------------------------------------+
+        |        right arrow   function body |
+        |                 |     |            |
+        |                \|/   \|/           |
+        |(x: Int, y: Int) => x + y           |
+        |       /|\                          |
+		|        |                           |
+        |function parameters in parentheses  |
+        +------------------------------------+
+     > The syntax of a function literal in Scala <
+ 
+ another way to print each command line argument is:
+ 
+ args.foreach(arg => println(arg)) 
+ 
+ In the previous example, the Scala interpreter infers the type of @arg to be String.
+ If you¡¯d prefer to be more explicit, you can mention the type name
+ 
+ args.foreach((arg: String) => println(arg))
+ 
+ If a "function literal" consists of one statement that takes a single argument,  you 
+ need not explicitly name and specify the argument. Thus, the following code also wo-
+ rks:
+
+ args.foreach(println)
+ 
+ In a new file named forargs.scala, type the following:
+
+ for (arg <- args)
+     println(arg)
+ 
+--> Parameterize arrays with types
+
+ val greetStrings = new Array[String](3)
+ // val greetStrings: Array[String] = new Array[String](3)
+ 
+ greetStrings(0) = "Hello"
+ greetStrings(1) = ", "
+ greetStrings(2) = "world!\n"
+ for (i <- 0 to 2)
+     print(greetStrings(i)) 
+	 
+ When you apply parentheses surrounding one or more values to a variable, Scala  will 
+ transform the code into an invocation of a method named apply on that variable. So -
+ greetStrings(i) gets transformed into greetStrings.apply(i). 
+ 
+ 1 + 2 --> (1).+(2)   // All operations are method calls in Scala.
+ 
+ greetStrings(0) = "Hello"  // will be transformed into:
+ greetStrings.update(0, "Hello")
+ 
+ val greetStrings = new Array[String](3)
+ greetStrings.update(0, "Hello")
+ greetStrings.update(1, ", ")
+ greetStrings.update(2, "world!\n")
+ for (i <- 0.to(2))
+     print(greetStrings.apply(i))
+ 
+--> Use lists
+ - 
+ 
+--> Use tuples
+ Like lists, tuples are immutable, but unlike lists, tuples can contain different ty-
+ pes of elements. 
+  
+ val pair = (99, "Luftballons") // Creating and using a tuple.
+ println(pair._1) // one-based index of the element.
+ println(pair._2)
+ 
+ The actual type of a tuple depends on the number of elements it contains and the ty-
+ pes of those elements. Thus, the type of (99, "Luftballons") is Tuple2[Int, String]. 
+ The type of ('u', 'r', "the", 1, 4, "me") is Tuple6[Char, Char, String, Int, Int, String].
+
+--> Use sets and maps
+ For sets and maps, Scala models mutability in the class hierarchy. the Scala API co-
+ ntains a base trait for sets, where a trait is similar to a Java interface. Scala t-
+ hen provides two subtraits, one for mutable sets and another for immutable sets. 
+ 
+ var jetSet = Set("Boeing", "Airbus")
+ jetSet += "Lear"
+ println(jetSet.contains("Cessna"))
+ 
+ Both mutable and immutable sets offer a + method, but their behavior differs. Where-
+ as a mutable set will add the element to itself, an immutable set will create and r-
+ eturn a new set with the element added.
+ 
+ If you want a mutable set, you¡¯ll need to use an import,
+ 
+ import scala.collection.mutable.Set
+ val movieSet = Set("Hitch", "Poltergeist")
+ movieSet += "Shrek"
+ println(movieSet)
+ 
+ As with sets, Scala provides mutable and immutable versions of Map, using a class h-
+ ierarchy. There¡¯s a base Map trait in package scala.collection, and two subtrait Ma-
+ ps: a mutable Map in scala.collection.mutable and an immutable one in scala.collection.immutable
+ 
+ import scala.collection.mutable.Map
+ val treasureMap = Map[Int, String]()
+ treasureMap += (1 -> "Go to island.") // (1).->("Go to island.")
+ treasureMap += (2 -> "Find big X on ground.")
+ treasureMap += (3 -> "Dig.")
+ println(treasureMap(2)) // it will print: Find big X on ground.
+ 
+ If you prefer an immutable map, no import is necessary, as immutable is the  default 
+ map. 
+ 
+ val romanNumeral = Map(
+ 1 -> "I", 2 -> "II", 3 -> "III", 4 -> "IV", 5 -> "V"
+ )
+ println(romanNumeral(4)) // it will print "IV".
+ 
+--> Learn to recognize the functional style
+ -
+ 
+--> Read lines from a file
+ 
+
+
+
+
+
+
+
+
+
+
+
