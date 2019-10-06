@@ -55,8 +55,8 @@ Git和其他版本控制系统如SVN的一个不同之处就是有暂存区的概念。
 2. git add .                                     添加文件到暂存区
    git add --all                                添加所有的文件到暂存区(从工作区到暂存区)
 3. git commit -a -m "message"      提交到本地版本库
-4. git push origin master                 提交到github，origin是远程仓库，master是本地仓库
-5. git pull                                         更新代码
+4. git push origin master                提交到github，origin是远程仓库，master是本地仓库
+5. git pull                                        更新代码
 
 # git基础命令
 
