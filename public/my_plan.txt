@@ -1,3 +1,0 @@
-2016-02-15
- 1 core java Chapter 1~6  300
- 2 programming in scala Chapter 1~11 250
