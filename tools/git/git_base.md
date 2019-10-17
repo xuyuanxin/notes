@@ -35,19 +35,48 @@ Git和其他版本控制系统如SVN的一个不同之处就是有暂存区的概念。
 ********************************************************************************
 # git使用基础场景
 
+## git初始配置
+
+1. 配置用户名和邮箱
+
+   $ git config --global user.name "Your Name"
+   $ git config --global user.email "email@example.com"
+
+2. 安装github.exe
+
+3. 命令行启动 git bash here
+
+4. 命令行输入 ssh-keygen -t rsa -C '111@qq.com' 
+
+   邮箱是你github的邮箱，按回车三次
+
+5. 进入C:\Users\Administrator\.ssh\id_rsq.pub复制其内容
+
+6. 进入github-setting-SSH AND GPG keys-New SSH KEY添加
+
+   进入 [https://github.com/settings/keys](https://link.zhihu.com/?target=https%3A//github.com/settings/keys)。点击 New SSH key，你需要输入 Title 和 Key
+
+7. 测试是否成功ssh -T [git@github.com](mailto:git@github.com)
+
+   你可能会看到这样的提示，输入 yes。然后如果你看到 `Permission denied (publickey).` 就说明你失败了。如果你看到 `Hi FrankFang! You've successfully authenticated, but GitHub does not provide shell access.` 就说明你成功了！
+
 ## fork工程并修改推送
 
 1. 点击 Fork ，他人的代码库(假设是test2工程)就会复制到自己的github账号上，
+
 2. 从自己的账号下载代码(我的账号名是xuyuanxin)
    $ git clone https://github.com/xuyuanxin/test2.git
+   
 3. Configuring a remote for a fork
       $ git remote add upstream https://github.com/xyxin/test2.git
       git remote -v             查看一些信息
+      
 4. 获取原始代码库的更新
-       git fetch upstream        只是把原始代码库下载到本地，还没有合并到你的代码中
-       git merge upstream/master 把原始代码合并到本地，本地修改不会丢失
-5. Syncing your fork only updates your local copy of the repository. To update 
-        your fork on GitHub, you must push your changes.
+   
+   git fetch upstream                 只是把原始代码库下载到本地，还没有合并到你的代码中
+   git merge upstream/master   把原始代码合并到本地，本地修改不会丢失
+   
+5. Syncing your fork only updates your local copy of the repository. To update your fork on GitHub, you must push your changes.
 
 ## 下载代码库并修改上传
 

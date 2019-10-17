@@ -8,5 +8,5 @@ git commit -a -m "message"
 git push -u origin master   推送代码,把本地的代码推送到库上,第一次用-u,后面可以不用。
 git pull  更新代码
 
-
+git
 
