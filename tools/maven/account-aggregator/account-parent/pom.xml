@@ -7,7 +7,7 @@
 	<packaging>pom</packaging>
 	<name>Account Parent</name>
 	<properties>
-		<springframework.version>2.5.6</springframework.version>
+		<springframework.version>5.2.0.RELEASE</springframework.version>
 		<junit.version>4.7</junit.version>
 	</properties>
 	<dependencyManagement> <!-- 在dependencyManagement元素下的依赖声明不会引入实际的依赖，不过它能够约束dependencies下的依赖使用 -->
