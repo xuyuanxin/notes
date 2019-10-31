@@ -37,26 +37,24 @@ Git和其他版本控制系统如SVN的一个不同之处就是有暂存区的概念。
 
 ## git初始配置
 
-1. 配置用户名和邮箱
+1. 命令行启动 git bash here
+
+2. 配置用户名和邮箱
 
    $ git config --global user.name "Your Name"
    $ git config --global user.email "email@example.com"
 
-2. 安装github.exe
-
-3. 命令行启动 git bash here
-
-4. 命令行输入 ssh-keygen -t rsa -C '111@qq.com' 
+3. 命令行输入 ssh-keygen -t rsa -C "email@example.com"
 
    邮箱是你github的邮箱，按回车三次
 
-5. 进入C:\Users\Administrator\.ssh\id_rsq.pub复制其内容
+4. 进入C:\Users\Administrator\.ssh\id_rsq.pub复制其内容
 
-6. 进入github-setting-SSH AND GPG keys-New SSH KEY添加
+5. 进入github-setting-SSH AND GPG keys-New SSH KEY添加
 
    进入 [https://github.com/settings/keys](https://link.zhihu.com/?target=https%3A//github.com/settings/keys)。点击 New SSH key，你需要输入 Title 和 Key
 
-7. 测试是否成功ssh -T [git@github.com](mailto:git@github.com)
+6. 测试是否成功ssh -T [git@github.com](mailto:git@github.com)
 
    你可能会看到这样的提示，输入 yes。然后如果你看到 `Permission denied (publickey).` 就说明你失败了。如果你看到 `Hi FrankFang! You've successfully authenticated, but GitHub does not provide shell access.` 就说明你成功了！
 
