@@ -24,14 +24,14 @@ Python的Def语句是一个可执行的语句：当他运行的时候，他创�
 
 ```python
 >>> def times(x, y): # Create and assign function
-...    return x * y # Body executed when called
+...    return x * y  # Body executed when called
 ...
->>> times(2, 4)  # Arguments in parentheses
+>>> times(2, 4)      # Arguments in parentheses
 8
 >>> x = times(3.14, 4) 
 >>> x 
 12.56
->>> times('Ni', 4) # Functions are "typeless"，函数多态性说明 todo
+>>> times('Ni', 4)    # Functions are "typeless"，函数多态性说明 todo
 'NiNiNiNi'
 ```
 
@@ -69,7 +69,7 @@ func.attr = value # Attach attributes
 
 Python中的变量名在第一次赋值时已经创建，并且必须经过赋值后才能够使用。Python创建、改变或查找变量名都是在所谓的命名空间（一个保存变了名的地方）中进行的。Python将一个变量名被赋值的地点关联为一个特定的命名空间，代码中给一个变量赋值的地方决定了这个变量将存在于哪个命名空间，也就是它可见的范围。
 
-- Local(function)，本地作用域(函数)：每次对函数的调用都创建了一个新的本地作用域。一个函数内部的任何类型的赋值都会吧一个名称划定为本地的（声明为global的除外）。这包括=语句、import中的模块名称、def中的函数名称、函数参数名称等。
+- Local(function)，本地作用域(函数)：每次对函数的调用都创建了一个新的本地作用域。一个函数内部的任何类型的赋值都会把一个名称划定为本地的（声明为global的除外）。这包括=语句、import中的模块名称、def中的函数名称、函数参数名称等。
 - Enclosing function locals：names in the local scope of any all enclosing functions(def or lambda), from inner to outer
 - Global(module)，全局作用域：每个模块都是一个全局作用域（也就是说，一个创建于模块文件顶层的变量的命名空间）。全局作用域的作用范围仅限于单个文件，Python中没有基于一个单个的、无所不包的情景文件的全局作用域。
 - Built-in(Python)：Names preassigned in built-in names module:open, range, SyntaxError...
@@ -99,18 +99,222 @@ func(1)        # func in module: result=100
 - Local names: Y, Z
   Y and Z are local to the function (and exist only while the function runs) because they are both assigned values in the function definition: Z by virtue of the = statement, and Y because arguments are always passed by assignment.
 
+### 内置作用域
 
+内置作用域是通过一个名为\__builtin__的标准库模块来实现的，这个变量名自身并没有放入内置作用域内，必须导入这个文件才能够使用它。
 
-全局变量
+```python
+>>> import builtins
+>>> dir(builtins)
+['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException',
+'BlockingIOError', 'BrokenPipeError', 'BufferError', 'BytesWarning',
+Python Scope Basics | 491...many more names omitted...
+'ord', 'pow', 'print', 'property', 'quit', 'range', 'repr', 'reversed',
+'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum',
+'super', 'tuple', 'type', 'vars', 'zip']
+```
 
-- 全局变量是位于模块文件内部的顶层的变量名
+这个列表中的变量名组成了Python中的内置作用域。Python最后将自动搜索这个模块，我们能够使用这些变量名而不需要导入任何模块，也可以手动导入\__builtin__模块。
 
-- 全局变量如果是在函数内被赋值的话，必须经过声明
+```python
+>>> zip # The normal way
+<class 'zip'>
+>>> import builtins # The hard way: for customizations
+>>> builtins.zip
+<class 'zip'>
+>>> zip is builtins.zip # Same object, different lookups
+True
+```
 
-- 全局变量名在函数的内部不经过声明也可以被引用
+本地作用域的变量名可能会覆盖在全局作用域和内置作用域的有着相同变量名的变量，而全局变量名有可能覆盖内置的变量名。
+
+```python
+def hider():
+    open = 'spam' # Local variable, hides built-in here
+    ...
+    open('data.txt') # Error: this no longer opens a file in this scope!
+```
+
+函数也能够简单地使用本地变量名隐藏同名的全局变量。
+
+```python
+X = 88 # Global X
+def func():
+    X = 99 # Local X: hides global, but we want this here
+func()
+print(X) # Prints 88: unchanged
+```
+
+### 作用域和嵌套函数
+
+在增加了嵌套的函数作用域后，变量的查找法复杂了一些。  Within a function:
+
+- A reference (X) looks for the name X first in the current local scope (function); then in the local scopes of any lexically enclosing functions in your source code, from inner to outer; then in the current global scope (the module file); and finally in the built-in scope (the module builtins). global declarations make the search begin in the global (module file) scope instead.
+- An assignment (X = value) creates or changes the name X in the current local scope, by default. If X is declared global within the function, the assignment creates or changes the name X in the enclosing module’s scope instead. If, on the other hand, X is declared nonlocal within the function in 3.X (only), the assignment changes the name X in the closest enclosing function’s local scope.  
+
+```python
+X = 99           # Global scope name: not used
+def f1():
+    X = 88       # Enclosing def local
+    def f2():
+        print(X) # Reference made in nested def
+    f2()         # 实际测试此处不打印，why？
+f1()             # Prints 88: enclosing def local
+```
+
+嵌套的def在函数f1调用时运行，这个def生成一个函数，并将其赋值给变量f2，f2是f1的本地作用域内的一个本地变量。在此情况下，f2是一个临时函数，仅在f1内部执行的过程中存在，并且只对f1中的代码可见。在f2内部，当打印变量x时，x引用了存在于函数f1整个本地作用域内的变量x的值。因为函数能够在整改def声明内获取变量名，通过LEGB查找法则，f2内的x自动映射到了f1的x。
+
+```python
+def f1():
+    X = 88
+    def f2():
+        print(X) # Remembers X in enclosing def scope
+    return f2    # Return f2 but don't call it
+action = f1()    # Make, return function
+action()         # Call it now: prints 88
+```
+
+在这个代码中，f2运行时在f1运行后发生的，f2记住了在f1中嵌套作用域中的x，尽管f1已经不处于激活状态。这种行为有时也叫做闭合（closure）或者工厂函数--一个能够记住嵌套作用域的变量值得函数。
+
+### global语句
+
+global语句是一个命名空间的声明，它告诉Python函数打算生产一个或多个全局变量名。也就是说，存在于整个模块内部作用域（命名空间）的变量名。global语句其后跟着一个或多个逗号分开的变量名。
+
+```python
+X = 88 # Global X
+def func():
+    global X
+    X = 99 # Global X: outside def
+func()
+print(X) # Prints 99
+
+y, z = 1, 2 # Global variables in module
+def all_global():
+   global x # Declare globals assigned
+   x = y + z # No need to declare y, z: LEGB rule
+```
+
+这里，x、y和z都是all_global函数内的全局变量。y和z是全局变量，因为他们不是在函数内赋值的。x是全局变量，因为他通过global语句使自己明确地映射到了模块的作用域。注意x在函数运行前可能并不存在。
+
+### nonlocal语句
+
+Python3.0引入了一条新的nonlocal语句，他只在一个函数内有意义：
+
+```python
+def func():
+​    nonlocal name1, name2, ...
+```
+
+这条语句允许一个嵌套函数来修改在一个语法嵌套函数的作用域中定义的一个或多个名称。nonlocal使得对该语句中列出的名称的查找从嵌套的def的作用域中开始，而不是从声明函数的本地作用域开始。
+
+```python
+>>> def tester(start):
+        state = start # Each call gets its own state
+        def nested(label):
+            nonlocal state # Remembers state in enclosing scope
+            print(label, state)
+            state += 1 # Allowed to change it if nonlocal
+        return nested
+>>> F = tester(0)
+>>> F('spam') # Increments state on each call
+spam 0
+>>> F('ham')
+ham 1
+>>> F('eggs')
+eggs 2
+>>> G = tester(42) # Make a new tester that starts at 42
+>>> G('spam')
+spam 42
+>>> G('eggs') # My state information updated to 43
+eggs 43
+>>> F('bacon') # But F's is where it left off: at 3
+bacon 3 # Each call has different state information
+```
+
+在Python3.0下，如果我们在nested中把tester作用域中的state声明为一个nonlocal，我们就可以在nested函数中修改它了。
+
+```python
+>>> def tester(start):
+        def nested(label):
+            nonlocal state # Nonlocals must already exist in enclosing def!
+            state = 0
+            print(label, state)
+        return nested
+
+SyntaxError: no binding for nonlocal 'state' found
+
+>>> def tester(start):
+        def nested(label):
+            global state # Globals don't have to exist yet when declared
+            state = 0    # This creates the name in the module now
+            print(label, state)
+    return nested
+>>> F = tester(0)
+>>> F('abc')
+abc 0
+>>> state
+0
+```
+
+## 函数参数
+
+### 参数传递基础
+
+参数在Python中总是通过赋值进行传递(arguments are always passed by assignment in Python），传入的对象赋值给了在def头部的变量名。函数参数在实际中只是Python赋值的另一个实例而已。因为引用是以指针的形式实现的，所有的参数实际上都是通过指针进行传递的。作为参数被传递的对象从来不自动拷贝。
+
+```python
+>>> def f(a): # a is assigned to (references) the passed object
+        a = 99 # Changes local variable a only. 
+>>> b = 88
+>>> f(b) # a and b both reference same 88 initially
+>>> print(b) # b is not changed
+88
+```
+
+在使用f(b)调用函数的时候，变量a赋值了对象88。在函数中修改a对于调用函数的地方没有任何影响，它直接把本地变量a重置为一个完全不同的对象。
+
+```python
+>>> def changer(a, b): # Arguments assigned references to objects
+        a = 2 # Changes local name's value only
+        b[0] = 'spam' # Changes shared object in place
+>>> X = 1
+>>> L = [1, 2] # Caller:
+>>> changer(X, L) # Pass immutable and mutable objects
+>>> X, L # X is unchanged, L is different!
+(1, ['spam', 2])
+```
+
+当参数传递列表和字典这样的可修改对象时，需要注意。changer中的第二条赋值语句没有修改b，修改的时b当前所引用的对象的一部分。名称L也没有改变，它仍然引用同样的、修改后的对象（这个对象在函数调用时被修改了）。
+
+![python_function_01](F:\mygit\notes\language\python\images\python_function_01.PNG)
+
+### 参数匹配模型
+
+TODO
 
 
 
 ## 参考：
 
 learning python （python学习手册）
+
+
+
+# 模块
+
+## 模块包
+
+除了模块名之外，导入也可以指定目录路径。Python代码的目录就称为包，这类导入就称为包导入。包导入是把计算机上的目录变成另一个Python命名空间，而属性则对应于目录中所包含的子目录和模块文件。
+
+
+
+
+
+
+
+
+
+
+
+
+
