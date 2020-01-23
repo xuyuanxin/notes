@@ -1,4 +1,4 @@
-# Java介绍及安装
+# Java introduction and install
 
 ```java
 version  year
@@ -169,17 +169,19 @@ rpm -Uvh jdk-8uversion-linux-x64.rpm
 CLASSPATH是编译或运行Java程序时用来告诉Java编译器或虚拟机到哪里查找Java类文件的
 PATH变量用来告诉操作系统到哪里去查找一个命令。
 
-# java基础
+# java base
 
 ## first sample
 
-  public class FirstSample
- {
+```java
+public class FirstSample
+{
     public static void main(String[] args)
     {
-       System.out.println("Hello, World!");
+        System.out.println("Hello, World!");
     }
- }
+}
+```
 
  1 First and foremost, Java is case sensitive. 
  2 The keyword public is called an access modifier;
@@ -220,7 +222,6 @@ PATH变量用来告诉操作系统到哪里去查找一个命令。
  /**/
  //
 
-
 class name
     Names must begin with a letter, and after that , they can have any combination of 
     letters and digits. The length is essentially unlimited. You cannot use a Java r-
@@ -235,9 +236,11 @@ class name
 
 arrays  java.util.Arrays  language/java/utiljava/Arrays.java
 
-# 类
+# Class
 
 ## Defining Your Own Classes
+
+### An Employee Class
 
 The simplest form for a class definition in Java is
 
@@ -325,8 +328,8 @@ Note that the example program consists of two classes: the Employee class and a 
 
 when you compile this source code, the compiler creates two class files in the directory: EmployeeTest.class and Employee.class. You then start the program by giving the bytecode interpreter the name of the class that contains the main method of your program:
 
-```
-java EmployeeTesT
+```java
+java EmployeeTest
 ```
 
 The bytecode interpreter starts running the code in the main method in the EmployeeTest class.
@@ -349,116 +352,245 @@ You may find it surprising that the second choice works even though the Employee
 
 > NOTE: If you are familiar with the make facility of UNIX (or one of its Windows cousins, such as nmake), then you can think of the Java compiler as having the make functionality already built in.
 
---> public private
- public void raiseSalary(double byPercent)
- The keyword @public means that any method in any class can call the method. 
+### public and private
 
- private String name;
- private double salary;
- private Date hireDay;
- The @private keyword makes sure that the only methods that can access these instanc-
- e fields are the methods of the Employee class itself. No outside method can read or 
- write to these fields. 
- The @name and @hireDay fields are references to @String and @Date objects. This is -
- quite usual: Classes will often contain instance fields of class type.
+```java
+public void raiseSalary(double byPercent)
+private String name;
+private double salary; 
+private Date hireDay;
+```
 
---> constructor
- A constructor has the same name as the class.
- A class can have more than one constructor.
- A constructor can take zero, one, or more parameters.
- A constructor has no return value.
- A constructor is always called with the @new operator. You can’t apply a constructor 
- to an existing object to reset the instance fields.
+The keyword @public means that any method in any class can call the method. The @private keyword makes sure that the only methods that can access these instance fields are the methods of the Employee class itself. No outside method can read or write to these fields. The @name and @hireDay fields are references to @String and @Date objects. This is quite usual: Classes will often contain instance fields of class type.
 
- -->--> Default Field Initialization
-  If you don’t set a field explicitly in a constructor, it is automatically set to  a 
-  default value:numbers to 0, boolean values to false, and object references to null. 
+###  Implicit and Explicit Parameters
 
- -->--> The Constructor with No Arguments
-  Please keep in mind that you get a free no-argument constructor only when your cla-
-  ss has no other constructors. If you write your class with even a single construct-
-  or of your own and you want the users of your class to have the ability to create -
-  an instance by a call to
-  > new ClassName()
-  > then you must provide a no-argument constructor. Of course, if you are happy with -
-  > the default values for all fields, you can simply supply
-  > public ClassName()
-  > {
-  > }
+Methods operate on objects and access their instance fields. For example, the method 
 
- -->--> Explicit Field Initialization
-  You can simply assign a value to any field in the class definition. For example:
+```java
+public void raiseSalary(double byPercent)
+{
+    double raise = salary * byPercent / 100;
+    salary += raise;
+}
+```
 
-  class Employee
-  {
-      private String name = "";
-      . . .
+ sets a new value for the @salary instance field in the object on which this method is invoked. Consider the call
+
+```java
+number007.raiseSalary(5);
+```
+
+ The effect is to increase the value of the number007.salaryfield by 5%. More specifically, the call executes the following instructions:
+
+```java
+double raise = number007.salary * 5 / 100;
+number007.salary += raise;
+```
+
+The @raiseSalary method has two parameters. The first parameter, called the implicit parameter, is the object of type Employee that appears before the method name. The second parameter, the number inside the parentheses after the method name, is an explicit parameter.
+
+As you can see, the explicit parameters are explicitly listed in the method declaration, for example, double @byPercent. The implicit parameter does not appear in  the method declaration.
+
+In every method, the keyword @this refers to the implicit parameter. If you like, you can write the @raiseSalary method as follows:
+
+```java
+public void raiseSalary(double byPercent)
+{
+    double raise = this.salary * byPercent / 100;
+    this.salary += raise;
+}
+```
+
+###  Class-Based Access Privileges /todo
+
+
+
+### Final Instance Fields
+
+You can define an instance field as final. Such a field must be initialized when the object is constructed. That is, you must guarantee that the field value has been set after the end of every constructor. Afterwards, the field may not be modified again. 
+
+For example, the name field of the Employee class may be declared as final because it never changes after the object is constructed—there is no setName method.
+
+```java
+class Employee
+{
+    private final String name;
+    . . .
+}
+```
+
+The final modifier is particularly useful for fields whose type is primitive or an immutable class. (A class is immutable if none of its methods ever mutate its objects. For example, the String class is immutable.)
+
+## Object Constructor
+
+-  A constructor has the same name as the class.
+
+-  A class can have more than one constructor.
+
+-  A constructor can take zero, one, or more parameters.
+
+-  A constructor has no return value.
+
+-  A constructor is always called with the @new operator. You can’t apply a constructor 
+   to an existing object to reset the instance fields.
+
+### Overloading /todo
+
+### Default Field Initialization
+
+If you don’t set a field explicitly in a constructor, it is automatically set to a default value:numbers to 0, boolean values to false, and object references to null. 
+
+### The Constructor with No Arguments
+
+Many classes contain a constructor with no arguments that creates an object whose state is set to an appropriate default. For example, here is a constructor with no arguments for the Employee class:
+
+```java
+public Employee()
+{
+    name = "";
+    salary = 0;
+    hireDay = LocalDate.now();
+}
+```
+
+If you write a class with no constructors whatsoever, then a no-argument constructor is provided for you. This constructor sets all the instance felds to their default values. So, all numeric data contained in the instance felds would be 0, all boolean values would be false, and all object variables would be set to null.
+
+If a class supplies at least one constructor but does not supply a no-argument constructor, it is illegal to construct objects without supplying arguments. Please keep in mind that you get a free no-argument constructor only when your class has no other constructors. Of course, if you are happy with the default values for all fields, you can simply supply
+
+```java
+public ClassName()
+{
+}
+```
+
+### Calling Another Constructor
+
+The keyword this refers to the implicit parameter of a method. However, this keyword has a second meaning. If the first statement of a constructor has the form this(. . .), then the constructor calls another constructor of the same class. Here 
+ is a typical example:
+
+```java
+public Employee(double s)
+{
+    this("Employee #" + nextId, s); // calls Employee(String, double)
+    nextId++;
+}
+```
+
+When you call new Employee(60000), the Employee(double) constructor calls the Employee(String,double) constructor. Using the this keyword in this manner is useful, you only need to write common construction code once.
+
+### Object Destruction and the finalize Method /todo
+
+ss
+
+### Initialization block
+
+Class declarations can contain arbitrary blocks of code. These blocks are  executed whenever an object of that class is constructed. For example:
+
+```java
+class Employee
+{
+    private static int nextId;
+    private int id;
+    private String name;
+    private double salary;
+    // object initialization block
+    {
+        id = nextId;
+        nextId++;
+    }
+    public Employee(String n, double s)
+    {
+        name = n;
+        salary = s;
+    }
+    public Employee()
+    {
+        name = "";
+        salary = 0;
+    }
+    . . .
   }
+```
 
-  This assignment is carried out before the constructor executes.
+In this example, the id field is initialized in the object initialization block, no matter which constructor is used to construct an object. The initialization block runs first, and then the body of the constructor is executed. 
 
- -->--> Calling Another Constructor
-  The keyword this refers to the implicit parameter of a method. However, this keywo-
-  rd has a second meaning. If the first statement of a constructor has the form     -
-  this(. . .), then the constructor calls another constructor of the same class. Here 
-  is a typical example:
+With so many ways of initializing data fields, it can be quite confusing to give all possible pathways for the construction process. Here is what happens in detail  when a constructor is called:
 
-  public Employee(double s)
-  {
-      // calls Employee(String, double)
-      this("Employee #" + nextId, s);
-      nextId++;
-  }
-
-  When you call new Employee(60000), the Employee(double) constructor calls the     -
-  Employee(String,double) constructor. Using the this keyword in this manner is usef-
-  ul, you only need to write common construction code once.
-
- -->--> initialization block
-  Class declarations can contain arbitrary blocks of code. These blocks are  executed 
-  whenever an object of that class is constructed. For example:
-
-  class Employee
-  {
-      private static int nextId;
-      private int id;
-      private String name;
-      private double salary;
-      // object initialization block
-      {
-      id = nextId;
-      nextId++;
-      }
-      public Employee(String n, double s)
-      {
-          name = n;
-          salary = s;
-      }
-      public Employee()
-      {
-          name = "";
-          salary = 0;
-      }
-      . . .
-  }
-
-  In this example, the id field is initialized in the object initialization block, no
-  matter which constructor is used to construct an object. The initialization block -
-  runs first, and then the body of the constructor is executed.
-
- With so many ways of initializing data fields, it can be quite confusing to give all
- possible pathways for the construction process. Here is what happens in detail  when 
- a constructor is called:
  1. All data fields are initialized to their default values (0, false, or null).
- 2. All field initializers and initialization blocks are executed, in the order in w-
-    hich they occur in the class declaration.
- 3. If the first line of the constructor calls a second constructor, then the body of
-    the second constructor is executed.
+ 2. All field initializers and initialization blocks are executed, in the order in which they occur in the class declaration.
+ 3. If the first line of the constructor calls a second constructor, then the body of the second constructor is executed.
  4. The body of the constructor is executed.
 
- -->--> initialize a static field
+To initialize a static field, either supply an initial value or use a static initialization block. You have already seen the first mechanism:
+
+```java
+private static int nextId = 1;
+```
+
+If the static felds of your class require complex initialization code, use a static initialization block. Place the code inside a block and tag it with the keyword static. Here is an example. We want the employee ID numbers to start at a random integer less than 10,000.
+
+```java
+// static initialization block
+static
+{
+Random generator = new Random();
+nextId = generator.nextInt(10000);
+}
+```
+
+Static initialization occurs when the class is first loaded. Like instance fields, static fields are 0, false, or null unless you explicitly set them to another value. All static field initializers and static initialization blocks are executed in the order in which they occur in the class declaration.  
+
+NOTE: Amazingly enough, up to JDK 6, it was possible to write a “Hello, World” program in Java without ever writing a main method.
+
+```java
+public class Hello
+{
+    static
+    {
+        System.out.println("Hello, World");
+    }
+}
+```
+
+When you invoked the class with java Hello, the class was loaded, the static initialization block printed “Hello, World”, and only then was a message displayed that main is not defined. Since Java SE 7, the java program first checks that there is a main method.  
+
+### Explicit Field Initialization
+
+It is always a good idea to make sure that, regardless of the constructor call, every instance feld is set to something meaningful. You can simply assign a value to any field in the class definition. This assignment is carried out before the constructor executes. For example:
+
+```java
+class Employee
+{
+    private String name = "";
+    . . .
+}
+```
+
+Here is an example in which a feld is initialized with a method call. Consider an Employee class where each employee has an id feld. You can initialize it as follows:
+
+```java
+class Employee
+{
+    private static int nextId;
+    private int id = assignId();
+    . . .
+    private static int assignId()
+    {
+        int r = nextId;
+        nextId++;  
+        return r;
+    }
+    . . .
+}  
+```
+
+## Static Fields and Methods
+
+initialize a static field
   To initialize a static field, either supply an initial value or use a static initi-
   alization block. You have already seen the first mechanism:
+
   > private static int nextId = 1;
   > If the static fields of your class require complex initialization code, use a stat-
   > ic initialization block.
@@ -501,44 +633,7 @@ You may find it surprising that the second choice works even though the Employee
   ass. The finalize method will be called before the garbage collector sweeps away t-
   he object. 
 
---> Implicit and Explicit Parameters
- Methods operate on objects and access their instance fields. For example, the method 
 
- public void raiseSalary(double byPercent)
- {
-     double raise = salary * byPercent / 100;
-     salary += raise;
- }
-
- sets a new value for the @salary instance field in the object on which this method -
- is invoked. Consider the call
-
- number007.raiseSalary(5);
-
- The effect is to increase the value of the number007.salaryfield by 5%. More specif-
- ically, the call executes the following instructions:
-
- double raise = number007.salary * 5 / 100;
- number007.salary += raise;
-
- The @raiseSalary method has two parameters. The first parameter, called the implicit
- parameter, is the object of type Employee that appears before the method name. The -
- second parameter, the number inside the parentheses after the method name, is an ex-
- plicit parameter. (Some people call the implicit parameter the target or receiver of 
- the method call.)
-
- As you can see, the explicit parameters are explicitly listed in the method declara-
- tion, for example, double @byPercent. The implicit parameter does not appear in  the
- method declaration.
-
- In every method, the keyword @this refers to the implicit parameter. If you like, y-
- ou can write the @raiseSalary method as follows:
-
- public void raiseSalary(double byPercent)
- {
-     double raise = this.salary * byPercent / 100;
-     this.salary += raise;
- }
 
 --> accessor method
   accessor methods: they simply return the values of instance fields, they are somet-
@@ -682,6 +777,7 @@ public class classBase // EmployeeTest
      System.out.println(currencyFormatter.format(x)); // prints $0.10
      System.out.println(percentFormatter.format(x));  // prints 10%
  Why doesn't the NumberFormat class use a constructor instead? There are two reasons:
+
  * You can't give names to constructors. The constructor name is always the same as -
  the class name. But we want two different names to get the currency instance and the 
  percent instance.
@@ -892,7 +988,261 @@ class EmployeeL // employee local
 
 -----------------------------------------------------------------------------------*/
 
+## Packages
 
+Java allows you to group classes in a collection called a package. The standard Java library is distributed over a number of packages, including java.lang,  java.util, java.net, and so on. The standard Java packages are examples of hierarchical packages. All standard Java packages are inside the java and javax package hierarchies.
+
+The main reason for using packages is to guarantee the uniqueness of class names. Suppose two programmers come up with the bright idea of supplying an Employee  class. As long as both of them place their class into different packages, there is no conflict. 
+
+### import
+
+A class can use all classes from its own package and all public classes from other packages. You can access the public classes in another package in two ways. The first is simply to add the full package name in front of every class name. For example:
+
+```java
+java.util.Date today = new java.util.Date();
+```
+
+The simpler, and more common, approach is to use the import statement . For example, you can import all classes in the java.util package with the statement 
+
+```java
+import java.util.*
+```
+
+Then you can use
+
+```java
+Date today = new Date();
+```
+
+without a package prefix. You can also import a specific class inside a package:
+
+```java
+import java.util.Date;
+```
+
+The java.util.* syntax is less tedious. It has no negative effect on code size. However, note that you can only use the * notation to import a single package. You cannot use `import java.*` or `import java.*.*` to import all packages with the java prefix.
+
+### name conflict
+
+For example, both the java.util and java.sql packages have a Date class. Suppose you write a program that imports both packages.
+
+```java
+import java.util.*;
+import java.sql.*;
+```
+
+ If you now use the Date class, you get a compile-time error:
+
+```java
+Date today; // ERROR--java.util.Date or java.sql.Date?
+```
+
+The compiler cannot figure out which Date class you want. You can solve this problem by adding a specific import statement:
+
+```java
+import java.util.*;
+import java.sql.*;
+import java.util.Date;
+```
+
+What if you really need both Date classes? Then you need to use the full package name with every class name.
+
+```java
+java.util.Date deadline = new java.util.Date();
+java.sql.Date today = new java.sql.Date(...);
+```
+
+Locating classes in packages is an activity of the compiler . The bytecodes in class files always use full package names to refer to other classes.
+
+### Static Imports
+
+A form of the import statement permits the importing of static methods and fields, not just classes. For example, if you add the directive
+
+```java
+import static java.lang.System.*;
+```
+
+to the top of your source file, then you can use the static methods and fields of the System class without the class name prefix:
+
+```java
+out.println("Goodbye, World!"); // i.e., System.out
+exit(0); // i.e., System.exit
+```
+
+You can also import a specific method or field:
+
+```java
+import static java.lang.System.out;
+```
+
+### Addition of a Class into a Package
+
+classes are stored in subdirectories of the file system. The path to  the class must match the package name.To place classes inside a package, you must put the name of the package at the top of your source file, before the code that defines the classes in the package. For example, the file Employee.java starts out like this:
+
+```java
+package com.horstmann.corejava;
+
+public class Employee
+{
+    . . .
+}
+```
+
+ If you don’t put a package statement in the source file, then the classes in that source file belong to the default package. The default package has no package name.
+
+ Place source files into a subdirectory that matches the full package name. For example, all source files in the com.horstmann.corejava package should be in a subdirectory com/horstmann/corejava . The compiler places the class files into the same directory structure. 
+
+two packages: The PackageTest class belongs to the default package, and the Employee class belongs to the com.horstmann.corejava package. Therefore, the Employee.java file must be in a subdirectory com/horstmann/corejava.
+
+```java
+ .(base directory)
+     |-- PackageTest.java
+     |-- PackageTest.class
+     |-- com/
+         |-- horstmann/
+             |-- corejava/
+                 |-- Employee.java
+                 |-- Employee.class
+```
+
+To compile this program, simply change to the base directory and run the command
+
+```java
+javac PackageTest.java
+```
+
+The compiler automatically finds the file com/horstmann/corejava/Employee.java and compiles it.
+
+Let's look at a more realistic example, in which we don't use the default package but have classes distributed over several packages (com.horstmann.corejava and  com.mycompany)
+
+```java
+.(base directory)
+     |-- com/
+         |-- horstmann/
+         |   |-- corejava/
+         |   |   |-- Employee.java
+         |   |   |-- Employee.class 
+         |-- mycompany/
+             |-- PayrollApp.java
+             |-- PayrollApp.class
+```
+
+In this situation, you still must compile and run classes from the base directory, that is, the directory containing the com directory:
+
+```java
+javac com/mycompany/PayrollApp.java
+java com.mycompany.PayrollApp
+```
+
+Caution: The compiler does not check the directory structure when it compiles source files. For example, suppose you have a source file that starts with the directive 
+
+```java
+package com.mycompany; 
+```
+
+You can compile the file even if it is not contained in a subdirectory com/mycompany. The source file will compile without errors if it doesn't depend on other  packages. However, the resulting program will not run . The virtual machine won't find the resulting classes when you try to run the program.
+
+### Package Scope  /todo
+
+Features tagged as public can be used by any class. Private features can be used only by the class that defines them. If you don't specify either public or private, the feature (that is, the class, method , or variable) can be accessed by all methods in the same package.
+
+### Documentation Comments /todo
+
+
+
+## The Class Path
+
+Class files can also be stored in a JAR (Java archive) file. A JAR file contains multiple class files and subdirectories in a compressed format, saving space and improving performance. 
+
+To share classes among programs, you need to do the following:
+
+```java
+1 Place your class files inside a directory, for example, /home/user/classdir. Note that this directory is the base directory for the package tree. If you add the class com.horstmann.corejava.Employee, then the  Employee.class file must be located in the subdirectory /home/user/classdir/com/horstmann/corejava.
+2 Place any JAR files inside a directory, for example, /home/user/archives.
+3 Set the class path. The class path is the collection of all locations that can contain class files.
+```
+
+In UNIX, the elements on the class path are separated by colons:
+
+```
+/home/user/classdir:.:/home/user/archives/archive.jar
+```
+
+In Windows, they are separated by semicolons:
+
+```
+c:\classdir;.;c:\archives\archive.jar
+```
+
+In both cases, the period denotes the current directory. This class path contains
+
+```
+1 The base directory /home/user/classdir or c:\classdir;
+2 The current directory (.); and
+3 The JAR file /home/user/archives/archive.jar or c:\archives\archive.jar.
+```
+
+ Starting with Java SE 6, you can specify a wildcard for a JAR file directory, like this:
+
+```
+/home/user/classdir:.:/home/user/archives/'*'
+or
+c:\classdir;.;c:\archives\*
+```
+
+In UNIX, the * must be escaped to prevent shell expansion.
+
+The runtime library files (rt.jar and the other JAR files in the  jre/lib and jre/lib/ext directories) are always searched for classes; don't include them explicitly in the class path.
+
+> Caution:The javac compiler always looks for files in the current directory, but the java virtual machine launcher only looks into the current directory if the "." directory is on the class path. If you have no class path set, this is not a problem, the default class path consists of the "." directory. But if you have set the class path and forgot to include the "." directory, your programs will compile without error, but they won't run.
+>
+
+The class path lists all directories and archive files that  are starting points for locating classes. Let's consider our sample class path:/home/user/classdir:.:/home/user/archives/archive.jar
+Suppose the virtual machine searches for the class file of the com.horstmann.corejava.Employee. It first looks in the system class files that are stored in archives in the  jre/lib and jre/lib/ext directories. It won't find the class file there , so it turns to the class path. It then looks for the following files:
+
+```java
+1 /home/user/classdir/com/horstmann/corejava/Employee.class
+2 com/horstmann/corejava/Employee.class starting from the current directory
+3 com/horstmann/corejava/Employee.class inside /home/user/archives/archive.jar
+```
+
+The compiler has a harder time locating files than does the virtual machine . For example, suppose the source file contains directives
+
+```java
+import java.util.*;
+import com.horstmann.corejava.*;
+```
+
+and the source code refers to a class Employee. The compiler then tries to find
+
+```java
+ 1 java.lang.Employee (because the  java.lang package is always imported by default),
+ 2 java.util.Employee  com.horstmann.corejava.Employee, 
+ 3 and Employee in the current package. 
+```
+
+It searches for each of these classes in all of the locations of the class path . It is a compile-time error if more than one class is found. (Classes must be unique, so the order of the import statements doesn't matter.)
+The compiler goes one step further.It looks at the source files to see if the source is newer than the class file. If so, the source file is recompiled automatically. 
+
+### Setting the Class Path
+
+It is best to specify the class path with the -classpath (or -cp) option:
+
+```java
+ java -classpath /home/user/classdir:.:/home/user/archives/archive.jar MyProg
+ or
+ java -classpath c:\classdir;.;c:\archives\archive.jar MyProg
+```
+
+An alternate approach is the CLASSPATH environment variable. The details depend on your shell. With the Bourne Again shell (bash), use the command
+
+```java
+export CLASSPATH=/home/user/classdir:.:/home/user/archives/archive.jar
+setenv CLASSPATH /home/user/classdir:.:/home/user/archives/archive.jar # C shell
+set CLASSPATH=c:\classdir;.;c:\archives\archive.jar # Windows shell
+```
+
+  
 
 # xx
 
