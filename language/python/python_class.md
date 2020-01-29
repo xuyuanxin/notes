@@ -221,6 +221,27 @@ class Sub(Super):
 I = Sub(1, 2)  
 ```
 
+### Inheritance  
+
+Of course, the whole point of the namespace created by the class statement is to support name inheritance.  Every time you use an expression of the form object.attr where object is an instance or class object, Python searches the namespace tree from bottom to top, beginning with object, looking for the first attr it can find. This includes references to self attributes in your methods. Because lower definitions in the tree override higher ones, inheritance forms the basis
+of specialization.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
