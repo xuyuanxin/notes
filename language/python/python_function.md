@@ -72,19 +72,43 @@ func() # Call object
 func.attr = value # Attach attributes 
 ```
 
-# 作用域
+# Scopes
 
-Python中的变量名在第一次赋值时已经创建，并且必须经过赋值后才能够使用。Python创建、改变或查找变量名都是在所谓的命名空间（一个保存变了名的地方）中进行的。Python将一个变量名被赋值的地点关联为一个特定的命名空间，代码中给一个变量赋值的地方决定了这个变量将存在于哪个命名空间，也就是它可见的范围。
+This chapter moves on to present the details behind Python’s scopes—the places where variables are defined and looked up. Like module files, scopes help prevent name clashes across your program’s code: names defined in one program unit don’t interfere with names in another.
+
+## Python Scope Basics  
+
+When you use a name in a program,  Python creates, changes, or looks up the name in what is known as a **namespace**—a place where names live. Python uses the location of the assignment of a name to associate it with (i.e., bind it to) a particular namespace. In other words, the place where you assign a name in your source code determines the namespace it will live in, and hence its scope of visibility.    
+
+Besides packaging code for reuse, functions add an extra namespace layer to your programs to minimize the potential for collisions among variables of the same name—by default, all names assigned inside a function are associated with that function’s namespace, and no other. This rule means that:  
+
+- Names assigned inside a def can only be seen by the code within that def. You cannot even refer to such names from outside the function.  
+- Names assigned inside a def do not clash with variables outside the def, even if the same names are used elsewhere.   
+
+Variables may be assigned in three different places, corresponding to three different scopes:
+
+- If a variable is assigned inside a def, it is local to that function.
+- If a variable is assigned in an enclosing def, it is nonlocal to nested functions.
+- If a variable is assigned outside all defs, it is global to the entire file.  
+
+### Scope Details  /todo
+
+Functions define a local scope and modules define a global scope with the following properties:  
+
+- **The enclosing module is a global scope.** Each module is a global scope—that is, a namespace in which variables created (assigned) at the top level of the module file live. Global variables become attributes of a module object to the outside world after imports but can also be used as simple variables within the module file itself  
+- **The global scope spans a single file only.** Don’t be fooled by the word “global” here—names at the top level of a file are global to code within that single file only. There is really no notion of a single, all-encompassing global file-based scope in Python.  When you hear “global” in Python, think “module.”  
+- **Assigned names are local unless declared global or nonlocal.** By default, all the names assigned inside a function definition are put in the local scope (the namespace associated with the function call). If you need to assign a name that lives at the top level of the module enclosing the function, you can do so by declaring it in a global statement inside the function. If you need to assign a name that lives in an enclosing def, as of Python 3.X you can do so by declaring it in a nonlocal statement.  
+- **All other names are enclosing function locals, globals, or built-ins.** Names not assigned a value in the function definition are assumed to be enclosing scope locals, defined in a physically surrounding def statement; globals that live in the enclosing module’s namespace; or built-ins in the predefined built-ins module Python provides.  
+- **Each call to a function creates a new local scope.** Every time you call a function, you create a new local scope—that is, a namespace in which the names created inside that function will usually live. You can think of each def statement (and lambda expression) as defining a new local scope, but the local scope actually corresponds to a function call.   
+
+### Name Resolution: The LEGB Rule
+
+The LEGB scope lookup rule. When a variable is referenced, Python searches for it in this order: in the local scope, in any enclosing functions’ local scopes, in the global scope, and finally in the built-in scope. The first occurrence wins. The place in your code where a variable is assigned usually determines its scope. In Python 3.X, nonlocal declarations can also force names to be mapped to enclosing function scopes, whether assigned or not.  
 
 - Local(function)，本地作用域(函数)：每次对函数的调用都创建了一个新的本地作用域。一个函数内部的任何类型的赋值都会把一个名称划定为本地的（声明为global的除外）。这包括=语句、import中的模块名称、def中的函数名称、函数参数名称等。
 - Enclosing function locals：names in the local scope of any all enclosing functions(def or lambda), from inner to outer
 - Global(module)，全局作用域：每个模块都是一个全局作用域（也就是说，一个创建于模块文件顶层的变量的命名空间）。全局作用域的作用范围仅限于单个文件，Python中没有基于一个单个的、无所不包的情景文件的全局作用域。
 - Built-in(Python)：Names preassigned in built-in names module:open, range, SyntaxError...
-
-LEGB作用域查找原则：当引用一个变量时，Python按以下顺序依次进行查找，从本地变量中，在任意上层函数的作用域，在全局作用域，最后在内置作用域中查找。第一个能够完成查找的就算成功。
-
-- 赋值的变量名除非声明为全局变量或非本地变量，否则均为本地变量。
-- 所有其他的变量名都可以归纳为本地、全局或者内置的。
 
 在交互模式运行的代码实际上真的输入到一个叫做__main__的内置模块中，这个模块就像一个模块文件一样工作。因此，交互模式也在一个模块中创建名称，并由此遵守常规的作用域规则。
 
@@ -97,31 +121,29 @@ def func(Y):   # Y and Z assigned in function: locals
     Z = X + Y  # X is a global
     return Z
 func(1)        # func in module: result=100
-
-
 ```
 
 - Global names: X, func
-  X is global because it’s assigned at the top level of the module file; it can be referenced inside the function as a simple unqualified variable without being declaredglobal. func is global for the same reason; the def statement assigns a function object to the name func at the top level of the module.
+  X is global because it’s assigned at the top level of the module file; it can be referenced inside the function as a simple unqualified variable without being declared global. func is global for the same reason; the def statement assigns a function object to the name func at the top level of the module.
 - Local names: Y, Z
   Y and Z are local to the function (and exist only while the function runs) because they are both assigned values in the function definition: Z by virtue of the = statement, and Y because arguments are always passed by assignment.
 
-## 内置作用域
+### The Built-in Scope  
 
-内置作用域是通过一个名为\__builtin__的标准库模块来实现的，这个变量名自身并没有放入内置作用域内，必须导入这个文件才能够使用它。
+The built-in scope is implemented as a standard library module named builtins in 3.X, but that name itself is not placed in the built-in scope, so you have to import it in order to inspect it. Once you do, you can run a dir call to see which names are predefined. In Python 3.3 (see ahead for 2.X usage):  
 
 ```python
 >>> import builtins
 >>> dir(builtins)
 ['ArithmeticError', 'AssertionError', 'AttributeError', 'BaseException',
 'BlockingIOError', 'BrokenPipeError', 'BufferError', 'BytesWarning',
-Python Scope Basics | 491...many more names omitted...
+...many more names omitted...
 'ord', 'pow', 'print', 'property', 'quit', 'range', 'repr', 'reversed',
 'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum',
 'super', 'tuple', 'type', 'vars', 'zip']
 ```
 
-这个列表中的变量名组成了Python中的内置作用域。Python最后将自动搜索这个模块，我们能够使用这些变量名而不需要导入任何模块，也可以手动导入\__builtin__模块。
+Because Python automatically searches this module last in its LEGB lookup, you get all the names in this list “for free”—that is, you can use them without importing any modules. Thus, there are really two ways to refer to a built-in function—by taking advantage of the LEGB rule, or by manually importing the builtins module:  
 
 ```python
 >>> zip # The normal way
@@ -152,40 +174,15 @@ func()
 print(X) # Prints 88: unchanged
 ```
 
-## 作用域和嵌套函数
+## The global Statement  
 
-在增加了嵌套的函数作用域后，变量的查找法复杂了一些。  Within a function:
+The global statement and its nonlocal 3.X cousin are the only things that are remotely like declaration statements in Python. They are not type or size declarations, though; they are namespace declarations.   
 
-- A reference (X) looks for the name X first in the current local scope (function); then in the local scopes of any lexically enclosing functions in your source code, from inner to outer; then in the current global scope (the module file); and finally in the built-in scope (the module builtins). global declarations make the search begin in the global (module file) scope instead.
-- An assignment (X = value) creates or changes the name X in the current local scope, by default. If X is declared global within the function, the assignment creates or changes the name X in the enclosing module’s scope instead. If, on the other hand, X is declared nonlocal within the function in 3.X (only), the assignment changes the name X in the closest enclosing function’s local scope.  
+- Global names are variables assigned at the top level of the enclosing module file.
+- Global names must be declared only if they are assigned within a function.
+- Global names may be referenced within a function without being declared.
 
-```python
-X = 99           # Global scope name: not used
-def f1():
-    X = 88       # Enclosing def local
-    def f2():
-        print(X) # Reference made in nested def
-    f2()         # 实际测试此处不打印，why？
-f1()             # Prints 88: enclosing def local
-```
-
-嵌套的def在函数f1调用时运行，这个def生成一个函数，并将其赋值给变量f2，f2是f1的本地作用域内的一个本地变量。在此情况下，f2是一个临时函数，仅在f1内部执行的过程中存在，并且只对f1中的代码可见。在f2内部，当打印变量x时，x引用了存在于函数f1整个本地作用域内的变量x的值。因为函数能够在整改def声明内获取变量名，通过LEGB查找法则，f2内的x自动映射到了f1的x。
-
-```python
-def f1():
-    X = 88
-    def f2():
-        print(X) # Remembers X in enclosing def scope
-    return f2    # Return f2 but don't call it
-action = f1()    # Make, return function
-action()         # Call it now: prints 88
-```
-
-在这个代码中，f2运行时在f1运行后发生的，f2记住了在f1中嵌套作用域中的x，尽管f1已经不处于激活状态。这种行为有时也叫做闭合（closure）或者工厂函数--一个能够记住嵌套作用域的变量值得函数。
-
-## global语句
-
-global语句是一个命名空间的声明，它告诉Python函数打算生产一个或多个全局变量名。也就是说，存在于整个模块内部作用域（命名空间）的变量名。global语句其后跟着一个或多个逗号分开的变量名。
+The global statement consists of the keyword global, followed by one or more names separated by commas. All the listed names will be mapped to the enclosing module’s scope when assigned or referenced within the function body.  In other words,  global allows us to change names that live outside a def at the top level of a module file.  
 
 ```python
 X = 88 # Global X
@@ -201,18 +198,171 @@ def all_global():
    x = y + z # No need to declare y, z: LEGB rule
 ```
 
-这里，x、y和z都是all_global函数内的全局变量。y和z是全局变量，因为他们不是在函数内赋值的。x是全局变量，因为他通过global语句使自己明确地映射到了模块的作用域。注意x在函数运行前可能并不存在。
+We’ve added a global declaration to the example here, such that the X inside the def now refers to the X outside the def; Here, x, y, and z are all globals inside the function all_global. y and z are global because
+they aren’t assigned in the function; Notice that y and z are not declared global; Python’s LEGB lookup rule finds them in the module automatically.    
 
-## nonlocal语句
+### Other Ways to Access Globals  
 
-Python3.0引入了一条新的nonlocal语句，他只在一个函数内有意义：
+```python
+# thismod.py
+var = 99 # Global variable == module attribute
+
+def local():
+    var = 0 # Change local var
+
+def glob1():
+    global var # Declare global (normal)
+    var += 1 # Change global var
+
+def glob2():
+    var = 0 # Change local var
+    import thismod # Import myself
+    thismod.var += 1 # Change global var
+
+def glob3():
+    var = 0 # Change local var
+    import sys # Import system table
+    glob = sys.modules['thismod'] # Get module object (or use __name__)
+    glob.var += 1 # Change global var
+
+def test():
+    print(var)
+    local(); glob1(); glob2(); glob3()
+    print(var)
+```
+
+```python
+>>> import thismod
+>>> thismod.test()
+99
+102
+>>> thismod.var
+102
+```
+
+## Scopes and Nested Functions
+
+However, it’s time to take a deeper look at the letter E in the LEGB lookup rule. The E layer was added in Python 2.2; it takes the form of the local scopes of any and all enclosing function’s local scopes. Enclosing scopes are sometimes also called statically nested scopes.  
+
+### Nested Scope Details  
+
+With the addition of nested function scopes, variable lookup rules become slightly more complex. Within a function: 
+
+- A reference (X) looks for the name X first in the current local scope (function); then in the local scopes of any lexically enclosing functions in your source code, from inner to outer; then in the current global scope (the module file); and finally in the built-in scope (the module builtins). global declarations make the search begin in the global (module file) scope instead.
+- An assignment (X = value) creates or changes the name X in the current local scope, by default. If X is declared global within the function, the assignment creates or changes the name X in the enclosing module’s scope instead. If, on the other hand, X is declared nonlocal within the function in 3.X (only), the assignment changes the name X in the closest enclosing function’s local scope.  
+
+```python
+X = 99           # Global scope name: not used
+def f1():
+    X = 88       # Enclosing def local
+    def f2():
+        print(X) # Reference made in nested def
+    f2()         
+f1()             # Prints 88: enclosing def local
+```
+
+Here, the nested def runs while a call to the function f1 is running; it generates a function and assigns it to the name f2, a local variable within f1’s local scope. In a sense, f2 is a temporary function that lives only during the execution of (and is visible only to code in) the enclosing f1.
+
+But notice what happens inside f2: when it prints the variable X, it refers to the X that lives in the enclosing f1 function’s local scope. Because functions can access names in all physically enclosing def statements, the X in f2 is automatically mapped to the X in f1, by the LEGB lookup rule.
+
+This enclosing scope lookup works even if the enclosing function has already returned. For example, the following code defines a function that makes and returns another function, and represents a more common usage pattern:  
+
+```python
+def f1():
+    X = 88
+    def f2():
+        print(X) # Remembers X in enclosing def scope
+    return f2    # Return f2 but don't call it
+action = f1()    # Make, return function
+action()         # Call it now: prints 88
+```
+
+### Factory Functions: Closures  
+
+Factory functions (a.k.a. closures) are sometimes used by programs that need to generate event handlers on the fly in response to conditions at runtime.  For instance, imagine a GUI that must define actions according to user inputs that cannot be anticipated when the GUI is built.  In such cases, we need a function that creates and returns another function, with information that may vary per function made.    
+
+To illustrate this in simple terms, consider the following function 
+
+```python
+>>> def maker(N):
+        def action(X): # Make and return action
+            return X ** N # action retains N from enclosing scope
+        return action
+```
+
+This defines an outer function that simply generates and returns a nested function, without calling it.
+
+```python
+>>> f = maker(2) # Pass 2 to argument N
+>>> f
+<function maker.<locals>.action at 0x0000000002A4A158>
+>>> f(3) # Pass 3 to X, N remembers 2: 3 ** 2
+9
+>>> f(4) # 4 ** 2
+16
+```
+
+Perhaps the most unusual part of this, though, is that the nested function remembers integer 2, the value of the variable N in maker, even though maker has returned and exited by the time we call action. In effect, N from the enclosing local scope is retained as state information attached to the generated action, which is why we get back its argument squared when it is later called  
+
+Just as important, if we now call the outer function again, we get back a new nested function with different state information attached. That is, we get the argument cubed instead of squared when calling the new function, but the original still squares as before:  
+
+```python
+>>> g = maker(3) # g remembers 3, f remembers 2
+>>> g(4) # 4 ** 3
+64
+>>> f(4) # 4 ** 2
+16
+```
+
+This works because each call to a factory function like this gets its own set of state information. In our case, the function we assign to name g remembers 3, and f remembers 2, because each has its own state information retained by the variable N in maker.  
+
+On the other hand, enclosing scopes are often employed by the lambda function-creation expressions，because they are expressions, they are almost always nested within a def. For example, a lambda would serve in place of a def in our example:  
+
+```python
+>>> def maker(N):
+        return lambda X: X ** N # lambda functions retain state too
+>>> h = maker(3)
+>>> h(4) # 4 ** 3 again
+64
+```
+
+
+
+## The nonlocal Statement in 3.X  
+
+### nonlocal Basics  
+
+Python 3.X introduces a new nonlocal statement, which has meaning only inside a function:  
 
 ```python
 def func():
-​    nonlocal name1, name2, ...
+    nonlocal name1, name2, ... # OK here
+>>> nonlocal X
+SyntaxError: nonlocal declaration not allowed at module level
 ```
 
-这条语句允许一个嵌套函数来修改在一个语法嵌套函数的作用域中定义的一个或多个名称。nonlocal使得对该语句中列出的名称的查找从嵌套的def的作用域中开始，而不是从声明函数的本地作用域开始。
+This statement allows a nested function to change one or more names defined in a syntactically enclosing function’s scope.  
+
+Besides allowing names in enclosing defs to be changed, the nonlocal statement also forces the issue for references—much like the global statement, nonlocal causes searches for the names listed in the statement to begin in the enclosing defs’ scopes, not in the local scope of the declaring function. That is, nonlocal also means “skip my local scope entirely.”  
+
+In fact, the names listed in a nonlocal must have been previously defined in an enclosing def when the nonlocal is reached, or an error is raised.  
+
+Changing a name in an enclosing def’s scope is not allowed by default, though; this is the normal case in 2.X as well:  
+
+```python
+>>> def tester(start):
+        state = start
+    def nested(label):
+        print(label, state)
+        state += 1 # Cannot change by default (never in 2.X)
+    return nested
+
+>>> F = tester(0)
+>>> F('spam')
+UnboundLocalError: local variable 'state' referenced before assignment
+```
+
+Using nonlocal for changes. Now, under 3.X, if we declare state in the tester scope as nonlocal within nested, we get to change it inside the nested function, too.   
 
 ```python
 >>> def tester(start):
@@ -222,6 +372,7 @@ def func():
             print(label, state)
             state += 1 # Allowed to change it if nonlocal
         return nested
+
 >>> F = tester(0)
 >>> F('spam') # Increments state on each call
 spam 0
@@ -229,6 +380,7 @@ spam 0
 ham 1
 >>> F('eggs')
 eggs 2
+
 >>> G = tester(42) # Make a new tester that starts at 42
 >>> G('spam')
 spam 42
@@ -238,7 +390,7 @@ eggs 43
 bacon 3 # Each call has different state information
 ```
 
-在Python3.0下，如果我们在nested中把tester作用域中的state声明为一个nonlocal，我们就可以在nested函数中修改它了。
+First, unlike the global statement, nonlocal names really must have previously been assigned in an enclosing def’s scope when a nonlocal is evaluated, or else you’ll get an error
 
 ```python
 >>> def tester(start):
@@ -262,6 +414,21 @@ abc 0
 >>> state
 0
 ```
+
+Second, nonlocal restricts the scope lookup to just enclosing defs; nonlocals are not looked up in the enclosing module’s global scope or the built-in scope outside all defs, even if they are already there:  
+
+```python
+>>> spam = 99
+>>> def tester():
+        def nested():
+        nonlocal spam # Must be in a def, not the module!
+        print('Current=', spam)
+        spam += 1
+    return nested
+SyntaxError: no binding for nonlocal 'spam' found
+```
+
+
 
 # Arguments  
 
