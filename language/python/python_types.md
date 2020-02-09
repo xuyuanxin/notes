@@ -473,15 +473,30 @@ In this interaction, X and Y should be == (same value), but not is (same object)
 
 # String Fundamentals
 
+Python string—an ordered collection of characters used to store and represent text- and bytes-based information.   
+
+## This Chapter’s Scope
+
+- In Python 3.X there are three string types: str is used for Unicode text (including ASCII), bytes is used for binary data (including encoded text), and bytearray is a mutable variant of bytes. Files work in two modes: text, which represents content as str and implements Unicode encodings, and binary, which deals in raw bytes and does no data translation.  
+- In Python 2.X, unicode strings represent Unicode text, str strings handle both 8-bit text and binary data, and bytearray is available in 2.6 and later as a back-port from 3.X. Normal files’ content is simply bytes represented as str, but a codecs module opens Unicode text files, handles encodings, and represents content as unicode objects  
+
+Despite such version differences, if and when you do need to care about Unicode you’ll find that it is a relatively minor extension—once text is in memory, it’s a Python string of characters that supports all the basics we’ll study in this chapter. In fact, the primary distinction of Unicode often lies in the translation (a.k.a. encoding) step required to move it to and from files. Beyond that, it’s largely just string processing.  
+
+For this chapter, we’ll focus on the basic string type and its operations. As you’ll find, the techniques we’ll study here also apply directly to the more advanced string types in Python’s toolset.  
+
+## String Basics
+
+  
+
 ### String Literals  
 
-• Single quotes: 'spa"m'
-• Double quotes: "spa'm"
-• Triple quotes: '''... spam ...''', """... spam ..."""
-• Escape sequences: "s\tp\na\0m"
-• Raw strings: r"C:\new\test.spm"
-• Bytes literals in 3.X and 2.6+ : b'sp\x01am'
-• Unicode literals in 2.X and 3.3+: u'eggs\u0020spam'  
+- Single quotes: 'spa"m'
+- Double quotes: "spa'm"
+- Triple quotes: '''... spam ...''', """... spam ..."""
+- Escape sequences: "s\tp\na\0m"
+- Raw strings: r"C:\new\test.spm"
+- Bytes literals in 3.X and 2.6+ : b'sp\x01am'
+- Unicode literals in 2.X and 3.3+: u'eggs\u0020spam'  
 
 #### Single- and Double-Quoted Strings Are the Same. 
 
