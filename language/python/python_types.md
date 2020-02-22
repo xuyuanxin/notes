@@ -644,7 +644,247 @@ print(os.getcwd())
 Y = 2  
 ```
 
-## Unicode and Byte Strings
+## Strings in Action  
+
+### Basic Operations 
+
+```python
+% python
+>>> len('abc') # Length: number of items
+3
+>>> 'abc' + 'def' # Concatenation: a new string
+'abcdef'
+>>> 'Ni!' * 4 # Repetition: like "Ni!" + "Ni!" + ...
+'Ni!Ni!Ni!Ni!'
+
+>>> print('------- ...more... ---') # 80 dashes, the hard way
+>>> print('-' * 80) # 80 dashes, the easy way
+
+>>> myjob = "hacker"
+>>> for c in myjob: print(c, end=' ') # Step through items, print each (3.X form)
+...
+h a c k e r
+>>> "k" in myjob # Found
+True
+>>> "z" in myjob # Not found
+False
+>>> 'spam' in 'abcspamdef' # Substring search, no position returned
+True
+```
+
+### Indexing and Slicing 
+
+Because strings are defined as ordered collections of characters, we can access their components by position. Offsets and slices: positive offsets start from the left end (offset 0 is the first item), and negatives count back from the right end (offset -1 is the last item). Either kind of offset can be used to give positions in indexing and slicing operations.  
+
+```python
+>>> S = 'spam'
+>>> S[0], S[−2] # Indexing from front or end
+('s', 'a')
+>>> S[1:3], S[1:], S[:−1] # Slicing: extract a section
+('pa', 'pam', 'spa')
+```
+
+Here’s a summary of the details for reference:  
+
+Indexing (S[i]) fetches components at offsets:
+
+- The first item is at offset 0.
+- Negative indexes mean to count backward from the end or right.
+- S[0] fetches the first item.
+- S[-2] fetches the second item from the end (like S[len(S)-2]).
+
+Slicing (S[i:j]) extracts contiguous sections of sequences:  
+
+- The upper bound is noninclusive.
+- Slice boundaries default to 0 and the sequence length, if omitted.
+- S[1:3] fetches items at offsets 1 up to but not including 3.
+- S[1:] fetches items at offset 1 through the end (the sequence length).
+- S[:3] fetches items at offset 0 up to but not including 3.
+- S[:-1] fetches items at offset 0 up to but not including the last item.
+- S[:] fetches items at offsets 0 through the end—making a top-level copy of S.    
+
+Extended slicing (S[i:j:k]) accepts a step (or stride) k, which defaults to +1:
+
+- Allows for skipping items and reversing order—see the next section.  
+
+```python
+>>> S = 'abcdefghijklmnop'
+>>> S[1:10:2] # Skipping items
+'bdfhj'
+>>> S[::2]
+'acegikmo'
+
+>>> S = 'hello'
+>>> S[::−1] # Reversing items
+'olleh'
+```
+
+"hello"[::−1] returns the new string "olleh"—the first two bounds default to 0 and the length of the sequence, as before, and a stride of −1 indicates that the slice should go from right to left instead of the usual left to right. The effect, therefore, is to reverse the sequence.
+
+With a negative stride, the meanings of the first two bounds are essentially reversed. That is, the slice S[5:1:−1] fetches the items from 2 to 5, in reverse order (the result contains items from offsets 5, 4, 3, and 2):
+
+```python
+>>> S = 'abcedfg'
+>>> S[5:1:−1] # Bounds roles differ
+'fdec'
+```
+
+### String Conversion Tools
+
+```python
+>>> int("42"), str(42) # Convert from/to string
+(42, '42')
+>>> repr(42) # Convert to as-code string
+'42'
+```
+
+The repr function also converts an object to its string representation, but returns the object as a string of code that can be rerun to recreate the object.
+
+For strings, the result has quotes around it if displayed with a print statement, which differs in form between Python lines:
+
+```python
+>>> print(str('spam'), repr('spam')) # 2.X: print str('spam'), repr('spam')
+spam 'spam'
+>>> str('spam'), repr('spam') # Raw interactive echo displays
+('spam', "'spam'")
+```
+
+@ord function—this returns the actual binary value used to represent the corresponding character in memory. The @chr function performs the inverse operation, taking an integer code and converting it to the corresponding character:
+
+```python
+>>> ord('s')
+115
+>>> chr(115)
+'s'
+
+>>> int('1101', 2) # Convert binary to integer: built-in
+13
+>>> bin(13) # Convert integer to binary: built-in
+'0b1101'
+```
+
+## String Methods  
+
+## String Formatting Expressions
+
+Python also provides a more advanced way to combine string processing tasks—string formatting allows us to perform multiple type-specific substitutions on a string in a single step.  
+
+- String formatting expressions: '...%s...' % (values)  
+- String formatting method calls: '...{}...'.format(values)  
+
+### Formatting Expression Basics
+
+To format strings:  
+
+- On the left of the % operator, provide a format string containing one or more embedded conversion targets, each of which starts with a % (e.g., %d).  
+- On the right of the % operator, provide the object (or objects, embedded in a tuple) that you want Python to insert into the format string on the left in place of the conversion target (or targets).  
+
+```python
+>>> 'That is %d %s bird!' % (1, 'dead') # Format expression
+That is 1 dead bird!
+>>> exclamation = 'Ni'
+>>> 'The knights who say %s!' % exclamation # String substitution
+'The knights who say Ni!'
+>>> '%d %s %g you' % (1, 'spam', 4.0) # Type-specific substitutions
+'1 spam 4 you'
+>>> '%s -- %s -- %s' % (42, 3.14159, [1, 2, 3]) # All types match a %s target
+'42 -- 3.14159 -- [1, 2, 3]'
+```
+
+Note that when you’re inserting more than one value, you need to group the values on the right in parentheses (i.e., put them in a tuple).
+
+### Advanced Formatting Expression Syntax
+
+Some of the format codes in the table provide alternative ways to format the same type; for instance, %e, %f, and %g provide alternative ways to format floating-point numbers.  
+
+| Code                                                         | Meaning |
+| ------------------------------------------------------------ | ------- |
+| s String (or any object’s str(X) string)<br/>r Same as s, but uses repr, not str<br/>c Character (int or str)<br/>d Decimal (base-10 integer)<br/>i Integer<br/>u Same as d (obsolete: no longer unsigned)<br/>o Octal integer (base 8)<br/>x Hex integer (base 16)<br/>X Same as x, but with uppercase letters<br/>e Floating point with exponent, lowercase<br/>E Same as e, but uses uppercase letters<br/>f Floating-point decimal<br/>F Same as f, but uses uppercase letters<br/>g Floating-point e or f<br/>G Floating-point E or F<br/>% Literal % (coded as %%) |         |
+
+The general structure of conversion targets looks like this:
+
+```python
+%[(keyname)][flags][width][.precision]typecode 
+```
+
+The type code characters in the first column of Table 7-4 show up at the end of this target string’s format. Between the % and the type code character, you can do any of the following:
+
+- Provide a key name for indexing the dictionary used on the right side of the expression
+- List flags that specify things like left justification (-), numeric sign (+), a blank before positive numbers and a – for negatives (a space), and zero fills (0)
+- Give a total minimum field width for the substituted text
+- Set the number of digits (precision) to display after a decimal point for floatingpoint numbers  
+
+### Advanced Formatting Expression Examples  
+
+```python
+>>> x = 1234
+>>> res = 'integers: ...%d...%−6d...%06d' % (x, x, x)
+>>> res
+'integers: ...1234...1234 ...001234'
+
+>>> x = 1.23456789
+>>> x # Shows more digits before 2.7 and 3.1
+1.23456789
+>>> '%e | %f | %g' % (x, x, x)
+'1.234568e+00 | 1.234568 | 1.23457'
+>>> '%E' % x
+'1.234568E+00'
+
+>>> '%−6.2f | %05.2f | %+06.1f' % (x, x, x)
+'1.23 | 01.23 | +001.2'
+>>> '%s' % x, str(x)
+('1.23456789', '1.23456789')
+```
+
+When sizes are not known until runtime, you can use a computed width and precision by specifying them with a * in the format string to force their values to be taken from the next item in the inputs to the right of the % operator—the 4 in the tuple here gives precision:
+
+```python
+>>> '%f, %.2f, %.*f' % (1/3.0, 1/3.0, 4, 1/3.0)
+'0.333333, 0.33, 0.3333'
+```
+
+### Dictionary-Based Formatting Expressions  
+
+As a more advanced extension, string formatting also allows conversion targets on the left to refer to the keys in a dictionary coded on the right and fetch the corresponding values. This opens the door to using formatting as a sort of template tool.   
+
+```python
+>>> '%(qty)d more %(food)s' % {'qty': 1, 'food': 'spam'}
+'1 more spam'
+```
+
+Here, the (qty) and (food) in the format string on the left refer to keys in the dictionary literal on the right and fetch their associated values.
+
+### String Formatting Method Calls
+
+### Formatting Method Basics
+
+The string object’s format method, available in Python 2.6, 2.7, and 3.X, is based on normal function call syntax, instead of an expression. Specifically, it uses the subject string as a template, and takes any number of arguments that represent values to be substituted according to the template.
+
+Within the subject string, curly braces designate substitution targets and arguments to be inserted either by position (e.g., {1}), or keyword (e.g., {food}), or relative position in 2.7, 3.1, and later ({}).   
+
+```python
+>>> template = '{0}, {1} and {2}' # By position
+>>> template.format('spam', 'ham', 'eggs')
+'spam, ham and eggs'
+>>> template = '{motto}, {pork} and {food}' # By keyword
+>>> template.format(motto='spam', pork='ham', food='eggs')
+'spam, ham and eggs'
+>>> template = '{motto}, {0} and {food}' # By both
+>>> template.format('ham', motto='spam', food='eggs')
+'spam, ham and eggs'
+>>> template = '{}, {} and {}' # By relative position
+>>> template.format('spam', 'ham', 'eggs') # New in 3.1 and 2.7
+'spam, ham and eggs'
+
+>>> '{motto}, {0} and {food}'.format(42, motto=3.14, food=[1, 2])
+'3.14, 42 and [1, 2]'
+
+>>> X = '{motto}, {0} and {food}'.format(42, motto=3.14, food=[1, 2])
+>>> X
+'3.14, 42 and [1, 2]'
+```
+
+# Unicode and Byte Strings
 
 ### String Base 
 

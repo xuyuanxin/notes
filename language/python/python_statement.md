@@ -6,6 +6,12 @@ In simple terms, statements are the things you write to tell Python what your pr
 
 ## Python’s Statements
 
+Table 10-1 summarizes Python’s statement set. Each statement in Python has its own specific purpose and its own specific syntax—the rules that define its structure— though, as we’ll see, many share common syntax patterns, and some statements’ roles overlap. Table 10-1 also gives examples of each statement, when coded according to its syntax rules. In your programs, these units of code can perform actions, repeat tasks, make choices, build larger program structures, and so on.  
+
+
+
+
+
 # Assignments, Expressions, and Prints
 
 ## Assignment Statements  
@@ -165,9 +171,13 @@ expression : 是什么
 
 比如: 1+2是3, 1+2就是expression, 3 就是expression的 value
 
+
+
 statement: 做什么
 
 比如: a = 1, 把 a 绑定到整数1上, 并没有什么value 返回, 只是一个动作而已.
+
+
 
 Expression是有值的。一个函数调用（Function Call）是一个表达式，一个普通的运算例如![[公式]](https://www.zhihu.com/equation?tex=x%5E2%2B2x%2B1)是一个表达式
 
