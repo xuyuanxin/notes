@@ -4,6 +4,22 @@
 
 # Function Basics
 
+In simple terms, a function is a device that groups a set of statements so they can be run more than once in a program—a packaged procedure invoked by name.  Functions are also the most basic program structure Python provides for maximizing code reuse, and lead us to the larger notions of program design.   
+
+Table 16-1 previews the primary function-related tools we’ll study in this part of the book—a set that includes call expressions, two ways to make functions (def and lambda), two ways to manage scope visibility (global and nonlocal), and two ways to send results back to callers (return and yield).  
+
+Table 16-1. Function-related statements and expressions 
+
+| Statement or expression | Examples                                                     |
+| ----------------------- | ------------------------------------------------------------ |
+| Call expressions        | myfunc('spam', 'eggs', meat=ham, *rest)                      |
+| def                     | def printer(messge): <br/>    print('Hello ' + message)      |
+| return                  | def adder(a, b=1, *c): <br/>    return a + b + c[0]          |
+| global                  | x = 'old'<br/>def changer():<br/>    global x; <br/>    x = 'new' |
+| nonlocal (3.X)          |                                                              |
+| yield                   | def squares(x): <br/>    for i in range(x): yield i ** 2     |
+| lambda                  | `funcs = [lambda x: x**2, lambda x: x**3]`                   |
+
 一个函数就是将一些语句集合在一起的部件，函数可以在程序中重复调用。函数是为了代码最大程度的重用和最小化代码冗余而提供的最基本的程序结构。
 
 ## Why Use Functions 
@@ -14,6 +30,19 @@ As a brief introduction, functions serve two primary development roles:
 - Procedural decomposition   
 
 ## Coding Functions
+
+Here is a brief introduction to the main concepts behind Python functions, all of which we will study in this part of the book:  
+
+- def is executable code. 
+- def creates an object and assigns it to a name. 
+- lambda creates an object but returns it as a result. 
+- return sends a result object back to the caller. 
+- yield sends a result object back to the caller, but remembers where it left off. 
+- global declares module-level variables that are to be assigned. 
+- nonlocal declares enclosing function variables that are to be assigned. 
+- Arguments are passed by assignment (object reference). 
+- Arguments are passed by position, unless you say otherwise. 
+- Arguments, return values, and variables are not declared. 
 
 ### def Statements  
 
@@ -91,7 +120,7 @@ Variables may be assigned in three different places, corresponding to three diff
 - If a variable is assigned in an enclosing def, it is nonlocal to nested functions.
 - If a variable is assigned outside all defs, it is global to the entire file.  
 
-### Scope Details  /todo
+### Scope Details 
 
 Functions define a local scope and modules define a global scope with the following properties:  
 
@@ -326,7 +355,50 @@ On the other hand, enclosing scopes are often employed by the lambda function-cr
 64
 ```
 
+### Nested scopes, defaults, and lambdas  
 
+```python
+>>> def makeActions():
+acts = []
+for i in range(5): # Tries to remember each i
+acts.append(lambda x: i ** x) # But all remember same last i!
+return acts
+>>> acts = makeActions()
+>>> acts[0]
+<function makeActions.<locals>.<lambda> at 0x0000000002A4A400>
+```
+
+This doesn’t quite work, though—because the enclosing scope variable is looked up when the nested functions are later called, they all effectively remember the same value: the value the loop variable had on the last loop iteration. That is, when we pass a power argument of 2 in each of the following calls, we get back 4 to the power of 2 for each function in the list, because i is the same in all of them—4:  
+
+```python
+>>> acts[0](2) # All are 4 ** 2, 4=value of last i
+16
+>>> acts[1](2) # This should be 1 ** 2 (1)
+16
+>>> acts[2](2) # This should be 2 ** 2 (4)
+16
+>>> acts[4](2) # Only this should be 4 ** 2 (16)
+16
+```
+
+This is the one case where we still have to explicitly retain enclosing scope values with default arguments, rather than enclosing scope references. That is, to make this sort of code work, we must pass in the current value of the enclosing scope’s variable with a default. Because defaults are evaluated when the nested function is created (not when it’s later called), each remembers its own value for i:
+
+```python
+>>> def makeActions():
+acts = []
+for i in range(5): # Use defaults instead
+acts.append(lambda x, i=i: i ** x) # Remember current i
+return acts
+>>> acts = makeActions()
+>>> acts[0](2) # 0 ** 2
+0
+>>> acts[1](2) # 1 ** 2
+1
+>>> acts[2](2) # 2 ** 2
+4
+>>> acts[4](2) # 4 ** 2
+16
+```
 
 ## The nonlocal Statement in 3.X  
 
@@ -427,8 +499,6 @@ Second, nonlocal restricts the scope lookup to just enclosing defs; nonlocals ar
     return nested
 SyntaxError: no binding for nonlocal 'spam' found
 ```
-
-
 
 # Arguments  
 
@@ -651,6 +721,10 @@ Again, we can combine normal, positional, and keyword arguments in the call in v
 ```
 
 # Advanced Function Topics  
+
+This chapter introduces a collection of more advanced function-related topics: recursive functions, function attributes and annotations, the lambda expression, and functional programming tools such as map and filter.   
+
+## Function Design Concepts  
 
 ## Anonymous Functions: lambda  
 

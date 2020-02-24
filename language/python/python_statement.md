@@ -8,10 +8,6 @@ In simple terms, statements are the things you write to tell Python what your pr
 
 Table 10-1 summarizes Python’s statement set. Each statement in Python has its own specific purpose and its own specific syntax—the rules that define its structure— though, as we’ll see, many share common syntax patterns, and some statements’ roles overlap. Table 10-1 also gives examples of each statement, when coded according to its syntax rules. In your programs, these units of code can perform actions, repeat tasks, make choices, build larger program structures, and so on.  
 
-
-
-
-
 # Assignments, Expressions, and Prints
 
 ## Assignment Statements  
@@ -151,11 +147,90 @@ None
 
 This doesn’t quite work, though. Calling an in-place change operation such as append, sort, or reverse on a list always changes the list in place, but these methods do not return the list they have changed; instead, they return the None object.  
 
+# Iterations and Comprehensions  
 
+## Iterations: A First Look  
 
+One of the easiest ways to understand the iteration protocol is to see how it works with a built-in type such as the file.   
 
+script2.py：
 
+```
+import sys
+x = 2
+print(x ** 32)
+```
 
+```python
+>>> open('script2.py').read()
+'import sys\nprint(sys.path)\nx = 2\nprint(x ** 32)\n'
+
+>>> f = open('script2.py') # Read a four-line script file in this directory
+>>> f.readline() # readline loads one line on each call
+'import sys\n'
+>>> f.readline()
+'print(sys.path)\n'
+>>> f.readline()
+'x = 2\n'
+>>> f.readline() # Last lines may have a \n or not
+'print(x ** 32)\n'
+>>> f.readline() # Returns empty string at end-of-file
+''
+
+>>> for line in open('script2.py'): # Use file iterators to read by lines
+... print(line.upper(), end='') # Calls __next__, catches StopIteration
+...
+IMPORT SYS
+PRINT(SYS.PATH)
+X = 2
+PRINT(X ** 32)
+
+>>> for line in open('script2.py').readlines():
+... print(line.upper(), end='')
+...
+IMPORT SYS
+PRINT(SYS.PATH)
+X = 2
+PRINT(X ** 32)
+```
+
+## Manual Iteration: iter and next  
+
+To simplify manual iteration code, Python 3.X also provides a built-in function, next, that automatically calls an object’s `__next__` method.  
+
+```python
+>>> f = open('script2.py')
+>>> f.__next__() # Call iteration method directly
+'import sys\n'
+>>> f.__next__()
+'print(sys.path)\n'
+>>> f = open('script2.py')
+>>> next(f) # The next(f) built-in calls f.__next__() in 3.X
+'import sys\n'
+>>> next(f) # next(f) => [3.X: f.__next__()], [2.X: f.next()]
+'print(sys.path)\n'
+```
+
+Although Python iteration tools call these functions automatically, we can use them to apply the iteration protocol manually, too.
+
+```python
+>>> L = [1, 2, 3]
+>>>
+>>> for X in L: # Automatic iteration
+... print(X ** 2, end=' ') # Obtains iter, calls __next__, catches exceptions
+...
+1 4 9
+
+>>> I = iter(L) # Manual iteration: what for loops usually do
+>>> while True:
+... try: # try statement catches exceptions
+... X = next(I) # Or call I.__next__ in 3.X
+... except StopIteration:
+... break
+... print(X ** 2, end=' ')
+...
+1 4 9
+```
 
 
 
@@ -165,7 +240,7 @@ learning python （python学习手册）
 
 
 
-
+-------------------------------------------------------------------------------------------
 
 expression : 是什么
 
