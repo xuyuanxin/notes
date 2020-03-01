@@ -726,6 +726,154 @@ This chapter introduces a collection of more advanced function-related topics: r
 
 ## Function Design Concepts  
 
+When you start using functions in earnest, you’re faced with choices about how to glue components together—for instance, how to decompose a task into purposeful functions (known as cohesion), how your functions should communicate (called coupling), and so on. You also need to take into account concepts such as the size of your functions, because they directly impact code usability. Some of this falls into the category of structured analysis and design, but it applies to Python code as to any other.  
+
+## Recursive Functions  
+
+### Summation with Recursion 
+
+```python
+>>> def mysum(L):
+        if not L:
+            return 0
+        else:
+            return L[0] + mysum(L[1:]) # Call myself recursively
+>>> mysum([1, 2, 3, 4, 5])
+15
+```
+
+### Coding Alternatives  
+
+```python
+def mysum(L):
+    return 0 if not L else L[0] + mysum(L[1:]) # Use ternary expression
+def mysum(L):
+    return L[0] if len(L) == 1 else L[0] + mysum(L[1:]) # Any type, assume one
+def mysum(L):
+    first, *rest = L
+    return first if not rest else first + mysum(rest) # Use 3.X ext seq assign
+```
+
+The latter two of these fail for empty lists but allow for sequences of any object type that supports +, not just numbers:  
+
+```python
+>>> mysum([1]) # mysum([]) fails in last 2
+1
+>>> mysum([1, 2, 3, 4, 5])
+15
+>>> mysum(('s', 'p', 'a', 'm')) # But various types now work
+'spam'
+>>> mysum(['spam', 'ham', 'eggs'])
+'spamhameggs
+```
+
+### Loop Statements Versus Recursion  
+
+```python
+>>> L = [1, 2, 3, 4, 5]
+>>> sum = 0
+>>> while L:
+        sum += L[0]
+        L = L[1:]
+>>> sum
+15
+
+>>> L = [1, 2, 3, 4, 5]
+>>> sum = 0
+>>> for x in L: sum += x
+>>> sum
+15
+```
+
+## Function Objects: Attributes and Annotations
+
+As we’ve seen in this part of the book, functions in Python are much more than code-generation specifications for a compiler—Python functions are full-blown objects, stored in pieces of memory all
+their own. As such, they can be freely passed around a program and called indirectly. They also support operations that have little to do with calls at all—attribute storage and annotation.  
+
+### Indirect Function Calls: “First Class” Objects  
+
+### Function Introspection
+
+Because they are objects, we can also process functions with normal object tools. For instance, once we make a function, we can call it as usual:  
+
+```python
+>>> def func(a):
+        b = 'spam'
+        return b * a
+>>> func(8)
+'spamspamspamspamspamspamspamspam'
+```
+
+But the call expression is just one operation defined to work on function objects. We can also inspect their attributes generically:
+
+```python
+>>> func.__name__
+'func'
+>>> dir(func)
+['__annotations__', '__call__', '__class__', '__closure__', '__code__',
+...more omitted: 34 total...
+'__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+
+>>> func.__code__
+<code object func at 0x00000000021A6030, file "<stdin>", line 1>
+>>> dir(func.__code__)
+['__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__',
+...more omitted: 37 total...
+'co_argcount', 'co_cellvars', 'co_code', 'co_consts', 'co_filename',
+'co_firstlineno', 'co_flags', 'co_freevars', 'co_kwonlyargcount', 'co_lnotab',
+'co_name', 'co_names', 'co_nlocals', 'co_stacksize', 'co_varnames']
+>>> func.__code__.co_varnames
+('a', 'b')
+>>> func.__code__.co_argcount
+1
+```
+
+### Function Attributes  
+
+Function objects are not limited to the system-defined attributes listed in the prior section, though.  As we learned in Chapter 17, it’s been possible to attach arbitrary userdefined attributes to them as well since Python 2.1:  
+
+```python
+>>> func
+<function func at 0x000000000296A1E0>
+>>> func.count = 0
+>>> func.count += 1
+>>> func.count
+1
+>>> func.handles = 'Button-Press'
+>>> func.handles
+'Button-Press'
+>>> dir(func)
+['__annotations__', '__call__', '__class__', '__closure__', '__code__',
+...and more: in 3.X all others have double underscores so your names won't clash...
+__str__', '__subclasshook__', 'count', 'handles']
+```
+
+Python’s own implementation-related data stored on functions follows naming conventions that prevent them from clashing with the more arbitrary attribute names you might assign yourself. In 3.X, all function internals’ names have leading and trailing double underscores (`“__X__”`); 2.X follows the same scheme, but also assigns some names that begin with “func_X”:  
+
+```python
+c:\code> py −3
+>>> def f(): pass
+>>> dir(f)
+...run on your own to see...
+>>> len(dir(f))
+34
+>>> [x for x in dir(f) if not x.startswith('__')]
+[]
+c:\code> py −2
+>>> def f(): pass
+>>> dir(f)
+...run on your own to see...
+>>> len(dir(f))
+31
+>>> [x for x in dir(f) if not x.startswith('__')]
+['func_closure', 'func_code', 'func_defaults', 'func_dict', 'func_doc',
+'func_globals', 'func_name']
+```
+
+### Function Annotations in 3.X
+
+
+
 ## Anonymous Functions: lambda  
 
 Besides the def statement, Python also provides an expression form that generates function objects. Because of its similarity to a tool in the Lisp language, it’s called lambda. Like def, this expression creates a function to be called later, but it returns the function instead of assigning it to a name. This is why lambdas are sometimes known as anonymous (i.e., unnamed) functions. In practice, they are often used as a way to
