@@ -246,8 +246,6 @@ expression : 是什么
 
 比如: 1+2是3, 1+2就是expression, 3 就是expression的 value
 
-
-
 statement: 做什么
 
 比如: a = 1, 把 a 绑定到整数1上, 并没有什么value 返回, 只是一个动作而已.

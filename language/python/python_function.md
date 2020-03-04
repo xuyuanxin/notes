@@ -1,5 +1,3 @@
-
-
 # PART--Functions and Generators
 
 # Function Basics
@@ -872,12 +870,49 @@ c:\code> py −2
 
 ### Function Annotations in 3.X
 
+In Python 3.X (but not 2.X), it’s also possible to attach annotation information—arbitrary user-defined data about a function’s arguments and result—to a function object. Python provides special syntax for specifying annotations, but it doesn’t do anything with them itself; annotations are completely optional, and when present are simply attached to the function object’s `__annotations__` attribute for use by other tools.  
 
+Syntactically, function annotations are coded in def header lines, as arbitrary expressions associated with arguments and return values. For arguments, they appear after a colon immediately following the argument’s name; for return values, they are written after a -> following the arguments list. This code, for example 
+
+```python
+>>> def func(a: 'spam', b: (1, 10), c: float) -> int:
+        return a + b + c
+>>> func(1, 2, 3)
+6
+```
+
+Calls to an annotated function work as usual, but when annotations are present Python collects them in a dictionary and attaches it to the function object itself.   
+
+```python
+>>> func.__annotations__
+{'c': <class 'float'>, 'b': (1, 10), 'a': 'spam', 'return': <class 'int'>}
+
+>>> def func(a: 'spam', b, c: 99):
+        return a + b + c
+>>> func(1, 2, 3)
+6
+>>> func.__annotations__
+{'c': 99, 'a': 'spam'}
+>>> for arg in func.__annotations__:
+        print(arg, '=>', func.__annotations__[arg])
+c => 99
+a => spam
+
+>>> def func(a: 'spam' = 4, b: (1, 10) = 5, c: float = 6) -> int:
+        return a + b + c
+>>> func(1, 2, 3)
+6
+>>> func() # 4 + 5 + 6 (all defaults)
+15
+>>> func(1, c=10) # 1 + 5 + 10 (keywords work normally)
+16
+>>> func.__annotations__
+{'c': <class 'float'>, 'b': (1, 10), 'a': 'spam', 'return': <class 'int'>}
+```
 
 ## Anonymous Functions: lambda  
 
-Besides the def statement, Python also provides an expression form that generates function objects. Because of its similarity to a tool in the Lisp language, it’s called lambda. Like def, this expression creates a function to be called later, but it returns the function instead of assigning it to a name. This is why lambdas are sometimes known as anonymous (i.e., unnamed) functions. In practice, they are often used as a way to
-inline a function definition, or to defer execution of a piece of code.
+Besides the def statement, Python also provides an expression form that generates function objects. Like def, this expression creates a function to be called later, but it returns the function instead of assigning it to a name. This is why lambdas are sometimes known as anonymous (i.e., unnamed) functions. In practice, they are often used as a way to inline a function definition, or to defer execution of a piece of code.
 
 ### lambda Basics
 
@@ -904,9 +939,9 @@ lambda argument1, argument2,... argumentN : expression using arguments
 'weefiefoe'
 
 >>> def knights():
-title = 'Sir'
-action = (lambda x: title + ' ' + x) # Title in enclosing def scope
-return action # Return a function object
+        title = 'Sir'
+        action = (lambda x: title + ' ' + x) # Title in enclosing def scope
+        return action # Return a function object
 >>> act = knights()
 >>> msg = act('robin') # 'robin' passed to x
 >>> msg
@@ -915,28 +950,138 @@ return action # Return a function object
 <function knights.<locals>.<lambda> at 0x00000000029CA488>
 ```
 
+### Why Use lambda?  
+
 lambda is also commonly used to code jump tables, which are lists or dictionaries of actions to be performed on demand. For example:
 
 ```python
 L = [lambda x: x ** 2, # Inline function definition
-lambda x: x ** 3,
-lambda x: x ** 4] # A list of three callable functions
+     lambda x: x ** 3,
+     lambda x: x ** 4] # A list of three callable functions
+
 for f in L:
-print(f(2)) # Prints 4, 8, 16
+    print(f(2)) # Prints 4, 8, 16
+
 print(L[0](3)) # Prints 9
 ```
 
 ```python
 >>> key = 'got'
 >>> {'already': (lambda: 2 + 2),
-'got': (lambda: 2 * 4),
-'one': (lambda: 2 ** 6)}[key]()
-8  
+     'got': (lambda: 2 * 4),
+     'one': (lambda: 2 ** 6)}[key]()
+8
 ```
 
 Here, when Python makes the temporary dictionary, each of the nested lambdas generates and leaves behind a function to be called later. Indexing by key fetches one of those functions, and parentheses force the fetched function to be called. When coded this way, a dictionary becomes a more general multiway branching tool than what I could fully show you in Chapter 12’s coverage of if statements
 
+### How (Not) to Obfuscate Your Python Code  
 
+# Comprehensions and Generations
+
+## List Comprehensions and Functional Tools    
+
+In short, list comprehensions apply an arbitrary expression to items in an iterable, rather than applying a function.  
+
+### List Comprehensions Versus map
+
+```python
+>>> res = list(map(ord, 'spam')) # Apply function to sequence (or other)
+>>> res
+[115, 112, 97, 109]
+
+>>> res = [ord(x) for x in 'spam'] # Apply expression to sequence (or other)
+>>> res
+[115, 112, 97, 109]
+```
+
+List comprehensions collect the results of applying an arbitrary expression to an iterable of values and return them in a new list. Syntactically, list comprehensions are enclosed in square brackets—to remind you that they construct lists. In their simple form, within the brackets you code an expression that names a variable followed by what looks like a for loop header that names the same variable. Python then collects the expression’s results for each iteration of the implied loop.  
+
+### Adding Tests and Nested Loops: filter  
+
+```python
+>>> [x ** 2 for x in range(10) if x % 2 == 0]
+[0, 4, 16, 36, 64]
+```
+
+This time, we collect the squares of the even numbers from 0 through 9: the for loop skips numbers for which the attached if clause on the right is false, and the expression on the left computes the squares. The equivalent map call would require a lot more work on our part—we would have to combine filter selections with map iteration, making for a noticeably more complex expression:  
+
+```python
+>>> list( map((lambda x: x**2), filter((lambda x: x % 2 == 0), range(10))) )
+[0, 4, 16, 36, 64]
+```
+
+The general structure of list comprehensions looks like this:
+
+```python
+[ expression for target1 in iterable1 if condition1
+             for target2 in iterable2 if condition2 ...
+             for targetN in iterableN if conditionN ]  
+```
+
+```python
+>>> [x + y for x in 'spam' for y in 'SPAM']
+['sS', 'sP', 'sA', 'sM', 'pS', 'pP', 'pA', 'pM',
+'aS', 'aP', 'aA', 'aM', 'mS', 'mP', 'mA', 'mM']
+
+>>> [x + y + z for x in 'spam' if x in 'sm'
+               for y in 'SPAM' if y in ('P', 'A')
+               for z in '123' if z > '1']
+['sP2', 'sP3', 'sA2', 'sA3', 'mP2', 'mP3', 'mA2', 'mA3']
+```
+
+## Generator Functions and Expressions  
+
+todo
+
+### Generator Functions: yield Versus return
+
+Generator functions are like normal functions in most respects, and in fact are coded with normal def statements. However, when created, they are compiled specially into an object that supports the iteration protocol. And when called, they don’t return a result: they return a result generator that can appear in any iteration context. 
+
+#### Generator functions in action  
+
+The following code defines a generator function that can be used to generate the squares of a series of numbers over time:  
+
+```python
+>>> def gensquares(N):
+        for i in range(N):
+            yield i ** 2 # Resume here later
+```
+
+This function yields a value, and so returns to its caller, each time through the loop; when it is resumed, its prior state is restored, including the last values of its variables i and N, and control picks up again immediately after the yield statement. For example, when it’s used in the body of a for loop, the first iteration starts the function and gets its first result; thereafter, control returns to the function after its yield statement each time through the loop:  
+
+```python
+>>> for i in gensquares(5): # Resume the function
+        print(i, end=' : ') # Print last yielded value
+0 : 1 : 4 : 9 : 16 :
+>>>
+```
+
+To end the generation of values, functions either use a return statement with no value or simply allow control to fall off the end of the function body.  
+
+```python
+>>> x = gensquares(4)
+>>> x
+<generator object gensquares at 0x000000000292CA68>
+```
+
+You get back a generator object that supports the iteration protocol we met in Chapter 14—the generator function was compiled to return this automatically. The returned generator object in turn has a `__next__` method that starts the function or resumes it from where it last yielded a value, and raises a StopIteration exception when the end of the series of values is reached and the function returns. For convenience, the
+next(X) built-in calls an object’s X.`__next__`() method for us in 3.X (and X.next() in 2.X):  
+
+```python
+>>> next(x) # Same as x.__next__() in 3.X
+0
+>>> next(x) # Use x.next() or next() in 2.X
+1
+>>> next(x)
+4
+>>> next(x)
+9
+>>> next(x)
+Traceback (most recent call last):
+File "<stdin>", line 1, in <module>
+StopIteration
+```
 
 
 
