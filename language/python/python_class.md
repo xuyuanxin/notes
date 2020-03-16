@@ -226,23 +226,301 @@ I = Sub(1, 2)
 Of course, the whole point of the namespace created by the class statement is to support name inheritance.  Every time you use an expression of the form object.attr where object is an instance or class object, Python searches the namespace tree from bottom to top, beginning with object, looking for the first attr it can find. This includes references to self attributes in your methods. Because lower definitions in the tree override higher ones, inheritance forms the basis
 of specialization.  
 
+# Operator Overloading  
+
+## Call Expressions: `__call__`  
+
+```python
+class tracer:
+    def __init__(self, func): # Remember original, init counter
+        self.calls = 0
+        self.func = func
+    def __call__(self, *args): # On later calls: add logic, run original
+        self.calls += 1
+        print('call %s to %s' % (self.calls, self.func.__name__))
+        return self.func(*args)
+
+@tracer # Same as spam = tracer(spam)
+def spam(a, b, c): # Wrap spam in a decorator object
+    return a + b + c
+
+print(spam(1, 2, 3)) # Really calls the tracer wrapper object
+    print(spam('a', 'b', 'c')) # Invokes __call__ in class
+```
+
+Because the spam function is run through the tracer decorator, when the original spam name is called it actually triggers the `__call__` method in the class. This method counts and logs the call, and then dispatches it to the original wrapped function.  
+
+```python
+c:\code> python tracer1.py
+call 1 to spam
+6
+call 2 to spam
+abc
+```
+
+### A First Look at Class Decorators and Metaclasses  
 
 
 
+# Advanced Class Topics
 
+## Static and Class Methods
 
+As of Python 2.2, it is possible to define two kinds of methods within a class that can be called without an instance: static methods work roughly like simple instance-less functions inside a class, and class methods are passed a class instead of an instance.  
 
+### Why the Special Methods?  
 
+Sometimes, programs need to process data associated with classes instead of instances. Consider keeping track of the number of instances created from a class. This type of information and its processing are associated with the class rather than its instances.    
 
+Python supports such goals with the notion of static methods—simple functions with no self argument that are nested in a class and are designed to work on class attributes instead of instance attributes.   
 
+### Static Methods in 2.X and 3.X  
 
+To illustrate, suppose we want to use class attributes to count how many instances are generated from a class. The following file, spam.py, makes a first attempt  
 
+```python
+class Spam:
+    numInstances = 0
+    def __init__(self):
+        Spam.numInstances = Spam.numInstances + 1
+    def printNumInstances():
+        print("Number of instances created: %s" % Spam.numInstances)
+```
 
+The printNumInstances method is designed to process class data, not instance data—it’s about all the instances, not any one in particular. Because of that, we want to be able to call it without having to pass an instance.  
 
+In 2.X, calls to a self-less method function through both the class and instances fail (as usual, I’ve omitted some error text here for space):  
 
+```python
+C:\code> c:\python27\python
+>>> from spam import Spam
+>>> a = Spam() # Cannot call unbound class methods in 2.X
+>>> b = Spam() # Methods expect a self object by default
+>>> c = Spam()
+>>> Spam.printNumInstances()
+TypeError: unbound method printNumInstances() must be called with Spam instance
+as first argument (got nothing instead)
+>>> a.printNumInstances()
+TypeError: printNumInstances() takes no arguments (1 given)
+```
 
+In Python 3.X, calls to self-less methods made through classes work, but calls from instances fail:  
 
+```python
+C:\code> c:\python33\python
+>>> from spam import Spam
+>>> a = Spam() # Can call functions in class in 3.X
+>>> b = Spam() # Calls through instances still pass a self
+>>> c = Spam()
+>>> Spam.printNumInstances() # Differs in 3.X
+Number of instances created: 3
+>>> a.printNumInstances()
+TypeError: printNumInstances() takes 0 positional arguments but 1 was given
+```
 
+That is, calls to instance-less methods like printNumInstances made through the class fail in Python 2.X but work in Python 3.X. On the other hand, calls made through an instance fail in both Pythons, because an instance is automatically passed to a method that does not have an argument to receive it:
+
+```python
+Spam.printNumInstances() # Fails in 2.X, works in 3.X
+instance.printNumInstances() # Fails in both 2.X and 3.X (unless static)
+```
+
+If you’re able to use 3.X and stick with calling self-less methods through classes only, you already have a static method feature. However, to allow self-less methods to be called through classes in 2.X and through instances in both 2.X and 3.X, you need to either adopt other designs or be able to somehow mark such methods as special. Let’s look at both options in turn.  
+
+### Static Method Alternatives 
+
+if you just want to call functions that access class members without an instance, perhaps the simplest idea is to use normal functions outside the class, not class methods. This way, an instance isn’t expected in the call. The following mutation of spam.py illustrates, and works the same in Python 3.X and 2.X:  
+
+```python
+def printNumInstances():
+    print("Number of instances created: %s" % Spam.numInstances)
+class Spam:
+    numInstances = 0
+    def __init__(self):
+        Spam.numInstances = Spam.numInstances + 1
+C:\code> c:\python33\python
+>>> import spam
+>>> a = spam.Spam()
+>>> b = spam.Spam()
+>>> c = spam.Spam()
+>>> spam.printNumInstances() # But function may be too far removed
+Number of instances created: 3 # And cannot be changed via inheritance
+>>> spam.Spam.numInstances
+3
+```
+
+Because the class name is accessible to the simple function as a global variable, this works fine. 
+
+### Using Static and Class Methods
+
+```python
+# File bothmethods.py
+class Methods:
+    def imeth(self, x): # Normal instance method: passed a self
+        print([self, x])
+    def smeth(x): # Static: no instance passed
+        print([x])
+        
+    def cmeth(cls, x): # Class: gets class, not instance
+        print([cls, x])
+        
+    smeth = staticmethod(smeth) # Make smeth a static method (or @: ahead)
+    cmeth = classmethod(cmeth) # Make cmeth a class method (or @: ahead)
+```
+
+Notice how the last two assignments in this code simply reassign (a.k.a. rebind) the method names smeth and cmeth. Attributes are created and changed by any assignment in a class statement, so these final assignments simply overwrite the assignments made earlier by the defs. 
+
+Technically, Python now supports three kinds of class-related methods, with differing argument protocols:
+
+- Instance methods, passed a self instance object (the default)
+- Static methods, passed no extra object (via staticmethod)
+- Class methods, passed a class object (via classmethod, and inherent in metaclasses)    
+
+Moreover, Python 3.X extends this model by also allowing simple functions in a class to serve the role of static methods without extra protocol, when called through a class object only. 
+
+Instance methods are the normal and default case that we’ve seen in this book. An instance method must always be called with an instance object. When you call it through an instance, Python passes the instance to the first (leftmost) argument automatically; when you call it through a class, you must pass along the instance manually:  
+
+```python
+>>> from bothmethods import Methods # Normal instance methods
+>>> obj = Methods() # Callable through instance or class
+>>> obj.imeth(1)
+[<bothmethods.Methods object at 0x0000000002A15710>, 1]
+```
+
+Static methods, by contrast, are called without an instance argument. 
+
+```python
+>>> Methods.smeth(3) # Static method: call through class
+[3] # No instance passed or expected
+>>> obj.smeth(4) # Static method: call through instance
+[4] # Instance not passed
+```
+
+Class methods are similar, but Python automatically passes the class (not an instance) in to a class method’s first (leftmost) argument, whether it is called through a class or an instance:  
+
+```python
+>>> Methods.cmeth(5) # Class method: call through class
+[<class 'bothmethods.Methods'>, 5] # Becomes cmeth(Methods, 5)
+>>> obj.cmeth(6) # Class method: call through instance
+[<class 'bothmethods.Methods'>, 6] # Becomes cmeth(Methods, 6)
+```
+
+### Counting Instances with Static Methods  
+
+```python
+class Spam:
+    numInstances = 0 # Use static method for class data
+    def __init__(self):
+        Spam.numInstances += 1
+    def printNumInstances():
+        print("Number of instances: %s" % Spam.numInstances)
+    printNumInstances = staticmethod(printNumInstances)
+```
+
+Using the static method built-in, our code now allows the self-less method to be called through the class or any instance of it, in both Python 2.X and 3.X:  
+
+```python
+>>> from spam_static import Spam
+>>> a = Spam()
+>>> b = Spam()
+>>> c = Spam()
+>>> Spam.printNumInstances() # Call as simple function
+Number of instances: 3
+>>> a.printNumInstances() # Instance argument not passed
+Number of instances: 3
+```
+
+```python
+class Sub(Spam):
+    def printNumInstances(): # Override a static method
+        print("Extra stuff...") # But call back to original
+        Spam.printNumInstances()
+    printNumInstances = staticmethod(printNumInstances)
+>>> from spam_static import Spam, Sub
+>>> a = Sub()
+>>> b = Sub()
+>>> a.printNumInstances() # Call from subclass instance
+Extra stuff...
+Number of instances: 2
+>>> Sub.printNumInstances() # Call from subclass itself
+Extra stuff...
+Number of instances: 2
+>>> Spam.printNumInstances() # Call original version
+Number of instances: 2
+>>> class Other(Spam): pass # Inherit static method verbatim
+>>> c = Other()
+>>> c.printNumInstances()
+Number of instances: 3
+```
+
+### Counting Instances with Class Methods  
+
+```python
+class Spam:
+    numInstances = 0 # Use class method instead of static
+    def __init__(self):
+        Spam.numInstances += 1
+    def printNumInstances(cls):
+        print("Number of instances: %s" % cls.numInstances)
+    printNumInstances = classmethod(printNumInstances)
+
+>>> from spam_class import Spam
+>>> a, b = Spam(), Spam()
+>>> a.printNumInstances() # Passes class to first argument
+Number of instances: 2
+>>> Spam.printNumInstances() # Also passes class to first argument
+Number of instances: 2
+```
+
+## Decorators and Metaclasses: Part 1
+
+This is called a “decoration,” but in more concrete terms is really just a way to run extra processing steps at function and class definition time with explicit syntax. It comes in two flavors:  Function decorators, Class decorators.
+
+### Function Decorator Basics  
+
+Syntactically, a function decorator is a sort of runtime declaration about the function that follows. A function decorator is coded on a line by itself just before the def statement that defines a function or method. It consists of the @ symbol, followed by what we call a metafunction—a function (or other callable object) that manages another function.   
+
+Static methods since Python 2.4, for example, may be coded with decorator syntax like this:  
+
+```python
+class C:
+    @staticmethod # Function decoration syntax
+    def meth():
+        ...
+```
+
+Internally, this syntax has the same effect as the following—passing the function through the decorator and assigning the result back to the original name:  
+
+```python
+class C:
+    def meth():
+        ...
+    meth = staticmethod(meth) # Name rebinding equivalent
+```
+
+### A First Look at User-Defined Function Decorators  
+
+Although Python provides a handful of built-in functions that can be used as decorators, we can also write custom decorators of our own.  As a quick example, though, let’s look at a simple user-defined decorator at work.  
+
+### A First Look at Class Decorators and Metaclasses  
+
+In short, class decorators are similar to function decorators, but they are run at the end of a class statement to rebind a class name to a callable. As such, they can be used to either manage classes just after they are created, or insert a layer of wrapper logic to manage instances when they are later created. Symbolically, the code structure:  
+
+```python
+def decorator(aClass): ...
+
+@decorator # Class decoration syntax
+class C: ...
+```
+
+is mapped to the following equivalent:
+
+```python
+def decorator(aClass): ...
+
+class C: ... # Name rebinding equivalent
+C = decorator(C)
+```
 
 
 
