@@ -522,6 +522,21 @@ class C: ... # Name rebinding equivalent
 C = decorator(C)
 ```
 
+```python
+def count(aClass):
+    aClass.numInstances = 0
+    return aClass # Return class itself, instead of a wrapper
+
+@count
+class Spam: ... # Same as Spam = count(Spam)
+
+@count
+class Sub(Spam): ... # numInstances = 0 not needed here
+
+@count
+class Other(Spam): ...
+```
+
 
 
 ## 参考：
