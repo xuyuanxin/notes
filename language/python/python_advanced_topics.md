@@ -1,5 +1,13 @@
 # Part--Advanced Topics  
 
+# Managed Attributes  
+
+This chapter expands on the attribute interception techniques introduced earlier, introduces another, and employs them in a handful of larger examples.  
+
+## Why Manage Attributes?
+
+##    
+
 # Decorators
 
 This is a somewhat advanced topic, and decorator construction tends to be of more interest to tool builders than to application programmers. Still, given that decorators are becoming increasingly common in popular Python frameworks, a basic understanding can help demystify their role, even if you’re just a decorator user.    

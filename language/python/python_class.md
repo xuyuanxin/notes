@@ -678,7 +678,26 @@ In Python, classes can also intercept basic attribute access (a.k.a. qualificati
 
 ### Attribute Reference 
 
-  
+The `__getattr__` method intercepts attribute references. It’s called with the attribute name as a string whenever you try to qualify an instance with an undefined (nonexistent) attribute name. It is not called if Python can find the attribute using its inheritance tree search procedure.   
+
+```python
+>>> class Empty:
+        def __getattr__(self, attrname): # On self.undefined
+            if attrname == 'age':
+                return 40
+            else:
+                raise AttributeError(attrname)
+>>> X = Empty()
+>>> X.age
+40
+>>> X.name
+...error text omitted...
+AttributeError: name
+```
+
+Here, the Empty class and its instance X have no real attributes of their own, so the access to X.age gets routed to the `__getattr__` method; self is assigned the instance (X), and attrname is assigned the undefined attribute name string ('age'). The class makes age look like a real attribute by returning a real value as the result of the X.age qualification expression (40). In effect, age becomes a dynamically computed attribute—its value is formed by running code, not fetching an object.  
+
+
 
 ## String Representation: `__repr__` and `__str__`  
 
