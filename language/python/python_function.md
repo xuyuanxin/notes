@@ -585,7 +585,7 @@ By default, arguments are matched by position, from left to right, and you must 
 
 ## Keyword and Default Examples  
 
-If you don’t use any special matching syntax, Python matches names by position from left to right  If you don’t use any special matching syntax, Python matches names by position from left to right. Here, we pass by position—a is matched to 1, b is matched to 2, and so on.
+If you don’t use any special matching syntax, Python matches names by position from left to right. Here, we pass by position—a is matched to 1, b is matched to 2, and so on.
 
 ```python
 >>> def f(a, b, c): print(a, b, c)

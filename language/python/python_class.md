@@ -773,7 +773,7 @@ addboth(5)
 
 ## Call Expressions: `__call__`  
 
-On to our next overloading method: the `__call__` method is called when your instance is called. No, this isn’t a circular definition—if defined, Python runs a `__call__` method for function call expressions applied to your instances, passing along whatever positional or keyword arguments were sent. This allows instances to conform to a functionbased API:  
+On to our next overloading method: the `__call__` method is called when your instance is called. No, this isn’t a circular definition—if defined, Python runs a `__call__` method for function call expressions applied to your instances, passing along whatever positional or keyword arguments were sent. This allows instances to conform to a function-based API:  
 
 ```python
 >>> class Callee:
@@ -790,10 +790,10 @@ Intercepting call expression like this allows class instances to emulate the loo
 
 ```python
 >>> class Prod:
-def __init__(self, value):
-self.value = value
-def comp(self, other):
-return self.value * other
+        def __init__(self, value):
+            self.value = value
+        def __cal__(self, other):
+            return self.value * other
 >>> x = Prod(3)
 >>> x.comp(3)
 9
