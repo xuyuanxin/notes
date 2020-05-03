@@ -153,9 +153,8 @@ This doesn’t quite work, though. Calling an in-place change operation such as 
 
 One of the easiest ways to understand the iteration protocol is to see how it works with a built-in type such as the file.   
 
-script2.py：
-
-```
+```python
+# script2.py：
 import sys
 x = 2
 print(x ** 32)
@@ -223,11 +222,11 @@ Although Python iteration tools call these functions automatically, we can use t
 
 >>> I = iter(L) # Manual iteration: what for loops usually do
 >>> while True:
-... try: # try statement catches exceptions
-... X = next(I) # Or call I.__next__ in 3.X
-... except StopIteration:
-... break
-... print(X ** 2, end=' ')
+...     try: # try statement catches exceptions
+...         X = next(I) # Or call I.__next__ in 3.X
+...     except StopIteration:
+...         break
+...     print(X ** 2, end=' ')
 ...
 1 4 9
 ```
