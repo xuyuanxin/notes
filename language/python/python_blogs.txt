@@ -1,2 +1,0 @@
-http://www.oschina.net/translate/open-sourcing-a-python-project-the-right-way?print     以正确的方式开源 Python 项目
-python中对list去重的多种方法   http://www.jb51.net/article/55342.htm
