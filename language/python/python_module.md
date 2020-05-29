@@ -1,6 +1,6 @@
 # Modules and Packages
 
-## Modules: The Big Picture  
+# Modules: The Big Picture  
 
 Python module—the highest-level program organization unit, which packages program code and data for reuse, and provides selfcontained namespaces that minimize variable name clashes across your programs.  Each file is a module, and modules import other modules to use the names they define.  Modules are processed with two statements and one important function:
 
@@ -10,7 +10,7 @@ Python module—the highest-level program organization unit, which packages prog
 
 Besides serving as the highest organizational structure, modules (and module packages) are also the highest level of code reuse in Python.  
 
-### Why Use Modules?
+## Why Use Modules?
 
 All the names defined at the top level of a module file become attributes of the imported module object. Python’s modules allow us to link individual files into a larger program system. More specifically, modules have at least three roles:  
 
@@ -18,7 +18,7 @@ All the names defined at the top level of a module file become attributes of the
 - System namespace partitioning  
 - Implementing shared services or data  
 
-### Python Program Architecture  
+## Python Program Architecture  
 
 At a base level, a Python program consists of text files containing Python statements, with one main top-level file, and zero or more supplemental files known as modules.  
 
@@ -44,7 +44,7 @@ The code import b roughly means: Load the file b.py (unless it’s already loade
 
 Similarly, objects defined by a module are also created at runtime, as the import is executing: import literally runs statements in the target file one at a time to create its contents. Along the way, every name assigned at the top-level of the file becomes an attribute of the module, accessible to importers.  The code b.spam means: Fetch the value of the name spam that lives within the object b.  
 
-### How Imports Work
+## How Imports Work
 
 In Python, imports are not just textual insertions of one file into another. They are really runtime operations that perform three distinct steps the first time a program imports a given file:
 
@@ -62,9 +62,9 @@ In Python, imports are not just textual insertions of one file into another. The
 
    If you need to import a file again after it has already been loaded (for example, to support dynamic end-user customizations), you have to force the issue with an imp.reload call—a tool we’ll meet in the next chapter.  
 
-### pycache /todo
+## pycache /todo
 
-### The Module Search Path
+## The Module Search Path
 
 Roughly, Python’s module search path is composed of the concatenation of these major components, some of which are preset for you and some of which you can tailor to tell Python where to look:  
 
@@ -133,9 +133,11 @@ Roughly, Python’s module search path is composed of the concatenation of these
   not Python; because they look just like Python-coded module files, their clients d-
   on’t have to care.
 
-## Module Coding Basics
+# Module Coding Basics
 
-### Module Creation
+Python modules are easy to create; they’re just files of Python program code created with a text editor. You don’t need to write special syntax to tell Python you’re making a module; almost any text file will do. Because Python handles all the details of finding and loading modules, modules are also easy to use; clients simply import a module, or specific names a module defines, and use the objects they reference.  
+
+## Module Creation
 
 To define a module, simply use your text editor to type some Python code into a text file, and save it with a “.py” extension; any such file is automatically considered a Python module. All the names assigned at the top level of the module become its attributes. 
 
@@ -146,11 +148,13 @@ def printer(x): # Module attribute
     print(x)
 ```
 
+In fact, both the names of module files and the names of directories used in package imports (discussed in the next chapter) must conform to the rules for variable names presented in Chapter 11; they may, for instance, contain only letters, digits, and underscores. Package directories also cannot contain platform-specific syntax such as spaces in their names.  
+
 It is also possible to create a Python module by writing code in an external language such as C, C++, and others (e.g., Java, in the Jython implementation of the language). Such modules are called extension modules, and they are generally used to wrap up external libraries for use in Python scripts. When imported by Python code, extension modules look and feel the same as modules coded as Python source code files--they are accessed with import statements, and they provide functions and objects as module attributes. Extension modules are beyond the scope of this book; see Python’s standard manuals or advanced texts such as Programming Python for more details.
 
-### Module Usage
+## Module Usage
 
-####  The import Statement
+###  The import Statement
 
 In the first example, the name module1 serves two different purposes--it identifies an external file to be loaded, and it becomes a variable in the script, which references the module object after the file is loaded:
 
@@ -162,7 +166,7 @@ Hello world!
 
 The import statement simply lists one or more names of modules to load, separated by commas. Because it gives a name that refers to the whole module object, we  must go through the module name to fetch its attributes (e.g., module1.printer).
 
-####  The from Statement
+###  The from Statement
 
 By contrast, because from copies specific names from one file over to another scope, it allows us to use the copied names directly in the script without going through the module (e.g., printer):
 
@@ -174,7 +178,7 @@ Hello world!
 
 This form of from allows us to list one or more names to be copied out, separated by commas. We can use it directly instead of naming the enclosing module. In fact, we must; from doesn’t assign the name of the module itself. As you’ll see in more detail later, the from statement is really just a  minor extension to the import statement--it imports the module file as usual  ( running the full three-step procedure of the preceding chapter ), but adds an extra step that copies one or more names (not objects) out of the file. The entire file is loaded, but you’re given names for more direct access to its parts.  
 
-#### The from * Statement
+### The from * Statement
 
 Finally, the next example uses a special form of from: when we use a * instead of specific names, we get copies of all names assigned at the top level of the referenced module. Here again, we can then use the copied name printer in our script without going through the module name:
 
@@ -234,11 +238,11 @@ del module # Get rid of the module name
 
 Like all assignments, the from statement creates new variables in the importer, which initially refer to objects of the same names in the imported file. Only the names are copied out, though, not the objects they reference, and not the name of the module itself. When we use the from * form of this statement (from module import *), the equivalence is the same, but all the top-level names in the module are copied over to the importing scope this way.  
 
-## Module Packages  
+# Module Packages  
 
 In addition to a module name, an import can name a directory path. A directory of Python code is said to be a package, so such imports are known as package imports. In effect, a package import turns a directory on your computer into another Python namespace, with attributes corresponding to the subdirectories and module files that the directory contains  
 
-### Package Import Basics  
+## Package Import Basics  
 
 ```python
 import dir1.dir2.mod  
@@ -267,8 +271,8 @@ import dir1.dir2.mod
 
 the following rules apply:
 
-- dir1 and dir2 both must contain an __init__.py file.
-- dir0, the container, does not require an __init__.py file; this file will simply be ignored if present.
+- dir1 and dir2 both must contain an `__init__`.py file.
+- dir0, the container, does not require an `__init__`.py file; this file will simply be ignored if present.
 - dir0, not dir0\dir1, must be listed on the module search path sys.path.  
 
 The net effect is that this example’s directory structure should be as follows, with indentation designating directory nesting:
@@ -284,7 +288,14 @@ dir0\ # Container on module search path
 
 The `__init__.py` files can contain Python code, just like normal module files. Their names are special because their code is run automatically the first time a Python program imports a directory, and thus serves primarily as a hook for performing initialization steps required by the package. These files can also be completely empty, though, and sometimes have additional roles--as the next section explains.
 
-### Package Import Example
+Package initialization file roles  
+
+- Package initialization: The first time a Python program imports through a directory, it automatically runs all the code in the directory’s `__init__`.py file. Because of that, these files are a natural place to put code to initialize the state required by files in a package. 
+- Module usability declarations: Package `__init__`.py files are also partly present to declare that a directory is a Python package.     
+- Module namespace initialization: In the package import model, the directory paths in your script become real nested object paths after an import. For instance, in the preceding example, after the import the expression dir1.dir2 works and returns a module object whose namespace contains all the names assigned by dir2’s `__init__`.py initialization file. Such files provide a namespace for module objects created for directories, which would otherwise have no real associated module file.  
+- from * statement behavior: As an advanced feature, you can use `__all__` lists in `__init__`.py files to define what is exported when a directory is imported with the from * statement form. In an `__init__`.py file, the `__all__` list is taken to be the list of submodule names that should be  automatically imported when from * is used on the package (directory) name. If `__all__` is not set, the from * statement does not automatically load submodules nested in the directory; instead, it loads just names defined by assignments in the directory’s `__init__`.py file, including any submodules explicitly imported by code in this file. For instance, the statement from submodule import X in a directory’s `__init__`.py makes the name X available in that directory’s namespace.   
+
+## Package Import Example
 
 The following three files are coded in a directory dir1 and its subdirectory dir2—comments give the pathnames of these files:  
 
@@ -304,7 +315,7 @@ z = 3
 
 Here, dir1 will be either an immediate subdirectory of the one we’re working in (i.e., the home directory), or an immediate subdirectory of a directory that is listed on the module search path (technically, on sys.path). Either way, dir1’s container does not need an `__init__.py` file.  
 
-import statements run each directory’s initialization file the first time that directory is traversed, as Python descends the path;   
+import statements run each directory’s initialization file the first time that directory is traversed:
 
 ```python
 C:\code> python # Run in dir1's container directory
@@ -372,15 +383,17 @@ in mod.py
 3
 ```
 
+## Why Use Package Imports?  
+
+
+
+## Package Relative Imports  
 
 
 
 
 
-
-
-
-## 参考：
+# 参考：
 
 learning python （python学习手册）
 

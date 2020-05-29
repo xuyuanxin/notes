@@ -362,6 +362,21 @@ In Python, numbers are not really a single object type, but a category of simila
 
 ### Numeric Literals
 
+Table 5-1 shows what Python’s numeric types look like when written out in a program as literals or constructor function calls.  
+
+Table 5-1. Numeric literals and constructors
+
+| Literal                             | Interpretation                                |
+| ----------------------------------- | --------------------------------------------- |
+| 1234, -24, 0, 99999999999999        | Integers (unlimited size)                     |
+| 1.23, 1., 3.14e-10, 4E210, 4.0e+210 | Floating-point numbers                        |
+| 0o177, 0x9ff, 0b101010              | Octal, hex, and binary literals in 3.X        |
+| 0177, 0o177, 0x9ff, 0b101010        | Octal, octal, hex, and binary literals in 2.X |
+| 3+4j, 3.0+4.0j, 3J                  | Complex number literals                       |
+| set('spam'), {1, 2, 3, 4}           | Sets: 2.X and 3.X construction forms          |
+| Decimal('1.0'), Fraction(1, 3)      | Decimal and fraction extension types          |
+| bool(X), True, False                | Boolean type and constants                    |
+
 ### Built-in Numeric Tools  
 
 Python provides a set of tools for processing number objects:  
