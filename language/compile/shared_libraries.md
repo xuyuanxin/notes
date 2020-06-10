@@ -1,0 +1,514 @@
+http://www.cnblogs.com/vamei/archive/2013/04/04/2998850.html  C编译: 动态连接库 (.so文件)
+http://zrj.me/archives/1066   
+
+库分为静态库(Static Library)和共享库(Shared library)两类. 静态库文件的扩展名是.a, 共享库文件的扩展名是.so(在CYGWIN环境下, 分别叫做.o和.dll). 共享库现在常常被叫做动态库, 是由于很多人借用了MS Windows的DLL(Dynamic Linked Library)这个词. 当我们想知道gcc在链接的时候使用了什么库的时候, 可以使用这样的命令                                        
+
+```shell
+$ gcc --print-file-name=librt.so
+```
+
+http://www.cnblogs.com/zhuyp1015/archive/2012/05/06/2486650.html                   
+
+# 可执行文件的装载
+
+## 程序和进程                                                                      
+
+程序是一个静态的概念，它就是这些预编译好的指令和数据集合的一个文件；进程则是一个动态的概念，它是程序运行时的一个过程，很多时候把动态库叫做运行时也有一定的含义。一般来来说，C语言指针大小的位数与虚拟空间的位数相同，如果32位平台下指针为32位，即4字节；64位平台下的指针为64位，即8字节。Intel自从1995年的Pentium Pro CPU开始采用了36位的物理地址，也就是可以访问高达64GB的物理内存。Intel把这个地址扩展方式叫做PAE（Physical Address Extension).                                                                   
+
+## 装载方式
+
+覆盖装入和页映射是两种很典型的动态装载方法, 它们都利用了程序的局部性原理.             
+
+## 操作系统角度下的文件装载                                                        
+
+从操作系统的角度，一个进程最关键的特征是它拥有独立的虚拟地址空间，这使得它有别于其他进程。一个程序被执行同时都伴随着一个新进程的创建：创建一个进程，然后装载相应的可执行文件并且执行。该工程需要做三件事：                                           
+
+- 创建一个独立的虚拟地址空间：将虚拟空间的各个页映射至相应的物理空间, 实际上只是分配了一个页目录(Page Directory)就可以了.                                                                               
+- 读取可执行文件头，并且建立虚拟空间与可执行文件的映射关系：建立虚拟地址空间与可执行文件的映射关系. 当发生缺页故障时, 操作系统应该知道当前所需要的页在可执行文件中的哪个位置, 这就是虚拟空间与可执行文件之间的映射关系. 这种映射关系只是保存在操作系统内部的一个数据构. Linux中将进程虚拟空间中的一个段叫做虚拟内存区域(VMA, Virtual Memory Area); 在Windows中将这个叫做虚拟段(Virtual Section).              
+- 将CPU的指令寄存器设置成可执行文件的入口地址, 启动并运行                              
+
+## 进程虚拟空间分布                                                                
+
+ELF文件中, 段的权限只有为数不多的几种组合:                                            
+*以代码段为代表的权限为可读可执行的段                                                 
+*以数据段和BSS段为代表的权限为可读可写的段                                            
+*以只读数据段为代表的权限为只读的段.                                                  
+对于相同权限的段, 把它们合并到一起当做一个段进行映射.                                 
+
+#include <stdlib.h>
+
+int main()
+{
+  while(1) sleep(1000);
+  return 0;
+}
+?~~~~~~~~~~~~~~~~~~~~~~~~~a.c end                                                      
+#gcc -static -o SectionMapping.elf a.c
+#readelf -S SectionMapping.elf
+
+There are 29 section headers, starting at offset 0x868dc:
+Section Headers:
+  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
+  [ 1] .note.ABI-tag     NOTE            080480f4 0000f4 000020 00   A  0   0  4
+  [ 2] .note.gnu.build-i NOTE            08048114 000114 000024 00   A  0   0  4
+  [ 3] .rel.plt          REL             08048138 000138 000028 08   A  0   5  4
+  [ 4] .init             PROGBITS        08048160 000160 000030 00  AX  0   0  4
+  [ 5] .plt              PROGBITS        08048190 000190 000050 00  AX  0   0  4
+  [ 6] .text             PROGBITS        080481e0 0001e0 065d5c 00  AX  0   0 16
+  [ 7] __libc_freeres_fn PROGBITS        080adf40 065f40 000b57 00  AX  0   0 16
+  [ 8] .fini             PROGBITS        080aea98 066a98 00001c 00  AX  0   0  4
+  [ 9] .rodata           PROGBITS        080aeac0 066ac0 0191b0 00   A  0   0 32
+  [10] __libc_subfreeres PROGBITS        080c7c70 07fc70 000030 00   A  0   0  4
+  [11] __libc_atexit     PROGBITS        080c7ca0 07fca0 000004 00   A  0   0  4
+  [12] .eh_frame         PROGBITS        080c7ca4 07fca4 0054d8 00   A  0   0  4
+  [13] .gcc_except_table PROGBITS        080cd17c 08517c 00011a 00   A  0   0  1
+  [14] .tdata            PROGBITS        080cef8c 085f8c 000010 00 WAT  0   0  4
+  [15] .tbss             NOBITS          080cef9c 085f9c 000018 00 WAT  0   0  4
+  [16] .ctors            PROGBITS        080cef9c 085f9c 00000c 00  WA  0   0  4
+  [17] .dtors            PROGBITS        080cefa8 085fa8 00000c 00  WA  0   0  4
+  [18] .jcr              PROGBITS        080cefb4 085fb4 000004 00  WA  0   0  4
+  [19] .data.rel.ro      PROGBITS        080cefb8 085fb8 000030 00  WA  0   0  4
+  [20] .got              PROGBITS        080cefe8 085fe8 00000c 04  WA  0   0  4
+  [21] .got.plt          PROGBITS        080ceff4 085ff4 000020 04  WA  0   0  4
+  [22] .data             PROGBITS        080cf020 086020 000740 00  WA  0   0 32
+  [23] .bss              NOBITS          080cf760 086760 001b9c 00  WA  0   0 32
+  [24] __libc_freeres_pt NOBITS          080d12fc 086760 000018 00  WA  0   0  4
+  [25] .comment          PROGBITS        00000000 086760 00006c 01  MS  0   0  1
+  [26] .shstrtab         STRTAB          00000000 0867cc 000110 00      0   0  1
+  [27] .symtab           SYMTAB          00000000 086d64 0083e0 10     28 974  4
+  [28] .strtab           STRTAB          00000000 08f144 00758a 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+                                                                                      
+ELF可执行文件中有一个专门的数据结构叫做程序头表(Program Header Table)用来保存"Segment"
+的信息.                                                                               
+
+readelf -l SectionMapping.elf
+
+Elf file type is EXEC (Executable file)
+Entry point 0x80481e0
+
+There are 6 program headers, starting at offset 52
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  LOAD           0x000000 0x08048000 0x08048000 0x85296 0x85296 R E 0x1000
+  LOAD           0x085f8c 0x080cef8c 0x080cef8c 0x007d4 0x02388 RW  0x1000
+  NOTE           0x0000f4 0x080480f4 0x080480f4 0x00044 0x00044 R   0x4
+  TLS            0x085f8c 0x080cef8c 0x080cef8c 0x00010 0x00028 R   0x4
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x4
+  GNU_RELRO      0x085f8c 0x080cef8c 0x080cef8c 0x00074 0x00074 R   0x1
+ Section to Segment mapping:
+  Segment Sections...
+   00     .note.ABI-tag .note.gnu.build-id .rel.plt .init .plt .text __libc_freeres_fn .fini .rodata __libc_subfreeres __libc_atexit .eh_frame .gcc_except_table
+   01     .tdata .ctors .dtors .jcr .data.rel.ro .got .got.plt .data .bss __libc_freeres_ptrs
+   02     .note.ABI-tag .note.gnu.build-id
+   03     .tdata .tbss
+   04    
+   05     .tdata .ctors .dtors .jcr .data.rel.ro .got
+                                                                                      
+Elf32_Phdr结构的几个成员与使用readelf -l 命令打印文件头表显示的结果一一对应.          
+/usr/src/linux/include/linux/elf.h
+typedef struct elf32_phdr
+{
+    Elf32_Word p_type;
+    Elf32_Off p_offset;
+    Elf32_Addr p_vaddr;
+    Elf32_Addr p_paddr;
+    Elf32_Word p_filesz;
+    Elf32_Word p_memsz;
+    Elf32_Word p_flags;
+    Elf32_Word p_align;
+} Elf32_Phdr;
+
+Elf32_Phdr->p_type                                                                    
+段的类型, 它能告诉我们这个段里存放着什么用途的数据. 此字段的值是在elf.h中定义了一些常 
+量. 例如1(PT_LOAD)表示是可加载的段, 这样的段将被读入程序的进程空间成为内存映像的一部  
+分. 段的种类再不断增加, 例如7(PT_TLS)在以前就没有定义, 它表示用于线程局部存储.        
+Elf32_Phdr->p_flags                                                                   
+段的属性. 它用每一个二进制位表示一种属, 相应位为1表示含有相应的属性, 为0表示不含那种  
+属性. 其中最低位是可执行位, 次低位是可写位, 第三低位是可读位. 如果这个字段的最低三位  
+同时为1那就表示这个段中的数据加载以后既可读也可写而且可执行的. 同样在elf.h文件中也定  
+义了一此常量(PF_X PF_W PF_R)来测试这个字段的属性, 做为一个好习惯应该尽量使用这此常量. 
+Elf32_Phdr->p_offset                                                                  
+该段在文件中的偏移. 这个偏移是相对于整个文件的.                                       
+Elf32_Phdr->p_vaddr                                                                   
+该段加载后在进程空间中占用的内存起始地址.                                             
+Elf32_Phdr->p_paddr                                                                   
+该段的物理地地址. 这个字段被忽略, 因为在多数现代操作系统下物理地址是进程无法触及的.   
+Elf32_Phdr->p_filesz                                                                  
+该段在文件中占用的字节大小. 有些段可能在文件中不存在但却占用一定的内存空间, 此时这个  
+字段为0.                                                                              
+Elf32_Phdr->p_memsz                                                                   
+该段在内存中占用的字节大小. 有些段可能仅存在于文件中而不被加载到内存,此时这个字段为0. 
+Elf32_Phdr->p_align                                                                   
+对齐. 现代操作系统都使用虚拟内存为进程序提供更大的空间, 分页技术功不可没, 页就成了最  
+小的内存分配单位, 不足一页的按一页算. 所以加载程序数据一般也从一页的起始地址开始, 这  
+就属于对齐.                                                                           
+                                                                                      
+在Linux下, 我们可以通过查看"/proc"来查看进程的虚拟空间分布.                           
+
+./SectionMapping.elf  &
+
+[1] 2458
+
+cat  /proc/2458/maps
+
+00da3000-00da4000 r-xp 00000000 00:00 0          [vdso]
+08048000-080ce000 r-xp 00000000 08:01 209272     /xxx/SectionMapping.elf
+080ce000-080d0000 rw-p 00085000 08:01 209272     /xxx/SectionMapping.elf
+080d0000-080d2000 rw-p 00000000 00:00 0
+08bb6000-08bd8000 rw-p 00000000 00:00 0          [heap]
+bfc81000-bfca2000 rw-p 00000000 00:00 0          [stack]
+                                                                                      
+第一列表示VMA的地址范围; 第二列是VMA的权限, rwx, "p"表示(COW), "s"表示共享, 第三列表  
+示偏移, 表示VMA对应的Segment在映像文件中的偏移, 第四列表示映像文件所在设备的主次设备  
+号, 第五列表示文件的节点号. 最后一列表示映像文件的路径.                               
+vdso的地址位于内核空间, 他是一个内核模块, 进程可以通过访问这个VMA来跟内核通信. 主设备 
+号和此设备号都为0的段叫做匿名虚拟内存区域(Anonymous Virtual Memory Area).             
+操作系统通过给进程空间划分出一个个VMA来管理进程的虚拟空间; 基本原则是将相同权限属性的 
+, 有相同映像文件的映射成一个VMA.                                                      
+一个进程可以分为如下几种VMA区域:                                                      
+*代码VMA rx, 有映像文件
+*数据VMA rwx, 有映像文件
+*堆VMA rwx, 无映像文件,匿名,可向上扩展
+*栈VMA rx, 无映像文件,匿名,可向下扩展
+                                                                                      
+----> ELF文件的装载过程                                                               
+fork->execve()->sys_execve()->do_execve()                                             
+do_execve()读取文件的前128个字节判断文件的格式(一般根据魔数来判断, 比如elf的头四个字  
+节为: 0x7F, e, l, f). 然后调用search_binary_handle()去搜索和匹配合适的可执行文件装载  
+处理过程, 对于elf则调用load_elf_binary():                                             
+*检查ELF可执行文件格式的有效性                                                        
+*寻找动态链接的".interp"段, 设置动态连接器路径                                        
+*根据ELF可执行文件的程序头表的描述, 对ELF文件进行映射, 比如代码 数据 只读数据.        
+*根据ELF进程环境, 比如进程启动是EDX寄存器的地址应该是DT_FINI的地址.                   
+*将系统调用的返回地址修改成ELF可执行文件的入口点, 这个入口点取决于程序的链接方式, 静  
+ 态ELF可执行文件为e_entry所指的地址, 对于动态ELF入口点为动态连接器.                   
+Load_elf_binary()执行完毕, 返回至do_execve()再返回至sys_execve(), 最后一步的系统调用  
+返回地址改成了被装在的ELF程序入口地址. 当sys_execve()系统调用从内核态返回到用户态时,  
+EIP寄存器直接跳转到了ELF程序的入口地址, 新程序开始执行.                               
+
+Windows PE文件的装载 略.                                                              
+
+http://www.cnblogs.com/zhuyp1015/archive/2012/05/06/2486706.html                      
+
+# 动态链接                                                                        
+
+静态链接浪费内存和磁盘空间，模块更新困难等问题，因此寻找一种更好的办法来组织程序模块。静态链接对程序的更新，部署和发布也会带来很多麻烦。动态链接：就是不对那些组成程序的目标文件进行链接，等到程序要运行时才进行链接。动态链接的方式使得开发过程中各个模块更加独立，耦合度更小，便于不同的开发者和开发组织之间进行独立的开发和测试。动态链接还有一个特点就是程序在运行时可以动态的选择加载各种程序模块，使得插件成为可能。Linux系统中，ELF动态链接文件被称为动态共享对象(DSO, Dynamic Shared Objects)，简称共享对象，它们一般都是以".so"为扩展名；动态链接文件被称为动态链接库。在windows下为.dll。                                                         
+
+## 动态链接的基本原理                                                              
+
+动态链接的基本思想是把程序按模块拆分成各个相对独立的部分，在程序运行时才将它们链接在一起形成一个完整的程序。当程序被装载的时候，系统的动态链接器(不同于静态连接器ld)会将程序所需要的所有动态库装载到进程的地址空间，并将程序中所有未决的符号绑定到相应的动态链接库中，并进行重定位。举个例子                                                      
+
+```C
+/*Program1.c */
+#include "Lib.h"
+
+int main()
+{
+    foobar(1);
+    return 0;
+}
+```
+
+```C
+/*Program2.c*/
+#include "Lib.h"
+
+int main()
+{
+    foobar(2);
+    return 0;
+}
+```
+
+```C
+/*Lib.c*/
+#include <stdio.h>
+
+void foobar(int i)
+{
+    printf("Printing from Lib.so %d\n",i);
+}
+
+/*Lib.h*/
+#ifndef LIB_H
+#define LIB_H
+void foobar(int i); 
+#endif
+```
+
+```shell
+gcc -fPIC -shared -o Lib.so Lib.c
+```
+
+将Lib.c 编译成为一个共享对象文件，'-shared'表示产生共享对象-fPIC(Position Independent Code)表示使用地址无关代码技术来产生输出文件。
+
+```shell
+gcc -o Program1 Program1.c ./Lib.so // 利用./Lib.so分别进行编译链接。
+gcc -o Program2 Program2.c ./Lib.so
+```
+
+```shell
+./Program2
+Printing from Lib.so 1
+
+./Program2
+Printing from Lib.so 2
+```
+
+## 动态链接过程                                                                          
+
+当Program1.c编译成Program1.o时，编译器不知道foobar函数的地址。当链接器将Program1.o链接成可执行文件时：如果foobar是静态模块中的函数，连接器按照静态链接的规则将foobar重定位。如果foobar是动态库中的函数，那么连接器把foobar标记为一个动态链接符号，不进行重定位，把这个过程推迟到装载时再进行。因为动态库中保存了完整的符号信息，连接器知道foobar是动态符号还是静态符号。                                               
+
+查看进程的虚拟地址空间，可以看到有Lib.so映射文件。
+
+```shell
+./Program1 &
+[1] 4653
+Printing from Lib.so 1
+```
+
+```shell
+cat   /proc/4653/maps
+08048000-08049000 r-xp 00000000 08:01 209281     /xxx/Program1
+08049000-0804a000 r--p 00000000 08:01 209281     /xxx/Program1
+0804a000-0804b000 rw-p 00001000 08:01 209281     /xxx/Program1
+b7678000-b767a000 rw-p 00000000 00:00 0
+b767a000-b77d1000 r-xp 00000000 08:01 389519     /lib/libc-2.12.1.so
+b77d1000-b77d2000 ---p 00157000 08:01 389519     /lib/libc-2.12.1.so
+b77d2000-b77d4000 r--p 00157000 08:01 389519     /lib/libc-2.12.1.so
+b77d4000-b77d5000 rw-p 00159000 08:01 389519     /lib/libc-2.12.1.so
+b77d5000-b77d8000 rw-p 00000000 00:00 0
+b77e4000-b77e5000 rw-p 00000000 00:00 0
+b77e5000-b77e6000 r-xp 00000000 08:01 209280     /xxx/Lib.so
+b77e6000-b77e7000 r--p 00000000 08:01 209280     /xxx/Lib.so
+b77e7000-b77e8000 rw-p 00001000 08:01 209280     /xxx/Lib.so
+b77e8000-b77ea000 rw-p 00000000 00:00 0
+b77ea000-b77eb000 r-xp 00000000 00:00 0          [vdso]
+b77eb000-b7807000 r-xp 00000000 08:01 389495     /lib/ld-2.12.1.so
+b7807000-b7808000 r--p 0001b000 08:01 389495     /lib/ld-2.12.1.so
+b7808000-b7809000 rw-p 0001c000 08:01 389495     /lib/ld-2.12.1.so
+bfb39000-bfb4e000 rw-p 00000000 00:00 0          [stack]
+```
+
+ld-2.12.1.so是linux下的动态连接器，在系统运行Program1之前，首先会把控制权交给动态链接器，由它完成所有的动态链接工作以后再把控制权交个Program1，然后开始运行。   
+
+```shell
+readelf  -l  Lib.so
+
+Elf file type is DYN (Shared object file)
+Entry point 0x3b0
+There are 6 program headers, starting at offset 52
+
+Program Headers:
+  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
+  LOAD           0x000000 0x00000000 0x00000000 0x00524 0x00524 R E 0x1000
+  LOAD           0x000f14 0x00001f14 0x00001f14 0x00100 0x00108 RW  0x1000
+  DYNAMIC        0x000f28 0x00001f28 0x00001f28 0x000c0 0x000c0 RW  0x4
+  NOTE           0x0000f4 0x000000f4 0x000000f4 0x00024 0x00024 R   0x4
+  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x4
+  GNU_RELRO      0x000f14 0x00001f14 0x00001f14 0x000ec 0x000ec R   0x1
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     .note.gnu.build-id .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rel.dyn .rel.plt .init .plt .text .fini .rodata .eh_frame
+   01     .ctors .dtors .jcr .dynamic .got .got.plt .data .bss
+   02     .dynamic
+   03     .note.gnu.build-id
+   04    
+   05     .ctors .dtors .jcr .dynamic .got
+```
+
+动态链接库的装载地址是0x00000000，因为动态链接库的装载地址是不固定的。装载器根据当前系统的空闲情况，动态分配虚拟内存给相应的共享库。
+
+## position-independent code
+
+地址无关代码(position-independent code, PIC), 又称地址无关可执行文件(position-independent executable, PIE)，是指可在主存储器中任意位置正确地运行，而不受其绝对地址影响的一种机器码。PIC广泛使用于共享库，使得同一个库中的代码能够被加载到不同进程的地址空间中。PIC还用于缺少内存管理单元的计算机系统中，使得操作系统能够在单一的地址空间中将不同的运行程序隔离开来。
+
+地址无关代码能够在不做修改的情况下被复制到内存中的任意位置。这一点不同于重定位代码，因为重定位代码需要经过链接器或加载器的特殊处理才能确定合适的运行时内存地址。地址无关代码需要在源代码级别遵循一套特定的语义，并且需要编译器的支持。那些引用了绝对内存地址的指令(比如绝对跳转指令)必须被替换为PC相对寻址指令。这些间接处理过程可能导致PIC的运行效率下降，但是目前大多数处理器对PIC都有很好的支持，使得这效率上的这一点点下降基本可以忽略。
+
+?                     指令跳转、调用                    数据访问
+模块内部     1 相对跳转和调用                 2 相对地址访问
+模块外部     3 间接跳转和调用(GOT)       4 间接访问(GOT)
+
+如果一个共享对象lib.so中定义了一个全局变量G，而进程A和B都使用了lib.so，那么当进程A改变这个全局变量G的值的时，进程B中G会受到影响么？不会，因为当lib.so被两个进程加载时，它的数据段部分在每个进程中都有独立的副本，从这个角度看，共享对象中的全局变量实际上和定义在程序内部的全局变量没什么区别。如果是线程，则有影响。
+
+## 延迟绑定                                                                 
+
+动态链接比静态链接慢的主要原因是动态链接下对于全局静态的数据访问要进行复杂的GOT定位，然后间接寻址。由于很多函数在程序执行过程中不一定被用到(错误处理函数，特殊功能模块)，ELF采用了一种叫延迟绑定(Lazy Binding)的做法，基本思想就是当函数第一次被用到时才进行绑定。  
+
+# linux共享库的组织 
+
+http://man7.org/linux/man-pages/man8/ld.so.8.html                                     
+
+http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html                     
+
+http://www.tuicool.com/articles/BJZRBbf  细说linux系统下共享库的命名规范和使用方法
+
+## 共享版本库命名
+
+为了解决共享库的兼容性问题，Linux有一套规则来命名系统中的每一个共享库，它规定共享库的文件命名规则必需如下:  Libname.so.x.y.z。最前面是前缀"lib"，中间是共享库的名字和后缀"so"，最后面跟着的是三个数字组成的版本号。"x"表示主版本号(Major Version Number)，"y"表示次版本号(Minor Version Number)，"z"表示发布版本号(Release Version Number)。三个版本号的意义不一样：主版本号表示库有重大升级, 不同的主版本号之间不兼容。次版本号表示库的增量升级，即增加一些新的接口符号，且保持原来的符号不变. 在主版本号相同的情况下, 高的次版本号兼容低的次版本号的库。发布版本号表示库的一些错误修正, 性能的改进等，并不添加任何新的接口，也不对接口进行更改。
+
+## SO-NAME                                                                          
+
+每个共享库都有一个对应的"SO-NAME"，这个SO-NAME即共享库的文件名去掉次版本号和发布版本号，只保留主版本号。在Linux系统中，系统会为每个共享库在它所在的目录创建一个跟 "SO-NAME"相同的并且指向它的软连接(Symbol Link)。这个软连接一般指向最新版本的动态库。把ELF依赖的共享库的SO-NAME保到".dynamic"中，这样就会自动连接最新的版本。Linux中提供了一个工具叫做"ldconfig"，当系统安装或者更新一个共享库时，就运行这个工具，它会更新软连接使其指向最新的动态库, 如果是新安装则会建立相应的软连接。比如系统中存在一个共享库"/lib/libfoo.so.2.6.1"，那么Linux中的共享库管理程序会为它产生一个软连接"/lib/libfoo.so.2"指向它。
+
+## 链接名 Link Name                                                                 
+
+库libxxx.so.2.6.1的链接名是xxx。当我们在编译器里面使用共享库的时候(比如使用GCC的"-l"参数链接某个共享库)，为了简洁方便我们只需要指名共享库名(链接名)，而不需要给出共享库的全名(如:libname.so.2.6.1)。编译器会根据当前环境，在系统中相关路径(往往由-L参数指定)查找最新版本的name库。不同类型的库可能有同样的链接名，比如C语言的运行库都有静态版本(libc.a)和动态版本(libc.so.x.y.x)。如果在链接时使用参数"-lc"，那么链接器会根据输出文件的情况(动态/静态)来选择适合版本的库。比如ld使用-static参数时，"-lc"会查找libc.a，如果使用-Bdynamic(默认情况), 它会查找最新版本的libc.so.x.y.z。         
+
+## 共享库系统路径                                                                   
+
+FHS (File Hierarchy Standard)标准：大多数包括Linux在内的开源操作系统都遵守的标准，这个标准规定了一个系统中的系统文件应该如何存放，包括各个目录的结构，组织和作用。                                    
+
+FHS规定的共享库存放位置:                                                      
+
+- /lib存放系统最关键和基础的共享库，这些库主要是/bin和/sbin下的程序所需要用到的库，还有系统启动时需要的库。
+- /usr/lib，保存一些非系统运行时所需要的关键性的共享库，主要是一些开发时用到的共享库，还有开发时可能会用到的静态库，目标文件等。
+  /usr/local/lib，放置一些跟操作系统本身并不十分相关的库，主要是一些第三方的应用程序的库。比如在系统中安装了python语言的解释器, 那么与它相关的共享库可能会被放到    
+- /usr/local/lib/python，而它的可执行文件可能被放到/usr/local/bin下。GNU的标准推荐第三方的程序应该默认将库安装到/usr/local/lib下。	
+
+-     /lib和/usr/lib一些很常用的、成熟的，一般是系统本身所需要的库; /usr/local/lib非系  
+      统所需的第三方程序的共享库.                                                       
+
+
+## 共享库查找路径
+
+在开源系统中，包括所有的linux系统在内的很多都是基于Glibc的。在这些系统里，动态链接的ELF可执行文件在启动时同时会启动动态链接器，在Linux系统中，动态链接器是/lib/ld-linux.so.X(X是版本号)，程序所依赖的共享对象全部由动态链接器负责装载和初始化。任何一个动态链接的模块所依赖的模块路径保存在".dynamic"段里面，有DT_NEED类型的项表示。动态链接器对于模块的查找规则：如果DT_NEED里面保存的是绝对路径, 那么动态链接器就按照这个路径去查找；如果DT_NEED里面保存的是相对路径(通常如此),那么动态链接器会在/lib /usr/lib 和由 /etc/ld.so.conf 配置文件指定的目录中查找共享库。
+ld.so.conf：一个文本配置文件, 可能包含其他的配置文件, 这些配置文件中存放着目录信息。
+
+4 ldconfig
+
+为共享库目录下的各个共享库创建，删除，更新相应的SO-NAME(即相应的符号链接)；将这些SO-NAME收集起来，集中存放到/etc/ld.so.cache文件里面，并建立一个SO-NAME的缓存，当动态链接器要查找共享库时，它可以直接从/etc/ld.so.cache里面查找。而/etc/ld.so.cache的结构式经过特殊设计的, 非常适合查找。                                              
+
+5 动态链接器对于模块的查找规则2:                                                      
+
+如果动态链接器在/etc/ld.so.cache里面没有找到所需要的共享库, 那么它还会遍历/lib和/usr/lib这两个目录, 如果还是没找到, 就宣告失败.                                     
+
+6 如果在系统指定的共享库目录下添加,删除,更新任何一个共享库, 或者更改了/etc/ld.so.conf的配置, 都应该运行ldconfig程序, 以便调整SO-NAME和/etc/ld.so.cache.  
+
+7 不同Linux系统中SO-NAME缓存文件名字不同, 通过查看ldconfig的man手册来得知这些信息. 总体上, 动态链接器按照下列顺序依次装载或查找共享对象: a)由环境变量LD_LIBRARY_PATH指定的路径; b)由路径缓存文件/etc/ld.so.cache指定的路径; c)默认共享库目录, 先/usr/lib,  然后/lib。
+
+## LD_LIBRARY_PATH                                                                 
+
+在linux系统中，LD_LIBRARY_PATH是一个由若干路径组成的环境变量, 路径间用冒号隔开。默认情况下，LD_LIBRARY_PATH为空。如果为某个进程设置了LD_LIBRARY_PATH，那么进程启动时，动态连接器在查找共享库时，会首先查找由LD_LIBRARY_PATH指定的目录。LD_LIBRARY_PATH也会影响GCC编译时查找库的路径，它里面包含的目录相当于连接时GCC的"-L"参数。
+
+## 共享库的创建与安装                                                               
+
+-shared 表示输出结果是共享库类型。
+
+-fPIC   使用地址无关代码技术来产生输出文件。
+
+-Wl,-soname,my_soname 传递给连接器，用来指定共享库的SO-NAME。如果不指定，默认共享库没有SO-NAME，使用ldconfig更新SO-NAME的软连接时，对该共享库也没有效果。  
+
+-rpath (gcc -Wl,-rpath=dir1:dir2)，程序执行时首先在rpath中查找动态库.              
+
+Linux中提供了一个工具叫做"ldconfig"，当系统安装或者更新一个共享库时，就运行这个工具，它会更新软连接使其指向最新的动态库，如果是新安装则会建立相应的软连接。             
+
+比如有 libfoo1.c 和 libfoo2.c 两个源代码文件，希望产生一个 libfoo.so.1.0.0 的共享库，这个共享库依赖于 libbar1.so 和 libbar2.so 这两个共享库，可以使用如下命令
+
+```shell
+$ gcc -shared -fPIC -wl,-soname,libfoo.so.1 -o libfoo.so.1.0.0 libfoo1.c libfoo2.c -lbar1 -lbar2
+# 或者
+$ gcc -c -g -Wall -o libfoo1.o libfoo1.c
+$ gcc -c -g -Wall -o libfoo1.o libfoo1.c
+$ gcc -shared -soname,libfoo.so.1 -o libfoo.so.1.0.0 libfoo1.o libfoo2.o -lbar1 -lbar2
+```
+
+```shell
+$ldconfig -n dir # 刷新动态库软连接
+```
+
+
+建立目录 dir 里所有动态库的 soname。libxxx.so.1.0.0 的 soname，其实是一个指向libxxx.so.1.0.0 的软连接，这个软连接一般命名为 "libxxx.so.1"。库的soname，在编译时通过参数 -Wl,-soname,my_soname 指定。可以通过 readelf -d 来查看每个动态库的SONAME。
+
+  
+
+http://blog.sina.com.cn/s/blog_76fbd24d010142ob.html
+程序员的自我修养 - 符号版本  此博文包含图片	(2011-12-27 22:20:25)
+分类： 程序员的自我修养
+程序员的自我修养 <wbr>- <wbr>符号版本 
+
+1. 静态链接器会把程序所依赖的所有共享库的名字、主版本号和次版本号都记录到最终的应用程序二进制输出文件中。
+
+2. 程序如果用到了高次版本号中新添加的接口而目前系统中的低次版本号的共享库中不存在，那么就会发生重定位错误。
+
+3. 次版本号交会问题：
+在保守策略的系统中，如果系统中只有低次版本号的共享库，那么这些程序就不能运行。
+
+4. 次版本号交会问题并没有因为SO-NAME而解决，动态链接器在进行动态链接时，只进行主版本号的判断，即只判断SO-NAME，如果某个被依赖的共享库SO-NAME与系统中存在的实际共享库SO-NAME一致，那么系统就认为接口兼容，而不再进行兼容性检查。
+
+5. 基于符号的版本机制：
+让每个导出和导入的符号都有一个相关联的版本号。
+
+6. 共享库的每一次次版本号升级，都给那些新的次版本号中添加的全局符号打上相应的标记，就可以清楚地看到共享库中的每个符号都拥有相应的标签，如：“VERS_1.1”、“VERS_1.2”
+
+7. Solaris中的版本机制：
+定义一些符号的集合，这些集合本身都有名字，比如叫“VERS_1.1”，每个集合都包含一些指定的符号，出了可以拥有符号以外，还可以包含另外一个集合。
+
+8. 在Solaris中，程序员可以在链接共享库时编写一种叫做符号版本脚本的文件，在这个文件中指定这些符号与集合之间及集合与集合之间的继承依赖关系。链接器在链接时根据符号版本脚本中指定的关系来产生共享库，并且设置符号的集合与它们之间的关系。
+
+9. 在Solaris系统中：
+符号的集合名通常由“SUNW”开头；
+global：全局的符号；
+local：局部符号；
+
+10. 范围机制：
+使用local保护共享库的使用者有意或者无意地访问这些函数。
+
+11. 升级共享库，在原有的基础上添加了一个全局函数“swap”，那么新的符号版本脚本文件可以在原有的基础上添加如下内容：
+SUNW_1.2 {
+ global:
+ swap;
+} SUNW_1.1;
+
+12. 在Glibc的库中还可以看到类似于“GCC_”为前缀及“GLIBC_PRIVATE”这样的符号版本标记分别用于GCC编译器和GLIBC内部，它提醒共享库的使用者：最好不要使用这些符号，因为它并不是对外公开的，有可能随着共享库的版本演化儿被删除或改变。
+
+13. GCC允许使用一个叫做“.symver”的汇编宏指令来指定符号的版本，可以在GCC的C/C++源代码中嵌入汇编指令的模式使用：
+asm(".symver add, add@VERS_1.1");
+int add(int a, int b)
+{
+ return a + b;
+}
+这样就可以把符号“add”指定为符号标签“VERS_1.1”。
+
+14. GCC提供的两个扩展：
+（1）“.symver”的汇编宏指令。
+（2）符号多版本重载机制。
+
+15. 符号多版本重载机制的意义：
+如果仅仅为了一个符号的更改而升级主版本号，那么将会对系统带来很大的影响。
+
+16. 在Linux下链接一个共享库：
+使用ld：使用“--version-script”参数；
+使用gcc：使用“-Xlinker”参数加“--version-script”；
+符号版本脚本文件为“lib.ver”，编译源代码“lib.c”：
+gcc -shared -fPIC lib.c -Xlinker --version-script lib.ver -o lib.so
+lib.ver内容如下：
+VERS_1.2 {
+ global:
+    foo;
+ local:
+    *;
+};
+将main.c编译并且连接到当前版本的lib.so：
+gcc main.c ./lib.so -o main                                                           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
