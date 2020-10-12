@@ -8,7 +8,7 @@
 	<name>Account Parent</name>
 	<properties>
 		<springframework.version>2.5.6</springframework.version>
-		<junit.version>4.7</junit.version>
+		<junit.version>4.13.1</junit.version>
 	</properties>
 	<dependencyManagement> <!-- 在dependencyManagement元素下的依赖声明不会引入实际的依赖，不过它能够约束dependencies下的依赖使用 -->
 		<dependencies> <!-- 如果子模块不声明依赖的使用，及时该依赖已经在父POM的dependencyManagement中声明了，也不会产生任何实际的效果-->
