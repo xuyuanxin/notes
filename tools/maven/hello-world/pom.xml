@@ -11,7 +11,7 @@
     <dependency>
   	  <groupId>junit</groupId>
   	  <artifactId>junit</artifactId>
-  	  <version>4.7</version>  <!-- junit-4.7.jar -->
+  	  <version>4.13.1</version>  <!-- junit-4.7.jar -->
   	  <scope>test</scope> <!-- 依赖范围，表示只对测试有效。默认是compile -->
     </dependency>
   </dependencies>
