@@ -12,7 +12,7 @@
 		<module>jcomm-helloworld</module>
 	</modules>
 	<properties>
-		<junit.version>4.7</junit.version>
+		<junit.version>4.13.1</junit.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
