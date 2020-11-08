@@ -96,7 +96,7 @@ git checkout -- filename  回退filename的修改(进入到文件所在的目录)
 1 git rm filename
 2 git commit filename
 
-## 文件重命名
+## 文件或文件夹重命名
 
 1 git mv <旧文件名> <新文件名> 
 2 commit即可
