@@ -1,5 +1,7 @@
 # PART--Functions and Generators
 
+
+
 # Function Basics
 
 In simple terms, a function is a device that groups a set of statements so they can be run more than once in a program—a packaged procedure invoked by name.  Functions are also the most basic program structure Python provides for maximizing code reuse, and lead us to the larger notions of program design.   
@@ -500,6 +502,8 @@ SyntaxError: no binding for nonlocal 'spam' found
 
 # Arguments  
 
+This chapter continues the function story by studying the concepts in Python argument passing—the way that objects are sent to functions as inputs. As we’ll see, arguments (a.k.a. parameters) are assigned to names in a function, but they have more to do with object references than with variable scopes.  
+
 ## Argument-Passing Basics  
 
 todo
@@ -532,7 +536,7 @@ todo
 
 当参数传递列表和字典这样的可修改对象时，需要注意。changer中的第二条赋值语句没有修改b，修改的时b当前所引用的对象的一部分。名称L也没有改变，它仍然引用同样的、修改后的对象（这个对象在函数调用时被修改了）。
 
-![python_function_01](F:\mygit\notes\language\python\images\python_function_01.PNG)
+![python_function_01](.\images\python_function_01.PNG)
 
 ### Avoiding Mutable Argument Changes  
 
@@ -577,13 +581,42 @@ It looks like the code is returning two values here, but it’s really just one�
 
 ## Special Argument-Matching Modes  
 
+As we’ve just seen, arguments are always passed by assignment in Python; names in the def header are assigned to passed-in objects.   
+
 By default, arguments are matched by position, from left to right, and you must pass exactly as many arguments as there are argument names in the function header. However, you can also specify matching by name, provide default values, and use collectors for extra arguments.  
 
 ### Argument Matching Basics  /todo
 
-### Argument Matching Syntax /todo
+### Argument Matching Syntax
 
-## Keyword and Default Examples  
+Table 18-1. Function argument-matching forms Syntax Location Interpretation
+
+| Synax                   | Location | Interpretation                                               |
+| ----------------------- | -------- | ------------------------------------------------------------ |
+| func(value)             | Caller   | Normal argument: matched by position                         |
+| func(name=value)        | Caller   | Keyword argument: matched by name                            |
+| func(*iterable)         | Caller   | Pass all objects in iterable as individual positional arguments |
+| func(**dict)            | Caller   | Pass all key/value pairs in dict as individual keyword arguments |
+| def func(name)          | Function | Normal argument: matches any passed value by position or name |
+| def func(name=value)    | Function | Default argument value, if not passed in the call            |
+| def func(*name)         | Function | Matches and collects remaining positional arguments in a tuple |
+| def func(**name)        | Function | Matches and collects remaining keyword arguments in a dictionary |
+| def func(*other, name)  | Function | Arguments that must be passed by keyword only in calls (3.X) |
+| def func(*, name=value) | Function | Arguments that must be passed by keyword only in calls (3.X) |
+
+### The Gritty Details
+
+In both the call and header, the `**args` form must appear last if present.  The steps that Python internally carries out to match arguments before assignment can roughly be described as follows:
+
+1. Assign nonkeyword arguments by position.
+2. Assign keyword arguments by matching names.
+3. Assign extra nonkeyword arguments to *name tuple.
+4. Assign extra keyword arguments to **name dictionary.
+5. Assign default values to unassigned arguments in header. 
+
+After this, Python checks to make sure each argument is passed just one value; if not, an error is raised. When all matching is complete, Python assigns argument names to the objects passed to them.  
+
+### Keyword and Default Examples  
 
 If you don’t use any special matching syntax, Python matches names by position from left to right. Here, we pass by position—a is matched to 1, b is matched to 2, and so on.
 
@@ -593,7 +626,7 @@ If you don’t use any special matching syntax, Python matches names by position
 1 2 3
 ```
 
-### Keywords  
+#### Keywords  
 
 Keyword arguments allow us to match by name, instead of by position. 
 
@@ -605,9 +638,9 @@ Keyword arguments allow us to match by name, instead of by position.
 1 2 3
 ```
 
-Python matches the name c in the call to the argument named c in the function definition’s header, and then passes the value 3 to that argument.  All positionals are matched first from left to right in the header, before keywords are matched by name.
+Python matches the name c in the call to the argument named c in the function definition’s header, and then passes the value 3 to that argument.  **All positionals are matched first from left to right in the header, before keywords are matched by name.**
 
-### Defaults  
+#### Defaults  
 
 In short, defaults allow us to make selected function arguments optional; if not passed a value, the argument is assigned its default before the function runs.   
 
@@ -628,9 +661,9 @@ In short, defaults allow us to make selected function arguments optional; if not
 1 2 6
 ```
 
-When we call this function, we must provide a value for a, either by position or by keyword; however, providing values for b and c is optional. If we don’t pass values to b and c, they default to 2 and 3, respectively. If we pass two values, only c gets its default, and with three values, no defaults are used.
+When we call this function, we must provide a value for @a, either by position or by keyword; however, providing values for @b and @c is optional. If we don’t pass values to @b and @c, they default to 2 and 3, respectively. If we pass two values, only @c gets its default, and with three values, no defaults are used.
 
-### Combining keywords and defaults
+#### Combining keywords and defaults
 
 ```python
 def func(spam, eggs, toast=0, ham=0): # First 2 required
@@ -644,9 +677,11 @@ func(1, 2, 3, 4) # Output: (1, 2, 3, 4)
 
 Notice again that when keyword arguments are used in the call, the order in which the arguments are listed doesn’t matter; Python matches by name, not by position. The caller must supply values for spam and eggs, but they can be matched by position or by name. Again, keep in mind that the form name=value means different things in the call and the def: a keyword in the call and a default in the header.  
 
-## Arbitrary Arguments Examples  
+### Arbitrary Arguments Examples  
 
-### Headers: Collecting arguments  
+The last two matching extensions, * and **, are designed to support functions that take any number of arguments.   
+
+#### Headers: Collecting arguments  
 
 The first use, in the function definition, collects unmatched positional arguments into a tuple:  
 
@@ -683,7 +718,7 @@ Finally, function headers can combine normal arguments, the *, and the ** to imp
 1 (2, 3) {'y': 2, 'x': 1}
 ```
 
-### Calls: Unpacking arguments
+#### Calls: Unpacking arguments
 
 In all recent Python releases, we can use the * syntax when we call a function, too. In this context, its meaning is the inverse of its meaning in the function definition—it unpacks a collection of arguments, rather than building a collection of arguments.   
 
@@ -717,6 +752,91 @@ Again, we can combine normal, positional, and keyword arguments in the call in v
 >>> func(1, *(2,), c=3, **{'d':4}) # Same as func(1, 2, c=3, d=4)
 1 2 3 4
 ```
+
+### Python 3.X Keyword-Only Arguments  
+
+Python 3.X generalizes the ordering rules in function headers to allow us to specify keyword-only arguments—arguments that must be passed by keyword only and will never be filled in by a positional argument.   
+
+Syntactically, keyword-only arguments are coded as named arguments that may appear after *args in the arguments list. All such arguments must be passed using keyword syntax in the call.   
+
+```python
+>>> def kwonly(a, *b, c):
+        print(a, b, c)
+>>> kwonly(1, 2, c=3)
+1 (2,) 3
+>>> kwonly(a=1, c=3)
+1 () 3
+>>> kwonly(1, 2, 3)
+TypeError: kwonly() missing 1 required keyword-only argument: 'c'  
+```
+
+In the next function, a may be passed by position or name again, but b and c must be keywords, and no extra positionals are allowed:  
+
+```python
+>>> def kwonly(a, *, b, c):
+        print(a, b, c)
+>>> kwonly(1, c=3, b=2)
+1 2 3
+>>> kwonly(c=3, b=2, a=1)
+1 2 3
+>>> kwonly(1, 2, 3)
+TypeError: kwonly() takes 1 positional argument but 3 were given
+>>> kwonly(1)
+TypeError: kwonly() missing 2 required keyword-only arguments: 'b' and 'c' 
+        
+>>> def kwonly(a, *, b=1, c, d=2):
+        print(a, b, c, d)
+>>> kwonly(3, c=4)
+3 1 4 2
+>>> kwonly(3, c=4, b=5)
+3 5 4 2
+>>> kwonly(3)
+TypeError: kwonly() missing 1 required keyword-only argument: 'c'
+>>> kwonly(1, 2, 3)
+TypeError: kwonly() takes 1 positional argument but 3 were given
+```
+
+Finally, note that keyword-only arguments must be specified after a single star, not two —named arguments cannot appear after the `**args` arbitrary keywords form, and a ** can’t appear by itself in the arguments list.   
+
+```python
+>>> def kwonly(a, **pargs, b, c):
+SyntaxError: invalid syntax
+>>> def kwonly(a, **, b, c):
+SyntaxError: invalid syntax  
+    
+>>> def f(a, *b, **d, c=6): print(a, b, c, d) # Keyword-only before **!
+SyntaxError: invalid syntax
+>>> def f(a, *b, c=6, **d): print(a, b, c, d) # Collect args in header
+>>> f(1, 2, 3, x=4, y=5) # Default used
+1 (2, 3) 6 {'y': 5, 'x': 4}
+>>> f(1, 2, 3, x=4, y=5, c=7) # Override default
+1 (2, 3) 7 {'y': 5, 'x': 4}
+>>> f(1, 2, 3, c=7, x=4, y=5) # Anywhere in keywords
+1 (2, 3) 7 {'y': 5, 'x': 4}
+>>> def f(a, c=6, *b, **d): print(a, b, c, d) # c is not keyword-only here!
+>>> f(1, 2, 3, x=4)
+1 (3,) 2 {'x': 4}
+```
+
+In fact, similar ordering rules hold true in function calls: when keyword-only arguments are passed, they must appear before a `**args` form. The keyword-only argument can be coded either before or after the *args, though, and may be included in `**args`:
+
+```python
+>>> def f(a, *b, c=6, **d): print(a, b, c, d) # KW-only between * and **
+>>> f(1, *(2, 3), **dict(x=4, y=5)) # Unpack args at call
+1 (2, 3) 6 {'y': 5, 'x': 4}
+>>> f(1, *(2, 3), **dict(x=4, y=5), c=7) # Keywords before **args!
+SyntaxError: invalid syntax
+>>> f(1, *(2, 3), c=7, **dict(x=4, y=5)) # Override default
+1 (2, 3) 7 {'y': 5, 'x': 4}
+>>> f(1, c=7, *(2, 3), **dict(x=4, y=5)) # After or before *
+1 (2, 3) 7 {'y': 5, 'x': 4}
+>>> f(1, *(2, 3), **dict(x=4, y=5, c=7)) # Keyword-only in **
+1 (2, 3) 7 {'y': 5, 'x': 4}
+```
+
+
+
+
 
 # Advanced Function Topics  
 
@@ -789,6 +909,8 @@ As we’ve seen in this part of the book, functions in Python are much more than
 their own. As such, they can be freely passed around a program and called indirectly. They also support operations that have little to do with calls at all—attribute storage and annotation.  
 
 ### Indirect Function Calls: “First Class” Objects  
+
+。。。
 
 ### Function Introspection
 

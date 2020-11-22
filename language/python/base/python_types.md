@@ -1096,7 +1096,7 @@ At least conceptually, each time you generate a new value in your script by runn
 >>> a = 1.23 # Now it's a floating point
 ```
 
-This isn’t typical Python code, but it does work—a starts out as an integer, then becomes a string, and finally becomes a floating-point number. However, that’s not really what’s happening. In Python, things work more simply. Names have no types; as stated earlier, types live with objects, not names. In the preceding listing, we’ve simply changed a to reference different objects. 
+@a starts out as an integer, then becomes a string, and finally becomes a floating-point number. However, that’s not really what’s happening. In Python, things work more simply. Names have no types; as stated earlier, types live with objects, not names. In the preceding listing, we’ve simply changed @a to reference different objects. 
 
 Objects, on the other hand, know what type they are—each object contains a header field that tags the object with its type. The integer object 3, for example, will contain the value 3, plus a designator that tells Python that the object is an integer (strictly speaking, a pointer to an object called int, the name of the integer type). The type designator of the 'spam' string object points to the string type (called str) instead. Because objects know their types, variables don’t have to.
 
@@ -1111,7 +1111,7 @@ after the following statements, what happens to the object 3?
 
 The answer is that in Python, whenever a name is assigned to a new object, the space held by the prior object is reclaimed if it is not referenced by any other name or object. This automatic reclamation of objects’ space is known as garbage collection.
 
-## Shared References  
+## Shared References
 
 Now let’s introduce another variable into our interaction and watch what happens to its names and objects:
 
@@ -1120,7 +1120,7 @@ Now let’s introduce another variable into our interaction and watch what happe
 >>> b = a  
 ```
 
-The second command causes Python to create the variable b; the variable a is being used and not assigned here, so it is replaced with the object it references (3), and b is made to reference that object. The net effect is that the variables a and b wind up referencing the same object (that is, pointing to the same chunk of memory). This scenario in Python—with multiple names referencing the same object—is usually called a shared reference (and sometimes just a shared object).   
+The second command causes Python to create the variable @b; the variable @a is being used and not assigned here, so it is replaced with the object it references (3), and @b is made to reference that object. The net effect is that the variables @a and @b wind up referencing the same object (that is, pointing to the same chunk of memory). This scenario in Python—with multiple names referencing the same object—is usually called a shared reference (and sometimes just a shared object).   
 
 ### Shared References and In-Place Changes
 
